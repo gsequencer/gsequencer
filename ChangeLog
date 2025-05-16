@@ -1,3 +1,9 @@
+ags (7.7.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags-fx-pattern counter change absolute note offset
+	* improved AgsCoreAudioMidiin async fill MIDI buffer, disabled extra synchronization with audio HW on macOS
+
 ags (7.7.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

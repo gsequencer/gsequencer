@@ -238,6 +238,8 @@ ags_fx_pattern_audio_processor_init(AgsFxPatternAudioProcessor *fx_pattern_audio
   fx_pattern_audio_processor->note_256th = NULL;
 
   fx_pattern_audio_processor->has_16th_pulse = TRUE;
+
+  fx_pattern_audio_processor->note_offset_absolute_start = 0;
 }
 
 void
@@ -974,8 +976,7 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
 
   /* run */
   if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER)){
-    if(parent_recycling_context == NULL &&
-       delay_counter <= 0.0){
+    if(parent_recycling_context == NULL){
       ags_fx_pattern_audio_processor_play(fx_pattern_audio_processor);
     }
   }
@@ -1350,8 +1351,6 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
 
   note = NULL;
 
-  note_offset_absolute = 0;
-    
   bank_index_0 = 0.0;
   bank_index_1 = 0.0;
 

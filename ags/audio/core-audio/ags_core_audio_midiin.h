@@ -40,6 +40,8 @@ G_BEGIN_DECLS
 
 #define AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE (4096)
 
+#define AGS_CORE_AUDIO_MIDIIN_QUEUE_DEFAULT_LENGTH (8)
+
 typedef struct _AgsCoreAudioMidiin AgsCoreAudioMidiin;
 typedef struct _AgsCoreAudioMidiinClass AgsCoreAudioMidiinClass;
 
