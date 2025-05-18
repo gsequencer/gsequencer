@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1528,8 +1528,10 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   AgsSoundcardFormat format;
   guint copy_mode;
   guint i;
+  gboolean is_starting;
   gboolean is_playing;
   gboolean pass_through;
+  gboolean initial_callback;
   gboolean no_event;
   gboolean empty_run;
   
@@ -1571,18 +1573,27 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
 
   is_playing = FALSE;
 
-    /* wait callback */
+  is_starting = FALSE;
+  
+  /* wait callback */
   is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(core_audio_devout));
 
+  is_starting = ags_soundcard_is_starting(AGS_SOUNDCARD(core_audio_devout));
+  
   if(is_playing){
     ags_atomic_int_and(&(core_audio_devout->sync_flags),
 		     (~(AGS_CORE_AUDIO_DEVOUT_PASS_THROUGH)));
   }
   
   no_event = TRUE;
+
+  initial_callback = FALSE;
   
-  if(is_playing){
+  if(!is_starting &&
+     is_playing){
     if((AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK & (ags_atomic_int_get(&(core_audio_devout->sync_flags)))) != 0){
+      initial_callback = TRUE;
+      
       ags_atomic_int_or(&(core_audio_devout->sync_flags),
 		      AGS_CORE_AUDIO_DEVOUT_PRE_SYNC_CALLBACK_WAIT);
 	
@@ -1641,7 +1652,8 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
 				     out_buffer->mData, 1,
 				     out_buffer->mNumberChannels * (out_buffer->mDataByteSize / sizeof(float)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
-  if(is_playing){
+  if(!is_starting &&
+     is_playing){
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
     
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -1708,7 +1720,8 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   }
   
   /* signal finish */ 
-  if(!no_event){
+  if(!is_starting &&
+     !no_event){
     callback_finish_mutex = &(core_audio_devout->callback_finish_mutex);
 	
     g_mutex_lock(callback_finish_mutex);
@@ -2465,10 +2478,11 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						 ags_atomic_int_increment(&(core_audio_port->queued));
 
 						 no_event = TRUE;
-  
+						 
 						 if((AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
 						   g_rec_mutex_unlock(device_mutex);
 						   
+#if 0  						   
 						   /* force wait */
 						   ags_atomic_int_or(&(core_audio_midiin->sync_flags),
 								   AGS_CORE_AUDIO_MIDIIN_DO_SYNC);
@@ -2488,7 +2502,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						   }
     
 						   g_mutex_unlock(callback_mutex);
-
+#endif
+						   
 						   /* lock device */
 						   g_rec_mutex_lock(device_mutex);
 
@@ -2513,9 +2528,13 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						 }else if(core_audio_midiin->app_buffer_mode == AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_3){
 						   nth_buffer = 0;
 						 }
+
+						 g_rec_mutex_unlock(device_mutex);
 						 
 						 event_packet = &evtlist->packet[0];
 						 num_packets = evtlist->numPackets;
+
+						 g_rec_mutex_lock(core_audio_midiin->app_buffer_mutex[nth_buffer]);
 
 						 for(i = 0; i < num_packets; i++){
 						   guint length;
@@ -2548,9 +2567,10 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 						   event_packet = MIDIEventPacketNext(event_packet);
 						 }
 
-						 g_rec_mutex_unlock(device_mutex);
+						 g_rec_mutex_unlock(core_audio_midiin->app_buffer_mutex[nth_buffer]);
 
-						 /* signal finish */  
+						 /* signal finish */
+#if 0
 						 if(!no_event){
 						   /* signal client - wait callback finish */
 						   g_mutex_lock(callback_finish_mutex);
@@ -2564,7 +2584,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 
 						   g_mutex_unlock(callback_finish_mutex);
 						 }
-
+#endif
+						 
 						 ags_atomic_int_decrement(&(core_audio_port->queued));
 					       });
 	

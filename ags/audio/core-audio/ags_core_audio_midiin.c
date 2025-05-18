@@ -1417,6 +1417,7 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
   do_sync = FALSE;
   
   if(core_audio_client_activated){
+#if 0
     if((AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
       if((AGS_CORE_AUDIO_MIDIIN_DO_SYNC & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
 	ags_atomic_int_and(&(core_audio_midiin->sync_flags),
@@ -1447,9 +1448,11 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
       ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 		       (~AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK));
     }
+#endif
   }
 
   /* implied wait - callback finish wait */
+#if 0
   if(do_sync){
     g_mutex_lock(callback_finish_mutex);
 
@@ -1469,7 +1472,8 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
     ags_atomic_int_or(&(core_audio_midiin->sync_flags),
 		    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT |  AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
   }
-
+#endif
+  
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   task = NULL;
