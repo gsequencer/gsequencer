@@ -1,3 +1,8 @@
+ags (7.7.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsCoreAudioPort hw output no sync while starting playback on macOS
+
 ags (7.7.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
