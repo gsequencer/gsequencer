@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-05-18 05:27+0200\n"
+"POT-Creation-Date: 2025-05-20 08:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -177,8 +177,8 @@ msgstr "Otwórz plik audio"
 msgid "machine editor"
 msgstr "tym urządzenia: "
 
-#: ags/app/ags_machine_editor_dialog.c:192
-#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:556
+#: ags/app/ags_machine_editor_dialog.c:194
+#: ags/app/editor/ags_envelope_dialog.c:367 ags/app/ags_midi_dialog.c:561
 #: ags/app/ags_plugin_browser.c:364 ags/app/ags_preferences.c:282
 msgid "ok"
 msgstr ""
@@ -295,7 +295,7 @@ msgstr ""
 
 #: ags/app/ags_pcm_file_dialog.c:293
 #: ags/app/export/ags_midi_export_wizard.c:481
-#: ags/app/export/ags_wave_export_dialog.c:417
+#: ags/app/export/ags_wave_export_dialog.c:418
 #: ags/app/import/ags_midi_import_wizard.c:472
 #: ags/app/ags_export_soundcard.c:336
 msgid "open"
@@ -357,26 +357,26 @@ msgstr ""
 msgid "audio fast export"
 msgstr "Szybkie eksportowanie audio"
 
-#: ags/app/export/ags_wave_export_dialog.c:307
+#: ags/app/export/ags_wave_export_dialog.c:308
 msgid "start tact"
 msgstr "start taktowania"
 
-#: ags/app/export/ags_wave_export_dialog.c:328
+#: ags/app/export/ags_wave_export_dialog.c:329
 msgid "end tact"
 msgstr "koniec taktowania"
 
-#: ags/app/export/ags_wave_export_dialog.c:362
+#: ags/app/export/ags_wave_export_dialog.c:363
 #: ags/app/ags_export_soundcard.c:341
 msgid "output format"
 msgstr "format wyjścia"
 
-#: ags/app/export/ags_wave_export_dialog.c:404
+#: ags/app/export/ags_wave_export_dialog.c:405
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
 #: ags/app/ags_export_soundcard.c:289
 msgid "file"
 msgstr "plik"
 
-#: ags/app/export/ags_wave_export_dialog.c:431 ags/app/ags_export_window.c:416
+#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:416
 msgid "export"
 msgstr "eksportuj"
 
@@ -1008,15 +1008,15 @@ msgstr "na dół"
 msgid "envelope info"
 msgstr "koperta"
 
-#: ags/app/editor/ags_envelope_dialog.c:326
+#: ags/app/editor/ags_envelope_dialog.c:331
 msgid "editor"
 msgstr "edytor"
 
-#: ags/app/editor/ags_envelope_dialog.c:343
+#: ags/app/editor/ags_envelope_dialog.c:348
 msgid "info"
 msgstr "info"
 
-#: ags/app/editor/ags_envelope_dialog.c:670 ags/app/machine/ags_drum.c:368
+#: ags/app/editor/ags_envelope_dialog.c:675 ags/app/machine/ags_drum.c:368
 msgid "pattern"
 msgstr "szablon"
 
@@ -1361,32 +1361,32 @@ msgstr "monitor końca czasu"
 msgid "MIDI connection"
 msgstr "połączenie MIDI"
 
-#: ags/app/ags_midi_dialog.c:303
+#: ags/app/ags_midi_dialog.c:308
 #, fuzzy
 msgid "midi group"
 msgstr "grupa"
 
-#: ags/app/ags_midi_dialog.c:317
+#: ags/app/ags_midi_dialog.c:322
 msgid "midi channel"
 msgstr "kanał midi"
 
-#: ags/app/ags_midi_dialog.c:354
+#: ags/app/ags_midi_dialog.c:359
 msgid "audio start mapping"
 msgstr "zacznij mapowanie audio"
 
-#: ags/app/ags_midi_dialog.c:391
+#: ags/app/ags_midi_dialog.c:396
 msgid "audio end mapping"
 msgstr "zakończ mapowanie audio"
 
-#: ags/app/ags_midi_dialog.c:422
+#: ags/app/ags_midi_dialog.c:427
 msgid "midi start mapping"
 msgstr "zacznij mapowanie midi"
 
-#: ags/app/ags_midi_dialog.c:459
+#: ags/app/ags_midi_dialog.c:464
 msgid "midi end mapping"
 msgstr "zakończ mapowanie midi"
 
-#: ags/app/ags_midi_dialog.c:512
+#: ags/app/ags_midi_dialog.c:517
 msgid "midi device"
 msgstr "urządzenie midi"
 

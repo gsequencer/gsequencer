@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -259,6 +259,8 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   gtk_window_set_title((GtkWindow *) envelope_dialog,
 		       i18n("envelope info"));
+  gtk_window_set_hide_on_close(GTK_WINDOW(envelope_dialog),
+			       TRUE);
 
   gtk_window_set_deletable(GTK_WINDOW(envelope_dialog),
 			   TRUE);
@@ -268,6 +270,9 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
 
   gtk_window_set_default_size((GtkWindow *) envelope_dialog,
 			      800, 600);
+
+  g_signal_connect(envelope_dialog, "close-request",
+		   G_CALLBACK(ags_envelope_dialog_close_request_callback), NULL);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) envelope_dialog,

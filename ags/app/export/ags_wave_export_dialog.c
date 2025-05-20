@@ -261,9 +261,10 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
   wave_export_dialog->flags = 0;
   wave_export_dialog->connectable_flags = 0;
   
-  g_object_set(wave_export_dialog,
-	       "title", i18n("audio fast export"),
-	       NULL);
+  gtk_window_set_title(GTK_WINDOW(wave_export_dialog),
+		       i18n("audio fast export"));
+  gtk_window_set_hide_on_close(GTK_WINDOW(wave_export_dialog),
+			       TRUE);
 
   g_signal_connect(wave_export_dialog, "close-request",
 		   G_CALLBACK(ags_wave_export_dialog_close_request_callback), wave_export_dialog);

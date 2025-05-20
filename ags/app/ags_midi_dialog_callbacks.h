@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,8 @@
 #include <ags/app/ags_midi_dialog.h>
 
 G_BEGIN_DECLS
+
+gboolean ags_midi_dialog_close_request_callback(GtkWindow *window, gpointer user_data);
 
 G_END_DECLS
 

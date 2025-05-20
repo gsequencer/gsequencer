@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -133,6 +133,9 @@ ags_connection_editor_dialog_init(AgsConnectionEditorDialog *connection_editor_d
 
   gtk_window_set_title(GTK_WINDOW(connection_editor_dialog),
 		       i18n("connection editor"));
+  gtk_window_set_hide_on_close(GTK_WINDOW(connection_editor_dialog),
+			       TRUE);
+
   gtk_window_set_deletable(GTK_WINDOW(connection_editor_dialog),
 			   TRUE);
 

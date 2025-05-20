@@ -132,7 +132,9 @@ ags_machine_editor_dialog_init(AgsMachineEditorDialog *machine_editor_dialog)
 
   gtk_window_set_title(GTK_WINDOW(machine_editor_dialog),
 		       i18n("machine editor"));
-
+  gtk_window_set_hide_on_close(GTK_WINDOW(machine_editor_dialog),
+			       TRUE);
+  
   gtk_window_set_deletable(GTK_WINDOW(machine_editor_dialog),
 			   TRUE);
 

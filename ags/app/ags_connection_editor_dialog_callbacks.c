@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,5 +24,8 @@
 gboolean
 ags_connection_editor_dialog_close_request_callback(GtkWindow *window, gpointer user_data)
 {
+  ags_connection_editor_dialog_response((AgsConnectionEditorDialog *) window,
+					GTK_RESPONSE_CLOSE);	
+
   return(FALSE);
 }
