@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -258,6 +258,8 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
 
   gtk_window_set_title((GtkWindow *) preset_dialog,
 		       i18n("preset editor"));
+  gtk_window_set_hide_on_close(GTK_WINDOW(preset_dialog),
+			       TRUE);
 
   gtk_window_set_deletable(GTK_WINDOW(preset_dialog),
 			   TRUE);
@@ -267,6 +269,9 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
 
   gtk_window_set_default_size((GtkWindow *) preset_dialog,
 			      1024, 800);
+
+  g_signal_connect(preset_dialog, "close-request",
+		   G_CALLBACK(ags_preset_dialog_close_request_callback), NULL);
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) preset_dialog,

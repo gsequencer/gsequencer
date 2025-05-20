@@ -1,3 +1,13 @@
+ags (7.7.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiDialog uniform close-request behaviour
+	* fixed AgsMachineEditorDialog uniform close-request behaviour
+	* fixed AgsConnectionEditorDialog uniform close-request behaviour
+	* fixed AgsEnvelopeDialog uniform close-request behaviour
+	* fixed AgsPresetDialog uniform close-request behaviour
+	* fixed AgsWaveExportDialog uniform close-request behaviour
+
 ags (7.7.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,3 +19,11 @@
 
 #include <ags/app/editor/ags_preset_dialog_callbacks.h>
 
+gboolean
+ags_preset_dialog_close_request_callback(GtkWindow *window, gpointer user_data)
+{
+  ags_preset_dialog_response((AgsPresetDialog *) window,
+			     GTK_RESPONSE_CLOSE);	
+
+  return(FALSE);
+}
