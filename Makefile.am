@@ -3739,6 +3739,7 @@ endif
 endif
 
 install-html-links: install-html-mkdir-links
+	$(MAKE) install-html-mkdir
 	echo "creating links [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
 if AGS_WITH_SINGLE_DOCDIR
 else
@@ -3752,7 +3753,7 @@ endif
 endif
 endif
 
-install-html: install-html-mkdir install-html-links
+install-html: install-html-links
 if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)$(docdir)/images/
 	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)$(docdir)/images/adwaita/
