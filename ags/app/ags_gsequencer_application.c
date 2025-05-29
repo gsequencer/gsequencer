@@ -626,7 +626,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   
   /* LADSPA */
   add_ladspa_bridge_action = g_simple_action_new("add_ladspa_bridge",
-						 G_VARIANT_TYPE("as"));
+						 g_variant_type_new("as"));
   g_signal_connect(add_ladspa_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_ladspa_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
@@ -634,7 +634,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   /* DSSI */
   add_dssi_bridge_action = g_simple_action_new("add_dssi_bridge",
-					       G_VARIANT_TYPE("as"));
+					       g_variant_type_new("as"));
   g_signal_connect(add_dssi_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_dssi_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
@@ -642,7 +642,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   /* LV2 */
   add_lv2_bridge_action = g_simple_action_new("add_lv2_bridge",
-					      G_VARIANT_TYPE("as"));
+					      g_variant_type_new("as"));
   g_signal_connect(add_lv2_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_lv2_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
@@ -650,7 +650,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   /* VST3 */
   add_vst3_bridge_action = g_simple_action_new("add_vst3_bridge",
-					       G_VARIANT_TYPE("as"));
+					       g_variant_type_new("as"));
   g_signal_connect(add_vst3_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_vst3_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
@@ -658,7 +658,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   /* live DSSI */
   add_live_dssi_bridge_action = g_simple_action_new("add_live_dssi_bridge",
-						    G_VARIANT_TYPE("as"));
+						    g_variant_type_new("as"));
   g_signal_connect(add_live_dssi_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_live_dssi_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
@@ -666,7 +666,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   /* live LV2 */
   add_live_lv2_bridge_action = g_simple_action_new("add_live_lv2_bridge",
-						   G_VARIANT_TYPE("as"));
+						   g_variant_type_new("as"));
   g_signal_connect(add_live_lv2_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_live_lv2_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
@@ -674,7 +674,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 
   /* live VST3 */
   add_live_vst3_bridge_action = g_simple_action_new("add_live_vst3_bridge",
-						    G_VARIANT_TYPE("as"));
+						    g_variant_type_new("as"));
   g_signal_connect(add_live_vst3_bridge_action, "activate",
 		   G_CALLBACK(ags_gsequencer_add_live_vst3_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),

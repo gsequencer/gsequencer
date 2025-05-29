@@ -672,7 +672,7 @@ ags_window_load_add_menu_ladspa(AgsWindow *window,
     item = g_menu_item_new(effect,
 			   "app.add_ladspa_bridge");
 
-    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    builder = g_variant_builder_new(g_variant_type_new("as"));
     
     g_variant_builder_add(builder, "s", filename);
     g_variant_builder_add(builder, "s", effect);
@@ -762,7 +762,7 @@ ags_window_load_add_menu_dssi(AgsWindow *window,
     item = g_menu_item_new(effect,
 			   "app.add_dssi_bridge");
 
-    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    builder = g_variant_builder_new(g_variant_type_new("as"));
     
     g_variant_builder_add(builder, "s", filename);
     g_variant_builder_add(builder, "s", effect);
@@ -845,7 +845,7 @@ ags_window_load_add_menu_lv2(AgsWindow *window,
 	item = g_menu_item_new(effect,
 			       "app.add_lv2_bridge");
 
-	builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+	builder = g_variant_builder_new(g_variant_type_new("as"));
     
 	g_variant_builder_add(builder, "s", filename);
 	g_variant_builder_add(builder, "s", effect);
@@ -880,7 +880,7 @@ ags_window_load_add_menu_lv2(AgsWindow *window,
 	item = g_menu_item_new(effect,
 			       "app.add_lv2_bridge");
 
-	builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+	builder = g_variant_builder_new(g_variant_type_new("as"));
     
 	g_variant_builder_add(builder, "s", filename);
 	g_variant_builder_add(builder, "s", effect);
@@ -969,7 +969,7 @@ ags_window_load_add_menu_vst3(AgsWindow *window,
     item = g_menu_item_new(effect,
 			   "app.add_vst3_bridge");
 
-    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    builder = g_variant_builder_new(g_variant_type_new("as"));
     
     g_variant_builder_add(builder, "s", filename);
     g_variant_builder_add(builder, "s", effect);
@@ -1051,7 +1051,7 @@ ags_window_load_add_menu_live_dssi(AgsWindow *window,
     item = g_menu_item_new(effect,
 			   "app.add_live_dssi_bridge");
 
-    builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+    builder = g_variant_builder_new(g_variant_type_new("as"));
     
     g_variant_builder_add(builder, "s", filename);
     g_variant_builder_add(builder, "s", effect);
@@ -1125,7 +1125,7 @@ ags_window_load_add_menu_live_lv2(AgsWindow *window,
 	item = g_menu_item_new(effect,
 			       "app.add_live_lv2_bridge");
 
-	builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+	builder = g_variant_builder_new(g_variant_type_new("as"));
     
 	g_variant_builder_add(builder, "s", filename);
 	g_variant_builder_add(builder, "s", effect);
@@ -1206,7 +1206,7 @@ ags_window_load_add_menu_live_vst3(AgsWindow *window,
       item = g_menu_item_new(effect,
 			     "app.add_live_vst3_bridge");
 
-      builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+      builder = g_variant_builder_new(g_variant_type_new("as"));
     
       g_variant_builder_add(builder, "s", filename);
       g_variant_builder_add(builder, "s", effect);

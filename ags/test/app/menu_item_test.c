@@ -23,6 +23,41 @@
 #include <gtk/gtk.h>
 
 GtkApplication *app;  
+GMenu *menu;
+
+gboolean
+update_ui_timeout(gpointer user_data)
+{
+  GMenuItem *item;
+
+  GVariantBuilder *builder;
+
+  gchar *filename, *effect;
+
+  filename = "cmt.so";
+  effect = "echo delay line (5s)";
+
+  //TODO:JK: filename and effect
+  
+  item = g_menu_item_new(effect,
+			 "app.add_ladspa_bridge");
+
+  builder = g_variant_builder_new(g_variant_type_new("as"));
+    
+  g_variant_builder_add(builder, "s", filename);
+  g_variant_builder_add(builder, "s", effect);
+
+  g_menu_item_set_attribute_value(item,
+				  "target",
+				  g_variant_new("as", builder));
+    
+  g_menu_append_item(menu,
+		     item);
+
+  g_variant_builder_unref(builder);
+
+  return(FALSE);
+}
 
 void
 app_action_util_add_ladspa_bridge(gchar *filename, gchar *effect)
@@ -62,12 +97,6 @@ activate(GtkApplication *app,
   GSimpleAction *add_ladspa_bridge_action;
 
   GMenu *menubar;
-  GMenu *menu;
-  GMenuItem *item;
-
-  GVariantBuilder *builder;
-
-  gchar *filename, *effect;
 
   window = (GtkWindow *) gtk_application_window_new(app);
   gtk_window_present(window);
@@ -87,37 +116,15 @@ activate(GtkApplication *app,
 			-1,
 			"add",
 			G_MENU_MODEL(menu));
-  
-  item = g_menu_item_new("LADSPA",
-			 NULL);
 
-  filename = "cmt.so";
-  effect = "echo delay line (5s)";
-
-  //TODO:JK: filename and effect
-  
-  item = g_menu_item_new(effect,
-			 "app.add_ladspa_bridge");
-
-  builder = g_variant_builder_new(g_variant_type_new("as"));
-    
-  g_variant_builder_add(builder, "s", filename);
-  g_variant_builder_add(builder, "s", effect);
-
-  g_menu_item_set_attribute_value(item,
-				  "target",
-				  g_variant_new("as", builder));
-    
-  g_menu_append_item(menu,
-		     item);
-  
   menubar_widget = gtk_popover_menu_bar_new_from_model(G_MENU_MODEL(menubar));
   gtk_window_set_child(window,
 		       menubar_widget);
   gtk_application_set_menubar((GtkApplication *) app,
 			      G_MENU_MODEL(menubar));
 
-  g_variant_builder_unref(builder);
+  g_timeout_add(1000 / 4, (GSourceFunc) update_ui_timeout, NULL);
+    
 }
 
 int
