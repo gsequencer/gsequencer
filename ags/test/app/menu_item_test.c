@@ -22,6 +22,8 @@
 
 #include <gtk/gtk.h>
 
+GtkApplication *app;  
+
 void
 app_action_util_add_ladspa_bridge(gchar *filename, gchar *effect)
 {
@@ -50,13 +52,16 @@ add_ladspa_bridge_callback(GAction *action, GVariant *parameter,
   app_action_util_add_ladspa_bridge(filename, effect);
 }
 
-int
-main(int argc, char **argv)
+void
+activate(GtkApplication *app,
+	 gpointer user_data)
 {
-  GApplication *app;
-  
+  GtkWindow *window;
+  GtkWidget *menubar_widget;
+
   GSimpleAction *add_ladspa_bridge_action;
 
+  GMenu *menubar;
   GMenu *menu;
   GMenuItem *item;
 
@@ -64,30 +69,37 @@ main(int argc, char **argv)
 
   gchar *filename, *effect;
 
-  app = g_application_new("menu-item-test",
-			  (GApplicationFlags) (G_APPLICATION_HANDLES_OPEN |
-					       G_APPLICATION_NON_UNIQUE));
-  
+  window = (GtkWindow *) gtk_application_window_new(app);
+  gtk_window_present(window);
+    
   add_ladspa_bridge_action = g_simple_action_new("add_ladspa_bridge",
-						 G_VARIANT_TYPE("as"));
+						 g_variant_type_new("as"));
   g_signal_connect(add_ladspa_bridge_action, "activate",
 		   G_CALLBACK(add_ladspa_bridge_callback), app);
   g_action_map_add_action(G_ACTION_MAP(app),
 			  G_ACTION(add_ladspa_bridge_action));
 
+  menubar = (GMenu *) g_menu_new();
+  
   menu = g_menu_new();
+
+  g_menu_insert_submenu(menubar,
+			-1,
+			"add",
+			G_MENU_MODEL(menu));
+  
   item = g_menu_item_new("LADSPA",
 			 NULL);
 
-  filename = NULL;
-  effect = NULL;
+  filename = "cmt.so";
+  effect = "echo delay line (5s)";
 
   //TODO:JK: filename and effect
   
   item = g_menu_item_new(effect,
 			 "app.add_ladspa_bridge");
 
-  builder = g_variant_builder_new(G_VARIANT_TYPE("as"));
+  builder = g_variant_builder_new(g_variant_type_new("as"));
     
   g_variant_builder_add(builder, "s", filename);
   g_variant_builder_add(builder, "s", effect);
@@ -96,10 +108,35 @@ main(int argc, char **argv)
 				  "target",
 				  g_variant_new("as", builder));
     
-  g_menu_append_item(ladspa_menu,
+  g_menu_append_item(menu,
 		     item);
+  
+  menubar_widget = gtk_popover_menu_bar_new_from_model(G_MENU_MODEL(menubar));
+  gtk_window_set_child(window,
+		       menubar_widget);
+  gtk_application_set_menubar((GtkApplication *) app,
+			      G_MENU_MODEL(menubar));
 
   g_variant_builder_unref(builder);
+}
 
+int
+main(int argc, char **argv)
+{
+  gint status;
+  
+  app = gtk_application_new("org.nongnu.gsequencer.menu-item-test",
+			    (GApplicationFlags) (G_APPLICATION_HANDLES_OPEN |
+						 G_APPLICATION_NON_UNIQUE));
+  
+  g_signal_connect(app, "activate",
+		   G_CALLBACK(activate), NULL);
+
+  status = g_application_run(G_APPLICATION(app),
+			     argc,
+			     argv);
+
+  g_object_unref(app);
+  
   return(0);
 }
