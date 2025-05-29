@@ -636,10 +636,15 @@ ags_window_load_add_menu_ladspa(AgsWindow *window,
   ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* ladspa sub-menu */
-  ladspa_menu = g_menu_new();
   ladspa_item = g_menu_item_new("LADSPA",
 				NULL);
+  g_menu_append_item(menu,
+		     ladspa_item);
   
+  ladspa_menu = g_menu_new();  
+  g_menu_item_set_submenu(ladspa_item,
+			  G_MENU_MODEL(ladspa_menu));  
+
   /* get plugin */
   g_rec_mutex_lock(ladspa_manager_mutex);
   
@@ -689,12 +694,6 @@ ags_window_load_add_menu_ladspa(AgsWindow *window,
     /* iterate */
     list = list->next;
   }
-  
-  g_menu_item_set_submenu(ladspa_item,
-			  G_MENU_MODEL(ladspa_menu));  
-
-  g_menu_append_item(menu,
-		     ladspa_item);
 
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
@@ -729,9 +728,14 @@ ags_window_load_add_menu_dssi(AgsWindow *window,
   dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* dssi sub-menu */
-  dssi_menu = g_menu_new();
   dssi_item = g_menu_item_new("DSSI",
 			      NULL);
+  g_menu_append_item(menu,
+		     dssi_item);
+
+  dssi_menu = g_menu_new();
+  g_menu_item_set_submenu(dssi_item,
+			  G_MENU_MODEL(dssi_menu));
 
   /* get plugin */
   g_rec_mutex_lock(dssi_manager_mutex);
@@ -780,12 +784,6 @@ ags_window_load_add_menu_dssi(AgsWindow *window,
     list = list->next;
   }
 
-  g_menu_item_set_submenu(dssi_item,
-			  G_MENU_MODEL(dssi_menu));  
-
-  g_menu_append_item(menu,
-		     dssi_item);
-
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
 }
@@ -820,9 +818,14 @@ ags_window_load_add_menu_lv2(AgsWindow *window,
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* lv2 sub-menu */
-  lv2_menu = g_menu_new();
   lv2_item = g_menu_item_new("LV2",
-			      NULL);
+			      NULL);  
+  g_menu_append_item(menu,
+		     lv2_item);
+
+  lv2_menu = g_menu_new();
+  g_menu_item_set_submenu(lv2_item,
+			  G_MENU_MODEL(lv2_menu));  
 
   /* get plugin */
   g_rec_mutex_lock(lv2_manager_mutex);
@@ -898,12 +901,6 @@ ags_window_load_add_menu_lv2(AgsWindow *window,
   }
 
   g_rec_mutex_unlock(lv2_manager_mutex);
-  
-  g_menu_item_set_submenu(lv2_item,
-			  G_MENU_MODEL(lv2_menu));  
-
-  g_menu_append_item(menu,
-		     lv2_item);
 }
 
 /**
@@ -936,10 +933,15 @@ ags_window_load_add_menu_vst3(AgsWindow *window,
   vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
 
   /* vst3 sub-menu */
-  vst3_menu = g_menu_new();
   vst3_item = g_menu_item_new("VST3",
 			      NULL);
+  g_menu_append_item(menu,
+		     vst3_item);
   
+  vst3_menu = g_menu_new();
+  g_menu_item_set_submenu(vst3_item,
+			  G_MENU_MODEL(vst3_menu));  
+
   /* get plugin */
   g_rec_mutex_lock(vst3_manager_mutex);
   
@@ -987,12 +989,6 @@ ags_window_load_add_menu_vst3(AgsWindow *window,
     list = list->next;
   }
   
-  g_menu_item_set_submenu(vst3_item,
-			  G_MENU_MODEL(vst3_menu));  
-
-  g_menu_append_item(menu,
-		     vst3_item);
-
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
 #endif
@@ -1018,9 +1014,14 @@ ags_window_load_add_menu_live_dssi(AgsWindow *window,
   dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* dssi sub-menu */
-  dssi_menu = g_menu_new();
   dssi_item = g_menu_item_new("live DSSI",
 			      NULL);
+  g_menu_append_item(menu,
+		     dssi_item);
+
+  dssi_menu = g_menu_new();
+  g_menu_item_set_submenu(dssi_item,
+			  G_MENU_MODEL(dssi_menu));  
 
   /* get plugin */
   g_rec_mutex_lock(dssi_manager_mutex);
@@ -1069,12 +1070,6 @@ ags_window_load_add_menu_live_dssi(AgsWindow *window,
     list = list->next;
   }
 
-  g_menu_item_set_submenu(dssi_item,
-			  G_MENU_MODEL(dssi_menu));  
-
-  g_menu_append_item(menu,
-		     dssi_item);
-
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
 }
@@ -1100,9 +1095,14 @@ ags_window_load_add_menu_live_lv2(AgsWindow *window,
   lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* lv2 sub-menu */
-  lv2_menu = g_menu_new();
   lv2_item = g_menu_item_new("live LV2",
 			      NULL);
+  g_menu_append_item(menu,
+		     lv2_item);
+
+  lv2_menu = g_menu_new();
+  g_menu_item_set_submenu(lv2_item,
+			  G_MENU_MODEL(lv2_menu));  
 
   /* get plugin */
   g_rec_mutex_lock(lv2_manager_mutex);
@@ -1143,12 +1143,6 @@ ags_window_load_add_menu_live_lv2(AgsWindow *window,
   }
 
   g_rec_mutex_unlock(lv2_manager_mutex);
-  
-  g_menu_item_set_submenu(lv2_item,
-			  G_MENU_MODEL(lv2_menu));  
-
-  g_menu_append_item(menu,
-		     lv2_item);
 }
 
 void
@@ -1172,10 +1166,15 @@ ags_window_load_add_menu_live_vst3(AgsWindow *window,
   vst3_manager_mutex = AGS_VST3_MANAGER_GET_OBJ_MUTEX(vst3_manager);
 
   /* vst3 sub-menu */
-  vst3_menu = g_menu_new();
   vst3_item = g_menu_item_new("live VST3",
 			      NULL);
+  g_menu_append_item(menu,
+		     vst3_item);
   
+  vst3_menu = g_menu_new();
+  g_menu_item_set_submenu(vst3_item,
+			  G_MENU_MODEL(vst3_menu));  
+
   /* get plugin */
   g_rec_mutex_lock(vst3_manager_mutex);
   
@@ -1224,12 +1223,6 @@ ags_window_load_add_menu_live_vst3(AgsWindow *window,
     /* iterate */
     list = list->next;
   }
-  
-  g_menu_item_set_submenu(vst3_item,
-			  G_MENU_MODEL(vst3_menu));  
-
-  g_menu_append_item(menu,
-		     vst3_item);
 
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
