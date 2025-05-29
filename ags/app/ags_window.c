@@ -659,6 +659,9 @@ ags_window_load_add_menu_ladspa(AgsWindow *window,
     GVariantBuilder *builder;
 
     gchar *filename, *effect;
+
+    filename = NULL;
+    effect = NULL;
     
     /* get filename and effect */
     g_object_get(list->data,
