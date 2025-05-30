@@ -3699,7 +3699,7 @@ fix-online-html:
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-audio-html@../libags-audio@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-gui-html@../libags-gui@g' {} \;
 
-install-html-mkdir-links:
+install-html-mkdir-links: install-html-mkdir
 	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
 if AGS_WITH_UPSTREAM_GTK_DOC
 if ENABLE_GTK_DOC
@@ -3739,7 +3739,6 @@ endif
 endif
 
 install-html-links: install-html-mkdir-links
-	$(MAKE) install-html-mkdir
 	echo "creating links [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
 if AGS_WITH_SINGLE_DOCDIR
 else

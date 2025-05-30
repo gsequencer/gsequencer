@@ -1,7 +1,13 @@
+ags (7.7.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved menubar on macOS work-around of failed action parameter
+
 ags (7.7.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed target install-html-mkdir in Makefile.am
+	* fixed variant type in ags_gsequencer_application.c
 
 ags (7.7.10)
 
