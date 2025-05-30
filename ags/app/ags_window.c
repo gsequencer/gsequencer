@@ -253,6 +253,8 @@ ags_window_init(AgsWindow *window)
 
     gtk_header_bar_set_decoration_layout(window->header_bar,
 					 "menu:minimize,maximize,close");
+    gtk_header_bar_set_use_native_controls(window->header_bar,
+					   TRUE);
 
     window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
 				   window->loaded_filename);
