@@ -801,10 +801,12 @@ ags_gsequencer_application_startup(GApplication *app)
   gsequencer_app->add_menu = (GMenu *) gtk_builder_get_object(builder,
 							      "ags-add-menu");
 
+#if !defined(AGS_OSXAPI)
   g_menu_insert_submenu(gsequencer_app->edit_menu,
 			0,
 			i18n("Add"),
 			G_MENU_MODEL(gsequencer_app->add_menu));
+#endif
   
   item = g_menu_item_new(i18n("Notation"),
 			 "app.edit_notation");

@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 7.7.11\n"
+"Project-Id-Version: gsequencer 7.7.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-05-28 13:13+0200\n"
+"POT-Creation-Date: 2025-05-30 07:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -614,7 +614,7 @@ msgid "position tool"
 msgstr ""
 
 #: ags/app/editor/ags_composite_toolbar.c:937
-#: ags/app/ags_gsequencer_application.c:856
+#: ags/app/ags_gsequencer_application.c:858
 msgid "Edit"
 msgstr ""
 
@@ -1139,90 +1139,90 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:806
+#: ags/app/ags_gsequencer_application.c:807
 msgid "Add"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:809
+#: ags/app/ags_gsequencer_application.c:811
 msgid "Notation"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:814
+#: ags/app/ags_gsequencer_application.c:816
 msgid "Automation"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:819
+#: ags/app/ags_gsequencer_application.c:821
 msgid "Wave"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:826
+#: ags/app/ags_gsequencer_application.c:828
 msgid "Sheet"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:832
+#: ags/app/ags_gsequencer_application.c:834
 msgid "Tempo"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:837
+#: ags/app/ags_gsequencer_application.c:839
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:842
+#: ags/app/ags_gsequencer_application.c:844
 msgid "Preferences"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:848
+#: ags/app/ags_gsequencer_application.c:850
 msgid "Downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:862
-#: ags/app/ags_gsequencer_application.c:1131
+#: ags/app/ags_gsequencer_application.c:864
+#: ags/app/ags_gsequencer_application.c:1133
 msgid "SMF import"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:867
-#: ags/app/ags_gsequencer_application.c:1140
+#: ags/app/ags_gsequencer_application.c:869
+#: ags/app/ags_gsequencer_application.c:1142
 msgid "SMF export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:874
+#: ags/app/ags_gsequencer_application.c:876
 msgid "MIDI"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:885
+#: ags/app/ags_gsequencer_application.c:887
 msgid "Window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:892
-#: ags/app/ags_gsequencer_application.c:904
+#: ags/app/ags_gsequencer_application.c:894
+#: ags/app/ags_gsequencer_application.c:906
 msgid "Help"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:897
+#: ags/app/ags_gsequencer_application.c:899
 msgid "About"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1085
+#: ags/app/ags_gsequencer_application.c:1087
 msgid "application window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1093 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1095 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1103
+#: ags/app/ags_gsequencer_application.c:1105
 msgid "sample downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1113
+#: ags/app/ags_gsequencer_application.c:1115
 msgid "meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1122
+#: ags/app/ags_gsequencer_application.c:1124
 msgid "audio export"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1149
+#: ags/app/ags_gsequencer_application.c:1151
 msgid "help"
 msgstr ""
 
