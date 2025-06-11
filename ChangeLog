@@ -1,3 +1,20 @@
+ags (8.0.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented AgsButton
+	* TODO:JK: implemented AgsToggleButton
+	* TODO:JK: implemented AgsCheckButton
+	* TODO:JK: implemented AgsRadioButton
+	* TODO:JK: implemented AgsSpinButton
+	* TODO:JK: implemented AgsMenuButton
+	* TODO:JK: implemented AgsComboBox
+	* TODO:JK: implemented AgsListView
+	* TODO:JK: implemented AgsEntry
+	* TODO:JK: implemented AgsTextView
+	* TODO:JK: implemented AgsScale
+	* TODO:JK: improved AgsFileEntry
+	* improved AgsDial small refactoring
+
 ags (7.8.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

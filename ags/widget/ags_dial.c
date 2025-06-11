@@ -181,6 +181,27 @@ ags_dial_get_type(void)
   return(g_define_type_id__static);
 }
 
+GType
+ags_dial_flags_get_type(void)
+{
+  static gsize g_flags_type_id__static;
+
+  if(g_once_init_enter(&g_flags_type_id__static)){
+    static const GFlagsValue values[] = {
+      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_WITH_BUTTONS", "dial-with-buttons" },
+      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_SEEMLESS_MODE", "dial-seemless-mode" },
+      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_INVERSE_LIGHT", "dial-inverse-light" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsDialFlags"), values);
+
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
+  }
+  
+  return(g_flags_type_id__static);
+}
+
 void
 ags_dial_class_init(AgsDialClass *dial)
 {
@@ -401,16 +422,23 @@ void
 ags_dial_init(AgsDial *dial)
 {
   GtkEventController *event_controller;
-  
+    
+  dial->flags = (AGS_DIAL_WITH_BUTTONS |
+		 AGS_DIAL_SEEMLESS_MODE |
+		 AGS_DIAL_INVERSE_LIGHT);
+  dial->state_flags = 0;
+
+  /* focus */
   gtk_widget_set_can_focus((GtkWidget *) dial,
 			   TRUE);
 
+  /* expand */
   gtk_widget_set_hexpand((GtkWidget *) dial,
 			 TRUE);
-  
   gtk_widget_set_vexpand((GtkWidget *) dial,
 			 TRUE);  
 
+  /* key controller */
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
@@ -424,6 +452,7 @@ ags_dial_init(AgsDial *dial)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_dial_modifiers_callback), dial);
 
+  /* gesture controller */
   event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
@@ -434,17 +463,15 @@ ags_dial_init(AgsDial *dial)
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_dial_gesture_click_released_callback), dial);
 
+  /* motion controller */
   event_controller = gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
 
   g_signal_connect_after(event_controller, "motion",
 			 G_CALLBACK(ags_dial_motion_callback), dial);
-  
-  dial->flags = (AGS_DIAL_WITH_BUTTONS |
-		 AGS_DIAL_SEEMLESS_MODE |
-		 AGS_DIAL_INVERSE_LIGHT);
 
+  /* fields */
   dial->radius = AGS_DIAL_DEFAULT_RADIUS;
   dial->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
   dial->scale_max_precision = AGS_DIAL_DEFAULT_PRECISION;
@@ -837,7 +864,7 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   gint padding_left, padding_top;
   gint dial_left_position;
   
-  dial->flags |= AGS_DIAL_MOUSE_BUTTON_PRESSED;
+  dial->state_flags |= AGS_DIAL_STATE_MOUSE_BUTTON_PRESSED;
 
   widget_width = gtk_widget_get_width((GtkWidget *) dial);
   widget_height = gtk_widget_get_height((GtkWidget *) dial);
@@ -861,11 +888,11 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
     if(ags_dial_button_press_is_down_event(dial,
 					   x, y,
 					   padding_left, padding_top)){
-      dial->flags |= AGS_DIAL_BUTTON_DOWN_PRESSED;
+      dial->state_flags |= AGS_DIAL_STATE_BUTTON_DOWN_PRESSED;
     }else if(ags_dial_button_press_is_up_event(dial,
 					       x, y,
 					       padding_left, padding_top)){
-      dial->flags |= AGS_DIAL_BUTTON_UP_PRESSED;
+      dial->state_flags |= AGS_DIAL_STATE_BUTTON_UP_PRESSED;
     }else{
       dial_left_position = padding_left + dial->button_width;
 
@@ -878,8 +905,8 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 	dial->current_x = x;
 	dial->current_y = y;
 
-	dial->flags |= AGS_DIAL_MOTION_CAPTURING_INIT;
-	dial->flags |= AGS_DIAL_MOTION_CAPTURING;
+	dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING_INIT;
+	dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING;
       }
     }
   }else{
@@ -894,8 +921,8 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
       dial->current_x = x;
       dial->current_y = y;
 
-      dial->flags |= AGS_DIAL_MOTION_CAPTURING_INIT;
-      dial->flags |= AGS_DIAL_MOTION_CAPTURING;
+      dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING_INIT;
+      dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING;
     }
   }
 }
@@ -909,9 +936,9 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
 {
   gtk_widget_grab_focus((GtkWidget *) dial);
 
-  dial->flags &= (~AGS_DIAL_MOUSE_BUTTON_PRESSED);
+  dial->state_flags &= (~AGS_DIAL_STATE_MOUSE_BUTTON_PRESSED);
 
-  if((AGS_DIAL_BUTTON_DOWN_PRESSED & (dial->flags)) != 0){
+  if((AGS_DIAL_STATE_BUTTON_DOWN_PRESSED & (dial->state_flags)) != 0){
     GtkAdjustment *adjustment;
 
     adjustment = dial->adjustment;
@@ -924,8 +951,8 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
 
-    dial->flags &= (~AGS_DIAL_BUTTON_DOWN_PRESSED);
-  }else if((AGS_DIAL_BUTTON_UP_PRESSED & (dial->flags)) != 0){
+    dial->state_flags &= (~AGS_DIAL_STATE_BUTTON_DOWN_PRESSED);
+  }else if((AGS_DIAL_STATE_BUTTON_UP_PRESSED & (dial->state_flags)) != 0){
     GtkAdjustment *adjustment;
 
     adjustment = dial->adjustment;
@@ -938,9 +965,9 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
 
-    dial->flags &= (~AGS_DIAL_BUTTON_UP_PRESSED);
-  }else if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
-    dial->flags &= (~AGS_DIAL_MOTION_CAPTURING);
+    dial->state_flags &= (~AGS_DIAL_STATE_BUTTON_UP_PRESSED);
+  }else if((AGS_DIAL_STATE_MOTION_CAPTURING & (dial->state_flags)) != 0){
+    dial->state_flags &= (~AGS_DIAL_STATE_MOTION_CAPTURING);
   }
 }
 
@@ -1102,9 +1129,9 @@ ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
   widget_width = gtk_widget_get_width((GtkWidget *) dial);
   widget_height = gtk_widget_get_height((GtkWidget *) dial);
 
-  if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
+  if((AGS_DIAL_STATE_MOTION_CAPTURING & (dial->state_flags)) != 0){
     if((AGS_DIAL_SEEMLESS_MODE & (dial->flags)) != 0){
-      if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+      if((AGS_DIAL_STATE_MOTION_CAPTURING_INIT & (dial->state_flags)) != 0){
 	dial->current_x = x;
 	dial->current_y = y;
       }else{
@@ -1117,11 +1144,11 @@ ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
       ags_dial_motion_notify_do_seemless_dial(dial,
 					      x, y);
     }else{
-      if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+      if((AGS_DIAL_STATE_MOTION_CAPTURING_INIT & (dial->state_flags)) != 0){
 	dial->current_x = x;
 	dial->current_y = y;
 
-	dial->flags &= (~AGS_DIAL_MOTION_CAPTURING_INIT);
+	dial->state_flags &= (~AGS_DIAL_STATE_MOTION_CAPTURING_INIT);
 
 	ags_dial_motion_notify_do_dial(dial,
 				       x, y);

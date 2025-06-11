@@ -53,14 +53,17 @@ typedef struct _AgsDialClass AgsDialClass;
 
 typedef enum{
   AGS_DIAL_WITH_BUTTONS           = 1,
-  AGS_DIAL_MOUSE_BUTTON_PRESSED   = 1 <<  1,
-  AGS_DIAL_BUTTON_DOWN_PRESSED    = 1 <<  2,
-  AGS_DIAL_BUTTON_UP_PRESSED      = 1 <<  3,
-  AGS_DIAL_MOTION_CAPTURING_INIT  = 1 <<  4,
-  AGS_DIAL_MOTION_CAPTURING       = 1 <<  5,
-  AGS_DIAL_SEEMLESS_MODE          = 1 <<  6,
-  AGS_DIAL_INVERSE_LIGHT          = 1 <<  7,
+  AGS_DIAL_SEEMLESS_MODE          = 1 <<  1,
+  AGS_DIAL_INVERSE_LIGHT          = 1 <<  2,
 }AgsDialFlags;
+
+typedef enum{
+  AGS_DIAL_STATE_MOUSE_BUTTON_PRESSED   = 1,
+  AGS_DIAL_STATE_BUTTON_DOWN_PRESSED    = 1 <<  1,
+  AGS_DIAL_STATE_BUTTON_UP_PRESSED      = 1 <<  2,
+  AGS_DIAL_STATE_MOTION_CAPTURING_INIT  = 1 <<  3,
+  AGS_DIAL_STATE_MOTION_CAPTURING       = 1 <<  4,
+}AgsDialStateFlags;
 
 typedef enum{
   AGS_DIAL_INCREMENT,
@@ -72,6 +75,7 @@ struct _AgsDial
   GtkWidget widget;
 
   AgsDialFlags flags;
+  AgsDialStateFlags state_flags;
 
   guint radius;
   guint outline_strength;
@@ -103,6 +107,9 @@ struct _AgsDialClass
 };
 
 GType ags_dial_get_type(void);
+GType ags_dial_flags_get_type(void);
+
+GType ags_dial_action_get_type(void);
 
 /* getter and setter */
 void ags_dial_set_radius(AgsDial *dial,
