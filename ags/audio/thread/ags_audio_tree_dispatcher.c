@@ -1079,6 +1079,17 @@ ags_audio_tree_dispatcher_compile_tree_list(AgsAudioTreeDispatcher *audio_tree_d
   return(g_list_reverse(start_tree_list));
 }
 
+/**
+ * ags_audio_tree_dispatcher_get_tree_list:
+ * @audio_tree_dispatcher: the #AgsAudioTreeDispatcher
+ * @staging_program_count: (out): the staging program count return value
+ * 
+ * Get tree list.
+ *
+ * Returns: (transfer full): the staging program
+ * 
+ * Since: 8.0.0
+ */
 guint*
 ags_audio_tree_dispatcher_get_staging_program(AgsAudioTreeDispatcher *audio_tree_dispatcher,
 					      guint *staging_program_count)
@@ -1106,6 +1117,16 @@ ags_audio_tree_dispatcher_get_staging_program(AgsAudioTreeDispatcher *audio_tree
   return(local_staging_program);
 }
 
+/**
+ * ags_audio_tree_dispatcher_set_staging_program:
+ * @audio_tree_dispatcher: the #AgsAudioTreeDispatcher
+ * @staging_program: (transfer none): the staging program array
+ * @staging_program_count: the staging program count
+ * 
+ * Get tree list.
+ * 
+ * Since: 8.0.0
+ */
 void
 ags_audio_tree_dispatcher_set_staging_program(AgsAudioTreeDispatcher *audio_tree_dispatcher,
 					      guint *staging_program, guint staging_program_count)
