@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1465,11 +1465,6 @@ ags_dial_draw(AgsDial *dial,
   font_name = NULL;
   
   dark_theme = TRUE;
-  
-  g_object_get(settings,
-	       "gtk-font-name", &font_name,
-	       "gtk-application-prefer-dark-theme", &dark_theme,
-	       NULL);
 
   /* colors */
   fg_success = gtk_style_context_lookup_color(style_context,
@@ -1860,6 +1855,60 @@ ags_dial_draw(AgsDial *dial,
   cairo_paint(cr);
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
+}
+
+/**
+ * ags_dial_test_flags:
+ * @dial: the #AgsDial
+ * @flags: the flags
+ * 
+ * Test flags of @dial.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 8.0.0
+ */
+gboolean
+ags_dial_test_flags(AgsDial *dial,
+		    AgsDialFlags flags)
+{
+  gboolean success;
+
+  success = ((flags & (dial->flags)) != 0) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_dial_set_flags:
+ * @dial: the #AgsDial
+ * @flags: the flags
+ * 
+ * Set flags of @dial.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_dial_set_flags(AgsDial *dial,
+		   AgsDialFlags flags)
+{
+  dial->flags |= flags;
+}
+
+/**
+ * ags_dial_unset_flags:
+ * @dial: the #AgsDial
+ * @flags: the flags
+ * 
+ * Set flags of @dial.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_dial_unset_flags(AgsDial *dial,
+		     AgsDialFlags flags)
+{
+  dial->flags &= (~flags);
 }
 
 /**

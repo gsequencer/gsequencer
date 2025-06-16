@@ -15967,7 +15967,6 @@ ags_audio_real_recursive_run_stage(AgsAudio *audio,
 
   g_rec_mutex_unlock(audio_mutex);
 
-  /* initialize return value */
   while(channel != NULL){
     /* reset recursive channel stage */
     ags_channel_recursive_run_stage(channel,

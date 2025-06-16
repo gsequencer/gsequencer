@@ -84,8 +84,43 @@ GType ags_button_get_type(void);
 GType ags_button_flags_get_type(void);
 GType ags_button_size_get_type(void);
 
+/* flags and size */
+gboolean ags_button_test_flags(AgsButton *button,
+			       AgsButtonFlags flags);
+void ags_button_set_flags(AgsButton *button,
+			  AgsButtonFlags flags);
+void ags_button_unset_flags(AgsButton *button,
+			    AgsButtonFlags flags);
+
+gboolean ags_button_test_size(AgsButton *button,
+			       AgsButtonSize size);
+void ags_button_set_size(AgsButton *button,
+			 AgsButtonSize size);
+
+/* getter/setter */
+void ags_button_set_font_size(AgsButton *button,
+			      guint font_size);
+guint ags_button_get_font_size(AgsButton *button);
+
+void ags_button_set_font_name(AgsButton *button,
+			      gchar *font_name);
+gchar* ags_button_get_font_name(AgsButton *button);
+
+void ags_button_set_label(AgsButton *button,
+			  gchar *label);
+gchar* ags_button_get_label(AgsButton *button);
+
+void ags_button_set_icon_name(AgsButton *button,
+			      gchar *icon_name);
+gchar* ags_button_get_icon_name(AgsButton *button);
+
+/* events */
+void ags_button_clicked(AgsButton *button);
+
 /* instantiate */
 AgsButton* ags_button_new();
+AgsButton* ags_button_new_with_label(gchar *label);
+AgsButton* ags_button_new_from_icon_name(gchar *icon_name);
 
 G_END_DECLS
 

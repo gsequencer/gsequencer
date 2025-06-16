@@ -320,7 +320,11 @@ void
 ags_button_init(AgsButton *button)
 {
   GtkEventController *event_controller;
+
+  button->flags = AGS_BUTTON_SHOW_LABEL;
+  button->button_size = AGS_BUTTON_SIZE_INHERIT;
   
+  /*  */
   gtk_widget_set_can_focus((GtkWidget *) button,
 			   TRUE);
 
@@ -671,7 +675,195 @@ ags_button_draw(AgsButton *button,
 		cairo_t *cr,
 		gboolean is_animation)
 {
+  GtkStyleContext *style_context;
+
+  GtkSettings *settings;
+
+  GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
+  GdkRGBA text_color;
+
+  gchar *font_name;
+
+  gint widget_width, widget_height;
+  gboolean dark_theme;
+  gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
+  gboolean text_success;
+
+  settings = gtk_settings_get_default();
+
+  style_context = gtk_widget_get_style_context((GtkWidget *) button);
+  
+  font_name = NULL;
+    
+  dark_theme = TRUE;
+
+  if(button->font_name == NULL){
+    g_object_get(settings,
+		 "gtk-font-name", &font_name,
+		 NULL);
+
+    ags_button_set_font_name(button,
+			     font_name);
+  }else{
+    font_name = button->font_name;
+  }
+
+  if(font_name == NULL){
+    font_name = "sans";
+  }
+  
+  g_object_get(settings,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
+  
+  /* colors */
+  fg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_fg_color",
+					      &fg_color);
+    
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+    
+  text_success = gtk_style_context_lookup_color(style_context,
+						"theme_text_color",
+						&text_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success ||
+     !text_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
+    
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+      
+      gdk_rgba_parse(&text_color,
+		     "#000000");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#cbd5d9");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+
+      gdk_rgba_parse(&text_color,
+		     "#ffffff");
+    }
+  }
+
+  widget_width = gtk_widget_get_width((GtkWidget *) button);
+  widget_height = gtk_widget_get_height((GtkWidget *) button);
+
   //TODO:JK: implement me
+}
+
+/**
+ * ags_button_test_flags:
+ * @button: the #AgsButton
+ * @flags: the flags
+ * 
+ * Test flags of @button.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 8.0.0
+ */
+gboolean
+ags_button_test_flags(AgsButton *button,
+		      AgsButtonFlags flags)
+{
+  gboolean success;
+
+  success = ((flags & (button->flags)) != 0) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_button_set_flags:
+ * @button: the #AgsButton
+ * @flags: the flags
+ * 
+ * Set flags of @button.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_button_set_flags(AgsButton *button,
+		     AgsButtonFlags flags)
+{
+  button->flags |= flags;
+}
+
+/**
+ * ags_button_unset_flags:
+ * @button: the #AgsButton
+ * @flags: the flags
+ * 
+ * Set flags of @button.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_button_unset_flags(AgsButton *button,
+		       AgsButtonFlags flags)
+{
+  button->flags &= (~flags);
+}
+
+/**
+ * ags_button_test_size:
+ * @button: the #AgsButton
+ * @size: the size
+ * 
+ * Test size of @button.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 8.0.0
+ */
+gboolean
+ags_button_test_size(AgsButton *button,
+		     AgsButtonSize size)
+{
+  gboolean success;
+
+  success = (size == button->size) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_button_set_size:
+ * @button: the #AgsButton
+ * @size: the size
+ * 
+ * Set size of @button.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_button_set_size(AgsButton *button,
+		    AgsButtonSize size)
+{
+  button->size = size;
 }
 
 /**
@@ -756,7 +948,7 @@ ags_button_set_font_name(AgsButton *button,
  * 
  * Since: 8.0.0
  */
-guint
+gchar*
 ags_button_get_font_name(AgsButton *button)
 {
   gchar *font_name;
@@ -785,7 +977,7 @@ ags_button_get_font_name(AgsButton *button)
  */
 void
 ags_button_set_label(AgsButton *button,
-			 gchar *label)
+		     gchar *label)
 {
   if(!AGS_IS_BUTTON(button)){
     return;
@@ -806,7 +998,7 @@ ags_button_set_label(AgsButton *button,
  * 
  * Since: 8.0.0
  */
-guint
+gchar*
 ags_button_get_label(AgsButton *button)
 {
   gchar *label;
@@ -856,7 +1048,7 @@ ags_button_set_icon_name(AgsButton *button,
  * 
  * Since: 8.0.0
  */
-guint
+gchar*
 ags_button_get_icon_name(AgsButton *button)
 {
   gchar *icon_name;
@@ -875,6 +1067,25 @@ ags_button_get_icon_name(AgsButton *button)
 }
 
 /**
+ * ags_button_clicked:
+ * @button: the #AgsButton
+ *
+ * draws the widget
+ *
+ * Since: 8.0.0
+ */
+void
+ags_button_clicked(AgsButton *button)
+{
+  g_return_if_fail(AGS_IS_BUTTON(button));
+
+  g_object_ref((GObject *) button);
+  g_signal_emit(G_OBJECT(button),
+		button_signals[CLICKED], 0);
+  g_object_unref((GObject *) button);
+}
+
+/**
  * ags_button_new:
  *
  * Creates an #AgsButton
@@ -889,6 +1100,48 @@ ags_button_new()
   AgsButton *button;
 
   button = (AgsButton *) g_object_new(AGS_TYPE_BUTTON,
+				      NULL);
+  
+  return(button);
+}
+
+/**
+ * ags_button_new:
+ *
+ * Creates an #AgsButton
+ *
+ * Returns: a new #AgsButton
+ *
+ * Since: 8.0.0
+ */
+AgsButton*
+ags_button_new_with_label(gchar *label)
+{
+  AgsButton *button;
+
+  button = (AgsButton *) g_object_new(AGS_TYPE_BUTTON,
+				      "label", label,
+				      NULL);
+  
+  return(button);
+}
+
+/**
+ * ags_button_new:
+ *
+ * Creates an #AgsButton
+ *
+ * Returns: a new #AgsButton
+ *
+ * Since: 8.0.0
+ */
+AgsButton*
+ags_button_new_from_icon_name(gchar *icon_name)
+{
+  AgsButton *button;
+
+  button = (AgsButton *) g_object_new(AGS_TYPE_BUTTON,
+				      "icon-name", icon_name,
 				      NULL);
   
   return(button);

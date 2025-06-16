@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -109,7 +109,13 @@ struct _AgsDialClass
 GType ags_dial_get_type(void);
 GType ags_dial_flags_get_type(void);
 
-GType ags_dial_action_get_type(void);
+/* flags */
+gboolean ags_dial_test_flags(AgsDial *dial,
+			     AgsDialFlags flags);
+void ags_dial_set_flags(AgsDial *dial,
+			AgsDialFlags flags);
+void ags_dial_unset_flags(AgsDial *dial,
+			  AgsDialFlags flags);
 
 /* getter and setter */
 void ags_dial_set_radius(AgsDial *dial,
