@@ -74,8 +74,8 @@ struct _AgsDispatchAudio
     GObject *input;
   }tree_element;
 
-  AgsRecallID *recall_id;
-  AgsRecyclingContext *recycling_context;
+  GObject *recall_id;
+  GObject *recycling_context;
 };
 
 GType ags_audio_tree_dispatcher_get_type(void);
