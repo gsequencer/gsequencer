@@ -511,7 +511,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync relative attack factor 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -545,7 +545,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -579,7 +579,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -613,7 +613,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync relative attack factor 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -647,7 +647,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -681,7 +681,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -715,7 +715,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync relative attack factor 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -749,7 +749,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -783,7 +783,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -817,7 +817,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync relative attack factor 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync factor 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -851,7 +851,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -885,7 +885,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -1929,7 +1929,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  8, 1);
 
   /* low-pass 0 cut-off frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("low-pass 0 - cut-off frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - cut-off frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_effect_grid,
@@ -1960,7 +1960,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* low-pass 0 filter gain */
-  label = (GtkLabel *) gtk_label_new(i18n("low-pass 0 - filter gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - filter gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_effect_grid,
@@ -1991,7 +1991,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* low-pass 0 no-clip */
-  label = (GtkLabel *) gtk_label_new(i18n("low-pass 0 - no clip"));
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - no clip"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_effect_grid,
@@ -2022,7 +2022,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* amplifier 0 - amp 0-3 */
-  label = (GtkLabel *) gtk_label_new(i18n("amplifier 0 - amp 1-4"));
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 1 - amp 1-4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_effect_grid,
@@ -2103,7 +2103,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 3);
   
   /* amplifier 0 - filter gain */
-  label = (GtkLabel *) gtk_label_new(i18n("amplifier 0 - filter gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 1 - filter gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_effect_grid,
@@ -2402,7 +2402,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync relative attack factor 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2436,7 +2436,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2470,7 +2470,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2504,7 +2504,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync relative attack factor 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2538,7 +2538,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2572,7 +2572,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2606,7 +2606,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync relative attack factor 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2640,7 +2640,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2674,7 +2674,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2708,7 +2708,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync relative attack factor 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync factor 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2742,7 +2742,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -2776,7 +2776,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -3714,7 +3714,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  8, 1);
 
   /* low-pass 1 cut-off frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - cut-off frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 2 - cut-off frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_effect_grid,
@@ -3745,7 +3745,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* low-pass 1 filter gain */
-  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - filter gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 2 - filter gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_effect_grid,
@@ -3776,7 +3776,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* low-pass 1 no-clip */
-  label = (GtkLabel *) gtk_label_new(i18n("low-pass 1 - no clip"));
+  label = (GtkLabel *) gtk_label_new(i18n("low-pass 2 - no clip"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_effect_grid,
@@ -3807,7 +3807,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 1);
 
   /* amplifier 1 - amp 0-3 */
-  label = (GtkLabel *) gtk_label_new(i18n("amplifier 1 - amp 1-4"));
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 2 - amp 1-4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_effect_grid,
@@ -3888,7 +3888,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 		  1, 3);
   
   /* amplifier 1 - filter gain */
-  label = (GtkLabel *) gtk_label_new(i18n("amplifier 1 - filter gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("amplifier 2 - filter gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_effect_grid,
