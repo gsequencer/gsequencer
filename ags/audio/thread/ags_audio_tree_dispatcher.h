@@ -34,6 +34,8 @@ G_BEGIN_DECLS
 #define AGS_IS_AUDIO_TREE_DISPATCHER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_AUDIO_TREE_DISPATCHER))
 #define AGS_AUDIO_TREE_DISPATCHER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_AUDIO_TREE_DISPATCHER, AgsAudioTreeDispatcherClass))
 
+#define AGS_DISPATCH_AUDIO(ptr) ((AgsDispatchAudio*)(ptr))
+
 #define AGS_AUDIO_TREE_DISPATCHER_GET_OBJ_MUTEX(obj) (&(((AgsAudioTreeDispatcher *) obj)->obj_mutex))
 
 typedef struct _AgsAudioTreeDispatcher AgsAudioTreeDispatcher;
@@ -64,7 +66,7 @@ struct _AgsDispatchAudio
 {
   GObject *dispatch_source;
   
-  gint scope;
+  gint sound_scope;
 
   GType tree_element_type;
   
@@ -82,12 +84,16 @@ GType ags_audio_tree_dispatcher_get_type(void);
 
 /* tree list */
 AgsDispatchAudio* ags_dispatch_audio_alloc(GObject *dispatch_source,
-					   gint scope);
+					   gint sound_scope);
 void ags_dispatch_audio_free(AgsDispatchAudio *dispatch_audio);
 
-GList* ags_audio_tree_dispatcher_compile_tree_list(AgsAudioTreeDispatcher *audio_tree_list,
+GList* ags_audio_tree_dispatcher_compile_tree_list(AgsAudioTreeDispatcher *audio_tree_dispatcher,
 						   GObject *dispatch_source,
-						   gint scope);
+						   gint sound_scope);
+
+void ags_audio_tree_dispatcher_remove_dispatch_source(AgsAudioTreeDispatcher *audio_tree_dispatcher,
+						      GObject *dispatch_source,
+						      gint sound_scope);
 
 /* getter and setter */
 guint* ags_audio_tree_dispatcher_get_staging_program(AgsAudioTreeDispatcher *audio_tree_dispatcher,

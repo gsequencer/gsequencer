@@ -38,28 +38,28 @@ void ags_audio_tree_dispatcher_finalize(GObject *gobject);
 
 GList* ags_audio_tree_dispatcher_compile_tree_list_audio(AgsAudio *audio,
 							 GObject *dispatch_source,
-							 gint scope,
+							 gint sound_scope,
 							 GList *tree_list);
 
 GList* ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
 							      GObject *dispatch_source,
-							      gint scope,
+							      gint sound_scope,
 							      AgsRecyclingContext *recycling_context,
 							      GList *tree_list);
 GList* ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
 								GObject *dispatch_source,
-								gint scope,
+								gint sound_scope,
 								AgsRecyclingContext *recycling_context,
 								GList *tree_list);
 GList* ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *channel,
 								      GObject *dispatch_source,
-								      gint scope,
+								      gint sound_scope,
 								      AgsRecyclingContext *recycling_context,
 								      GList *tree_list);
 
 GList* ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
 							   GObject *dispatch_source,
-							   gint scope,
+							   gint sound_scope,
 							   GList *tree_list);
 
 /**
@@ -69,7 +69,7 @@ GList* ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
  * @section_id:
  * @include: ags/audio/thread/ags_audio_tree_dispatcher.h
  *
- * #AgsAudioTreeDispatcher runs per dispatch source and scope.
+ * #AgsAudioTreeDispatcher runs per dispatch source and sound scope.
  */
 
 static gpointer ags_audio_tree_dispatcher_parent_class = NULL;
@@ -163,7 +163,7 @@ ags_audio_tree_dispatcher_finalize(GObject *gobject)
 /**
  * ags_dispatch_audio_alloc:
  * @dispatch_source: the dispatch source
- * @scope: the #AgsSoundScope
+ * @sound_scope: the #AgsSoundScope
  *
  * Alloc dispatch audio.
  *
@@ -173,7 +173,7 @@ ags_audio_tree_dispatcher_finalize(GObject *gobject)
  */
 AgsDispatchAudio*
 ags_dispatch_audio_alloc(GObject *dispatch_source,
-			 gint scope)
+			 gint sound_scope)
 {
   AgsDispatchAudio *dispatch_audio;
 
@@ -185,7 +185,7 @@ ags_dispatch_audio_alloc(GObject *dispatch_source,
   }
 
   dispatch_audio->dispatch_source = dispatch_source;
-  dispatch_audio->scope = scope;
+  dispatch_audio->sound_scope = sound_scope;
 }
 
 /**
@@ -237,7 +237,7 @@ ags_dispatch_audio_free(AgsDispatchAudio *dispatch_audio)
 GList*
 ags_audio_tree_dispatcher_compile_tree_list_audio(AgsAudio *audio,
 						  GObject *dispatch_source,
-						  gint scope,
+						  gint sound_scope,
 						  GList *tree_list)
 {
   AgsChannel *channel;
@@ -258,7 +258,7 @@ ags_audio_tree_dispatcher_compile_tree_list_audio(AgsAudio *audio,
   while(channel != NULL){
     tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel(channel,
 								    dispatch_source,
-								    scope,
+								    sound_scope,
 								    tree_list);
     
     /* get channel mutex */
@@ -278,7 +278,7 @@ ags_audio_tree_dispatcher_compile_tree_list_audio(AgsAudio *audio,
 GList*
 ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
 						       GObject *dispatch_source,
-						       gint scope,
+						       gint sound_scope,
 						       AgsRecyclingContext *recycling_context,
 						       GList *tree_list)
 {
@@ -316,9 +316,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
   }
 
   while(current_channel != NULL){
-    /* check scope - input */
+    /* check sound scope - input */
     recall_id =
-      start_recall_id = ags_channel_check_scope(current_channel, scope);
+      start_recall_id = ags_channel_check_scope(current_channel, sound_scope);
 
     current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							     recycling_context);    
@@ -328,7 +328,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
       AgsDispatchAudio *dispatch_audio;
 
       dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-						scope);
+						sound_scope);
 
       g_object_ref(current_channel);
 	
@@ -358,9 +358,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
 		 "audio", &current_audio,
 		 NULL);
 
-    /* check scope - audio */
+    /* check sound scope - audio */
     recall_id =
-      start_recall_id = ags_audio_check_scope(current_audio, scope);
+      start_recall_id = ags_audio_check_scope(current_audio, sound_scope);
       
     current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							     recycling_context);
@@ -370,7 +370,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
       AgsDispatchAudio *dispatch_audio;
 
       dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-						scope);
+						sound_scope);
 
       g_object_ref(channel);
     
@@ -444,9 +444,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
       
   ags_audio_tree_dispatcher_compile_tree_list_channel_up_OUTPUT:
 
-    /* check scope - output */
+    /* check sound scope - output */
     recall_id =
-      start_recall_id = ags_channel_check_scope(current_channel, scope);
+      start_recall_id = ags_channel_check_scope(current_channel, sound_scope);
       
     current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							     recycling_context);
@@ -456,7 +456,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
       AgsDispatchAudio *dispatch_audio;
 
       dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-						scope);
+						sound_scope);
 
       g_object_ref(current_channel);
 	
@@ -500,7 +500,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
 GList*
 ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
 							 GObject *dispatch_source,
-							 gint scope,
+							 gint sound_scope,
 							 AgsRecyclingContext *recycling_context,
 							 GList *tree_list)
 {
@@ -522,9 +522,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
   /* do */
   next_recycling_context = recycling_context;
     
-  /* check scope - output */
+  /* check sound scope - output */
   recall_id =
-    start_recall_id = ags_channel_check_scope(channel, scope);
+    start_recall_id = ags_channel_check_scope(channel, sound_scope);
 
   current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							   recycling_context);
@@ -534,7 +534,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
     AgsDispatchAudio *dispatch_audio;
 
     dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-					      scope);
+					      sound_scope);
 
     g_object_ref(channel);
     
@@ -569,9 +569,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
 	       "line", &line,
 	       NULL);
 
-  /* check scope - audio */
+  /* check sound scope - audio */
   recall_id =
-    start_recall_id = ags_audio_check_scope(current_audio, scope);
+    start_recall_id = ags_audio_check_scope(current_audio, sound_scope);
 
   current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							   recycling_context);
@@ -581,7 +581,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
     AgsDispatchAudio *dispatch_audio;
 
     dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-					      scope);
+					      sound_scope);
 
     g_object_ref(current_audio);
     
@@ -681,9 +681,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
 
   if(next_recycling_context != NULL &&
      next_recycling_context != recycling_context){
-    /* check scope - audio */
+    /* check sound scope - audio */
     recall_id =
-      start_recall_id = ags_audio_check_scope(current_audio, scope);
+      start_recall_id = ags_audio_check_scope(current_audio, sound_scope);
 
     current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							     next_recycling_context);
@@ -693,7 +693,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
       AgsDispatchAudio *dispatch_audio;
 
       dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-						scope);
+						sound_scope);
 
       g_object_ref(current_audio);
       
@@ -725,7 +725,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
   /* traverse the tree */
   tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(channel,
 									     dispatch_source,
-									     scope,
+									     sound_scope,
 									     next_recycling_context,
 									     tree_list);
 
@@ -740,7 +740,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
 GList*
 ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *channel,
 							       GObject *dispatch_source,
-							       gint scope,
+							       gint sound_scope,
 							       AgsRecyclingContext *recycling_context,
 							       GList *tree_list)
 {
@@ -795,9 +795,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *chann
       /* get some fields */
       current_link = ags_channel_get_link(current_input);
       
-      /* check scope - input */
+      /* check sound scope - input */
       recall_id =
-	start_recall_id = ags_channel_check_scope(current_input, scope);
+	start_recall_id = ags_channel_check_scope(current_input, sound_scope);
 
       current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							       recycling_context);
@@ -807,7 +807,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *chann
 	AgsDispatchAudio *dispatch_audio;
 
 	dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-						  scope);
+						  sound_scope);
 
 	g_object_ref(current_input);
 	
@@ -833,7 +833,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *chann
       /* traverse the tree */
       tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_down(current_link,
 									   dispatch_source,
-									   scope,
+									   sound_scope,
 									   recycling_context,
 									   tree_list);
       
@@ -861,9 +861,9 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *chann
     /* get some fields */
     current_link = ags_channel_get_link(current_input);
       
-    /* check scope - input */
+    /* check sound scope - input */
     recall_id =
-      start_recall_id = ags_channel_check_scope(current_input, scope);
+      start_recall_id = ags_channel_check_scope(current_input, sound_scope);
 
     current_recall_id = ags_recall_id_find_recycling_context(start_recall_id,
 							     recycling_context);      
@@ -873,7 +873,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *chann
       AgsDispatchAudio *dispatch_audio;
 
       dispatch_audio = ags_dispatch_audio_alloc(dispatch_source,
-						scope);
+						sound_scope);
 
       g_object_ref(current_input);
       
@@ -899,7 +899,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *chann
     /* traverse the tree */
     tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_down(current_link,
 									 dispatch_source,
-									 scope,
+									 sound_scope,
 									 recycling_context,
 									 tree_list);
 
@@ -927,7 +927,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *chann
 GList*
 ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
 						    GObject *dispatch_source,
-						    gint scope,
+						    gint sound_scope,
 						    GList *tree_list)
 {
   
@@ -942,13 +942,13 @@ ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
   GRecMutex *channel_mutex;
   GRecMutex *recall_id_mutex;
   
-  if(scope < 0 ||
-     scope >= AGS_SOUND_SCOPE_LAST){
+  if(sound_scope < 0 ||
+     sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(tree_list);
   }
 
-  /* check scope - input */
-  recall_id = ags_channel_check_scope(channel, scope);
+  /* check sound scope - input */
+  recall_id = ags_channel_check_scope(channel, sound_scope);
 
   recycling_context = NULL;
     
@@ -1015,31 +1015,31 @@ ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
     if(pad == 0){
       tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_down(channel,
 									   dispatch_source,
-									   scope,
+									   sound_scope,
 									   recycling_context,
 									   tree_list);
       
       tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_up(link,
 									 dispatch_source,
-									 scope,
+									 sound_scope,
 									 recycling_context,
 									 tree_list);
     }else{
       tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_up(channel,
 									 dispatch_source,
-									 scope,
+									 sound_scope,
 									 recycling_context,
 									 tree_list);
     }
   }else{
     tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_down(link,
 									 dispatch_source,
-									 scope,
+									 sound_scope,
 									 recycling_context,
 									 tree_list);
     tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel_up(channel,
 								       dispatch_source,
-								       scope,
+								       sound_scope,
 								       recycling_context,
 								       tree_list);
   }
@@ -1052,7 +1052,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
  * ags_audio_tree_dispatcher_compile_tree_list:
  * @audio_tree_dispatcher: the #AgsAudioTreeDispatcher
  * @dispatch_source: the dispatch source
- * @scope: the scope
+ * @sound_scope: the sound scope
  *
  * Compile tree list.
  *
@@ -1063,7 +1063,7 @@ ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
 GList*
 ags_audio_tree_dispatcher_compile_tree_list(AgsAudioTreeDispatcher *audio_tree_dispatcher,
 					    GObject *dispatch_source,
-					    gint scope)
+					    gint sound_scope)
 {
   GList *start_tree_list;
 
@@ -1072,18 +1072,68 @@ ags_audio_tree_dispatcher_compile_tree_list(AgsAudioTreeDispatcher *audio_tree_d
   if(AGS_IS_AUDIO(dispatch_source)){
     start_tree_list = ags_audio_tree_dispatcher_compile_tree_list_audio((AgsAudio *) dispatch_source,
 									dispatch_source,
-									scope,
+									sound_scope,
 									start_tree_list);
   }else if(AGS_IS_CHANNEL(dispatch_source)){
     start_tree_list = ags_audio_tree_dispatcher_compile_tree_list_channel((AgsChannel *) dispatch_source,
 									  dispatch_source,
-									  scope,
+									  sound_scope,
 									  start_tree_list);
   }else{
     g_warning("unknown dispatch source");
   }
 
   return(g_list_reverse(start_tree_list));
+}
+
+/**
+ * ags_audio_tree_dispatcher_remove_dispatch_source:
+ * @audio_tree_dispatcher: the #AgsAudioTreeDispatcher
+ * @dispatch_source: the dispatch source
+ * @sound_scope: the sound scope
+ *
+ * Remove dispatch source from tree list.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_audio_tree_dispatcher_remove_dispatch_source(AgsAudioTreeDispatcher *audio_tree_dispatcher,
+						 GObject *dispatch_source,
+						 gint sound_scope)
+{
+  GList *tree_list, *next_tree_list;
+
+  GRecMutex *audio_tree_dispatcher_mutex;
+  
+  g_return_if_fail(AGS_IS_AUDIO_TREE_DISPATCHER(audio_tree_dispatcher));
+  g_return_if_fail(dispatch_source != NULL);
+  g_return_if_fail(sound_scope >= 0 && sound_scope < AGS_SOUND_SCOPE_LAST);
+
+  audio_tree_dispatcher_mutex = AGS_AUDIO_TREE_DISPATCHER_GET_OBJ_MUTEX(audio_tree_dispatcher);
+
+  /* remove dispatch source */
+  g_rec_mutex_lock(audio_tree_dispatcher_mutex);
+
+  tree_list = audio_tree_dispatcher->tree_list;
+
+  while(tree_list != NULL){
+    AgsDispatchAudio *dispatch_audio;
+
+    dispatch_audio = AGS_DISPATCH_AUDIO(tree_list->data);
+    
+    next_tree_list = tree_list->next;
+    
+    if(dispatch_audio->dispatch_source == dispatch_source &&
+       dispatch_audio->sound_scope == sound_scope){
+      audio_tree_dispatcher->tree_list = g_list_remove(audio_tree_dispatcher->tree_list,
+						       dispatch_audio);
+      ags_dispatch_audio_free(dispatch_audio);
+    }
+
+    tree_list = next_tree_list;
+  }
+  
+  g_rec_mutex_unlock(audio_tree_dispatcher_mutex);
 }
 
 /**

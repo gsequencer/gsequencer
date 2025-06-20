@@ -140,6 +140,7 @@ enum{
   PROP_RADIUS,
   PROP_OUTLINE_STRENGTH,
   PROP_FONT_SIZE,
+  PROP_FONT_NAME,
   PROP_BUTTON_WIDTH,
   PROP_BUTTON_HEIGHT,
   PROP_MARGIN_LEFT,
@@ -273,6 +274,22 @@ ags_dial_class_init(AgsDialClass *dial)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FONT_SIZE,
+				  param_spec);
+
+  /**
+   * AgsDial:font-name:
+   *
+   * The font name of the dials.
+   * 
+   * Since: 8.0.0
+   */
+  param_spec = g_param_spec_string("font-name",
+				   "font name",
+				   "The dials font-name",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FONT_NAME,
 				  param_spec);
 
   /**
@@ -478,6 +495,9 @@ ags_dial_init(AgsDial *dial)
   dial->outline_strength = AGS_DIAL_DEFAULT_OUTLINE_STRENGTH;
 
   dial->font_size = AGS_DIAL_DEFAULT_FONT_SIZE;
+  
+  dial->font_name = NULL;
+  
   dial->button_width = AGS_DIAL_DEFAULT_BUTTON_WIDTH;
   dial->button_height = AGS_DIAL_DEFAULT_BUTTON_HEIGHT;
   dial->margin_left = AGS_DIAL_DEFAULT_MARGIN_LEFT;
@@ -518,6 +538,17 @@ ags_dial_set_property(GObject *gobject,
   case PROP_FONT_SIZE:
     {
       dial->font_size = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FONT_NAME:
+    {
+      gchar *font_name;
+      
+      font_name = g_value_get_string(value);
+
+      g_free(dial->font_name);
+
+      dial->font_name = g_strdup(font_name);
     }
     break;
   case PROP_BUTTON_WIDTH:
@@ -630,6 +661,11 @@ ags_dial_get_property(GObject *gobject,
   case PROP_FONT_SIZE:
     {
       g_value_set_uint(value, dial->font_size);
+    }
+    break;
+  case PROP_FONT_NAME:
+    {
+      g_value_set_string(value, dial->font_name);
     }
     break;
   case PROP_BUTTON_WIDTH:
@@ -1466,6 +1502,33 @@ ags_dial_draw(AgsDial *dial,
   
   dark_theme = TRUE;
 
+  if(dial->font_name == NULL){
+    g_object_get(settings,
+		 "gtk-font-name", &font_name,
+		 NULL);
+
+    ags_dial_set_font_name(dial,
+			   font_name);
+  }else{
+    font_name = dial->font_name;
+  }
+
+  if(font_name == NULL){
+    font_name = "sans";
+  }
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       NULL);
+
+  if(font_name == NULL){
+    font_name = "sans";
+  }
+  
+  g_object_get(settings,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
+  
   /* colors */
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
@@ -2053,6 +2116,56 @@ ags_dial_get_scale_precision(AgsDial *dial)
 	       NULL);
 
   return(scale_precision);
+}
+
+/**
+ * ags_dial_set_font_name:
+ * @dial: the #AgsDial
+ * @font_name: the font name
+ * 
+ * Set font name of @dial.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_dial_set_font_name(AgsDial *dial,
+		       gchar *font_name)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "font-name", font_name,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_font_name:
+ * @dial: the #AgsDial
+ * 
+ * Get font name of @dial.
+ * 
+ * Returns: the font name
+ * 
+ * Since: 8.0.0
+ */
+gchar*
+ags_dial_get_font_name(AgsDial *dial)
+{
+  gchar *font_name;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(0);
+  }
+
+  font_name = NULL;
+  
+  g_object_get(dial,
+	       "font-name", &font_name,
+	       NULL);
+
+  return(font_name);
 }
 
 /**

@@ -83,6 +83,9 @@ struct _AgsDial
   guint scale_max_precision;
   
   guint font_size;
+  
+  gchar *font_name;
+  
   gint button_width;
   gint button_height;
   gint margin_left;
@@ -133,6 +136,10 @@ guint ags_dial_get_scale_precision(AgsDial *dial);
 void ags_dial_set_font_size(AgsDial *dial,
 			    guint font_size);
 guint ags_dial_get_font_size(AgsDial *dial);
+
+void ags_dial_set_font_name(AgsDial *dial,
+			      gchar *font_name);
+gchar* ags_dial_get_font_name(AgsDial *dial);
 
 void ags_dial_set_button_width(AgsDial *dial,
 			       gint button_width);

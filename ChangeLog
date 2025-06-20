@@ -13,7 +13,9 @@ ags (8.0.0)
 	* TODO:JK: implemented AgsTextView
 	* TODO:JK: implemented AgsScale
 	* TODO:JK: improved AgsFileEntry
+	* implemented AgsAudioTreeDispatcher
 	* improved AgsDial small refactoring
+	* improved AgsRavenSynth label text enumerating starting from 1
 
 ags (7.8.0)
 
