@@ -626,6 +626,9 @@ ags_audio_thread_run(AgsThread *thread)
 
   playback_domain = NULL;
 
+  output_playback_start = NULL;
+  input_playback_start = NULL;
+
   if(processing){
     g_object_get(audio_thread,
 		 "audio", &audio,
@@ -677,11 +680,10 @@ ags_audio_thread_run(AgsThread *thread)
     g_rec_mutex_unlock(thread_mutex);
 
     g_object_get(playback_domain,
+		 "output-playback", &output_playback_start,
 		 "input-playback", &input_playback_start,
 		 NULL);
 
-    playback = input_playback_start;
-  
 #if 0    
     if(default_soundcard != NULL &&
        !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
@@ -857,6 +859,8 @@ ags_audio_thread_run(AgsThread *thread)
        ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
       gboolean super_threaded_channel;
 
+      playback = input_playback_start;
+      
       super_threaded_channel = FALSE;
       
       while(playback != NULL){    
@@ -869,9 +873,19 @@ ags_audio_thread_run(AgsThread *thread)
 	playback = playback->next;
       }
 
+      playback = output_playback_start;
+
+      while(playback != NULL){    
+	if(ags_playback_test_flags(playback->data, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+	  ags_audio_thread_play_channel_super_threaded(audio_thread, playback->data);
+	}
+    
+	playback = playback->next;
+      }
+      
       if(!super_threaded_channel){
 	ags_audio_tree_dispatcher_run(audio_thread->audio_tree_dispatcher);
-      }
+      }      
     }
 #endif
     

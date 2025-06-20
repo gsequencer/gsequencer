@@ -186,6 +186,8 @@ ags_dispatch_audio_alloc(GObject *dispatch_source,
 
   dispatch_audio->dispatch_source = dispatch_source;
   dispatch_audio->sound_scope = sound_scope;
+
+  return(dispatch_audio);
 }
 
 /**
@@ -1154,7 +1156,14 @@ ags_audio_tree_dispatcher_get_staging_program(AgsAudioTreeDispatcher *audio_tree
   guint *local_staging_program;
 
   guint local_staging_program_count;
-    
+
+  GRecMutex *audio_tree_dispatcher_mutex;
+
+  audio_tree_dispatcher_mutex = AGS_AUDIO_TREE_DISPATCHER_GET_OBJ_MUTEX(audio_tree_dispatcher);
+
+  /* get staging program */
+  g_rec_mutex_lock(audio_tree_dispatcher_mutex);
+
   local_staging_program = NULL;
 
   local_staging_program_count = 0;
@@ -1170,6 +1179,8 @@ ags_audio_tree_dispatcher_get_staging_program(AgsAudioTreeDispatcher *audio_tree
   if(staging_program_count != NULL){
     staging_program_count[0] = local_staging_program_count;
   }
+  
+  g_rec_mutex_unlock(audio_tree_dispatcher_mutex);
   
   return(local_staging_program);
 }
@@ -1187,12 +1198,21 @@ ags_audio_tree_dispatcher_get_staging_program(AgsAudioTreeDispatcher *audio_tree
 void
 ags_audio_tree_dispatcher_set_staging_program(AgsAudioTreeDispatcher *audio_tree_dispatcher,
 					      guint *staging_program, guint staging_program_count)
-{
+{   
+  GRecMutex *audio_tree_dispatcher_mutex;
+
+  audio_tree_dispatcher_mutex = AGS_AUDIO_TREE_DISPATCHER_GET_OBJ_MUTEX(audio_tree_dispatcher);
+
+  /* set staging program */
+  g_rec_mutex_lock(audio_tree_dispatcher_mutex);
+
   audio_tree_dispatcher->staging_program = g_malloc(staging_program_count * sizeof(guint));
   
   memcpy(audio_tree_dispatcher->staging_program, staging_program, staging_program_count * sizeof(guint));
   
   audio_tree_dispatcher->staging_program_count = staging_program_count;
+
+  g_rec_mutex_unlock(audio_tree_dispatcher_mutex);
 }
 
 /**
@@ -1238,6 +1258,8 @@ ags_audio_tree_dispatcher_set_tree_list(AgsAudioTreeDispatcher *audio_tree_dispa
 					GList *tree_list)
 {
   GRecMutex *audio_tree_dispatcher_mutex;
+
+  audio_tree_dispatcher_mutex = AGS_AUDIO_TREE_DISPATCHER_GET_OBJ_MUTEX(audio_tree_dispatcher);
 
   /* set tree list */
   g_rec_mutex_lock(audio_tree_dispatcher_mutex);
