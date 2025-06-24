@@ -36,9 +36,9 @@ G_BEGIN_DECLS
 
 #define AGS_BUTTON_DEFAULT_BORDER_WIDTH (1.25)
 
-#define AGS_BUTTON_SMALL_FONT_SIZE (8)
+#define AGS_BUTTON_SMALL_FONT_SIZE (10)
 #define AGS_BUTTON_NORMAL_FONT_SIZE (12)
-#define AGS_BUTTON_LARGE_FONT_SIZE (14)
+#define AGS_BUTTON_LARGE_FONT_SIZE (16)
 
 #define AGS_BUTTON_DEFAULT_FONT_SIZE (12)
 
@@ -92,10 +92,10 @@ void ags_button_set_flags(AgsButton *button,
 void ags_button_unset_flags(AgsButton *button,
 			    AgsButtonFlags flags);
 
-gboolean ags_button_test_size(AgsButton *button,
-			       AgsButtonSize size);
-void ags_button_set_size(AgsButton *button,
-			 AgsButtonSize size);
+gboolean ags_button_test_button_size(AgsButton *button,
+				     AgsButtonSize button_size);
+void ags_button_set_button_size(AgsButton *button,
+				AgsButtonSize button_size);
 
 /* getter/setter */
 void ags_button_set_font_size(AgsButton *button,

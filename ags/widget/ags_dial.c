@@ -2462,7 +2462,7 @@ ags_dial_get_adjustment(AgsDial *dial)
  * ags_dial_value_changed:
  * @dial: the #AgsDial
  *
- * draws the widget
+ * The value-changed event of @dial.
  *
  * Since: 3.0.0
  */

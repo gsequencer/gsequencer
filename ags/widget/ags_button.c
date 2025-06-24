@@ -679,6 +679,11 @@ ags_button_draw(AgsButton *button,
 
   GtkSettings *settings;
 
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  PangoRectangle ink_rect, logical_rect;
+
   GdkRGBA fg_color;
   GdkRGBA bg_color;
   GdkRGBA shadow_color;
@@ -687,6 +692,8 @@ ags_button_draw(AgsButton *button,
   gchar *font_name;
 
   gint widget_width, widget_height;
+  gint button_width, button_height;
+  guint margin_top, margin_start;
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
@@ -768,10 +775,92 @@ ags_button_draw(AgsButton *button,
     }
   }
 
+  layout = NULL;
+
   widget_width = gtk_widget_get_width((GtkWidget *) button);
   widget_height = gtk_widget_get_height((GtkWidget *) button);
 
+  margin_start = gtk_widget_get_margin_start((GtkWidget *) button);
+  margin_top = gtk_widget_get_margin_top((GtkWidget *) button);
+
+  ink_rect = (PangoRectangle) {0,};
+  logical_rect = (PangoRectangle) {0,};
+
+  cairo_push_group(cr);
+  
+  if(button->label != NULL){
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  button->label,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    button->font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+  }
+  
+  button_width = 24;
+  
+  if(button->label != NULL &&
+     ags_button_test_flags(button, AGS_BUTTON_SHOW_LABEL)){
+    button_width = (logical_rect.width / PANGO_SCALE) + 8;
+  }
+  
+  button_height = 24;
+
+  /*  background */
+  cairo_set_source_rgba(cr,
+			bg_color.red,
+			bg_color.green,
+			bg_color.blue,
+			bg_color.alpha);
+  
+  cairo_rectangle(cr,
+		  (gdouble) margin_start + 1.0, (gdouble) margin_top + 1.0,
+		  (gdouble) button_width, (gdouble) button_height);
+  cairo_fill(cr);
+
+  /* border */
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.green,
+			fg_color.blue,
+			fg_color.alpha);
+    
+  cairo_rectangle(cr,
+		  (gdouble) margin_start + 3.0, (gdouble) margin_top + 3.0,
+		  (gdouble) button_width - 5.0, (gdouble) button_height - 5.0);
+  cairo_stroke(cr);
+  
+  /* label */
+  if(button->label != NULL &&
+     ags_button_test_flags(button, AGS_BUTTON_SHOW_LABEL)){
+    cairo_set_source_rgba(cr,
+			  text_color.red,
+			  text_color.green,
+			  text_color.blue,
+			  text_color.alpha);
+    
+    cairo_move_to(cr,
+		  margin_start + 4.0,
+		  margin_top + 2.0);
+
+    pango_cairo_show_layout(cr,
+			    layout);
+
+    g_object_unref(layout);
+  }
+  
   //TODO:JK: implement me
+
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
 }
 
 /**
@@ -829,41 +918,41 @@ ags_button_unset_flags(AgsButton *button,
 }
 
 /**
- * ags_button_test_size:
+ * ags_button_test_button_size:
  * @button: the #AgsButton
- * @size: the size
+ * @button_size: the button size
  * 
- * Test size of @button.
+ * Test button size of @button.
  *
  * Returns: %TRUE on success, otherwise %FALSE
  * 
  * Since: 8.0.0
  */
 gboolean
-ags_button_test_size(AgsButton *button,
-		     AgsButtonSize size)
+ags_button_test_button_size(AgsButton *button,
+			    AgsButtonSize button_size)
 {
   gboolean success;
 
-  success = (size == button->size) ? TRUE: FALSE;
+  success = (button_size == button->button_size) ? TRUE: FALSE;
 
   return(success);
 }
 
 /**
- * ags_button_set_size:
+ * ags_button_set_button_size:
  * @button: the #AgsButton
- * @size: the size
+ * @button_size: the button size
  * 
- * Set size of @button.
+ * Set button size of @button.
  * 
  * Since: 8.0.0
  */
 void
-ags_button_set_size(AgsButton *button,
-		    AgsButtonSize size)
+ags_button_set_button_size(AgsButton *button,
+			   AgsButtonSize button_size)
 {
-  button->size = size;
+  button->button_size = button_size;
 }
 
 /**
@@ -1070,7 +1159,7 @@ ags_button_get_icon_name(AgsButton *button)
  * ags_button_clicked:
  * @button: the #AgsButton
  *
- * draws the widget
+ * The clicked event of @button.
  *
  * Since: 8.0.0
  */

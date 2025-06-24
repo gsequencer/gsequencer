@@ -287,6 +287,11 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->staging_program[0] = staging_program[0];
   
   audio_loop->staging_program_count = 1;
+
+  audio_loop->audio_tree_dispatcher = ags_audio_tree_dispatcher_new();
+
+  ags_audio_tree_dispatcher_set_staging_program(audio_loop->audio_tree_dispatcher,
+						audio_loop->staging_program, audio_loop->staging_program_count);
 }
 
 void
@@ -970,46 +975,23 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 		 NULL);
         
     /* play */
-#if 0
-    if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-      /* super threaded */
-      ags_audio_loop_play_channel_super_threaded(audio_loop,
-						 playback);
-    }else{
-#endif
-      if(default_soundcard != NULL &&
-	 !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
-	 ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
-	/* not super threaded */
-	sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
+    if(default_soundcard != NULL &&
+       !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
+       ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
+      /* not super threaded */
+      sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
       
-	if(ags_playback_get_recall_id(playback, sound_scope) == NULL){	
-	  goto ags_audio_loop_play_channel_NO_PLAYBACK;
-	}
-    
-	if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
-	  guint *staging_program;
-	
-	  guint staging_program_count;
-	  guint nth;
-
-	  staging_program = ags_audio_loop_get_staging_program(audio_loop,
-							       &staging_program_count);
-	
-	  for(nth = 0; nth < staging_program_count; nth++){
-	    ags_channel_recursive_run_stage(channel,
-					    sound_scope, staging_program[nth]);
-	  }
-
-	  g_free(staging_program);
-
-	  g_list_free_full(recall_id,
-			   g_object_unref);
-	}
+      if(ags_playback_get_recall_id(playback, sound_scope) == NULL){	
+	goto ags_audio_loop_play_channel_NO_PLAYBACK;
       }
-#if 0
+    
+      if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+	ags_audio_tree_dispatcher_run(audio_loop->audio_tree_dispatcher);
+
+	g_list_free_full(recall_id,
+			 g_object_unref);
+      }
     }
-#endif
   ags_audio_loop_play_channel_NO_PLAYBACK:
     
     if(channel != NULL){
@@ -1020,25 +1002,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
     play_channel = play_channel->next;
   }
 
-  /* sync channel */
-#if 0
-  play_channel = start_play_channel;
-  
-  while(play_channel != NULL){    
-    playback = (AgsPlayback *) play_channel->data;
-
-    /* sync */
-    if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-      /* super threaded */
-      ags_audio_loop_sync_channel_super_threaded(audio_loop,
-						 playback);
-    }
-
-    /* iterate */
-    play_channel = play_channel->next;
-  }
-#endif
-  
+  /* unref */  
   if(default_soundcard != NULL){
     g_object_unref(default_soundcard);
   }
@@ -1264,20 +1228,7 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
 	  if(sound_scope != AGS_SOUND_SCOPE_PLAYBACK){
 	    if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
-	      guint *staging_program;
-	
-	      guint staging_program_count;
-	      guint nth;
-
-	      staging_program = ags_audio_loop_get_staging_program(audio_loop,
-								   &staging_program_count);
-	
-	      for(nth = 0; nth < staging_program_count; nth++){
-		ags_audio_recursive_run_stage(audio,
-					      sound_scope, staging_program[nth]);
-	      }
-
-	      g_free(staging_program);
+	      ags_audio_tree_dispatcher_run(audio_loop->audio_tree_dispatcher);
 	  
 	      g_list_free_full(recall_id,
 			       g_object_unref);
@@ -1880,6 +1831,9 @@ ags_audio_loop_set_staging_program(AgsAudioLoop *audio_loop,
   audio_loop->staging_program_count = staging_program_count;
   
   g_rec_mutex_unlock(thread_mutex);
+
+  ags_audio_tree_dispatcher_set_staging_program(audio_loop->audio_tree_dispatcher,
+						staging_program, staging_program_count);
 }
 
 /**
