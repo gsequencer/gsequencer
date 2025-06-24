@@ -328,8 +328,14 @@ ags_button_init(AgsButton *button)
   gtk_widget_set_can_focus((GtkWidget *) button,
 			   TRUE);
 
+  gtk_widget_set_halign((GtkWidget *) button,
+			GTK_ALIGN_FILL);
+  
   gtk_widget_set_hexpand((GtkWidget *) button,
 			 TRUE);
+
+  gtk_widget_set_valign((GtkWidget *) button,
+			GTK_ALIGN_START);
   
   gtk_widget_set_vexpand((GtkWidget *) button,
 			 TRUE);  
@@ -522,9 +528,69 @@ ags_button_measure(GtkWidget *widget,
 {
   AgsButton *button;
 
+  GtkSettings *settings;
+
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  PangoRectangle ink_rect, logical_rect;
+
+  gchar *font_name;
+
   button = (AgsButton *) widget;
 
-  //TODO:JK: implement me
+  settings = gtk_settings_get_default();
+  
+  font_name = NULL;
+
+  if(button->font_name == NULL){
+    g_object_get(settings,
+		 "gtk-font-name", &font_name,
+		 NULL);
+
+    ags_button_set_font_name(button,
+			     font_name);
+  }else{
+    font_name = button->font_name;
+  }
+
+  if(font_name == NULL){
+    font_name = "sans";
+  }
+  
+  ink_rect = (PangoRectangle) {0,};
+  logical_rect = (PangoRectangle) {0,};
+
+  context = pango_context_new();
+  pango_context_set_font_map(context,
+			     pango_cairo_font_map_get_default());
+  
+  layout = pango_layout_new(context);
+  pango_layout_set_text(layout,
+			button->label,
+			-1);
+  desc = pango_font_description_from_string(font_name);
+  pango_font_description_set_size(desc,
+				  button->font_size * PANGO_SCALE);
+  pango_layout_set_font_description(layout,
+				    desc);
+  pango_font_description_free(desc);    
+
+  pango_layout_get_extents(layout,
+			   &ink_rect,
+			   &logical_rect);
+
+  if(orientation == GTK_ORIENTATION_VERTICAL){
+    minimum[0] =
+      natural[0] = (logical_rect.height / PANGO_SCALE) + 48;
+  }else{
+    minimum[0] =
+      natural[0] = (logical_rect.width / PANGO_SCALE) + 64;
+  }
+
+  //  g_object_run_dispose(context);
+  //  g_object_run_dispose(layout);
 }
 
 void
@@ -535,9 +601,79 @@ ags_button_size_allocate(GtkWidget *widget,
 {
   AgsButton *button;
 
+  GtkSettings *settings;
+
+  PangoContext *context;
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  PangoRectangle ink_rect, logical_rect;
+
+  gchar *font_name;
+
+  GtkAlign halign, valign;
+
   button = (AgsButton *) widget;
+
+  settings = gtk_settings_get_default();
+
+  font_name = NULL;
+
+  if(button->font_name == NULL){
+    g_object_get(settings,
+		 "gtk-font-name", &font_name,
+		 NULL);
+
+    ags_button_set_font_name(button,
+			     font_name);
+  }else{
+    font_name = button->font_name;
+  }
+
+  if(font_name == NULL){
+    font_name = "sans";
+  }
   
-  //TODO:JK: implement me
+  halign = gtk_widget_get_halign(widget);
+  valign = gtk_widget_get_valign(widget);
+
+  ink_rect = (PangoRectangle) {0,};
+  logical_rect = (PangoRectangle) {0,};
+
+  context = pango_context_new();
+  pango_context_set_font_map(context,
+			     pango_cairo_font_map_get_default());
+  
+  layout = pango_layout_new(context);
+  pango_layout_set_text(layout,
+			button->label,
+			-1);
+  desc = pango_font_description_from_string(font_name);
+  pango_font_description_set_size(desc,
+				  button->font_size * PANGO_SCALE);
+  pango_layout_set_font_description(layout,
+				    desc);
+  pango_font_description_free(desc);    
+
+  pango_layout_get_extents(layout,
+			   &ink_rect,
+			   &logical_rect);
+
+  if(halign != GTK_ALIGN_FILL){
+    width = (logical_rect.width / PANGO_SCALE) + 64;
+  }
+
+  if(valign != GTK_ALIGN_FILL){
+    height = (logical_rect.height / PANGO_SCALE) + 48;
+  }
+  
+  //  g_object_run_dispose(context);
+  //  g_object_run_dispose(layout);
+  
+  GTK_WIDGET_CLASS(ags_button_parent_class)->size_allocate(widget,
+							   width,
+							   height,
+							   baseline);
 }
 
 void
@@ -691,9 +827,12 @@ ags_button_draw(AgsButton *button,
 
   gchar *font_name;
 
+  GtkAlign halign, valign;
+  
   gint widget_width, widget_height;
   gint button_width, button_height;
   guint margin_top, margin_start;
+  gint x_offset, y_offset;
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
@@ -783,6 +922,9 @@ ags_button_draw(AgsButton *button,
   margin_start = gtk_widget_get_margin_start((GtkWidget *) button);
   margin_top = gtk_widget_get_margin_top((GtkWidget *) button);
 
+  halign = gtk_widget_get_halign((GtkWidget *) button);
+  valign = gtk_widget_get_valign((GtkWidget *) button);
+
   ink_rect = (PangoRectangle) {0,};
   logical_rect = (PangoRectangle) {0,};
 
@@ -805,15 +947,43 @@ ags_button_draw(AgsButton *button,
 			     &logical_rect);
   }
   
-  button_width = 24;
+  button_width = 64;
+  x_offset = 0;
+  
+  button_height = 32;
+  y_offset = 0;
   
   if(button->label != NULL &&
      ags_button_test_flags(button, AGS_BUTTON_SHOW_LABEL)){
     button_width = (logical_rect.width / PANGO_SCALE) + 8;
   }
-  
-  button_height = 24;
 
+  if(halign == GTK_ALIGN_FILL &&
+     ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
+    if(button_width < widget_width - 4){
+      button_width = widget_width - 4;
+    
+      x_offset = 2;
+    }
+  }else if(halign == GTK_ALIGN_END){
+    x_offset = widget_width - button_width;
+  }else if(halign == GTK_ALIGN_CENTER){
+    x_offset = (widget_width - button_width) / 2;
+  }
+
+  if(valign == GTK_ALIGN_FILL &&
+     ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
+    if(button_height < widget_height - 4){
+      button_height = widget_height - 4;
+
+      y_offset = 2;
+    }
+  }else if(valign == GTK_ALIGN_END){
+    y_offset = widget_height - button_height;
+  }else if(valign == GTK_ALIGN_CENTER){
+    y_offset = (widget_height - button_height) / 2;
+  }
+  
   /*  background */
   cairo_set_source_rgba(cr,
 			bg_color.red,
@@ -822,7 +992,7 @@ ags_button_draw(AgsButton *button,
 			bg_color.alpha);
   
   cairo_rectangle(cr,
-		  (gdouble) margin_start + 1.0, (gdouble) margin_top + 1.0,
+		  (gdouble) x_offset + (gdouble) margin_start + 1.0, (gdouble) y_offset + (gdouble) margin_top + 1.0,
 		  (gdouble) button_width, (gdouble) button_height);
   cairo_fill(cr);
 
@@ -832,11 +1002,29 @@ ags_button_draw(AgsButton *button,
 			fg_color.green,
 			fg_color.blue,
 			fg_color.alpha);
-    
-  cairo_rectangle(cr,
-		  (gdouble) margin_start + 3.0, (gdouble) margin_top + 3.0,
-		  (gdouble) button_width - 5.0, (gdouble) button_height - 5.0);
-  cairo_stroke(cr);
+
+  {
+    /* a custom shape that could be wrapped in a function */
+    double x        = (gdouble) x_offset + (gdouble) margin_start + 3.0,        /* parameters like cairo_rectangle */
+      y             = (gdouble) y_offset + (gdouble) margin_top + 3.0,
+      width         = (gdouble) button_width - 5.0,
+      height        = (gdouble) button_height - 5.0,
+      aspect        = 1.0,     /* aspect ratio */
+      corner_radius = height / 10.0;   /* and corner curvature radius */
+
+    double radius = corner_radius / aspect;
+    double degrees = M_PI / 180.0;
+
+    cairo_new_sub_path(cr);
+    cairo_arc(cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
+    cairo_arc(cr, x + width - radius, y + height - radius, radius, 0 * degrees, 90 * degrees);
+    cairo_arc(cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
+    cairo_arc(cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
+    cairo_close_path(cr);
+  
+    cairo_set_line_width(cr, 1.25);
+    cairo_stroke(cr);
+  }
   
   /* label */
   if(button->label != NULL &&
@@ -846,11 +1034,28 @@ ags_button_draw(AgsButton *button,
 			  text_color.green,
 			  text_color.blue,
 			  text_color.alpha);
+    if(valign == GTK_ALIGN_FILL &&
+       halign == GTK_ALIGN_FILL &&
+       ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
+      cairo_move_to(cr,
+		    (gdouble) x_offset + (((gdouble) button_width - (logical_rect.width / PANGO_SCALE)) / 2.0) + (gdouble) margin_start + 8.0,
+		    (gdouble) y_offset + (((gdouble) button_height - (logical_rect.height / PANGO_SCALE)) / 2.0) + (gdouble) margin_top + 4.0);
+    }else if(valign == GTK_ALIGN_FILL &&
+	     ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
+      cairo_move_to(cr,
+		    (gdouble) x_offset + (gdouble) margin_start + 8.0,
+		    (gdouble) y_offset + (((gdouble) button_height - (logical_rect.height / PANGO_SCALE)) / 2.0) + (gdouble) margin_top + 4.0);
+    }else if(halign == GTK_ALIGN_FILL &&
+	     ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
+      cairo_move_to(cr,
+		    (gdouble) x_offset + (((gdouble) button_width - (logical_rect.width / PANGO_SCALE)) / 2.0) + (gdouble) margin_start + 8.0,
+		    (gdouble) y_offset + (gdouble) margin_top + 4.0);
+    }else{
+      cairo_move_to(cr,
+		    (gdouble) x_offset + (gdouble) margin_start + 8.0,
+		    (gdouble) y_offset + (gdouble) margin_top + 4.0);
+    }
     
-    cairo_move_to(cr,
-		  margin_start + 4.0,
-		  margin_top + 2.0);
-
     pango_cairo_show_layout(cr,
 			    layout);
 
