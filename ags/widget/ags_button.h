@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 #define AGS_BUTTON_DEFAULT_BORDER_WIDTH (1.25)
 
 #define AGS_BUTTON_SMALL_FONT_SIZE (10)
-#define AGS_BUTTON_NORMAL_FONT_SIZE (12)
+#define AGS_BUTTON_MEDIUM_FONT_SIZE (12)
 #define AGS_BUTTON_LARGE_FONT_SIZE (16)
 
 #define AGS_BUTTON_DEFAULT_FONT_SIZE (12)
@@ -53,9 +53,14 @@ typedef enum{
 typedef enum{
   AGS_BUTTON_SIZE_INHERIT,
   AGS_BUTTON_SIZE_SMALL,
-  AGS_BUTTON_SIZE_NORMAL,
+  AGS_BUTTON_SIZE_MEDIUM,
   AGS_BUTTON_SIZE_LARGE,
 }AgsButtonSize;
+
+typedef enum{
+  AGS_BUTTON_OFFSET_AND_SIZE     = 1,
+  AGS_BUTTON_HOVER               = 1 <<  1,
+}AgsButtonStatus;
 
 struct _AgsButton
 {
@@ -63,7 +68,8 @@ struct _AgsButton
 
   AgsButtonFlags flags;
   AgsButtonSize button_size;
-
+  AgsButtonStatus button_status;
+  
   guint font_size;
 
   gchar *font_name;
@@ -71,6 +77,12 @@ struct _AgsButton
   gchar *label;
 
   gchar *icon_name;
+
+  gint x_offset;
+  gint y_offset;
+
+  gint button_width;
+  gint button_height;
 };
 
 struct _AgsButtonClass

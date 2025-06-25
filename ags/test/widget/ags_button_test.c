@@ -34,6 +34,8 @@ activate(GtkApplication *app,
   GtkGrid *grid;
   AgsButton *button;
 
+  guint i, j;
+  
   window = gtk_application_window_new(app);
 
   grid = gtk_grid_new();
@@ -44,7 +46,31 @@ activate(GtkApplication *app,
   gtk_grid_attach(grid,
 		  button,
 		  0, 0,
-		  1, 1);
+		  3, 1);
+
+  for(i = 0; i < 3; i++){
+    for(j = 0; j < 3; j++){
+      gchar *str;
+
+      str = g_strdup_printf("%d",
+			    (j * 3) + i + 1);
+      
+      button = ags_button_new_with_label(str);
+      
+      gtk_widget_set_halign((GtkWidget *) button,
+			    GTK_ALIGN_START);
+
+      ags_button_set_button_size(button,
+				 AGS_BUTTON_SIZE_SMALL);
+      
+      gtk_grid_attach(grid,
+		      (GtkWidget *) button,
+		      i, j + 1,
+		      1, 1);
+
+      g_free(str);
+    }
+  }
   
   gtk_widget_show(window);
 }

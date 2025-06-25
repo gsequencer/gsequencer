@@ -182,7 +182,7 @@ ags_button_size_get_type(void)
     static const GFlagsValue values[] = {
       { AGS_BUTTON_SIZE_INHERIT, "AGS_BUTTON_SIZE_INHERIT", "button-size-inherit" },
       { AGS_BUTTON_SIZE_SMALL, "AGS_BUTTON_SIZE_SMALL", "button-size-small" },
-      { AGS_BUTTON_SIZE_NORMAL, "AGS_BUTTON_SIZE_NORMAL", "button-size-normal" },
+      { AGS_BUTTON_SIZE_MEDIUM, "AGS_BUTTON_SIZE_MEDIUM", "button-size-medium" },
       { AGS_BUTTON_SIZE_LARGE, "AGS_BUTTON_SIZE_LARGE", "button-size-large" },
       { 0, NULL, NULL }
     };
@@ -323,8 +323,11 @@ ags_button_init(AgsButton *button)
 
   button->flags = AGS_BUTTON_SHOW_LABEL;
   button->button_size = AGS_BUTTON_SIZE_INHERIT;
+  button->button_status = 0;
   
   /*  */
+  gtk_widget_set_focusable((GtkWidget *) button,
+			   TRUE);
   gtk_widget_set_can_focus((GtkWidget *) button,
 			   TRUE);
 
@@ -536,6 +539,7 @@ ags_button_measure(GtkWidget *widget,
 
   PangoRectangle ink_rect, logical_rect;
 
+  gint button_width, button_height;
   gchar *font_name;
 
   button = (AgsButton *) widget;
@@ -581,16 +585,41 @@ ags_button_measure(GtkWidget *widget,
 			   &ink_rect,
 			   &logical_rect);
 
+  button_width = 48;
+  button_height = 32;
+    
+  switch(button->button_size){
+  case AGS_BUTTON_SIZE_INHERIT:
+    break;
+  case AGS_BUTTON_SIZE_SMALL:
+    {
+      button_width = 40;
+      button_height = 24;
+    }
+    break;
+  case AGS_BUTTON_SIZE_MEDIUM:
+    {
+      button_width = 48;
+      button_height = 32;
+    }
+    break;
+  case AGS_BUTTON_SIZE_LARGE:
+    {
+      button_width = 64;
+      button_height = 48;
+    }
+    break;
+  }
+  
   if(orientation == GTK_ORIENTATION_VERTICAL){
     minimum[0] =
-      natural[0] = (logical_rect.height / PANGO_SCALE) + 48;
+      natural[0] = (logical_rect.height / PANGO_SCALE) + button_height;
   }else{
     minimum[0] =
-      natural[0] = (logical_rect.width / PANGO_SCALE) + 64;
+      natural[0] = (logical_rect.width / PANGO_SCALE) + button_width;
   }
 
-  //  g_object_run_dispose(context);
-  //  g_object_run_dispose(layout);
+  g_object_unref(layout);
 }
 
 void
@@ -612,6 +641,8 @@ ags_button_size_allocate(GtkWidget *widget,
   gchar *font_name;
 
   GtkAlign halign, valign;
+
+  gint button_width, button_height;
 
   button = (AgsButton *) widget;
 
@@ -658,17 +689,41 @@ ags_button_size_allocate(GtkWidget *widget,
   pango_layout_get_extents(layout,
 			   &ink_rect,
 			   &logical_rect);
-
+  button_width = 48;
+  button_height = 32;
+    
+  switch(button->button_size){
+  case AGS_BUTTON_SIZE_INHERIT:
+    break;
+  case AGS_BUTTON_SIZE_SMALL:
+    {
+      button_width = 40;
+      button_height = 24;
+    }
+    break;
+  case AGS_BUTTON_SIZE_MEDIUM:
+    {
+      button_width = 48;
+      button_height = 32;
+    }
+    break;
+  case AGS_BUTTON_SIZE_LARGE:
+    {
+      button_width = 64;
+      button_height = 48;
+    }
+    break;
+  }
+  
   if(halign != GTK_ALIGN_FILL){
-    width = (logical_rect.width / PANGO_SCALE) + 64;
+    width = (logical_rect.width / PANGO_SCALE) + button_width;
   }
 
   if(valign != GTK_ALIGN_FILL){
-    height = (logical_rect.height / PANGO_SCALE) + 48;
+    height = (logical_rect.height / PANGO_SCALE) + button_height;
   }
   
-  //  g_object_run_dispose(context);
-  //  g_object_run_dispose(layout);
+  g_object_unref(layout);
   
   GTK_WIDGET_CLASS(ags_button_parent_class)->size_allocate(widget,
 							   width,
@@ -727,7 +782,7 @@ ags_button_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 					  gdouble y,
 					  AgsButton *button)
 {
-  //TODO:JK: implement me
+  //NOTE:JK: empty
 }
 
 void
@@ -738,8 +793,8 @@ ags_button_gesture_click_released_callback(GtkGestureClick *event_controller,
 					   AgsButton *button)
 {
   gtk_widget_grab_focus((GtkWidget *) button);
-  
-  //TODO:JK: implement me
+
+  ags_button_clicked(button);
 }
 
 gboolean
@@ -776,7 +831,14 @@ ags_button_key_released_callback(GtkEventControllerKey *event_controller,
 				 GdkModifierType state,
 				 AgsButton *button)
 {
-  //TODO:JK: implement me
+  if(gtk_widget_has_focus((GtkWidget *) button)){
+    if(keyval == GDK_KEY_KP_Space||
+       keyval == GDK_KEY_space ||
+       keyval == GDK_KEY_KP_Enter ||
+       keyval == GDK_KEY_ISO_Enter){
+      ags_button_clicked(button);
+    }
+  }
 }
 
 gboolean
@@ -794,13 +856,44 @@ ags_button_motion_callback(GtkEventControllerMotion *event_controller,
 			   gdouble x,
 			   gdouble y,
 			   AgsButton *button)
-{
-  //TODO:JK: implement me
+{ 
+  gint widget_width, widget_height;
+  guint margin_top, margin_start;
+  gint button_width, button_height;
+  gint x_offset, y_offset;
+  
+  button->button_status &= (~AGS_BUTTON_HOVER);
+
+  if((AGS_BUTTON_OFFSET_AND_SIZE & (button->button_status)) == 0){
+    return;
+  }
+  
+  widget_width = gtk_widget_get_width((GtkWidget *) button);
+  widget_height = gtk_widget_get_height((GtkWidget *) button);
+
+  margin_start = gtk_widget_get_margin_start((GtkWidget *) button);
+  margin_top = gtk_widget_get_margin_top((GtkWidget *) button);
+  
+  x_offset =  button->x_offset;
+  y_offset =  button->y_offset;
+    
+  button_width = button->button_width;
+  button_height = button->button_height;
+
+  /* check hover */
+  if(x >= (gdouble) x_offset + (gdouble) margin_start + 1.0 &&
+     x < (gdouble) x_offset + (gdouble) margin_start + 1.0 + button_width &&
+     y >= (gdouble) y_offset + (gdouble) margin_top + 1.0 &&
+     y < (gdouble) y_offset + (gdouble) margin_top + 1.0 + button_height){
+    button->button_status |= AGS_BUTTON_HOVER;
+  }
 }
 
 /**
  * ags_button_draw:
  * @button: the #AgsButton
+ * @cr: the cairo_t
+ * @is_animation: %TRUE if is animation, otherwise %FALSE
  *
  * draws the widget
  *
@@ -830,8 +923,8 @@ ags_button_draw(AgsButton *button,
   GtkAlign halign, valign;
   
   gint widget_width, widget_height;
-  gint button_width, button_height;
   guint margin_top, margin_start;
+  gint button_width, button_height;
   gint x_offset, y_offset;
   gboolean dark_theme;
   gboolean fg_success;
@@ -844,7 +937,7 @@ ags_button_draw(AgsButton *button,
   style_context = gtk_widget_get_style_context((GtkWidget *) button);
   
   font_name = NULL;
-    
+  
   dark_theme = TRUE;
 
   if(button->font_name == NULL){
@@ -927,9 +1020,37 @@ ags_button_draw(AgsButton *button,
 
   ink_rect = (PangoRectangle) {0,};
   logical_rect = (PangoRectangle) {0,};
-
-  cairo_push_group(cr);
   
+  button_width = 48;
+  button_height = 32;
+    
+  switch(button->button_size){
+  case AGS_BUTTON_SIZE_INHERIT:
+    break;
+  case AGS_BUTTON_SIZE_SMALL:
+    {
+      button_width = 40;
+      button_height = 24;
+    }
+    break;
+  case AGS_BUTTON_SIZE_MEDIUM:
+    {
+      button_width = 48;
+      button_height = 32;
+    }
+    break;
+  case AGS_BUTTON_SIZE_LARGE:
+    {
+      button_width = 64;
+      button_height = 48;
+    }
+    break;
+  }
+  
+  x_offset = 0;
+  y_offset = 0;
+
+  /* label */
   if(button->label != NULL){
     layout = pango_cairo_create_layout(cr);
     pango_layout_set_text(layout,
@@ -947,42 +1068,58 @@ ags_button_draw(AgsButton *button,
 			     &logical_rect);
   }
   
-  button_width = 64;
-  x_offset = 0;
-  
-  button_height = 32;
-  y_offset = 0;
-  
-  if(button->label != NULL &&
-     ags_button_test_flags(button, AGS_BUTTON_SHOW_LABEL)){
-    button_width = (logical_rect.width / PANGO_SCALE) + 8;
-  }
+  if((AGS_BUTTON_OFFSET_AND_SIZE & (button->button_status)) == 0){
+    /* button width */
+    if(button->label != NULL &&
+       ags_button_test_flags(button, AGS_BUTTON_SHOW_LABEL)){
+      if(button_width < (logical_rect.width / PANGO_SCALE) + 8){
+	button_width = (logical_rect.width / PANGO_SCALE) + 8;
+      }
+    }
 
-  if(halign == GTK_ALIGN_FILL &&
-     ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
-    if(button_width < widget_width - 4){
-      button_width = widget_width - 4;
+    /* x and y offset */
+    if(halign == GTK_ALIGN_FILL &&
+       ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
+      if(button_width < widget_width - 4){
+	button_width = widget_width - 4;
     
-      x_offset = 2;
+	x_offset = 2;
+      }
+    }else if(halign == GTK_ALIGN_END){
+      x_offset = widget_width - button_width;
+    }else if(halign == GTK_ALIGN_CENTER){
+      x_offset = (widget_width - button_width) / 2;
     }
-  }else if(halign == GTK_ALIGN_END){
-    x_offset = widget_width - button_width;
-  }else if(halign == GTK_ALIGN_CENTER){
-    x_offset = (widget_width - button_width) / 2;
+
+    if(valign == GTK_ALIGN_FILL &&
+       ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
+      if(button_height < widget_height - 4){
+	button_height = widget_height - 4;
+
+	y_offset = 2;
+      }
+    }else if(valign == GTK_ALIGN_END){
+      y_offset = widget_height - button_height;
+    }else if(valign == GTK_ALIGN_CENTER){
+      y_offset = (widget_height - button_height) / 2;
+    }
+    
+    button->x_offset = x_offset;
+    button->y_offset = y_offset;
+    
+    button->button_width = button_width;
+    button->button_height = button_height;
+  }else{
+    x_offset =  button->x_offset;
+    y_offset =  button->y_offset;
+    
+    button_width = button->button_width;
+    button_height = button->button_height;
   }
 
-  if(valign == GTK_ALIGN_FILL &&
-     ags_button_test_button_size(button, AGS_BUTTON_SIZE_INHERIT)){
-    if(button_height < widget_height - 4){
-      button_height = widget_height - 4;
+  button->button_status |= AGS_BUTTON_OFFSET_AND_SIZE;
 
-      y_offset = 2;
-    }
-  }else if(valign == GTK_ALIGN_END){
-    y_offset = widget_height - button_height;
-  }else if(valign == GTK_ALIGN_CENTER){
-    y_offset = (widget_height - button_height) / 2;
-  }
+  cairo_push_group(cr);
   
   /*  background */
   cairo_set_source_rgba(cr,
@@ -996,13 +1133,7 @@ ags_button_draw(AgsButton *button,
 		  (gdouble) button_width, (gdouble) button_height);
   cairo_fill(cr);
 
-  /* border */
-  cairo_set_source_rgba(cr,
-			fg_color.red,
-			fg_color.green,
-			fg_color.blue,
-			fg_color.alpha);
-
+  /* button */
   {
     /* a custom shape that could be wrapped in a function */
     double x        = (gdouble) x_offset + (gdouble) margin_start + 3.0,        /* parameters like cairo_rectangle */
@@ -1010,7 +1141,7 @@ ags_button_draw(AgsButton *button,
       width         = (gdouble) button_width - 5.0,
       height        = (gdouble) button_height - 5.0,
       aspect        = 1.0,     /* aspect ratio */
-      corner_radius = height / 10.0;   /* and corner curvature radius */
+      corner_radius = height / 5.0;   /* and corner curvature radius */
 
     double radius = corner_radius / aspect;
     double degrees = M_PI / 180.0;
@@ -1021,7 +1152,37 @@ ags_button_draw(AgsButton *button,
     cairo_arc(cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
     cairo_arc(cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
     cairo_close_path(cr);
-  
+
+    /* hover */
+    if((AGS_BUTTON_HOVER & (button->button_status)) != 0){
+      cairo_set_source_rgba(cr,
+			    1.0,
+			    1.0,
+			    1.0,
+			    0.25);
+      
+      cairo_fill_preserve(cr);
+    }
+
+    /* focus */
+    if(gtk_widget_has_focus((GtkWidget *) button)){
+      cairo_set_source_rgba(cr,
+			    0.96,
+			    0.96,
+			    1.0,
+			    0.75);
+
+      cairo_set_line_width(cr, 8.0);
+      cairo_stroke_preserve(cr);
+    }
+    
+    /* border */
+    cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.green,
+			fg_color.blue,
+			fg_color.alpha);
+
     cairo_set_line_width(cr, 1.25);
     cairo_stroke(cr);
   }
@@ -1061,8 +1222,6 @@ ags_button_draw(AgsButton *button,
 
     g_object_unref(layout);
   }
-  
-  //TODO:JK: implement me
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
@@ -1085,6 +1244,8 @@ ags_button_test_flags(AgsButton *button,
 {
   gboolean success;
 
+  g_return_val_if_fail(AGS_IS_BUTTON(button), FALSE);
+
   success = ((flags & (button->flags)) != 0) ? TRUE: FALSE;
 
   return(success);
@@ -1103,6 +1264,8 @@ void
 ags_button_set_flags(AgsButton *button,
 		     AgsButtonFlags flags)
 {
+  g_return_if_fail(AGS_IS_BUTTON(button));
+
   button->flags |= flags;
 }
 
@@ -1119,6 +1282,8 @@ void
 ags_button_unset_flags(AgsButton *button,
 		       AgsButtonFlags flags)
 {
+  g_return_if_fail(AGS_IS_BUTTON(button));
+
   button->flags &= (~flags);
 }
 
@@ -1139,6 +1304,8 @@ ags_button_test_button_size(AgsButton *button,
 {
   gboolean success;
 
+  g_return_val_if_fail(AGS_IS_BUTTON(button), FALSE);
+
   success = (button_size == button->button_size) ? TRUE: FALSE;
 
   return(success);
@@ -1157,7 +1324,36 @@ void
 ags_button_set_button_size(AgsButton *button,
 			   AgsButtonSize button_size)
 {
+  g_return_if_fail(AGS_IS_BUTTON(button));
+  
   button->button_size = button_size;
+
+  switch(button_size){
+  case AGS_BUTTON_SIZE_INHERIT:
+    break;
+  case AGS_BUTTON_SIZE_SMALL:
+    {
+      ags_button_set_font_size(button,
+			       AGS_BUTTON_SMALL_FONT_SIZE);
+    }
+    break;
+  case AGS_BUTTON_SIZE_MEDIUM:
+    {
+      ags_button_set_font_size(button,
+			       AGS_BUTTON_MEDIUM_FONT_SIZE);
+    }
+    break;
+  case AGS_BUTTON_SIZE_LARGE:
+    {
+      ags_button_set_font_size(button,
+			       AGS_BUTTON_LARGE_FONT_SIZE);
+    }
+    break;
+  default:
+    {
+      g_warning("unknown button size");
+    }
+  }
 }
 
 /**
@@ -1173,9 +1369,7 @@ void
 ags_button_set_font_size(AgsButton *button,
 			 guint font_size)
 {
-  if(!AGS_IS_BUTTON(button)){
-    return;
-  }
+  g_return_if_fail(AGS_IS_BUTTON(button));
   
   g_object_set(button,
 	       "font-size", font_size,
@@ -1197,9 +1391,7 @@ ags_button_get_font_size(AgsButton *button)
 {
   guint font_size;
   
-  if(!AGS_IS_BUTTON(button)){
-    return(0);
-  }
+  g_return_val_if_fail(AGS_IS_BUTTON(button), 0);
 
   font_size = 0;
   
@@ -1223,9 +1415,7 @@ void
 ags_button_set_font_name(AgsButton *button,
 			 gchar *font_name)
 {
-  if(!AGS_IS_BUTTON(button)){
-    return;
-  }
+  g_return_if_fail(AGS_IS_BUTTON(button));
   
   g_object_set(button,
 	       "font-name", font_name,
@@ -1247,9 +1437,7 @@ ags_button_get_font_name(AgsButton *button)
 {
   gchar *font_name;
   
-  if(!AGS_IS_BUTTON(button)){
-    return(0);
-  }
+  g_return_val_if_fail(AGS_IS_BUTTON(button), NULL);
 
   font_name = NULL;
   
@@ -1273,9 +1461,7 @@ void
 ags_button_set_label(AgsButton *button,
 		     gchar *label)
 {
-  if(!AGS_IS_BUTTON(button)){
-    return;
-  }
+  g_return_if_fail(AGS_IS_BUTTON(button));
   
   g_object_set(button,
 	       "label", label,
@@ -1297,9 +1483,7 @@ ags_button_get_label(AgsButton *button)
 {
   gchar *label;
   
-  if(!AGS_IS_BUTTON(button)){
-    return(0);
-  }
+  g_return_val_if_fail(AGS_IS_BUTTON(button), NULL);
 
   label = NULL;
   
@@ -1323,9 +1507,7 @@ void
 ags_button_set_icon_name(AgsButton *button,
 			 gchar *icon_name)
 {
-  if(!AGS_IS_BUTTON(button)){
-    return;
-  }
+  g_return_if_fail(AGS_IS_BUTTON(button));
   
   g_object_set(button,
 	       "icon-name", icon_name,
@@ -1347,9 +1529,7 @@ ags_button_get_icon_name(AgsButton *button)
 {
   gchar *icon_name;
   
-  if(!AGS_IS_BUTTON(button)){
-    return(0);
-  }
+  g_return_val_if_fail(AGS_IS_BUTTON(button), NULL);
 
   icon_name = NULL;
   
