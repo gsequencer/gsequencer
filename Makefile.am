@@ -207,6 +207,12 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	gen-symbols-all.pl \
+	gen-sym-libags.pl \
+	gen-sym-libags-thread.pl \
+	gen-sym-libags-server.pl \
+	gen-sym-libags-audio.pl \
+	gen-sym-libags-vst.pl \
+	gen-sym-libags-gui.pl \
 	libags.sym.in \
 	libags_thread.sym.in \
 	libags_server.sym.in \
@@ -2541,6 +2547,7 @@ deprecated_libags_gui_h_sources =
 
 libags_gui_h_sources = \
 	$(deprecated_libags_gui_h_sources) \
+	ags/widget/ags_button.h \
 	ags/widget/ags_cartesian.h \
 	ags/widget/ags_dial.h \
 	ags/widget/ags_expander.h \
@@ -2571,6 +2578,7 @@ deprecated_libags_gui_c_sources =
 
 libags_gui_c_sources = \
 	$(deprecated_libags_gui_c_sources) \
+	ags/widget/ags_button.c \
 	ags/widget/ags_cartesian.c \
 	ags/widget/ags_dial.c \
 	ags/widget/ags_expander.c \
@@ -2677,6 +2685,8 @@ libgsequencer_h_sources = \
 	ags/app/ags_machine_editor_bulk.h \
 	ags/app/ags_machine_editor_bulk_callbacks.h \
 	ags/app/ags_meta_data_window.h \
+	ags/app/ags_midi_cc_dialog.h \
+	ags/app/ags_midi_cc_dialog_callbacks.h \
 	ags/app/ags_midi_cc_editor.h \
 	ags/app/ags_midi_cc_editor_callbacks.h \
 	ags/app/ags_midi_dialog_callbacks.h \
@@ -2809,6 +2819,8 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_editor_line.c \
 	ags/app/ags_machine_editor_line_callbacks.c \
 	ags/app/ags_meta_data_window.c \
+	ags/app/ags_midi_cc_dialog.c \
+	ags/app/ags_midi_cc_dialog_callbacks.c \
 	ags/app/ags_midi_cc_editor.c \
 	ags/app/ags_midi_cc_editor_callbacks.c \
 	ags/app/ags_midi_dialog.c \
@@ -3920,49 +3932,76 @@ gen-symbols-ags:
 	touch libags.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags.sym.in
 	echo -e -n "\n" >> libags.sym.in
-	find ags/util -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags.pl $(srcdir)
+else
+	find ags/util -name "*.h" | xargs perl -p -e "/(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()/g" >> libags.sym.in
 	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+endif
 	echo "ags_application_context" >> libags.sym.in
+if WITH_OSXAPI
+else
 	find ags/object -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(ags_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags.sym.in
 	find ags/file -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+endif
 
 gen-symbols-ags-thread:
 	rm -f libags_thread.sym.in
 	touch libags_thread.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_thread.sym.in
 	echo -e -n "\n" >> libags_thread.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-thread.pl $(srcdir)
+else
 	find ags/thread -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_thread.sym.in
+endif
 
 gen-symbols-ags-server:
 	rm -f libags_server.sym.in
 	touch libags_server.sym.in
 	cat license-notice-gnu-agpl-3-0+-sym.txt >> libags_server.sym.in
 	echo -e -n "\n" >> libags_server.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-server.pl $(srcdir)
+else
 	find ags/server -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_server.sym.in
+endif
 
 gen-symbols-ags-audio:
 	rm -f libags_audio.sym.in
 	touch libags_audio.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_audio.sym.in
 	echo -e -n "\n" >> libags_audio.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-audio.pl $(srcdir)
+else
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
+endif
 
 gen-symbols-ags-vst:
 	rm -f libags_vst.sym.in
 	touch libags_vst.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_vst.sym.in
 	echo -e -n "\n" >> libags_vst.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-vst.pl $(srcdir)
+else
 	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
+endif
 
 gen-symbols-ags-gui:
 	rm -f libags_gui.sym.in
 	touch libags_gui.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_gui.sym.in
 	echo -e -n "\n" >> libags_gui.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-gui.pl $(srcdir)
+else
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
 	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
+endif
 
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
 	echo "Generated all symbols"

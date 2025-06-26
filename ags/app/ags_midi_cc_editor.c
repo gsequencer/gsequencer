@@ -154,12 +154,32 @@ ags_midi_cc_editor_is_connected(AgsConnectable *connectable)
 void
 ags_midi_cc_editor_connect(AgsConnectable *connectable)
 {
+  AgsMidiCCEditor *midi_cc_editor;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+  
+  midi_cc_editor = AGS_MIDI_CC_EDITOR(connectable);
+
+  midi_cc_editor->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
   //TODO:JK: implement me
 }
 
 void
 ags_midi_cc_editor_disconnect(AgsConnectable *connectable)
 {
+  AgsMidiCCEditor *midi_cc_editor;
+  
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+  
+  midi_cc_editor = AGS_MIDI_CC_EDITOR(connectable);
+  
+  midi_cc_editor->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+
   //TODO:JK: implement me
 }
 
