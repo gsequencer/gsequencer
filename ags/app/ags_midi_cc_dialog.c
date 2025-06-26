@@ -49,8 +49,6 @@ void ags_midi_cc_dialog_reset(AgsApplicable *applicable);
 
 void ags_midi_cc_dialog_show(GtkWidget *widget);
 
-void ags_midi_cc_dialog_add_button_callback(GtkButton *add_button,
-					    AgsMidiCCDialog *midi_cc_dialog);
 void ags_midi_cc_dialog_activate_button_callback(GtkButton *activate_button,
 						 AgsMidiCCDialog *midi_cc_dialog);
 
@@ -94,6 +92,31 @@ enum{
 static gpointer ags_midi_cc_dialog_parent_class = NULL;
 
 static guint midi_cc_dialog_signals[LAST_SIGNAL];
+
+static const gchar* const control_change_strv[] = {
+  "bank select",
+  "modulation wheel",
+  "breath controller",
+  "foot controller",
+  "portamento time",
+  "channel volume",
+  "balance",
+  "pan",
+  "expression controller",
+  "effect control 1",
+  "effect control 2",
+  "general purpose controller 1",
+  "general purpose controller 2",
+  "general purpose controller 3",
+  "general purpose controller 4",
+  "change program",
+  "change pressure",
+  "pitch bend",
+  "MIDI v2.0 change program",
+  "MIDI v2.0 change pressure",
+  "MIDI v2.0 pitch bend",
+  NULL,
+};
 
 GType
 ags_midi_cc_dialog_get_type(void)
@@ -240,10 +263,8 @@ ags_midi_cc_dialog_applicable_interface_init(AgsApplicableInterface *applicable)
 void
 ags_midi_cc_dialog_init(AgsMidiCCDialog *midi_cc_dialog)
 {
+  GtkScrolledWindow *scrolled_window;
   GtkBox *vbox;
-  GtkLabel *label;
-  GtkGrid *grid;
-  GtkBox *hbox;
 
   GtkEventController *event_controller;
 
@@ -260,12 +281,15 @@ ags_midi_cc_dialog_init(AgsMidiCCDialog *midi_cc_dialog)
   midi_cc_dialog->machine = NULL;
 
   gtk_window_set_title((GtkWindow *) midi_cc_dialog,
-		       i18n("MIDI connection"));
+		       i18n("MIDI CC connection"));
   gtk_window_set_hide_on_close(GTK_WINDOW(midi_cc_dialog),
 			       TRUE);
 
   gtk_window_set_deletable(GTK_WINDOW(midi_cc_dialog),
 			   TRUE);
+
+  gtk_window_set_default_size((GtkWindow *) midi_cc_dialog,
+			      800, 600);
 
   g_signal_connect(midi_cc_dialog, "close-request",
 		   G_CALLBACK(ags_midi_cc_dialog_close_request_callback), NULL);  
@@ -290,34 +314,42 @@ ags_midi_cc_dialog_init(AgsMidiCCDialog *midi_cc_dialog)
 		       (GtkWidget *) vbox);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
-			GTK_ALIGN_START);
+			GTK_ALIGN_FILL);
 
   gtk_widget_set_vexpand((GtkWidget *) vbox,
-			 FALSE);
+			 TRUE);
+
+  /* scrolled window */
+  scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
+
+  gtk_widget_set_hexpand((GtkWidget *) scrolled_window,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) scrolled_window,
+			 TRUE);
+
+  gtk_widget_set_halign((GtkWidget *) scrolled_window,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) scrolled_window,
+			GTK_ALIGN_FILL);
+
+  gtk_box_append(vbox,
+		 (GtkWidget *) scrolled_window);
   
-  grid = (GtkGrid *) gtk_grid_new();
-
-  gtk_grid_set_column_spacing(grid,
-			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
-  gtk_grid_set_row_spacing(grid,
-			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
-
-  gtk_box_append(vbox,
-		 (GtkWidget *) grid);
-
   /* midi CC editor */
-  midi_cc_dialog->midi_cc_editor = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-							  AGS_UI_PROVIDER_DEFAULT_SPACING);
+  midi_cc_dialog->editor = NULL;
 
-  gtk_box_append(vbox,
-		 (GtkWidget *) midi_cc_dialog->midi_cc_editor);
+  midi_cc_dialog->editor_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_widget_set_valign((GtkWidget *) midi_cc_dialog->midi_cc_editor,
-			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) midi_cc_dialog->editor_box,
+			GTK_ALIGN_FILL);
 
-  gtk_widget_set_vexpand((GtkWidget *) midi_cc_dialog->midi_cc_editor,
-			 FALSE);
+  gtk_widget_set_vexpand((GtkWidget *) midi_cc_dialog->editor_box,
+			 TRUE);
 
+  gtk_scrolled_window_set_child(scrolled_window,
+				(GtkWidget *) midi_cc_dialog->editor_box);
+  
   /* buttons */
   midi_cc_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						       AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -327,15 +359,6 @@ ags_midi_cc_dialog_init(AgsMidiCCDialog *midi_cc_dialog)
 
   gtk_box_append(vbox,
 		 (GtkWidget *) midi_cc_dialog->action_area);
-
-  /* add */
-  midi_cc_dialog->add_button = (GtkButton *) gtk_button_new_from_icon_name("list-add");
-
-  gtk_box_append(midi_cc_dialog->action_area,
-		 (GtkWidget *) midi_cc_dialog->add_button);
-
-  g_signal_connect(midi_cc_dialog->add_button, "clicked",
-		   G_CALLBACK(ags_midi_cc_dialog_add_button_callback), midi_cc_dialog);
 
   /* activate */
   midi_cc_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
@@ -483,6 +506,13 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
   
+  xmlNode *node;
+  
+  GList *start_dialog_model, *dialog_model;
+  GList *start_editor, *editor;
+
+  gint i, i_stop;
+  
   midi_cc_dialog = AGS_MIDI_CC_DIALOG(applicable);
 
   machine = midi_cc_dialog->machine;
@@ -490,7 +520,45 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
   /* audio and sequencer */
   audio = machine->audio;
 
-  //TODO:JK: implement me
+  /* editor */
+  editor =
+    start_editor = ags_midi_cc_dialog_get_editor(midi_cc_dialog);
+
+  while(editor != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(editor->data));
+
+    /* iterate */
+    editor = editor->next;
+  }
+  
+  /* model */
+  dialog_model =
+    start_dialog_model = ags_machine_get_dialog_model(machine);
+  
+  node = NULL;
+  
+  dialog_model = ags_machine_find_dialog_model(machine,
+					       dialog_model,
+					       "ags-midi-cc-dialog",
+					       NULL,
+					       NULL);
+
+  if(dialog_model != NULL){
+    node = dialog_model->data;
+  }
+
+  if(node != NULL){
+    ags_machine_remove_dialog_model(machine,
+				    node);
+  }
+
+  node = ags_midi_cc_dialog_to_xml_node(midi_cc_dialog);
+  ags_machine_add_dialog_model(machine,
+			       node);
+  
+  /* free */
+  g_list_free(start_editor);
+  g_list_free(start_dialog_model);
 }
 
 void
@@ -501,6 +569,11 @@ ags_midi_cc_dialog_reset(AgsApplicable *applicable)
 
   AgsAudio *audio;
   
+  xmlNode *node;
+  
+  GList *start_editor, *editor;
+  GList *start_dialog_model, *dialog_model;
+  
   midi_cc_dialog = AGS_MIDI_CC_DIALOG(applicable);
 
   machine = midi_cc_dialog->machine;
@@ -508,7 +581,44 @@ ags_midi_cc_dialog_reset(AgsApplicable *applicable)
   /* audio and sequencer */
   audio = machine->audio;
 
-  //TODO:JK: implement me
+  if(midi_cc_dialog->editor == NULL){
+    ags_midi_cc_dialog_load_editor(midi_cc_dialog);
+  }
+  
+  /* editor */
+  editor =
+    start_editor = ags_midi_cc_dialog_get_editor(midi_cc_dialog);
+
+  while(editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(editor->data));
+
+    /* iterate */
+    editor = editor->next;
+  }
+
+  dialog_model =
+    start_dialog_model = ags_machine_get_dialog_model(machine);
+  
+  node = NULL;
+
+  dialog_model = ags_machine_find_dialog_model(machine,
+					       dialog_model,
+					       "ags-midi-cc-dialog",
+					       NULL,
+					       NULL);
+
+  if(dialog_model != NULL){
+    node = dialog_model->data;
+  }
+  
+  if(node != NULL){
+    ags_midi_cc_dialog_from_xml_node(midi_cc_dialog,
+				     node);
+  }
+  
+  /* free */
+  g_list_free(start_editor);
+  g_list_free(start_dialog_model);
 }
 
 void
@@ -519,12 +629,6 @@ ags_midi_cc_dialog_show(GtkWidget *widget)
   midi_cc_dialog = (AgsMidiCCDialog *) widget;
 
   GTK_WIDGET_CLASS(ags_midi_cc_dialog_parent_class)->show(widget);
-}
-
-void
-ags_midi_cc_dialog_add_button_callback(GtkButton *add_button,
-				       AgsMidiCCDialog *midi_cc_dialog)
-{
 }
 
 void
@@ -610,6 +714,266 @@ ags_midi_cc_dialog_real_response(AgsMidiCCDialog *midi_cc_dialog,
   }
   
   gtk_window_destroy((GtkWindow *) midi_cc_dialog);
+}
+
+/**
+ * ags_midi_cc_dialog_get_editor:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * 
+ * Get editor.
+ * 
+ * Returns: (transfer container): the #GList-struct containig #AgsMidiCCEditor
+ * 
+ * Since: 8.0.0
+ */
+GList*
+ags_midi_cc_dialog_get_editor(AgsMidiCCDialog *midi_cc_dialog)
+{
+  g_return_val_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog), NULL);
+
+  return(g_list_reverse(g_list_copy(midi_cc_dialog->editor)));
+}
+
+/**%
+ * ags_midi_cc_dialog_add_editor:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * @editor: the #AgsMidiCCEditor
+ * 
+ * Add @editor to @midi_cc_dialog.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_dialog_add_editor(AgsMidiCCDialog *midi_cc_dialog,
+			      AgsMidiCCEditor *editor)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(editor));
+
+  if(g_list_find(midi_cc_dialog->editor, editor) == NULL){
+    editor->parent_midi_cc_dialog = (GtkWidget *) midi_cc_dialog;
+
+    midi_cc_dialog->editor = g_list_prepend(midi_cc_dialog->editor,
+					    editor);
+    
+    gtk_box_append(midi_cc_dialog->editor_box,
+		   (GtkWidget *) editor);
+  }
+}
+
+/**
+ * ags_midi_cc_dialog_remove_editor:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * @editor: the #AgsMidiCCEditor
+ * 
+ * Remove @editor from @midi_cc_dialog.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_dialog_remove_editor(AgsMidiCCDialog *midi_cc_dialog,
+				 AgsMidiCCEditor *editor)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(editor));
+
+  if(g_list_find(midi_cc_dialog->editor, editor) != NULL){
+    editor->parent_midi_cc_dialog = NULL;
+    
+    midi_cc_dialog->editor = g_list_remove(midi_cc_dialog->editor,
+					   editor);
+    
+    gtk_box_remove(midi_cc_dialog->editor_box,
+		   (GtkWidget *) editor);
+  }
+}
+
+/**
+ * ags_midi_cc_editor_load_editor:
+ * @midi_cc_editor: the #AgsMidiCCEditor
+ *
+ * Load editor.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
+{
+  AgsMidiCCEditor *editor;
+
+  gchar **iter;
+
+  AgsRecallMidi2ControlChange *cc_iter;
+
+  static const AgsRecallMidi2ControlChange control_change_enum[] = {
+    AGS_RECALL_MIDI2_MIDI1_BANK_SELECT,
+    AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL,
+    AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER,
+    AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER,
+    AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME,
+    AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME,
+    AGS_RECALL_MIDI2_MIDI1_BALANCE,
+    AGS_RECALL_MIDI2_MIDI1_PAN,
+    AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER,
+    AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1,
+    AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2,
+    AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1,
+    AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2,
+    AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3,
+    AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4,
+    AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM,
+    AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE,
+    AGS_RECALL_MIDI2_MIDI1_PITCH_BEND,
+    AGS_RECALL_MIDI2_CHANGE_PROGRAM,
+    AGS_RECALL_MIDI2_CHANGE_PRESSURE,
+    AGS_RECALL_MIDI2_PITCH_BEND,
+    -1,
+  };
+    
+  g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
+
+  if(control_change_strv != NULL){
+    for(iter = control_change_strv, cc_iter = control_change_enum; iter[0] != NULL; iter++, cc_iter++){
+      editor = ags_midi_cc_editor_new();
+      
+      editor->control = cc_iter[0];
+      gtk_label_set_label(editor->control_label,
+			  iter[0]);
+      
+      ags_midi_cc_dialog_add_editor(midi_cc_dialog,
+				    editor);
+      
+      ags_midi_cc_editor_load_port(editor);
+    }
+  }
+}
+
+/**
+ * ags_midi_cc_dialog_to_xml_node:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * 
+ * Serialize @midi_cc_dialog to #xmlNode-struct.
+ * 
+ * Returns: the serialized #xmlNode-struct
+ * 
+ * Since: 8.0.0
+ */
+xmlNode*
+ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
+{
+  xmlNode *node;
+  xmlNode *child;
+
+  GList *start_editor, *editor;
+  
+  g_return_val_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog), NULL);
+  
+  node = xmlNewNode(NULL,
+		    BAD_CAST "ags-midi-cc-dialog");
+
+  /* editor */
+  editor =
+    start_editor = ags_midi_cc_dialog_get_editor(midi_cc_dialog);
+
+  while(editor != NULL){
+    GObject *gobject;
+
+    gchar *str;
+    
+    child = xmlNewNode(NULL,
+		       "editor");
+
+    /* control */
+    str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(editor->data)->control_label);
+
+    xmlNewProp(child,
+	       "control",
+	       str);
+
+    /* port */
+    gobject = gtk_drop_down_get_selected_item(AGS_MIDI_CC_EDITOR(editor->data)->port_drop_down);
+    
+    str = gtk_string_object_get_string(gobject);
+
+    xmlNewProp(child,
+	       "port",
+	       str);
+
+    /* add child */
+    xmlAddChild(node,
+		child);
+
+    /* iterate */
+    editor = editor->next;
+  }
+
+  g_list_free(start_editor);
+
+  return(node);
+}
+
+/**
+ * ags_midi_cc_dialog_from_xml_node:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * @node: the #xmlNode-struct
+ * 
+ * Parse @node and apply to @midi_cc_dialog.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
+				 xmlNode *node)
+{
+  xmlNode *child;
+
+  GList *start_editor, *editor;
+
+  g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
+  g_return_if_fail(node != NULL);
+
+  /* editor */
+  editor =
+    start_editor = ags_midi_cc_dialog_get_editor(midi_cc_dialog);
+  
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(BAD_CAST "editor",
+		     child->name,
+		     7)){
+	xmlChar *control;
+	xmlChar *port;
+
+	control = xmlGetProp(child,
+			     BAD_CAST "control");
+	
+	port = xmlGetProp(child,
+			  BAD_CAST "port");
+
+	editor = ags_midi_cc_editor_find_control(start_editor,
+						 control);
+
+	if(editor != NULL){
+	  gint position;
+
+	  position = ags_strv_index(AGS_MIDI_CC_EDITOR(editor->data)->port,
+				    port);
+
+	  if(position >= 0){
+	    gtk_drop_down_set_selected(AGS_MIDI_CC_EDITOR(editor->data)->port_drop_down,
+				       (guint) position);
+	  }
+	}
+	
+	xmlFree(control);
+	xmlFree(port);
+      }
+    }
+
+    child = child->next;
+  }
 }
 
 /**

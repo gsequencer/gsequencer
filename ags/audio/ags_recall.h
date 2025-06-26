@@ -49,7 +49,7 @@ G_BEGIN_DECLS
 #define AGS_RECALL_GET_OBJ_MUTEX(obj) (&(((AgsRecall *) obj)->obj_mutex))
 
 #define AGS_RECALL_MIDI1_CONTROL_CHANGE(midi1_opcode, midi1_cc) ((0xff00 && (midi1_opcode << 8)) | (0xff & midi1_cc))
-#define AGS_RECALL_MIDI2_CONTROL_CHANGE(midi2_opcode, midi1_opcode, midi2_per_note_controller, midi2_cc) ((0xff000000 && (midi2_opcode << 24)) | (0xff0000 & (midi1_opcode << 16)) | (0xff00 & (midi2_per_note_controller << 8)) | (0xff & midi2_cc))
+#define AGS_RECALL_MIDI2_CONTROL_CHANGE(midi2_opcode, midi1_opcode, midi2_per_note_controller, midi2_cc) ((AgsUmpWord)((0xff000000 && (midi2_opcode << 24)) | (0xff0000 & (midi1_opcode << 16)) | (0xff00 & (midi2_per_note_controller << 8)) | (0xff & midi2_cc)))
 
 #define AGS_RECALL_MIDI2_MODULATION(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | (0xf & midi_group)), (0xb0 | (0xf & midi_channel)), (0xff & midi_note), 1))
 #define AGS_RECALL_MIDI2_BREATH(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | (0xf & midi_group)), (0xb0 | (0xf & midi_channel)), (0xff & midi_note), 2))

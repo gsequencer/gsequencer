@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,58 +41,26 @@ G_BEGIN_DECLS
 typedef struct _AgsMidiCCEditor AgsMidiCCEditor;
 typedef struct _AgsMidiCCEditorClass AgsMidiCCEditorClass;
 
-typedef enum{
-  AGS_MIDI_CC_EDITOR_BANK_SELECT, 
-  AGS_MIDI_CC_EDITOR_MODULATION_WHEEL,
-  AGS_MIDI_CC_EDITOR_BREATH_CONTROLLER,
-  AGS_MIDI_CC_EDITOR_FOOT_CONTROLLER,
-  AGS_MIDI_CC_EDITOR_PORTAMENTO_TIME,
-  AGS_MIDI_CC_EDITOR_DATA_ENTRY,
-  AGS_MIDI_CC_EDITOR_CHANNEL_VOLUME,
-  AGS_MIDI_CC_EDITOR_BALANCE,
-  AGS_MIDI_CC_EDITOR_PAN,
-  AGS_MIDI_CC_EDITOR_EXPRESSION_CONTROLLER,
-  AGS_MIDI_CC_EDITOR_EFFECT_CONTROL_1,
-  AGS_MIDI_CC_EDITOR_EFFECT_CONTROL_2,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_1,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_2,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_3,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_4,
-  AGS_MIDI_CC_EDITOR_DAMPER_PEDAL,
-  AGS_MIDI_CC_EDITOR_PORTAMENTO,
-  AGS_MIDI_CC_EDITOR_SOSTENUTO,
-  AGS_MIDI_CC_EDITOR_SOFT_PEDAL,
-  AGS_MIDI_CC_EDITOR_LEGATO_FOOTSWITCH,
-  AGS_MIDI_CC_EDITOR_HOLD_2,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_1,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_2,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_3,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_4,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_5,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_6,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_7,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_8,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_9,
-  AGS_MIDI_CC_EDITOR_SOUND_CONTROLLER_10,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_5,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_6,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_7,
-  AGS_MIDI_CC_EDITOR_GENERAL_PURPOSE_CONTROLLER_8,
-  AGS_MIDI_CC_EDITOR_PORTAMENTO_CONTROL,  
-}AgsMidiCCEditorControl;
-
 struct _AgsMidiCCEditor
 {
   GtkBox box;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
 
-  guint control;
+  GtkWidget *parent_midi_cc_dialog;
   
-  GtkLabel *label;
-  GtkDropDown *port;
-  GtkCheckButton *enabled;
+  AgsRecallMidi2ControlChange control;
+  GtkLabel *control_label;
+
+  gchar **port;
+  GtkDropDown *port_drop_down;
+
+  GtkSpinButton *midi_group;
+
+  GtkSpinButton *midi_channel;
+
+  GtkSpinButton *midi_note;
 };
 
 struct _AgsMidiCCEditorClass
@@ -102,6 +70,12 @@ struct _AgsMidiCCEditorClass
 
 GType ags_midi_cc_editor_get_type(void);
 
+void ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor);
+
+GList* ags_midi_cc_editor_find_control(GList *midi_cc_editor,
+				       gchar *control);
+
+/* instantiate */
 AgsMidiCCEditor* ags_midi_cc_editor_new();
 
 G_END_DECLS

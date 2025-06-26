@@ -31,6 +31,7 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
+#include <ags/app/ags_midi_cc_editor.h>
 
 G_BEGIN_DECLS
 
@@ -59,7 +60,9 @@ struct _AgsMidiCCDialog
   
   AgsMachine *machine;
 
-  GtkBox *midi_cc_editor;
+  GList *editor;
+  
+  GtkBox *editor_box;
 
   GtkBox *action_area;
 
@@ -77,9 +80,26 @@ struct _AgsMidiCCDialogClass
 
 GType ags_midi_cc_dialog_get_type(void);
 
+/* editor */
+GList* ags_midi_cc_dialog_get_editor(AgsMidiCCDialog *midi_cc_dialog);
+void ags_midi_cc_dialog_add_editor(AgsMidiCCDialog *midi_cc_dialog,
+				   AgsMidiCCEditor *editor);
+void ags_midi_cc_dialog_remove_editor(AgsMidiCCDialog *midi_cc_dialog,
+				      AgsMidiCCEditor *editor);
+
+/* load */
+void ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog);
+
+/* persistency */
+xmlNode* ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog);
+void ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
+				      xmlNode *node);
+  
+/* response */
 void ags_midi_cc_dialog_response(AgsMidiCCDialog *midi_cc_dialog,
 				 gint response_id);
 
+/* instantiate */
 AgsMidiCCDialog* ags_midi_cc_dialog_new(GtkWindow *transient_for,
 					AgsMachine *machine);
 
