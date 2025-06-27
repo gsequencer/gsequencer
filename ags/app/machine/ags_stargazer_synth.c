@@ -545,7 +545,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -579,7 +579,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -613,7 +613,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -647,7 +647,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -681,7 +681,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -715,7 +715,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -749,7 +749,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync attack 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync attack 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -783,7 +783,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 1 - sync phase 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 1 - sync phase 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_0_grid,
@@ -1353,7 +1353,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1387,7 +1387,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 0 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 0"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 1"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1421,7 +1421,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1455,7 +1455,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 1 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 1"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 2"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1489,7 +1489,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1523,7 +1523,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 2 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 2"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 3"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1557,7 +1557,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync attack 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync attack 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,
@@ -1591,7 +1591,7 @@ ags_stargazer_synth_init(AgsStargazerSynth *stargazer_synth)
 		  1, 1);
 
   /* OSC 2 - sync phase 3 */
-  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 3"));
+  label = (GtkLabel *) gtk_label_new(i18n("OSC 2 - sync phase 4"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(synth_1_grid,

@@ -18,6 +18,9 @@ ags (8.0.0)
 	* TODO:JK: improved AgsFileEntry
 	* implemented AgsAudioTreeDispatcher
 	* improved AgsDial small refactoring
+	* improved AgsHybridSynth label text enumerating starting from 1
+	* improved AgsQuantumSynth label text enumerating starting from 1
+	* improved AgsStargazerSynth label text enumerating starting from 1
 	* improved AgsRavenSynth label text enumerating starting from 1
 	* refactored all AgsMachine implementations supporting MIDI CC
 	* refactored AgsEffectBulk to support MIDI CC for plugins

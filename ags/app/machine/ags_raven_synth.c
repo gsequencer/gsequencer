@@ -6361,7 +6361,7 @@ ags_raven_synth_input_map_recall(AgsRavenSynth *raven_synth,
 
   /* ags-fx-tremolo */
   start_recall = ags_fx_factory_create(audio,
-				       raven_synth->raven_synth_play_container, raven_synth->raven_synth_recall_container,
+				       raven_synth->tremolo_play_container, raven_synth->tremolo_recall_container,
 				       "ags-fx-tremolo",
 				       NULL,
 				       NULL,
