@@ -614,7 +614,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   if(gtk_drop_down_get_selected(midi_cc_editor->port_drop_down) > 0){
     gobject = gtk_drop_down_get_selected_item(midi_cc_editor->port_drop_down);
     
-    specifier = gtk_string_object_get_string(gobject);
+    specifier = gtk_string_object_get_string((GtkStringObject *) gobject);
   }
   
   midi_group = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi_group);
@@ -634,7 +634,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     success = FALSE;
     
     if((port = ags_port_find_specifier(port, specifier)) != NULL){
-      play_container = ags_recall_get_recall_container(recall->data);
+      play_container = (AgsRecallContainer *) ags_recall_get_recall_container(recall->data);
 
       success = TRUE;
     }
@@ -666,7 +666,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     success = FALSE;
     
     if((port = ags_port_find_specifier(port, specifier)) != NULL){
-      recall_container = ags_recall_get_recall_container(recall->data);
+      recall_container = (AgsRecallContainer *) ags_recall_get_recall_container(recall->data);
 
       success = TRUE;
     }
@@ -686,7 +686,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
 		   (GDestroyNotify) g_object_unref);
 
   /* apply to recall audio - play container */
-  recall_audio = ags_recall_container_get_recall_audio(play_container);
+  recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(play_container);
 
   if(recall_audio != NULL){
     start_port = ags_recall_get_port((AgsRecall *) recall_audio);
@@ -694,7 +694,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     if(ags_port_find_specifier(start_port, specifier) != NULL){
       GHashTable *midi2_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier(recall_audio);
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
 
       ags_midi_cc_editor_apply_recall(midi_cc_editor,
 				      (AgsRecall *) recall_audio,
@@ -710,7 +710,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   }
   
   /* apply to recall audio - recall container */
-  recall_audio = ags_recall_container_get_recall_audio(recall_container);
+  recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(recall_container);
 
   if(recall_audio != NULL){
     start_port = ags_recall_get_port((AgsRecall *) recall_audio);
@@ -718,7 +718,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     if(ags_port_find_specifier(start_port, specifier) != NULL){
       GHashTable *midi2_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier(recall_audio);
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
 
       ags_midi_cc_editor_apply_recall(midi_cc_editor,
 				      (AgsRecall *) recall_audio,
@@ -743,7 +743,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     if(ags_port_find_specifier(start_port, specifier) != NULL){
       GHashTable *midi2_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier(recall_audio);
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
 
       ags_midi_cc_editor_apply_recall(midi_cc_editor,
 				      (AgsRecall *) recall_channel->data,
@@ -770,7 +770,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     if(ags_port_find_specifier(start_port, specifier) != NULL){
       GHashTable *midi2_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier(recall_audio);
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
 
       ags_midi_cc_editor_apply_recall(midi_cc_editor,
 				      (AgsRecall *) recall_channel->data,
@@ -1071,7 +1071,7 @@ ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
   }
     
   gtk_drop_down_set_model(midi_cc_editor->port_drop_down,
-			  G_LIST_MODEL(gtk_string_list_new(collected_specifier)));
+			  G_LIST_MODEL(gtk_string_list_new((const gchar * const *) collected_specifier)));
 
   if(midi_cc_editor->port != NULL){
     g_strfreev(midi_cc_editor->port);

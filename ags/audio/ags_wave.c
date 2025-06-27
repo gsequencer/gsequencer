@@ -2549,7 +2549,7 @@ ags_wave_free_selection(AgsWave *wave)
 
 /**
  * ags_wave_free_all_selection:
- * @wave: the #GList-struct containing #AgsWave
+ * @wave: (element-type AgsAudio.Wave): the #GList-struct containing #AgsWave
  *
  * Clear all selection of @wave.
  *

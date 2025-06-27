@@ -2864,7 +2864,7 @@ ags_automation_free_selection(AgsAutomation *automation)
 
 /**
  * ags_automation_free_all_selection:
- * @automation: the #GList-struct containing #AgsAutomation
+ * @automation: (element-type AgsAudio.Automation): the #GList-struct containing #AgsAutomation
  *
  * Clear all selection of @automation.
  *

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -14570,7 +14570,7 @@ ags_audio_real_start(AgsAudio *audio,
 
 	  if(!super_threaded_channel){
 	    start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
-									  audio,
+									  (GObject *) audio,
 									  sound_scope);
 
 	    current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher);
@@ -14602,7 +14602,7 @@ ags_audio_real_start(AgsAudio *audio,
 
 	    if(super_threaded_channel){
 	      start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
-									    audio,
+									    (GObject *) audio,
 									    sound_scope);
 
 	      current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher);
@@ -14727,7 +14727,7 @@ ags_audio_real_start(AgsAudio *audio,
 	    
 	    if(!super_threaded_channel){
 	      start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
-									    audio,
+									    (GObject *) audio,
 									    sound_scope);
 
 	      current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher);
@@ -14759,7 +14759,7 @@ ags_audio_real_start(AgsAudio *audio,
 
 	      if(super_threaded_channel){
 		start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
-									      audio,
+									      (GObject *) audio,
 									      sound_scope);
 
 		current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher);
@@ -14959,7 +14959,7 @@ ags_audio_real_stop(AgsAudio *audio,
 				      FALSE);
 
       ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
-						       audio,
+						       (GObject *) audio,
 						       sound_scope);
 
       g_object_unref(audio_thread);
@@ -14984,7 +14984,7 @@ ags_audio_real_stop(AgsAudio *audio,
 					  FALSE);
 
 	ags_audio_tree_dispatcher_remove_dispatch_source(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
-							 audio,
+							 (GObject *) audio,
 							 sound_scope);
 							 
 	g_object_unref(channel_thread);
@@ -15029,7 +15029,7 @@ ags_audio_real_stop(AgsAudio *audio,
 					FALSE);
 
 	ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
-							 audio,
+							 (GObject *) audio,
 							 sound_scope);
 
 	g_object_unref(audio_thread);
@@ -15054,7 +15054,7 @@ ags_audio_real_stop(AgsAudio *audio,
 					    FALSE);
 
 	  ags_audio_tree_dispatcher_remove_dispatch_source(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
-							   audio,
+							   (GObject *) audio,
 							   sound_scope);
 	  g_object_unref(channel_thread);
 	}

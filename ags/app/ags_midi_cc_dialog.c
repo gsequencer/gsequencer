@@ -833,7 +833,7 @@ ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
   g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
 
   if(control_change_strv != NULL){
-    for(iter = control_change_strv, cc_iter = control_change_enum; iter[0] != NULL; iter++, cc_iter++){
+    for(iter = (gchar **) control_change_strv, cc_iter = control_change_enum; iter[0] != NULL; iter++, cc_iter++){
       editor = ags_midi_cc_editor_new();
       
       editor->control = cc_iter[0];
@@ -879,6 +879,8 @@ ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
     GObject *gobject;
 
     gchar *str;
+
+    gint val;
     
     child = xmlNewNode(NULL,
 		       "editor");
@@ -893,12 +895,48 @@ ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
     /* port */
     gobject = gtk_drop_down_get_selected_item(AGS_MIDI_CC_EDITOR(editor->data)->port_drop_down);
     
-    str = gtk_string_object_get_string(gobject);
+    str = gtk_string_object_get_string((GtkStringObject *) gobject);
 
     xmlNewProp(child,
 	       "port",
 	       str);
 
+    /* MIDI group */
+    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi_group);
+
+    str = g_strdup_printf("%d",
+			  val);
+
+    xmlNewProp(child,
+	       "midi-group",
+	       str);
+
+    g_free(str);
+
+    /* MIDI channel */
+    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi_channel);
+
+    str = g_strdup_printf("%d",
+			  val);
+
+    xmlNewProp(child,
+	       "midi-channel",
+	       str);
+
+    g_free(str);
+
+    /* MIDI note */
+    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi_note);
+
+    str = g_strdup_printf("%d",
+			  val);
+
+    xmlNewProp(child,
+	       "midi-note",
+	       str);
+
+    g_free(str);
+    
     /* add child */
     xmlAddChild(node,
 		child);
@@ -945,7 +983,10 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 		     7)){
 	xmlChar *control;
 	xmlChar *port;
-
+	xmlChar *midi_group;
+	xmlChar *midi_channel;
+	xmlChar *midi_note;
+	
 	control = xmlGetProp(child,
 			     BAD_CAST "control");
 	
@@ -969,6 +1010,31 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 	
 	xmlFree(control);
 	xmlFree(port);
+
+	/* MIDI group */
+	midi_group = xmlGetProp(child,
+				BAD_CAST "midi-group");
+	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi_group,
+				  g_ascii_strtod(midi_group,
+						 NULL));
+	
+	/* MIDI channel */
+	midi_channel = xmlGetProp(child,
+				BAD_CAST "midi-channel");
+	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi_channel,
+				  g_ascii_strtod(midi_channel,
+						 NULL));
+
+	/* MIDI note */
+	midi_note = xmlGetProp(child,
+				BAD_CAST "midi-note");
+	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi_note,
+				  g_ascii_strtod(midi_note,
+						 NULL));
+
+	xmlFree(midi_group);
+	xmlFree(midi_channel);
+	xmlFree(midi_note);
       }
     }
 
