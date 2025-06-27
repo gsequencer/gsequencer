@@ -1,7 +1,10 @@
 ags (8.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsButton
+	* implemented MIDI v2.0 CC support within UI
+	* implemented AgsMidiCCDialog
+	* implemented AgsMidiCCEditor
+	* implemented AgsButton
 	* TODO:JK: implemented AgsToggleButton
 	* TODO:JK: implemented AgsCheckButton
 	* TODO:JK: implemented AgsRadioButton

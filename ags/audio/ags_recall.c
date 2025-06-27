@@ -6227,21 +6227,21 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
 	    if(control >= 0 && control <= 31){
 	      /* MSB */
-	      g_hash_table_insert(midi1_cc_to_port_specifier,
+	      g_hash_table_insert(midi1_cc_to_value,
 				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(value << 7));
 	    }else{
-	      ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+	      ptr = g_hash_table_lookup(midi1_cc_to_value,
 					GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 	      
 	      /* LSB */
-	      g_hash_table_insert(midi1_cc_to_port_specifier,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER(((guint) ptr) | value));
+	      g_hash_table_insert(midi1_cc_to_value,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)), GUINT_TO_POINTER((GPOINTER_TO_UINT(ptr)) | value));
 
 	      start_port = ags_recall_get_port(recall);
 	    
 	      g_rec_mutex_lock(recall_mutex);
 	    
-	      port_specifier = g_hash_table_lookup(midi1_cc_to_value,
+	      port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
 						   GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 
 	      g_rec_mutex_unlock(recall_mutex);
@@ -6266,11 +6266,11 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		  lower = ags_plugin_port_get_lower_value(plugin_port);
 		  upper = ags_plugin_port_get_upper_value(plugin_port);
 
-		  ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+		  ptr = g_hash_table_lookup(midi1_cc_to_value,
 					    GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 		
 		  g_value_set_float(&port_value,
-				    ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				    ((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		
 		  ags_port_safe_write(port->data,
 				      &port_value);
@@ -6301,14 +6301,14 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					 &channel, &transmitter);
 	    
 	    /* MSB and LSB */
-	    g_hash_table_insert(midi1_cc_to_port_specifier,
+	    g_hash_table_insert(midi1_cc_to_value,
 				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)), GUINT_TO_POINTER(transmitter));
 
 	    start_port = ags_recall_get_port(recall);
 	    
 	    g_rec_mutex_lock(recall_mutex);
 	    
-	    port_specifier = g_hash_table_lookup(midi1_cc_to_value,
+	    port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
 						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
@@ -6333,11 +6333,11 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		lower = ags_plugin_port_get_lower_value(plugin_port);
 		upper = ags_plugin_port_get_upper_value(plugin_port);
 
-		ptr = g_hash_table_lookup(midi1_cc_to_port_specifier,
+		ptr = g_hash_table_lookup(midi1_cc_to_value,
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xe0, 0x0)));
 		
 		g_value_set_float(&port_value,
-				  ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				  ((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
@@ -6569,21 +6569,21 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL);
 	    if(index_key >= 0 && index_key <= 31){
 	      /* MSB */
-	      g_hash_table_insert(midi2_cc_to_port_specifier,
+	      g_hash_table_insert(midi2_cc_to_value,
 				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)), GUINT_TO_POINTER(data << 7));
 	    }else{
-	      ptr = g_hash_table_lookup(midi2_cc_to_port_specifier,
+	      ptr = g_hash_table_lookup(midi2_cc_to_value,
 					GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)));
 	      
 	      /* LSB */
-	      g_hash_table_insert(midi2_cc_to_port_specifier,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)), GUINT_TO_POINTER(((guint) ptr) | data));
+	      g_hash_table_insert(midi2_cc_to_value,
+				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)), GUINT_TO_POINTER((GPOINTER_TO_UINT(ptr)) | data));
 
 	      start_port = ags_recall_get_port(recall);
 	    
 	      g_rec_mutex_lock(recall_mutex);
 	    
-	      port_specifier = g_hash_table_lookup(midi2_cc_to_value,
+	      port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
 						   GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)));
 
 	      g_rec_mutex_unlock(recall_mutex);
@@ -6608,11 +6608,11 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		  lower = ags_plugin_port_get_lower_value(plugin_port);
 		  upper = ags_plugin_port_get_upper_value(plugin_port);
 
-		  ptr = g_hash_table_lookup(midi2_cc_to_port_specifier,
+		  ptr = g_hash_table_lookup(midi2_cc_to_value,
 					    GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE(0xb0, index_key, 0x0, 0)));
 		
 		  g_value_set_float(&port_value,
-				    ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				    ((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		
 		  ags_port_safe_write(port->data,
 				      &port_value);
@@ -6646,14 +6646,14 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						   NULL,
 						   NULL);
 
-	    g_hash_table_insert(midi2_cc_to_port_specifier,
+	    g_hash_table_insert(midi2_cc_to_value,
 				GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND), GUINT_TO_POINTER(data));
 
 	    start_port = ags_recall_get_port(recall);
 	    
 	    g_rec_mutex_lock(recall_mutex);
 	    
-	    port_specifier = g_hash_table_lookup(midi2_cc_to_value,
+	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
 						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
 	    
 	    g_rec_mutex_unlock(recall_mutex);
@@ -6678,11 +6678,11 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		lower = ags_plugin_port_get_lower_value(plugin_port);
 		upper = ags_plugin_port_get_upper_value(plugin_port);
 
-		ptr = g_hash_table_lookup(midi2_cc_to_port_specifier,
+		ptr = g_hash_table_lookup(midi2_cc_to_value,
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
 		
 		g_value_set_float(&port_value,
-				  ((gfloat) ((guint) ptr)) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				  ((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		
 		ags_port_safe_write(port->data,
 				    &port_value);

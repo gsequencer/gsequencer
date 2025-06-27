@@ -309,161 +309,264 @@ ags_midi_cc_editor_apply_recall(AgsMidiCCEditor *midi_cc_editor,
   midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier(recall);
 
   local_specifier = g_strdup(specifier);
-  
-  switch(midi_cc_editor->control){
-    /*
+
+  switch((AgsUmpWord) midi_cc_editor->control){
   case AGS_RECALL_MIDI2_MIDI1_BANK_SELECT:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BANK_SELECT),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BANK_SELECT),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BANK_SELECT));
+      }
     }
     break;
-    */
   case AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME:
     {
       
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_BALANCE:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BALANCE),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BALANCE),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BALANCE));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_PAN:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PAN),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PAN),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PAN));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4));
+      }
     }
     break;
-    /*
   case AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_PITCH_BEND:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PITCH_BEND),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PITCH_BEND),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
+      }
     }
     break;
-    */
   case AGS_RECALL_MIDI2_CHANGE_PROGRAM:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PROGRAM),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PROGRAM),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PROGRAM));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_CHANGE_PRESSURE:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PRESSURE),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PRESSURE),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PRESSURE));
+      }
     }
     break;
   case AGS_RECALL_MIDI2_PITCH_BEND:
     {
-      g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_PITCH_BEND),
-			  local_specifier);
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_PITCH_BEND),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi2_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_PITCH_BEND));
+      }
     }
     break;
   }
+
+  g_hash_table_unref(midi2_cc_to_port_specifier);
 }
 
 void
