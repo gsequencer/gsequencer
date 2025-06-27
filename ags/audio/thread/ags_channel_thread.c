@@ -219,7 +219,11 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   guint buffer_size;
   
   static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+    (AGS_SOUND_STAGING_AUTOMATE
+     | AGS_SOUND_STAGING_RUN_INTER
+     | AGS_SOUND_STAGING_FX
+     | AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE
+     | AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE),
   };
 
   thread = (AgsThread *) channel_thread;

@@ -3712,6 +3712,24 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
 	ags_recall_feed_output_queue(recall);
       }
     }
+    
+    if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0 &&
+       (AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (recall_staging_flags)) == 0){
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->midi1_control_change(recall);
+      }else{
+	ags_recall_midi1_control_change(recall);
+      }
+    }
+    
+    if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0 &&
+       (AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (recall_staging_flags)) == 0){
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->midi2_control_change(recall);
+      }else{
+	ags_recall_midi2_control_change(recall);
+      }
+    }
   }
 
   if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0){
@@ -3722,7 +3740,9 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
 				    AGS_SOUND_STAGING_RUN_INTER |
 				    AGS_SOUND_STAGING_RUN_POST |
 				    AGS_SOUND_STAGING_DO_FEEDBACK |
-				    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));    
+				    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
+				    AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE |
+				    AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE));    
   }
 
   if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
@@ -6121,6 +6141,10 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   
   GRecMutex *recall_mutex;
 
+  if(!ags_recall_test_flags(recall, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+    return;
+  }
+  
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   
@@ -6459,6 +6483,10 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
   guint buffer_length;
   
   GRecMutex *recall_mutex;
+
+  if(!ags_recall_test_flags(recall, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+    return;
+  }
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);

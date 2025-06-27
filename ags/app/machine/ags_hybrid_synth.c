@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,8 @@
 #include <ags/app/ags_line.h>
 
 #include <math.h>
+
+#include <ags/ags_api_config.h>
 
 #include <ags/i18n.h>
 
@@ -2455,6 +2457,20 @@ ags_hybrid_synth_map_recall(AgsMachine *machine)
 				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
 
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
+
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
@@ -2469,6 +2485,20 @@ ags_hybrid_synth_map_recall(AgsMachine *machine)
 				       position,
 				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
+
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -2485,6 +2515,20 @@ ags_hybrid_synth_map_recall(AgsMachine *machine)
 				       position,
 				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT),
 				       0);
+
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -2525,7 +2569,7 @@ ags_hybrid_synth_input_map_recall(AgsHybridSynth *hybrid_synth,
 {
   AgsAudio *audio;
 
-  GList *start_recall;
+  GList *start_recall, *recall;
 
   gint position;
   guint input_pads;
@@ -2573,6 +2617,20 @@ ags_hybrid_synth_input_map_recall(AgsHybridSynth *hybrid_synth,
 				       position,
 				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
+
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
@@ -2587,6 +2645,20 @@ ags_hybrid_synth_input_map_recall(AgsHybridSynth *hybrid_synth,
 				       position,
 				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
 
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
+
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
@@ -2600,6 +2672,20 @@ ags_hybrid_synth_input_map_recall(AgsHybridSynth *hybrid_synth,
 				       input_pad_start, input_pads,
 				       position,
 				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT), 0);
+
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);

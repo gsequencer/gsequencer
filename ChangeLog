@@ -19,6 +19,11 @@ ags (8.0.0)
 	* implemented AgsAudioTreeDispatcher
 	* improved AgsDial small refactoring
 	* improved AgsRavenSynth label text enumerating starting from 1
+	* refactored all AgsMachine implementations supporting MIDI CC
+	* refactored AgsEffectBulk to support MIDI CC for plugins
+	* refactored AgsLine to support MIDI CC for plugins
+	* refactored AgsEffectLine to support MIDI CC for plugins
+	* minor bug-fixes
 
 ags (7.8.0)
 

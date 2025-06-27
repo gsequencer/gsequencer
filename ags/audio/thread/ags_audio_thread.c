@@ -229,7 +229,11 @@ ags_audio_thread_init(AgsAudioThread *audio_thread)
   guint i;  
 
   static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+    (AGS_SOUND_STAGING_AUTOMATE
+     | AGS_SOUND_STAGING_RUN_INTER
+     | AGS_SOUND_STAGING_FX
+     | AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE
+     | AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE),
   };
 
   thread = (AgsThread *) audio_thread;
