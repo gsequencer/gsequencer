@@ -100,8 +100,6 @@ struct _AgsMidi1CCLabel
   AgsRecallMidi1ControlChange midi1_cc;
   
   gchar *label;
-  
-  guint port_count;
 };
 
 struct _AgsMidi2CCLabel
@@ -109,79 +107,77 @@ struct _AgsMidi2CCLabel
   AgsRecallMidi2ControlChange midi2_cc;
   
   gchar *label;
-  
-  guint port_count;
 };
 
 static const struct _AgsMidi1CCLabel midi1_control_change[] = {
-  {AGS_RECALL_MIDI1_BANK_SELECT, "bank select", 1},
-  {AGS_RECALL_MIDI1_MODULATION_WHEEL, "modulation wheel", 1},
-  {AGS_RECALL_MIDI1_BREATH_CONTROLLER, "breath controller", 1},
-  {AGS_RECALL_MIDI1_FOOT_CONTROLLER, "foot controller", 1},
-  {AGS_RECALL_MIDI1_PORTAMENTO_TIME, "portamento time", 1},
-  {AGS_RECALL_MIDI1_CHANNEL_VOLUME, "channel volume", 1},
-  {AGS_RECALL_MIDI1_BALANCE, "balance", 1},
-  {AGS_RECALL_MIDI1_PAN, "pan", 1},
-  {AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER, "expression controller", 1},
-  {AGS_RECALL_MIDI1_EFFECT_CONTROL_1, "effect control 1", 1},
-  {AGS_RECALL_MIDI1_EFFECT_CONTROL_2, "effect control 2", 1},
-  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1, "general purpose controller 1", 1},
-  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2, "general purpose controller 2", 1},
-  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3, "general purpose controller 3", 1},
-  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4, "general purpose controller 4", 1},
-  {AGS_RECALL_MIDI1_CHANGE_PROGRAM, "change program", 1},
-  {AGS_RECALL_MIDI1_CHANGE_PRESSURE, "change pressure", 1},
-  {AGS_RECALL_MIDI1_PITCH_BEND, "pitch bend", 1},
-  {AGS_RECALL_MIDI1_SONG_POSITION, "song position", 1},
-  {AGS_RECALL_MIDI1_SONG_SELECT, "song select", 1},
-  {AGS_RECALL_MIDI1_TUNE_REQUEST, "tune request", 1},
+  {AGS_RECALL_MIDI1_BANK_SELECT, "bank select"},
+  {AGS_RECALL_MIDI1_MODULATION_WHEEL, "modulation wheel"},
+  {AGS_RECALL_MIDI1_BREATH_CONTROLLER, "breath controller"},
+  {AGS_RECALL_MIDI1_FOOT_CONTROLLER, "foot controller"},
+  {AGS_RECALL_MIDI1_PORTAMENTO_TIME, "portamento time"},
+  {AGS_RECALL_MIDI1_CHANNEL_VOLUME, "channel volume"},
+  {AGS_RECALL_MIDI1_BALANCE, "balance"},
+  {AGS_RECALL_MIDI1_PAN, "pan"},
+  {AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER, "expression controller"},
+  {AGS_RECALL_MIDI1_EFFECT_CONTROL_1, "effect control 1"},
+  {AGS_RECALL_MIDI1_EFFECT_CONTROL_2, "effect control 2"},
+  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1, "general purpose controller 1"},
+  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2, "general purpose controller 2"},
+  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3, "general purpose controller 3"},
+  {AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4, "general purpose controller 4"},
+  {AGS_RECALL_MIDI1_CHANGE_PROGRAM, "change program"},
+  {AGS_RECALL_MIDI1_CHANGE_PRESSURE, "change pressure"},
+  {AGS_RECALL_MIDI1_PITCH_BEND, "pitch bend"},
+  {AGS_RECALL_MIDI1_SONG_POSITION, "song position"},
+  {AGS_RECALL_MIDI1_SONG_SELECT, "song select"},
+  {AGS_RECALL_MIDI1_TUNE_REQUEST, "tune request"},
   {0x0, NULL, 0}
 };
 
 static const struct _AgsMidi2CCLabel midi2_control_change[] = {
-  {AGS_RECALL_MIDI2_MIDI1_BANK_SELECT, "bank select", 1},
-  {AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL, "modulation wheel", 1},
-  {AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER, "breath controller", 1},
-  {AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER, "foot controller", 1},
-  {AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME, "portamento time", 1},
-  {AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME, "channel volume", 1},
-  {AGS_RECALL_MIDI2_MIDI1_BALANCE, "balance", 1},
-  {AGS_RECALL_MIDI2_MIDI1_PAN, "pan", 1},
-  {AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER, "expression controller", 1},
-  {AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1, "effect control 1", 1},
-  {AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2, "effect control 2", 1},
-  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1, "general purpose controller 1", 1},
-  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2, "general purpose controller 2", 1},
-  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3, "general purpose controller 3", 1},
-  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4, "general purpose controller 4", 1},
-  {AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM, "change program", 1},
-  {AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE, "change pressure", 1},
-  {AGS_RECALL_MIDI2_MIDI1_PITCH_BEND, "pitch bend", 1},
-  {AGS_RECALL_MIDI2_CHANGE_PROGRAM, "MIDI v2.0 change program", 2},
-  {AGS_RECALL_MIDI2_CHANGE_PRESSURE, "MIDI v2.0 change pressure", 1},
-  {AGS_RECALL_MIDI2_PITCH_BEND, "MIDI v2.0 pitch bend", 1},
-  {AGS_RECALL_MIDI2_MODULATION, "MIDI v2.0 modulation", 1},
-  {AGS_RECALL_MIDI2_BREATH, "MIDI v2.0 breath", 1},
-  {AGS_RECALL_MIDI2_PITCH_7_25, "MIDI v2.0 pitch 7.25", 1},
-  {AGS_RECALL_MIDI2_VOLUME, "MIDI v2.0 volume", 1},
-  {AGS_RECALL_MIDI2_BALANCE, "MIDI v2.0 balance", 1},
-  {AGS_RECALL_MIDI2_PAN, "MIDI v2.0 pan", 1},
-  {AGS_RECALL_MIDI2_EXPRESSION, "MIDI v2.0 expression", 1},
-  {AGS_RECALL_MIDI2_SOUND_VARIATION, "MIDI v2.0 sound variation", 1},
-  {AGS_RECALL_MIDI2_TIMBRE, "MIDI v2.0 timbre", 1},
-  {AGS_RECALL_MIDI2_RELEASE, "MIDI v2.0 release", 1},
-  {AGS_RECALL_MIDI2_ATTACK, "MIDI v2.0 attack", 1},
-  {AGS_RECALL_MIDI2_BRIGHTNESS, "MIDI v2.0 brightness", 1},
-  {AGS_RECALL_MIDI2_DECAY, "MIDI v2.0 decay", 1},
-  {AGS_RECALL_MIDI2_VIBRATO_RATE, "MIDI v2.0 vibrato rate", 1},
-  {AGS_RECALL_MIDI2_VIBRATO_DEPTH, "MIDI v2.0 vibrato depth", 1},
-  {AGS_RECALL_MIDI2_VIBRATO_DELAY, "MIDI v2.0 vibrato delay", 1},
-  {AGS_RECALL_MIDI2_SOUND_CONTROLLER_10, "MIDI v2.0 sound controller 10", 1},
-  {AGS_RECALL_MIDI2_EFFECTS_1, "MIDI v2.0 effects 1", 1},
-  {AGS_RECALL_MIDI2_EFFECTS_2, "MIDI v2.0 effects 2", 1},
-  {AGS_RECALL_MIDI2_EFFECTS_3, "MIDI v2.0 effects 3", 1},
-  {AGS_RECALL_MIDI2_EFFECTS_4, "MIDI v2.0 effects 4", 1},
-  {AGS_RECALL_MIDI2_EFFECTS_5, "MIDI v2.0 effects 5", 1},
+  {AGS_RECALL_MIDI2_MIDI1_BANK_SELECT, "bank select"},
+  {AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL, "modulation wheel"},
+  {AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER, "breath controller"},
+  {AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER, "foot controller"},
+  {AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME, "portamento time"},
+  {AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME, "channel volume"},
+  {AGS_RECALL_MIDI2_MIDI1_BALANCE, "balance"},
+  {AGS_RECALL_MIDI2_MIDI1_PAN, "pan"},
+  {AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER, "expression controller"},
+  {AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1, "effect control 1"},
+  {AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2, "effect control 2"},
+  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1, "general purpose controller 1"},
+  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2, "general purpose controller 2"},
+  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3, "general purpose controller 3"},
+  {AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4, "general purpose controller 4"},
+  {AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM, "change program"},
+  {AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE, "change pressure"},
+  {AGS_RECALL_MIDI2_MIDI1_PITCH_BEND, "pitch bend"},
+  {AGS_RECALL_MIDI2_CHANGE_PROGRAM, "MIDI v2.0 change program (not assignable)"},
+  {AGS_RECALL_MIDI2_CHANGE_PRESSURE, "MIDI v2.0 change pressure"},
+  {AGS_RECALL_MIDI2_PITCH_BEND, "MIDI v2.0 pitch bend"},
+  {AGS_RECALL_MIDI2_MODULATION, "MIDI v2.0 modulation"},
+  {AGS_RECALL_MIDI2_BREATH, "MIDI v2.0 breath"},
+  {AGS_RECALL_MIDI2_PITCH_7_25, "MIDI v2.0 pitch 7.25"},
+  {AGS_RECALL_MIDI2_VOLUME, "MIDI v2.0 volume"},
+  {AGS_RECALL_MIDI2_BALANCE, "MIDI v2.0 balance"},
+  {AGS_RECALL_MIDI2_PAN, "MIDI v2.0 pan"},
+  {AGS_RECALL_MIDI2_EXPRESSION, "MIDI v2.0 expression"},
+  {AGS_RECALL_MIDI2_SOUND_VARIATION, "MIDI v2.0 sound variation"},
+  {AGS_RECALL_MIDI2_TIMBRE, "MIDI v2.0 timbre"},
+  {AGS_RECALL_MIDI2_RELEASE, "MIDI v2.0 release"},
+  {AGS_RECALL_MIDI2_ATTACK, "MIDI v2.0 attack"},
+  {AGS_RECALL_MIDI2_BRIGHTNESS, "MIDI v2.0 brightness"},
+  {AGS_RECALL_MIDI2_DECAY, "MIDI v2.0 decay"},
+  {AGS_RECALL_MIDI2_VIBRATO_RATE, "MIDI v2.0 vibrato rate"},
+  {AGS_RECALL_MIDI2_VIBRATO_DEPTH, "MIDI v2.0 vibrato depth"},
+  {AGS_RECALL_MIDI2_VIBRATO_DELAY, "MIDI v2.0 vibrato delay"},
+  {AGS_RECALL_MIDI2_SOUND_CONTROLLER_10, "MIDI v2.0 sound controller 10"},
+  {AGS_RECALL_MIDI2_EFFECTS_1, "MIDI v2.0 effects 1"},
+  {AGS_RECALL_MIDI2_EFFECTS_2, "MIDI v2.0 effects 2"},
+  {AGS_RECALL_MIDI2_EFFECTS_3, "MIDI v2.0 effects 3"},
+  {AGS_RECALL_MIDI2_EFFECTS_4, "MIDI v2.0 effects 4"},
+  {AGS_RECALL_MIDI2_EFFECTS_5, "MIDI v2.0 effects 5"},
   {0x0, NULL, 0}
 };
 
@@ -1125,72 +1121,40 @@ ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
 
   struct _AgsMidi1CCLabel *midi1_iter;
   struct _AgsMidi2CCLabel *midi2_iter;
-
-  guint i;
   
   g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
 
   /* MIDI 1 */
   if(ags_midi_cc_dialog_test_flags(midi_cc_dialog, AGS_MIDI_CC_DIALOG_SHOW_MIDI_1_0)){
     for(midi1_iter = midi1_control_change; midi1_iter->label != NULL; midi1_iter++){
-      for(i = 0; i < midi1_iter->port_count; i++){
-	gchar *str;
-	
-	midi_cc_editor = ags_midi_cc_editor_new();
+      midi_cc_editor = ags_midi_cc_editor_new();
       
-	midi_cc_editor->midi1_control = midi1_iter->midi1_cc;
+      midi_cc_editor->midi1_control = midi1_iter->midi1_cc;
 
-	if(midi1_iter->port_count == 1){
-	  gtk_label_set_label(midi_cc_editor->midi1_control_label,
-			      midi1_iter->label);
-	}else{
-	  str = g_strdup_printf("%s #%d",
-				midi1_iter->label,
-				i + 1);
-
-	  gtk_label_set_label(midi_cc_editor->midi1_control_label,
-			      str);
-
-	  g_free(str);
-	}
+      gtk_label_set_label(midi_cc_editor->midi1_control_label,
+			  midi1_iter->label);
 	
-	ags_midi_cc_dialog_add_editor(midi_cc_dialog,
-				      midi_cc_editor);
+      ags_midi_cc_dialog_add_editor(midi_cc_dialog,
+				    midi_cc_editor);
       
-	ags_midi_cc_editor_midi1_load_port(midi_cc_editor);
-      }
+      ags_midi_cc_editor_midi1_load_port(midi_cc_editor);
     }
   }
 
   /* MIDI 2 */
   if(ags_midi_cc_dialog_test_flags(midi_cc_dialog, AGS_MIDI_CC_DIALOG_SHOW_MIDI_2_0)){
     for(midi2_iter = midi2_control_change; midi2_iter->label != NULL; midi2_iter++){
-      for(i = 0; i < midi2_iter->port_count; i++){
-	gchar *str;
-	
-	midi_cc_editor = ags_midi_cc_editor_new();
+      midi_cc_editor = ags_midi_cc_editor_new();
       
-	midi_cc_editor->midi2_control = midi2_iter->midi2_cc;
+      midi_cc_editor->midi2_control = midi2_iter->midi2_cc;
 
-	if(midi2_iter->port_count == 1){
-	  gtk_label_set_label(midi_cc_editor->midi2_control_label,
-			      midi2_iter->label);
-	}else{
-	  str = g_strdup_printf("%s #%d",
-				midi2_iter->label,
-				i + 1);
-
-	  gtk_label_set_label(midi_cc_editor->midi2_control_label,
-			      str);
-
-	  g_free(str);
-	}
+      gtk_label_set_label(midi_cc_editor->midi2_control_label,
+			  midi2_iter->label);
 	
-	ags_midi_cc_dialog_add_editor(midi_cc_dialog,
-				      midi_cc_editor);
+      ags_midi_cc_dialog_add_editor(midi_cc_dialog,
+				    midi_cc_editor);
       
-	ags_midi_cc_editor_midi2_load_port(midi_cc_editor);
-      }
+      ags_midi_cc_editor_midi2_load_port(midi_cc_editor);
     }
   }
 }
