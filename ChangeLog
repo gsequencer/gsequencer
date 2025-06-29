@@ -4,19 +4,8 @@ ags (8.0.0)
 	* implemented MIDI v2.0 CC support within UI
 	* implemented AgsMidiCCDialog
 	* implemented AgsMidiCCEditor
-	* implemented AgsButton
-	* TODO:JK: implemented AgsToggleButton
-	* TODO:JK: implemented AgsCheckButton
-	* TODO:JK: implemented AgsRadioButton
-	* TODO:JK: implemented AgsSpinButton
-	* TODO:JK: implemented AgsMenuButton
-	* TODO:JK: implemented AgsComboBox
-	* TODO:JK: implemented AgsListView
-	* TODO:JK: implemented AgsEntry
-	* TODO:JK: implemented AgsTextView
-	* TODO:JK: implemented AgsScale
-	* TODO:JK: improved AgsFileEntry
 	* implemented AgsAudioTreeDispatcher
+	* fixed ags_recall.h MIDI 1 and 2 CC macros and enum
 	* improved AgsDial small refactoring
 	* improved AgsHybridSynth label text enumerating starting from 1
 	* improved AgsQuantumSynth label text enumerating starting from 1

@@ -37,7 +37,7 @@ void ags_midi_cc_editor_disconnect(AgsConnectable *connectable);
 
 void ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
 					   AgsRecall *recall,
-					   guint32 midi2_channel,
+					   guint midi2_channel,
 					   gchar *specifier);
 void ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
 					   AgsRecall *recall,
@@ -174,7 +174,7 @@ ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor)
 						     AGS_UI_PROVIDER_DEFAULT_SPACING);
   
 #if defined(AGS_OSXAPI)
-  gtk_widget_set_visible(midi_cc_editor->midi1_box,
+  gtk_widget_set_visible((GtkWidget *) midi_cc_editor->midi1_box,
 			 FALSE);
 #endif
   
@@ -236,7 +236,7 @@ ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor)
 						     AGS_UI_PROVIDER_DEFAULT_SPACING);
 
 #if !defined(AGS_OSXAPI)
-  gtk_widget_set_visible(midi_cc_editor->midi2_box,
+  gtk_widget_set_visible((GtkWidget *) midi_cc_editor->midi2_box,
 			 FALSE);
 #endif
 
@@ -383,7 +383,7 @@ ags_midi_cc_editor_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
 				      AgsRecall *recall,
-				      guint32 midi2_channel,
+				      guint midi1_channel,
 				      gchar *specifier)
 {
   GHashTable *midi1_cc_to_port_specifier;
@@ -391,20 +391,27 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
 
   gchar *local_specifier;
 
+  GRecMutex *recall_mutex;
+
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(midi1_channel < 16);
+
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
   midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier(recall);
 
   local_specifier = g_strdup(specifier);
+
+  g_rec_mutex_lock(recall_mutex);
 
   switch((AgsUmpWord) midi_cc_editor->midi1_control){
   case AGS_RECALL_MIDI1_BANK_SELECT:
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BANK_SELECT),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_BANK_SELECT(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BANK_SELECT));
       }
     }
     break;
@@ -412,11 +419,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_MODULATION_WHEEL),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_MODULATION_WHEEL(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_MODULATION_WHEEL));
       }
     }
     break;
@@ -424,11 +428,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BREATH_CONTROLLER),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_BREATH_CONTROLLER(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BREATH_CONTROLLER));
       }
     }
     break;
@@ -436,24 +437,17 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_FOOT_CONTROLLER),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_FOOT_CONTROLLER(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_FOOT_CONTROLLER));
       }
     }
     break;
   case AGS_RECALL_MIDI1_PORTAMENTO_TIME:
     {
-      
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PORTAMENTO_TIME),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_PORTAMENTO_TIME(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PORTAMENTO_TIME));
       }
     }
     break;
@@ -461,11 +455,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANNEL_VOLUME),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_CHANNEL_VOLUME(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANNEL_VOLUME));
       }
     }
     break;
@@ -473,11 +464,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BALANCE),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_BALANCE(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BALANCE));
       }
     }
     break;
@@ -485,11 +473,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PAN),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_PAN(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PAN));
       }
     }
     break;
@@ -497,11 +482,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_EXPRESSION_CONTROLLER(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER));
       }
     }
     break;
@@ -509,11 +491,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_1),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_EFFECT_CONTROL_1(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_1));
       }
     }
     break;
@@ -521,11 +500,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_2),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_EFFECT_CONTROL_2(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_2));
       }
     }
     break;
@@ -533,11 +509,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_1(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1));
       }
     }
     break;
@@ -545,11 +518,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_2(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2));
       }
     }
     break;
@@ -557,11 +527,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_3(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3));
       }
     }
     break;
@@ -569,11 +536,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_4(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4));
       }
     }
     break;
@@ -581,11 +545,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PROGRAM),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_CHANGE_PROGRAM(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PROGRAM));
       }
     }
     break;
@@ -593,11 +554,8 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PRESSURE),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_CHANGE_PRESSURE(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PRESSURE));
       }
     }
     break;
@@ -605,51 +563,41 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PITCH_BEND),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_PITCH_BEND(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PITCH_BEND));
       }
     }
     break;
-  case AGS_RECALL_CHANGE_PROGRAM:
+  case AGS_RECALL_MIDI1_SONG_POSITION:
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PROGRAM),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_SONG_POSITION(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PROGRAM));
       }
     }
     break;
-  case AGS_RECALL_CHANGE_PRESSURE:
+  case AGS_RECALL_MIDI1_SONG_SELECT:
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PRESSURE),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_SONG_SELECT(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PRESSURE));
       }
     }
     break;
-  case AGS_RECALL_PITCH_BEND:
+  case AGS_RECALL_MIDI1_TUNE_REQUEST:
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_PITCH_BEND),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_TUNE_REQUEST(midi1_channel)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi1_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_PITCH_BEND));
       }
     }
     break;
   }
+
+  g_rec_mutex_unlock(recall_mutex);
 
   g_hash_table_unref(midi1_cc_to_port_specifier);
 }
@@ -667,20 +615,29 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
 
   gchar *local_specifier;
 
+  GRecMutex *recall_mutex;
+
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+  g_return_if_fail(AGS_IS_RECALL(recall));
+  g_return_if_fail(midi2_group < 16);
+  g_return_if_fail(midi2_channel < 16);
+  g_return_if_fail(midi2_note < 128);
+
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+
   midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier(recall);
 
   local_specifier = g_strdup(specifier);
 
+  g_rec_mutex_lock(recall_mutex);
+  
   switch((AgsUmpWord) midi_cc_editor->midi2_control){
   case AGS_RECALL_MIDI2_MIDI1_BANK_SELECT:
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BANK_SELECT),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_BANK_SELECT(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BANK_SELECT));
       }
     }
     break;
@@ -688,11 +645,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_MODULATION_WHEEL(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL));
       }
     }
     break;
@@ -700,11 +654,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_BREATH_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER));
       }
     }
     break;
@@ -712,24 +663,17 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_FOOT_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER));
       }
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME:
-    {
-      
+    {      
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_PORTAMENTO_TIME(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME));
       }
     }
     break;
@@ -737,11 +681,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_CHANNEL_VOLUME(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME));
       }
     }
     break;
@@ -749,11 +690,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BALANCE),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_BALANCE(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_BALANCE));
       }
     }
     break;
@@ -761,11 +699,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PAN),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_PAN(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PAN));
       }
     }
     break;
@@ -773,11 +708,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_EXPRESSION_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER));
       }
     }
     break;
@@ -785,11 +717,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_EFFECT_CONTROL_1(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1));
       }
     }
     break;
@@ -797,11 +726,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_EFFECT_CONTROL_2(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2));
       }
     }
     break;
@@ -809,11 +735,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_1(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1));
       }
     }
     break;
@@ -821,11 +744,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_2(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2));
       }
     }
     break;
@@ -833,11 +753,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_3(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3));
       }
     }
     break;
@@ -845,11 +762,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_4(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4));
       }
     }
     break;
@@ -857,11 +771,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM));
       }
     }
     break;
@@ -869,11 +780,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE));
       }
     }
     break;
@@ -881,11 +789,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PITCH_BEND),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_PITCH_BEND(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_MIDI1_PITCH_BEND));
       }
     }
     break;
@@ -893,11 +798,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PROGRAM),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_CHANGE_PROGRAM(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PROGRAM));
       }
     }
     break;
@@ -905,11 +807,8 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PRESSURE),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_CHANGE_PRESSURE(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CHANGE_PRESSURE));
       }
     }
     break;
@@ -917,15 +816,14 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
     {
       if(local_specifier != NULL){
 	g_hash_table_insert(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_PITCH_BEND),
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_PITCH_BEND(midi2_group, midi2_channel, midi2_note)),
 			    local_specifier);
-      }else{
-	g_hash_table_remove(midi2_cc_to_port_specifier,
-			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_PITCH_BEND));
       }
     }
     break;
   }
+
+  g_rec_mutex_unlock(recall_mutex);
 
   g_hash_table_unref(midi2_cc_to_port_specifier);
 }
@@ -948,10 +846,14 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   
   gchar *specifier;
 
+  guint midi1_channel;
+
   guint32 midi2_group;
   guint32 midi2_channel;
   guint32 midi2_note;
 
+  GRecMutex *recall_mutex;
+  
   midi_cc_editor = AGS_MIDI_CC_EDITOR(applicable);
 
   midi_cc_dialog = (AgsMidiCCDialog *) midi_cc_editor->parent_midi_cc_dialog;
@@ -977,7 +879,9 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     
     specifier = gtk_string_object_get_string((GtkStringObject *) gobject);
   }
-  
+
+  midi1_channel = (guint) gtk_spin_button_get_value_as_int(midi_cc_editor->midi1_channel);
+
   midi2_group = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_group);
   midi2_channel = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_channel);
   midi2_note = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_note);
@@ -1049,45 +953,117 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   /* apply to recall audio - play container */
   recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(play_container);
 
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio);
+
   if(recall_audio != NULL){
     start_port = ags_recall_get_port((AgsRecall *) recall_audio);
 
     if(ags_port_find_specifier(start_port, specifier) != NULL){
-      GHashTable *midi2_cc_to_port_specifier;
+      /* MIDI 1 */
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	GHashTable *midi1_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
 
-      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-					    (AgsRecall *) recall_audio,
-					    midi2_group,
-					    midi2_channel,
-					    midi2_note,
-					    specifier);
-      midi_cc_editor->midi2_control;
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_audio,
+					      midi1_channel,
+					      specifier);
+
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+      
+      /* MIDI 2 */
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	GHashTable *midi2_cc_to_port_specifier;
+
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
+
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_audio,
+					      midi2_group,
+					      midi2_channel,
+					      midi2_note,
+					      specifier);
+
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
     }
 
     g_list_free_full(start_port,
 		     (GDestroyNotify) g_object_unref);
   }
-  
+
   /* apply to recall audio - recall container */
   recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(recall_container);
 
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio);
+  
   if(recall_audio != NULL){
     start_port = ags_recall_get_port((AgsRecall *) recall_audio);
 
     if(ags_port_find_specifier(start_port, specifier) != NULL){
-      GHashTable *midi2_cc_to_port_specifier;
+      /* MIDI 1 */
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	GHashTable *midi1_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
+  
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
 
-      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-					    (AgsRecall *) recall_audio,
-					    midi2_group,
-					    midi2_channel,
-					    midi2_note,
-					    specifier);
-      midi_cc_editor->midi2_control;
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_audio,
+					      midi1_channel,
+					      specifier);
+
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+
+      /* MIDI 2 */
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	GHashTable *midi2_cc_to_port_specifier;
+
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
+
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_audio,
+					      midi2_group,
+					      midi2_channel,
+					      midi2_note,
+					      specifier);
+
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
     }
 
     g_list_free_full(start_port,
@@ -1102,16 +1078,51 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     start_port = ags_recall_get_port((AgsRecall *) recall_channel->data);
 
     if(ags_port_find_specifier(start_port, specifier) != NULL){
-      GHashTable *midi2_cc_to_port_specifier;
+      /* MIDI 1 */
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	GHashTable *midi1_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
 
-      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-					    (AgsRecall *) recall_channel->data,
-					    midi2_group,
-					    midi2_channel,
-					    midi2_note,
-					    specifier);
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_channel->data,
+					      midi1_channel,
+					      specifier);
+
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+
+      /* MIDI 2 */
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	GHashTable *midi2_cc_to_port_specifier;
+
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
+
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_channel->data,
+					      midi2_group,
+					      midi2_channel,
+					      midi2_note,
+					      specifier);
+
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
     }
 
     g_list_free_full(start_port,
@@ -1129,16 +1140,50 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     start_port = ags_recall_get_port((AgsRecall *) recall_channel->data);
 
     if(ags_port_find_specifier(start_port, specifier) != NULL){
-      GHashTable *midi2_cc_to_port_specifier;
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	GHashTable *midi1_cc_to_port_specifier;
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
 
-      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-					    (AgsRecall *) recall_channel->data,
-					    midi2_group,
-					    midi2_channel,
-					    midi2_note,
-					    specifier);
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_channel->data,
+					      midi1_channel,
+					      specifier);
+
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+
+      /* MIDI 2 */
+      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	GHashTable *midi2_cc_to_port_specifier;
+
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
+
+	/* remove all */
+	g_rec_mutex_lock(recall_mutex);
+  
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+	g_rec_mutex_unlock(recall_mutex);
+
+	/* apply */
+	ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					      (AgsRecall *) recall_channel->data,
+					      midi2_group,
+					      midi2_channel,
+					      midi2_note,
+					      specifier);
+
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
     }
 
     g_list_free_full(start_port,
@@ -1536,7 +1581,7 @@ ags_midi_cc_editor_midi2_load_port(AgsMidiCCEditor *midi_cc_editor)
 /**
  * ags_midi_cc_editor_find_midi1_control:
  * @midi_cc_editor: (transfer none): the #GList-struct containing #AgsMidiCCEditor
- * @midi2_control: the MIDI 1 control
+ * @midi1_control: the MIDI 1 control
  *
  * Find @control in @midi_cc_editor.
  * 
@@ -1549,7 +1594,7 @@ ags_midi_cc_editor_find_midi1_control(GList *midi_cc_editor,
 				      gchar *midi1_control)
 {
   g_return_val_if_fail(midi_cc_editor != NULL, NULL);
-  g_return_val_if_fail(midi2_control != NULL, NULL);
+  g_return_val_if_fail(midi1_control != NULL, NULL);
 
   while(midi_cc_editor != NULL){
     gchar *str;

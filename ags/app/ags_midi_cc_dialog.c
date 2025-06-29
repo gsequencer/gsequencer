@@ -95,7 +95,32 @@ static gpointer ags_midi_cc_dialog_parent_class = NULL;
 
 static guint midi_cc_dialog_signals[LAST_SIGNAL];
 
-static const gchar* const control_change_strv[] = {
+static const gchar* const midi1_control_change_strv[] = {
+  "bank select",
+  "modulation wheel",
+  "breath controller",
+  "foot controller",
+  "portamento time",
+  "channel volume",
+  "balance",
+  "pan",
+  "expression controller",
+  "effect control 1",
+  "effect control 2",
+  "general purpose controller 1",
+  "general purpose controller 2",
+  "general purpose controller 3",
+  "general purpose controller 4",
+  "change program",
+  "change pressure",
+  "pitch bend",
+  "song position",
+  "song select",
+  "tune request",
+  NULL,
+};
+
+static const gchar* const midi2_control_change_strv[] = {
   "bank select",
   "modulation wheel",
   "breath controller",
@@ -628,6 +653,70 @@ ags_midi_cc_dialog_reset(AgsApplicable *applicable)
   g_list_free(start_dialog_model);
 }
 
+/**
+ * ags_midi_cc_dialog_test_flags:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * @flags: the flags
+ *
+ * Test @flags of @midi_cc_dialog.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 8.0.0
+ */
+gboolean
+ags_midi_cc_dialog_test_flags(AgsMidiCCDialog *midi_cc_dialog,
+			      AgsMidiCCDialogFlags flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog), FALSE);
+
+  retval = (((flags &(midi_cc_dialog->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_cc_dialog_set_flags:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * @flags: the flags
+ *
+ * Set @flags of @midi_cc_dialog.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_dialog_set_flags(AgsMidiCCDialog *midi_cc_dialog,
+			     AgsMidiCCDialogFlags flags)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
+
+  //TODO:JK: implement me
+  
+  midi_cc_dialog->flags |= flags;
+}
+
+/**
+ * ags_midi_cc_dialog_unset_flags:
+ * @midi_cc_dialog: the #AgsMidiCCDialog
+ * @flags: the flags
+ *
+ * Unset @flags of @midi_cc_dialog.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_dialog_unset_flags(AgsMidiCCDialog *midi_cc_dialog,
+			       AgsMidiCCDialogFlags flags)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
+
+  //TODO:JK: implement me
+  
+  midi_cc_dialog->flags &= (~flags);
+}
+
 void
 ags_midi_cc_dialog_show(GtkWidget *widget)
 {
@@ -810,9 +899,35 @@ ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
 
   gchar **iter;
 
-  AgsRecallMidi2ControlChange *cc_iter;
+  AgsRecallMidi1ControlChange *midi1_cc_iter;
+  AgsRecallMidi2ControlChange *midi2_cc_iter;
 
-  static const AgsRecallMidi2ControlChange control_change_enum[] = {
+  static const AgsRecallMidi1ControlChange midi1_control_change_enum[] = {
+    AGS_RECALL_MIDI1_BANK_SELECT,
+    AGS_RECALL_MIDI1_MODULATION_WHEEL,
+    AGS_RECALL_MIDI1_BREATH_CONTROLLER,
+    AGS_RECALL_MIDI1_FOOT_CONTROLLER,
+    AGS_RECALL_MIDI1_PORTAMENTO_TIME,
+    AGS_RECALL_MIDI1_CHANNEL_VOLUME,
+    AGS_RECALL_MIDI1_BALANCE,
+    AGS_RECALL_MIDI1_PAN,
+    AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER,
+    AGS_RECALL_MIDI1_EFFECT_CONTROL_1,
+    AGS_RECALL_MIDI1_EFFECT_CONTROL_2,
+    AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1,
+    AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2,
+    AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3,
+    AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4,
+    AGS_RECALL_MIDI1_CHANGE_PROGRAM,
+    AGS_RECALL_MIDI1_CHANGE_PRESSURE,
+    AGS_RECALL_MIDI1_PITCH_BEND,
+    AGS_RECALL_MIDI1_SONG_POSITION,
+    AGS_RECALL_MIDI1_SONG_SELECT,
+    AGS_RECALL_MIDI1_TUNE_REQUEST,
+    -1,
+  };
+
+  static const AgsRecallMidi2ControlChange midi2_control_change_enum[] = {
     AGS_RECALL_MIDI2_MIDI1_BANK_SELECT,
     AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL,
     AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER,
@@ -839,18 +954,37 @@ ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
     
   g_return_if_fail(AGS_IS_MIDI_CC_DIALOG(midi_cc_dialog));
 
-  if(control_change_strv != NULL){
-    for(iter = (gchar **) control_change_strv, cc_iter = control_change_enum; iter[0] != NULL; iter++, cc_iter++){
+  /* MIDI 1 */
+  if(ags_midi_cc_dialog_test_flags(midi_cc_dialog, AGS_MIDI_CC_DIALOG_SHOW_MIDI_1_0) &&
+     midi1_control_change_strv != NULL){
+    for(iter = (gchar **) midi1_control_change_strv, midi1_cc_iter = midi1_control_change_enum; iter[0] != NULL; iter++, midi1_cc_iter++){
       midi_cc_editor = ags_midi_cc_editor_new();
       
-      midi_cc_editor->midi2_control = cc_iter[0];
+      midi_cc_editor->midi1_control = midi1_cc_iter[0];
+      gtk_label_set_label(midi_cc_editor->midi1_control_label,
+			  iter[0]);
+      
+      ags_midi_cc_dialog_add_editor(midi_cc_dialog,
+				    midi_cc_editor);
+      
+      ags_midi_cc_editor_midi1_load_port(midi_cc_editor);
+    }
+  }
+
+  /* MIDI 2 */
+  if(ags_midi_cc_dialog_test_flags(midi_cc_dialog, AGS_MIDI_CC_DIALOG_SHOW_MIDI_2_0) &&
+     midi2_control_change_strv != NULL){
+    for(iter = (gchar **) midi2_control_change_strv, midi2_cc_iter = midi2_control_change_enum; iter[0] != NULL; iter++, midi2_cc_iter++){
+      midi_cc_editor = ags_midi_cc_editor_new();
+      
+      midi_cc_editor->midi2_control = midi2_cc_iter[0];
       gtk_label_set_label(midi_cc_editor->midi2_control_label,
 			  iter[0]);
       
       ags_midi_cc_dialog_add_editor(midi_cc_dialog,
 				    midi_cc_editor);
       
-      ags_midi_cc_editor_load_port(midi_cc_editor);
+      ags_midi_cc_editor_midi2_load_port(midi_cc_editor);
     }
   }
 }
@@ -892,57 +1026,89 @@ ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
     child = xmlNewNode(NULL,
 		       "editor");
 
-    /* control */
-    str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(editor->data)->midi2_control_label);
+    if(ags_midi_cc_editor_test_flags((AgsMidiCCEditor *) editor->data, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+      /* control */
+      str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(editor->data)->midi1_control_label);
 
-    xmlNewProp(child,
-	       "control",
-	       str);
+      xmlNewProp(child,
+		 "control",
+		 BAD_CAST str);
 
-    /* port */
-    gobject = gtk_drop_down_get_selected_item(AGS_MIDI_CC_EDITOR(editor->data)->midi2_port_drop_down);
+      /* port */
+      gobject = gtk_drop_down_get_selected_item(AGS_MIDI_CC_EDITOR(editor->data)->midi1_port_drop_down);
     
-    str = gtk_string_object_get_string((GtkStringObject *) gobject);
+      str = gtk_string_object_get_string((GtkStringObject *) gobject);
 
-    xmlNewProp(child,
-	       "port",
-	       str);
+      xmlNewProp(child,
+		 "port",
+		 BAD_CAST str);
 
-    /* MIDI group */
-    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_group);
+      /* MIDI channel */
+      val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi1_channel);
 
-    str = g_strdup_printf("%d",
-			  val);
+      str = g_strdup_printf("%d",
+			    val);
 
-    xmlNewProp(child,
-	       "midi-group",
-	       str);
+      xmlNewProp(child,
+		 "midi-channel",
+		 BAD_CAST str);
 
-    g_free(str);
+      g_free(str);
+    }
+    
+    if(ags_midi_cc_editor_test_flags((AgsMidiCCEditor *) editor->data, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+      /* control */
+      str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(editor->data)->midi2_control_label);
 
-    /* MIDI channel */
-    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_channel);
+      xmlNewProp(child,
+		 "control",
+		 BAD_CAST str);
 
-    str = g_strdup_printf("%d",
-			  val);
+      /* port */
+      gobject = gtk_drop_down_get_selected_item(AGS_MIDI_CC_EDITOR(editor->data)->midi2_port_drop_down);
+    
+      str = gtk_string_object_get_string((GtkStringObject *) gobject);
 
-    xmlNewProp(child,
-	       "midi-channel",
-	       str);
+      xmlNewProp(child,
+		 "port",
+		 BAD_CAST str);
 
-    g_free(str);
+      /* MIDI group */
+      val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_group);
 
-    /* MIDI note */
-    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_note);
+      str = g_strdup_printf("%d",
+			    val);
 
-    str = g_strdup_printf("%d",
-			  val);
+      xmlNewProp(child,
+		 "midi-group",
+		 BAD_CAST str);
 
-    xmlNewProp(child,
-	       "midi-note",
-	       str);
+      g_free(str);
 
-    g_free(str);
+      /* MIDI channel */
+      val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_channel);
+
+      str = g_strdup_printf("%d",
+			    val);
+
+      xmlNewProp(child,
+		 "midi-channel",
+		 BAD_CAST str);
+
+      g_free(str);
+
+      /* MIDI note */
+      val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_note);
+
+      str = g_strdup_printf("%d",
+			    val);
+
+      xmlNewProp(child,
+		 "midi-note",
+		 BAD_CAST str);
+
+      g_free(str);
+    }
     
     /* add child */
     xmlAddChild(node,

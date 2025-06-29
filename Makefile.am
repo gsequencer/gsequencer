@@ -2547,7 +2547,6 @@ deprecated_libags_gui_h_sources =
 
 libags_gui_h_sources = \
 	$(deprecated_libags_gui_h_sources) \
-	ags/widget/ags_button.h \
 	ags/widget/ags_cartesian.h \
 	ags/widget/ags_dial.h \
 	ags/widget/ags_expander.h \
@@ -2578,7 +2577,6 @@ deprecated_libags_gui_c_sources =
 
 libags_gui_c_sources = \
 	$(deprecated_libags_gui_c_sources) \
-	ags/widget/ags_button.c \
 	ags/widget/ags_cartesian.c \
 	ags/widget/ags_dial.c \
 	ags/widget/ags_expander.c \

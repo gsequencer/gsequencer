@@ -71,7 +71,6 @@ struct _AgsMidiCCDialog
 
   GtkBox *action_area;
 
-  GtkButton *add_button;
   GtkButton *activate_button;
 };
 
@@ -84,6 +83,13 @@ struct _AgsMidiCCDialogClass
 };
 
 GType ags_midi_cc_dialog_get_type(void);
+
+gboolean ags_midi_cc_dialog_test_flags(AgsMidiCCDialog *midi_cc_dialog,
+				       AgsMidiCCDialogFlags flags);
+void ags_midi_cc_dialog_set_flags(AgsMidiCCDialog *midi_cc_dialog,
+				  AgsMidiCCDialogFlags flags);
+void ags_midi_cc_dialog_unset_flags(AgsMidiCCDialog *midi_cc_dialog,
+				    AgsMidiCCDialogFlags flags);
 
 /* editor */
 GList* ags_midi_cc_dialog_get_editor(AgsMidiCCDialog *midi_cc_dialog);

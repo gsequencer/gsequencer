@@ -68,7 +68,6 @@ struct _AgsMidiCCEditor
 
   GtkSpinButton *midi1_channel;
   
-
   /* MIDI 2 */
   GtkBox *midi2_box;
   
