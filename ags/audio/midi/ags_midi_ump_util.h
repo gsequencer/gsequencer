@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -690,6 +690,7 @@ void ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 						gint group,
 						gint channel,
 						gint index_key,
+						AgsUmpWord data,
 						gchar **extension_name, GValue *extension_value,
 						guint extension_count);
 guint ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
@@ -697,6 +698,7 @@ guint ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 						 gint *group,
 						 gint *channel,
 						 gint *index_key,
+						 AgsUmpWord *data,
 						 gchar ***extension_name, GValue **extension_value,
 						 guint *extension_count);
 

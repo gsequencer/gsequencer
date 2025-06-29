@@ -1164,13 +1164,6 @@ ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
   g_return_if_fail(midi_cc_editor->parent_midi_cc_dialog != NULL);
 
   machine = AGS_MIDI_CC_DIALOG(midi_cc_editor->parent_midi_cc_dialog)->machine;
-
-  if(machine == NULL){
-    gtk_drop_down_set_model(midi_cc_editor->midi2_port_drop_down,
-			    NULL);
-    
-    return;
-  }
     
   /* add NULL to collected specifier */
   collected_specifier = (gchar **) g_malloc(2 * sizeof(gchar*));
@@ -1432,7 +1425,18 @@ ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
 void
 ags_midi_cc_editor_midi1_load_port(AgsMidiCCEditor *midi_cc_editor)
 {
+  AgsMachine *machine;
+
   g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+
+  machine = AGS_MIDI_CC_DIALOG(midi_cc_editor->parent_midi_cc_dialog)->machine;
+
+  if(machine == NULL){
+    gtk_drop_down_set_model(midi_cc_editor->midi1_port_drop_down,
+			    NULL);
+    
+    return;
+  }
 
   ags_midi_cc_editor_load_port(midi_cc_editor);
   
@@ -1452,7 +1456,18 @@ ags_midi_cc_editor_midi1_load_port(AgsMidiCCEditor *midi_cc_editor)
 void
 ags_midi_cc_editor_midi2_load_port(AgsMidiCCEditor *midi_cc_editor)
 {
+  AgsMachine *machine;
+
   g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+
+  machine = AGS_MIDI_CC_DIALOG(midi_cc_editor->parent_midi_cc_dialog)->machine;
+
+  if(machine == NULL){
+    gtk_drop_down_set_model(midi_cc_editor->midi2_port_drop_down,
+			    NULL);
+    
+    return;
+  }
 
   ags_midi_cc_editor_load_port(midi_cc_editor);
   

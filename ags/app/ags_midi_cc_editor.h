@@ -76,7 +76,7 @@ struct _AgsMidiCCEditor
   GtkLabel *midi2_control_label;
 
   GtkDropDown *midi2_port_drop_down;
-
+  
   GtkSpinButton *midi2_group;
 
   GtkSpinButton *midi2_channel;
@@ -91,6 +91,7 @@ struct _AgsMidiCCEditorClass
 
 GType ags_midi_cc_editor_get_type(void);
 
+/* flags */
 gboolean ags_midi_cc_editor_test_flags(AgsMidiCCEditor *midi_cc_editor,
 				       AgsMidiCCEditorFlags flags);
 void ags_midi_cc_editor_set_flags(AgsMidiCCEditor *midi_cc_editor,
@@ -98,9 +99,11 @@ void ags_midi_cc_editor_set_flags(AgsMidiCCEditor *midi_cc_editor,
 void ags_midi_cc_editor_unset_flags(AgsMidiCCEditor *midi_cc_editor,
 				    AgsMidiCCEditorFlags flags);
 
+/* load */
 void ags_midi_cc_editor_midi1_load_port(AgsMidiCCEditor *midi_cc_editor);
 void ags_midi_cc_editor_midi2_load_port(AgsMidiCCEditor *midi_cc_editor);
 
+/* find */
 GList* ags_midi_cc_editor_find_midi1_control(GList *midi_cc_editor,
 					     gchar *midi1_control);
 GList* ags_midi_cc_editor_find_midi2_control(GList *midi_cc_editor,
