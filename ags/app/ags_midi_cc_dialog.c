@@ -23,6 +23,8 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/i18n.h>
 
 void ags_midi_cc_dialog_class_init(AgsMidiCCDialogClass *midi_cc_dialog);
@@ -272,7 +274,12 @@ ags_midi_cc_dialog_init(AgsMidiCCDialog *midi_cc_dialog)
   
   application_context = ags_application_context_get_instance();
   
-  midi_cc_dialog->flags = 0;
+#if defined(AGS_OSXAPI)
+  midi_cc_dialog->flags = AGS_MIDI_CC_DIALOG_SHOW_MIDI_2_0;
+#else
+  midi_cc_dialog->flags = AGS_MIDI_CC_DIALOG_SHOW_MIDI_1_0;
+#endif
+  
   midi_cc_dialog->connectable_flags = 0;
 
   midi_cc_dialog->version = AGS_MIDI_CC_DIALOG_DEFAULT_VERSION;
@@ -799,7 +806,7 @@ ags_midi_cc_dialog_remove_editor(AgsMidiCCDialog *midi_cc_dialog,
 void
 ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
 {
-  AgsMidiCCEditor *editor;
+  AgsMidiCCEditor *midi_cc_editor;
 
   gchar **iter;
 
@@ -834,16 +841,16 @@ ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
 
   if(control_change_strv != NULL){
     for(iter = (gchar **) control_change_strv, cc_iter = control_change_enum; iter[0] != NULL; iter++, cc_iter++){
-      editor = ags_midi_cc_editor_new();
+      midi_cc_editor = ags_midi_cc_editor_new();
       
-      editor->control = cc_iter[0];
-      gtk_label_set_label(editor->control_label,
+      midi_cc_editor->midi2_control = cc_iter[0];
+      gtk_label_set_label(midi_cc_editor->midi2_control_label,
 			  iter[0]);
       
       ags_midi_cc_dialog_add_editor(midi_cc_dialog,
-				    editor);
+				    midi_cc_editor);
       
-      ags_midi_cc_editor_load_port(editor);
+      ags_midi_cc_editor_load_port(midi_cc_editor);
     }
   }
 }
@@ -886,14 +893,14 @@ ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
 		       "editor");
 
     /* control */
-    str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(editor->data)->control_label);
+    str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(editor->data)->midi2_control_label);
 
     xmlNewProp(child,
 	       "control",
 	       str);
 
     /* port */
-    gobject = gtk_drop_down_get_selected_item(AGS_MIDI_CC_EDITOR(editor->data)->port_drop_down);
+    gobject = gtk_drop_down_get_selected_item(AGS_MIDI_CC_EDITOR(editor->data)->midi2_port_drop_down);
     
     str = gtk_string_object_get_string((GtkStringObject *) gobject);
 
@@ -902,7 +909,7 @@ ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
 	       str);
 
     /* MIDI group */
-    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi_group);
+    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_group);
 
     str = g_strdup_printf("%d",
 			  val);
@@ -914,7 +921,7 @@ ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
     g_free(str);
 
     /* MIDI channel */
-    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi_channel);
+    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_channel);
 
     str = g_strdup_printf("%d",
 			  val);
@@ -926,7 +933,7 @@ ags_midi_cc_dialog_to_xml_node(AgsMidiCCDialog *midi_cc_dialog)
     g_free(str);
 
     /* MIDI note */
-    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi_note);
+    val = gtk_spin_button_get_value_as_int(AGS_MIDI_CC_EDITOR(editor->data)->midi2_note);
 
     str = g_strdup_printf("%d",
 			  val);
@@ -983,9 +990,9 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 		     7)){
 	xmlChar *control;
 	xmlChar *port;
-	xmlChar *midi_group;
-	xmlChar *midi_channel;
-	xmlChar *midi_note;
+	xmlChar *midi2_group;
+	xmlChar *midi2_channel;
+	xmlChar *midi2_note;
 	
 	control = xmlGetProp(child,
 			     BAD_CAST "control");
@@ -993,8 +1000,8 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 	port = xmlGetProp(child,
 			  BAD_CAST "port");
 
-	editor = ags_midi_cc_editor_find_control(start_editor,
-						 control);
+	editor = ags_midi_cc_editor_find_midi2_control(start_editor,
+						       control);
 
 	if(editor != NULL){
 	  gint position;
@@ -1003,7 +1010,7 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 				    port);
 
 	  if(position >= 0){
-	    gtk_drop_down_set_selected(AGS_MIDI_CC_EDITOR(editor->data)->port_drop_down,
+	    gtk_drop_down_set_selected(AGS_MIDI_CC_EDITOR(editor->data)->midi2_port_drop_down,
 				       (guint) position);
 	  }
 	}
@@ -1012,29 +1019,29 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 	xmlFree(port);
 
 	/* MIDI group */
-	midi_group = xmlGetProp(child,
+	midi2_group = xmlGetProp(child,
 				BAD_CAST "midi-group");
-	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi_group,
-				  g_ascii_strtod(midi_group,
+	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_group,
+				  g_ascii_strtod(midi2_group,
 						 NULL));
 	
 	/* MIDI channel */
-	midi_channel = xmlGetProp(child,
+	midi2_channel = xmlGetProp(child,
 				BAD_CAST "midi-channel");
-	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi_channel,
-				  g_ascii_strtod(midi_channel,
+	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_channel,
+				  g_ascii_strtod(midi2_channel,
 						 NULL));
 
 	/* MIDI note */
-	midi_note = xmlGetProp(child,
+	midi2_note = xmlGetProp(child,
 				BAD_CAST "midi-note");
-	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi_note,
-				  g_ascii_strtod(midi_note,
+	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_note,
+				  g_ascii_strtod(midi2_note,
 						 NULL));
 
-	xmlFree(midi_group);
-	xmlFree(midi_channel);
-	xmlFree(midi_note);
+	xmlFree(midi2_group);
+	xmlFree(midi2_channel);
+	xmlFree(midi2_note);
       }
     }
 

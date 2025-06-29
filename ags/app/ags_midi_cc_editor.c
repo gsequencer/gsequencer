@@ -22,6 +22,8 @@
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_midi_cc_dialog.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/i18n.h>
 
 void ags_midi_cc_editor_class_init(AgsMidiCCEditorClass *midi_cc_editor);
@@ -33,16 +35,22 @@ gboolean ags_midi_cc_editor_is_connected(AgsConnectable *connectable);
 void ags_midi_cc_editor_connect(AgsConnectable *connectable);
 void ags_midi_cc_editor_disconnect(AgsConnectable *connectable);
 
-void ags_midi_cc_editor_apply_recall(AgsMidiCCEditor *midi_cc_editor,
-				     AgsRecall *recall,
-				     guint32 midi_group,
-				     guint32 midi_channel,
-				     guint32 midi_note,
-				     gchar *specifier);
+void ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
+					   AgsRecall *recall,
+					   guint32 midi2_channel,
+					   gchar *specifier);
+void ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
+					   AgsRecall *recall,
+					   guint32 midi2_group,
+					   guint32 midi2_channel,
+					   guint32 midi2_note,
+					   gchar *specifier);
 
 void ags_midi_cc_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_cc_editor_apply(AgsApplicable *applicable);
 void ags_midi_cc_editor_reset(AgsApplicable *applicable);
+
+void ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor);
 
 /**
  * SECTION:ags_midi_cc_editor
@@ -149,11 +157,30 @@ ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor)
   GtkGrid *grid;
   GtkLabel *label;
   
-  midi_cc_editor->flags = 0;
+#if defined(AGS_OSXAPI)
+  midi_cc_editor->flags = AGS_MIDI_CC_DIALOG_SHOW_MIDI_2_0;
+#else
+  midi_cc_editor->flags = AGS_MIDI_CC_DIALOG_SHOW_MIDI_1_0;
+#endif
+  
   midi_cc_editor->connectable_flags = 0;
 
   midi_cc_editor->parent_midi_cc_dialog = NULL;
 
+  midi_cc_editor->port = NULL;
+
+  /* MIDI 1 */
+  midi_cc_editor->midi1_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						     AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
+#if defined(AGS_OSXAPI)
+  gtk_widget_set_visible(midi_cc_editor->midi1_box,
+			 FALSE);
+#endif
+  
+  gtk_box_append((GtkBox *) midi_cc_editor,
+		 (GtkWidget *) midi_cc_editor->midi1_box);
+  
   /* grid */
   grid = (GtkGrid *) gtk_grid_new();
 
@@ -162,30 +189,90 @@ ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor)
   gtk_grid_set_row_spacing(grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
-  gtk_box_append((GtkBox *) midi_cc_editor,
+  gtk_box_append(midi_cc_editor->midi1_box,
 		 (GtkWidget *) grid);
 
   /* control change */
-  midi_cc_editor->control = 0;
+  midi_cc_editor->midi1_control = 0;
   
-  midi_cc_editor->control_label = (GtkLabel *) gtk_label_new(NULL);
+  midi_cc_editor->midi1_control_label = (GtkLabel *) gtk_label_new(NULL);
 
-  gtk_label_set_xalign(midi_cc_editor->control_label,
+  gtk_label_set_xalign(midi_cc_editor->midi1_control_label,
 		       0.0);
-  gtk_widget_set_size_request((GtkWidget *) midi_cc_editor->control_label,
+  gtk_widget_set_size_request((GtkWidget *) midi_cc_editor->midi1_control_label,
 			      240,
 			      -1);
   gtk_grid_attach(grid,
-		  (GtkWidget *) midi_cc_editor->control_label,
+		  (GtkWidget *) midi_cc_editor->midi1_control_label,
 		  0, 0,
 		  1, 1);
 
   /* port */
-  midi_cc_editor->port = NULL;
-  
-  midi_cc_editor->port_drop_down = (GtkDropDown *) gtk_drop_down_new(NULL, NULL);
+  midi_cc_editor->midi1_port_drop_down = (GtkDropDown *) gtk_drop_down_new(NULL, NULL);
   gtk_grid_attach(grid,
-		  (GtkWidget *) midi_cc_editor->port_drop_down,
+		  (GtkWidget *) midi_cc_editor->midi1_port_drop_down,
+		  1, 0,
+		  1, 1);
+
+  /* midi channel */
+  label = (GtkLabel *) gtk_label_new(i18n("channel"));
+  gtk_label_set_xalign(label,
+		       0.0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+
+  midi_cc_editor->midi1_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										   15.0,
+										   1.0);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) midi_cc_editor->midi1_channel,
+		  3, 0,
+		  1, 1);
+  
+  /* MIDI 2 */
+  midi_cc_editor->midi2_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+						     AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+#if !defined(AGS_OSXAPI)
+  gtk_widget_set_visible(midi_cc_editor->midi2_box,
+			 FALSE);
+#endif
+
+  gtk_box_append((GtkBox *) midi_cc_editor,
+		 (GtkWidget *) midi_cc_editor->midi2_box);
+  
+  /* grid */
+  grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append(midi_cc_editor->midi2_box,
+		 (GtkWidget *) grid);
+
+  /* control change */
+  midi_cc_editor->midi2_control = 0;
+  
+  midi_cc_editor->midi2_control_label = (GtkLabel *) gtk_label_new(NULL);
+
+  gtk_label_set_xalign(midi_cc_editor->midi2_control_label,
+		       0.0);
+  gtk_widget_set_size_request((GtkWidget *) midi_cc_editor->midi2_control_label,
+			      240,
+			      -1);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) midi_cc_editor->midi2_control_label,
+		  0, 0,
+		  1, 1);
+
+  /* port */
+  midi_cc_editor->midi2_port_drop_down = (GtkDropDown *) gtk_drop_down_new(NULL, NULL);
+  gtk_grid_attach(grid,
+		  (GtkWidget *) midi_cc_editor->midi2_port_drop_down,
 		  1, 0,
 		  1, 1);
 
@@ -198,11 +285,11 @@ ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor)
 		  2, 0,
 		  1, 1);
 
-  midi_cc_editor->midi_group = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										15.0,
-										1.0);
+  midi_cc_editor->midi2_group = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										 15.0,
+										 1.0);
   gtk_grid_attach(grid,
-		  (GtkWidget *) midi_cc_editor->midi_group,
+		  (GtkWidget *) midi_cc_editor->midi2_group,
 		  3, 0,
 		  1, 1);
 
@@ -215,11 +302,11 @@ ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor)
 		  4, 0,
 		  1, 1);
 
-  midi_cc_editor->midi_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										  15.0,
-										  1.0);
+  midi_cc_editor->midi2_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										   15.0,
+										   1.0);
   gtk_grid_attach(grid,
-		  (GtkWidget *) midi_cc_editor->midi_channel,
+		  (GtkWidget *) midi_cc_editor->midi2_channel,
 		  5, 0,
 		  1, 1);
 
@@ -232,11 +319,11 @@ ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor)
 		  6, 0,
 		  1, 1);
 
-  midi_cc_editor->midi_note = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-									       127.0,
-									       1.0);
+  midi_cc_editor->midi2_note = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										127.0,
+										1.0);
   gtk_grid_attach(grid,
-		  (GtkWidget *) midi_cc_editor->midi_note,
+		  (GtkWidget *) midi_cc_editor->midi2_note,
 		  7, 0,
 		  1, 1);
 }
@@ -294,12 +381,286 @@ ags_midi_cc_editor_set_update(AgsApplicable *applicable, gboolean update)
 }
 
 void
-ags_midi_cc_editor_apply_recall(AgsMidiCCEditor *midi_cc_editor,
-				AgsRecall *recall,
-				guint32 midi_group,
-				guint32 midi_channel,
-				guint32 midi_note,
-				gchar *specifier)
+ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
+				      AgsRecall *recall,
+				      guint32 midi2_channel,
+				      gchar *specifier)
+{
+  GHashTable *midi1_cc_to_port_specifier;
+  GList *start_port, *port;
+
+  gchar *local_specifier;
+
+  midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier(recall);
+
+  local_specifier = g_strdup(specifier);
+
+  switch((AgsUmpWord) midi_cc_editor->midi1_control){
+  case AGS_RECALL_MIDI1_BANK_SELECT:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BANK_SELECT),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BANK_SELECT));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_MODULATION_WHEEL:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_MODULATION_WHEEL),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_MODULATION_WHEEL));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_BREATH_CONTROLLER:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BREATH_CONTROLLER),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BREATH_CONTROLLER));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_FOOT_CONTROLLER:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_FOOT_CONTROLLER),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_FOOT_CONTROLLER));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_PORTAMENTO_TIME:
+    {
+      
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PORTAMENTO_TIME),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PORTAMENTO_TIME));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_CHANNEL_VOLUME:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANNEL_VOLUME),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANNEL_VOLUME));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_BALANCE:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BALANCE),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_BALANCE));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_PAN:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PAN),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PAN));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_EFFECT_CONTROL_1:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_1),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_1));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_EFFECT_CONTROL_2:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_2),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_EFFECT_CONTROL_2));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_CHANGE_PROGRAM:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PROGRAM),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PROGRAM));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_CHANGE_PRESSURE:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PRESSURE),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CHANGE_PRESSURE));
+      }
+    }
+    break;
+  case AGS_RECALL_MIDI1_PITCH_BEND:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PITCH_BEND),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_PITCH_BEND));
+      }
+    }
+    break;
+  case AGS_RECALL_CHANGE_PROGRAM:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PROGRAM),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PROGRAM));
+      }
+    }
+    break;
+  case AGS_RECALL_CHANGE_PRESSURE:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PRESSURE),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_CHANGE_PRESSURE));
+      }
+    }
+    break;
+  case AGS_RECALL_PITCH_BEND:
+    {
+      if(local_specifier != NULL){
+	g_hash_table_insert(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_PITCH_BEND),
+			    local_specifier);
+      }else{
+	g_hash_table_remove(midi1_cc_to_port_specifier,
+			    GUINT_TO_POINTER((guint) AGS_RECALL_PITCH_BEND));
+      }
+    }
+    break;
+  }
+
+  g_hash_table_unref(midi1_cc_to_port_specifier);
+}
+
+void
+ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
+				      AgsRecall *recall,
+				      guint32 midi2_group,
+				      guint32 midi2_channel,
+				      guint32 midi2_note,
+				      gchar *specifier)
 {
   GHashTable *midi2_cc_to_port_specifier;
   GList *start_port, *port;
@@ -310,7 +671,7 @@ ags_midi_cc_editor_apply_recall(AgsMidiCCEditor *midi_cc_editor,
 
   local_specifier = g_strdup(specifier);
 
-  switch((AgsUmpWord) midi_cc_editor->control){
+  switch((AgsUmpWord) midi_cc_editor->midi2_control){
   case AGS_RECALL_MIDI2_MIDI1_BANK_SELECT:
     {
       if(local_specifier != NULL){
@@ -587,9 +948,9 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   
   gchar *specifier;
 
-  guint32 midi_group;
-  guint32 midi_channel;
-  guint32 midi_note;
+  guint32 midi2_group;
+  guint32 midi2_channel;
+  guint32 midi2_note;
 
   midi_cc_editor = AGS_MIDI_CC_EDITOR(applicable);
 
@@ -611,15 +972,15 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   /* port */
   specifier = NULL;
 
-  if(gtk_drop_down_get_selected(midi_cc_editor->port_drop_down) > 0){
-    gobject = gtk_drop_down_get_selected_item(midi_cc_editor->port_drop_down);
+  if(gtk_drop_down_get_selected(midi_cc_editor->midi2_port_drop_down) > 0){
+    gobject = gtk_drop_down_get_selected_item(midi_cc_editor->midi2_port_drop_down);
     
     specifier = gtk_string_object_get_string((GtkStringObject *) gobject);
   }
   
-  midi_group = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi_group);
-  midi_channel = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi_channel);
-  midi_note = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi_note);
+  midi2_group = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_group);
+  midi2_channel = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_channel);
+  midi2_note = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_note);
   
   /* recall */
   recall = 
@@ -696,13 +1057,13 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
 
       midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
 
-      ags_midi_cc_editor_apply_recall(midi_cc_editor,
-				      (AgsRecall *) recall_audio,
-				      midi_group,
-				      midi_channel,
-				      midi_note,
-				      specifier);
-      midi_cc_editor->control;
+      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					    (AgsRecall *) recall_audio,
+					    midi2_group,
+					    midi2_channel,
+					    midi2_note,
+					    specifier);
+      midi_cc_editor->midi2_control;
     }
 
     g_list_free_full(start_port,
@@ -720,13 +1081,13 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
 
       midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
 
-      ags_midi_cc_editor_apply_recall(midi_cc_editor,
-				      (AgsRecall *) recall_audio,
-				      midi_group,
-				      midi_channel,
-				      midi_note,
-				      specifier);
-      midi_cc_editor->control;
+      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					    (AgsRecall *) recall_audio,
+					    midi2_group,
+					    midi2_channel,
+					    midi2_note,
+					    specifier);
+      midi_cc_editor->midi2_control;
     }
 
     g_list_free_full(start_port,
@@ -745,12 +1106,12 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
 
       midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
 
-      ags_midi_cc_editor_apply_recall(midi_cc_editor,
-				      (AgsRecall *) recall_channel->data,
-				      midi_group,
-				      midi_channel,
-				      midi_note,
-				      specifier);
+      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					    (AgsRecall *) recall_channel->data,
+					    midi2_group,
+					    midi2_channel,
+					    midi2_note,
+					    specifier);
     }
 
     g_list_free_full(start_port,
@@ -772,12 +1133,12 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
 
       midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
 
-      ags_midi_cc_editor_apply_recall(midi_cc_editor,
-				      (AgsRecall *) recall_channel->data,
-				      midi_group,
-				      midi_channel,
-				      midi_note,
-				      specifier);
+      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+					    (AgsRecall *) recall_channel->data,
+					    midi2_group,
+					    midi2_channel,
+					    midi2_note,
+					    specifier);
     }
 
     g_list_free_full(start_port,
@@ -795,13 +1156,69 @@ ags_midi_cc_editor_reset(AgsApplicable *applicable)
 }
 
 /**
- * ags_midi_cc_editor_load_port:
+ * ags_midi_cc_editor_test_flags:
  * @midi_cc_editor: the #AgsMidiCCEditor
+ * @flags: the flags
  *
- * Load port.
+ * Test @flags of @midi_cc_editor.
+ * 
+ * Returns: %TRUE if @flags is set, otherwise %FALSE
+ *
+ * Since: 8.0.0
+ */
+gboolean
+ags_midi_cc_editor_test_flags(AgsMidiCCEditor *midi_cc_editor,
+			      AgsMidiCCEditorFlags flags)
+{
+  guint retval;
+  
+  g_return_val_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor), FALSE);
+
+  retval = (((flags &(midi_cc_editor->flags))) != 0) ? TRUE: FALSE;
+
+  return(retval);
+}
+
+/**
+ * ags_midi_cc_editor_set_flags:
+ * @midi_cc_editor: the #AgsMidiCCEditor
+ * @flags: the flags
+ *
+ * Set @flags of @midi_cc_editor.
  * 
  * Since: 8.0.0
  */
+void
+ags_midi_cc_editor_set_flags(AgsMidiCCEditor *midi_cc_editor,
+			     AgsMidiCCEditorFlags flags)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+
+  //TODO:JK: implement me
+  
+  midi_cc_editor->flags |= flags;
+}
+
+/**
+ * ags_midi_cc_editor_unset_flags:
+ * @midi_cc_editor: the #AgsMidiCCEditor
+ * @flags: the flags
+ *
+ * Unset @flags of @midi_cc_editor.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_editor_unset_flags(AgsMidiCCEditor *midi_cc_editor,
+			       AgsMidiCCEditorFlags flags)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+
+  //TODO:JK: implement me
+  
+  midi_cc_editor->flags &= (~flags);
+}
+
 void
 ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
 {
@@ -822,7 +1239,7 @@ ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
   machine = AGS_MIDI_CC_DIALOG(midi_cc_editor->parent_midi_cc_dialog)->machine;
 
   if(machine == NULL){
-    gtk_drop_down_set_model(midi_cc_editor->port_drop_down,
+    gtk_drop_down_set_model(midi_cc_editor->midi2_port_drop_down,
 			    NULL);
     
     return;
@@ -1069,10 +1486,7 @@ ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
   if(start_channel != NULL){
     g_object_unref(start_channel);
   }
-    
-  gtk_drop_down_set_model(midi_cc_editor->port_drop_down,
-			  G_LIST_MODEL(gtk_string_list_new((const gchar * const *) collected_specifier)));
-
+  
   if(midi_cc_editor->port != NULL){
     g_strfreev(midi_cc_editor->port);
   }
@@ -1081,9 +1495,48 @@ ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
 }
 
 /**
- * ags_midi_cc_editor_find_control:
+ * ags_midi_cc_editor_midi1_load_port:
+ * @midi_cc_editor: the #AgsMidiCCEditor
+ *
+ * MIDI 1 load port.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_editor_midi1_load_port(AgsMidiCCEditor *midi_cc_editor)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+
+  ags_midi_cc_editor_load_port(midi_cc_editor);
+  
+  gtk_drop_down_set_model(midi_cc_editor->midi1_port_drop_down,
+			  G_LIST_MODEL(gtk_string_list_new((const gchar * const *) midi_cc_editor->port)));
+
+}
+
+/**
+ * ags_midi_cc_editor_midi2_load_port:
+ * @midi_cc_editor: the #AgsMidiCCEditor
+ *
+ * MIDI 2 load port.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_midi_cc_editor_midi2_load_port(AgsMidiCCEditor *midi_cc_editor)
+{
+  g_return_if_fail(AGS_IS_MIDI_CC_EDITOR(midi_cc_editor));
+
+  ags_midi_cc_editor_load_port(midi_cc_editor);
+  
+  gtk_drop_down_set_model(midi_cc_editor->midi2_port_drop_down,
+			  G_LIST_MODEL(gtk_string_list_new((const gchar * const *) midi_cc_editor->port)));
+}
+
+/**
+ * ags_midi_cc_editor_find_midi1_control:
  * @midi_cc_editor: (transfer none): the #GList-struct containing #AgsMidiCCEditor
- * @control: the control
+ * @midi2_control: the MIDI 1 control
  *
  * Find @control in @midi_cc_editor.
  * 
@@ -1092,22 +1545,63 @@ ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor)
  * Since: 8.0.0
  */
 GList*
-ags_midi_cc_editor_find_control(GList *midi_cc_editor,
-				gchar *control)
+ags_midi_cc_editor_find_midi1_control(GList *midi_cc_editor,
+				      gchar *midi1_control)
 {
   g_return_val_if_fail(midi_cc_editor != NULL, NULL);
-  g_return_val_if_fail(control != NULL, NULL);
+  g_return_val_if_fail(midi2_control != NULL, NULL);
 
   while(midi_cc_editor != NULL){
     gchar *str;
 
     gboolean success;
     
-    str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(midi_cc_editor->data)->control_label);
+    str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(midi_cc_editor->data)->midi1_control_label);
 
     success = FALSE;
     
-    if(!g_ascii_strcasecmp(str, control)){
+    if(!g_ascii_strcasecmp(str, midi1_control)){
+      success = TRUE;
+    }
+
+    if(success){
+      break;
+    }
+    
+    midi_cc_editor = midi_cc_editor->next;
+  }
+  
+  return(midi_cc_editor);
+}
+
+/**
+ * ags_midi_cc_editor_find_midi2_control:
+ * @midi_cc_editor: (transfer none): the #GList-struct containing #AgsMidiCCEditor
+ * @midi2_control: the MIDI 2 control
+ *
+ * Find @control in @midi_cc_editor.
+ * 
+ * Returns: on success the matching #GList-struct otherwise %NULL
+ * 
+ * Since: 8.0.0
+ */
+GList*
+ags_midi_cc_editor_find_midi2_control(GList *midi_cc_editor,
+				      gchar *midi2_control)
+{
+  g_return_val_if_fail(midi_cc_editor != NULL, NULL);
+  g_return_val_if_fail(midi2_control != NULL, NULL);
+
+  while(midi_cc_editor != NULL){
+    gchar *str;
+
+    gboolean success;
+    
+    str = gtk_label_get_text(AGS_MIDI_CC_EDITOR(midi_cc_editor->data)->midi2_control_label);
+
+    success = FALSE;
+    
+    if(!g_ascii_strcasecmp(str, midi2_control)){
       success = TRUE;
     }
 

@@ -48,9 +48,9 @@ typedef struct _AgsMidiDialog AgsMidiDialog;
 typedef struct _AgsMidiDialogClass AgsMidiDialogClass;
 
 typedef enum{
-  AGS_MIDI_DIALOG_IO_OPTIONS     = 1 <<  1,
-  AGS_MIDI_DIALOG_MAPPING        = 1 <<  2,
-  AGS_MIDI_DIALOG_DEVICE         = 1 <<  3,
+  AGS_MIDI_DIALOG_IO_OPTIONS     = 1,
+  AGS_MIDI_DIALOG_MAPPING        = 1 <<  1,
+  AGS_MIDI_DIALOG_DEVICE         = 1 <<  2,
 }AgsMidiDialogFlags;
 
 struct _AgsMidiDialog

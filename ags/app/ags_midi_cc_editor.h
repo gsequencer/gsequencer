@@ -41,26 +41,48 @@ G_BEGIN_DECLS
 typedef struct _AgsMidiCCEditor AgsMidiCCEditor;
 typedef struct _AgsMidiCCEditorClass AgsMidiCCEditorClass;
 
+typedef enum{
+  AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0     = 1,
+  AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0     = 1 <<  1,
+}AgsMidiCCEditorFlags;
+
 struct _AgsMidiCCEditor
 {
   GtkBox box;
 
-  guint flags;
+  AgsMidiCCEditorFlags flags;
   AgsConnectableFlags connectable_flags;
 
   GtkWidget *parent_midi_cc_dialog;
   
-  AgsRecallMidi2ControlChange control;
-  GtkLabel *control_label;
-
   gchar **port;
-  GtkDropDown *port_drop_down;
 
-  GtkSpinButton *midi_group;
+  /* MIDI 1 */
+  GtkBox *midi1_box;
 
-  GtkSpinButton *midi_channel;
+  AgsRecallMidi1ControlChange midi1_control;
 
-  GtkSpinButton *midi_note;
+  GtkLabel *midi1_control_label;
+
+  GtkDropDown *midi1_port_drop_down;
+
+  GtkSpinButton *midi1_channel;
+  
+
+  /* MIDI 2 */
+  GtkBox *midi2_box;
+  
+  AgsRecallMidi2ControlChange midi2_control;
+  
+  GtkLabel *midi2_control_label;
+
+  GtkDropDown *midi2_port_drop_down;
+
+  GtkSpinButton *midi2_group;
+
+  GtkSpinButton *midi2_channel;
+
+  GtkSpinButton *midi2_note;
 };
 
 struct _AgsMidiCCEditorClass
@@ -70,10 +92,20 @@ struct _AgsMidiCCEditorClass
 
 GType ags_midi_cc_editor_get_type(void);
 
-void ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor);
+gboolean ags_midi_cc_editor_test_flags(AgsMidiCCEditor *midi_cc_editor,
+				       AgsMidiCCEditorFlags flags);
+void ags_midi_cc_editor_set_flags(AgsMidiCCEditor *midi_cc_editor,
+				  AgsMidiCCEditorFlags flags);
+void ags_midi_cc_editor_unset_flags(AgsMidiCCEditor *midi_cc_editor,
+				    AgsMidiCCEditorFlags flags);
 
-GList* ags_midi_cc_editor_find_control(GList *midi_cc_editor,
-				       gchar *control);
+void ags_midi_cc_editor_midi1_load_port(AgsMidiCCEditor *midi_cc_editor);
+void ags_midi_cc_editor_midi2_load_port(AgsMidiCCEditor *midi_cc_editor);
+
+GList* ags_midi_cc_editor_find_midi1_control(GList *midi_cc_editor,
+					     gchar *midi1_control);
+GList* ags_midi_cc_editor_find_midi2_control(GList *midi_cc_editor,
+					     gchar *midi2_control);
 
 /* instantiate */
 AgsMidiCCEditor* ags_midi_cc_editor_new();

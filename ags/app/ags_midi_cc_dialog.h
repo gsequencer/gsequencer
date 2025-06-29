@@ -48,11 +48,16 @@ G_BEGIN_DECLS
 typedef struct _AgsMidiCCDialog AgsMidiCCDialog;
 typedef struct _AgsMidiCCDialogClass AgsMidiCCDialogClass;
 
+typedef enum{
+  AGS_MIDI_CC_DIALOG_SHOW_MIDI_1_0     = 1,
+  AGS_MIDI_CC_DIALOG_SHOW_MIDI_2_0     = 1 <<  1,
+}AgsMidiCCDialogFlags;
+
 struct _AgsMidiCCDialog
 {
   GtkWindow window;
 
-  guint flags;
+  AgsMidiCCDialogFlags flags;
   AgsConnectableFlags connectable_flags;
   
   gchar *version;
