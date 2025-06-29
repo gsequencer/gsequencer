@@ -142,6 +142,28 @@ static const gchar* const midi2_control_change_strv[] = {
   "MIDI v2.0 change program",
   "MIDI v2.0 change pressure",
   "MIDI v2.0 pitch bend",
+  "MIDI v2.0 modulation",
+  "MIDI v2.0 breath",
+  "MIDI v2.0 pitch 7.25",
+  "MIDI v2.0 volume",
+  "MIDI v2.0 balance",
+  "MIDI v2.0 pan",
+  "MIDI v2.0 expression",
+  "MIDI v2.0 sound variation",
+  "MIDI v2.0 timbre",
+  "MIDI v2.0 release",
+  "MIDI v2.0 attack",
+  "MIDI v2.0 brightness",
+  "MIDI v2.0 decay",
+  "MIDI v2.0 vibrato rate",
+  "MIDI v2.0 vibrato depth",
+  "MIDI v2.0 vibrato delay",
+  "MIDI v2.0 sound controller 10",
+  "MIDI v2.0 effects 1",
+  "MIDI v2.0 effects 2",
+  "MIDI v2.0 effects 3",
+  "MIDI v2.0 effects 4",
+  "MIDI v2.0 effects 5",
   NULL,
 };
 
@@ -537,13 +559,19 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
   AgsMachine *machine;
 
   AgsAudio *audio;
+  AgsChannel *channel;
+  AgsRecallAudio *recall_audio;
+  AgsRecallContainer *play_container, *recall_container;
   
   xmlNode *node;
   
-  GList *start_dialog_model, *dialog_model;
+  GList *start_recall, *recall;
   GList *start_editor, *editor;
+  GList *start_dialog_model, *dialog_model;
 
   gint i, i_stop;
+
+  GRecMutex *recall_mutex;
   
   midi_cc_dialog = AGS_MIDI_CC_DIALOG(applicable);
 
@@ -552,6 +580,186 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
   /* audio and sequencer */
   audio = machine->audio;
 
+  /* play audio */
+  recall = 
+    start_recall = ags_audio_get_play(audio);
+
+  while(recall != NULL){
+    GHashTable *midi1_cc_to_port_specifier;
+
+    recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
+
+    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+    /* MIDI 1 remove all CC */
+    if(midi1_cc_to_port_specifier != NULL){
+      g_rec_mutex_lock(recall_mutex);
+      
+      g_hash_table_remove_all(midi1_cc_to_port_specifier);
+      
+      g_rec_mutex_unlock(recall_mutex);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* recall audio */
+  recall = 
+    start_recall = ags_audio_get_recall(audio);
+
+  while(recall != NULL){
+    GHashTable *midi2_cc_to_port_specifier;
+
+    recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
+
+    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+    /* MIDI 2 remove all CC */
+    g_rec_mutex_lock(recall_mutex);
+  
+    g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+    g_rec_mutex_unlock(recall_mutex);
+  
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* recall channel - output */
+  channel = ags_audio_get_output(audio);
+
+  while(channel != NULL){
+    AgsChannel *next;
+
+    /* play */
+    recall = 
+      start_recall = ags_channel_get_play(channel);
+
+    while(recall != NULL){
+      GHashTable *midi2_cc_to_port_specifier;
+
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
+
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+      /* MIDI 2 remove all CC */
+      g_rec_mutex_lock(recall_mutex);
+  
+      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+      g_rec_mutex_unlock(recall_mutex);
+  
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /* recall */
+    recall = 
+      start_recall = ags_channel_get_recall(channel);
+
+    while(recall != NULL){
+      GHashTable *midi2_cc_to_port_specifier;
+
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
+
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+      /* MIDI 2 remove all CC */
+      g_rec_mutex_lock(recall_mutex);
+  
+      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+      g_rec_mutex_unlock(recall_mutex);
+  
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+  
+  /* recall channel - output */
+  channel = ags_audio_get_input(audio);
+
+  while(channel != NULL){
+    AgsChannel *next;
+
+    /* play */
+    recall = 
+      start_recall = ags_channel_get_play(channel);
+
+    while(recall != NULL){
+      GHashTable *midi2_cc_to_port_specifier;
+
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
+
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+      /* MIDI 2 remove all CC */
+      g_rec_mutex_lock(recall_mutex);
+  
+      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+      g_rec_mutex_unlock(recall_mutex);
+  
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /* recall */
+    recall = 
+      start_recall = ags_channel_get_recall(channel);
+
+    while(recall != NULL){
+      GHashTable *midi2_cc_to_port_specifier;
+
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
+
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+      /* MIDI 2 remove all CC */
+      g_rec_mutex_lock(recall_mutex);
+  
+      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+
+      g_rec_mutex_unlock(recall_mutex);
+  
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
+    /* iterate */
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
+  }
+  
   /* editor */
   editor =
     start_editor = ags_midi_cc_dialog_get_editor(midi_cc_dialog);
@@ -949,6 +1157,28 @@ ags_midi_cc_dialog_load_editor(AgsMidiCCDialog *midi_cc_dialog)
     AGS_RECALL_MIDI2_CHANGE_PROGRAM,
     AGS_RECALL_MIDI2_CHANGE_PRESSURE,
     AGS_RECALL_MIDI2_PITCH_BEND,
+    AGS_RECALL_MIDI2_MODULATION,
+    AGS_RECALL_MIDI2_BREATH,
+    AGS_RECALL_MIDI2_PITCH_7_25,
+    AGS_RECALL_MIDI2_VOLUME,
+    AGS_RECALL_MIDI2_BALANCE,
+    AGS_RECALL_MIDI2_PAN,
+    AGS_RECALL_MIDI2_EXPRESSION,
+    AGS_RECALL_MIDI2_SOUND_VARIATION,
+    AGS_RECALL_MIDI2_TIMBRE,
+    AGS_RECALL_MIDI2_RELEASE,
+    AGS_RECALL_MIDI2_ATTACK,
+    AGS_RECALL_MIDI2_BRIGHTNESS,
+    AGS_RECALL_MIDI2_DECAY,
+    AGS_RECALL_MIDI2_VIBRATO_RATE,
+    AGS_RECALL_MIDI2_VIBRATO_DEPTH,
+    AGS_RECALL_MIDI2_VIBRATO_DELAY,
+    AGS_RECALL_MIDI2_SOUND_CONTROLLER_10,
+    AGS_RECALL_MIDI2_EFFECTS_1,
+    AGS_RECALL_MIDI2_EFFECTS_2,
+    AGS_RECALL_MIDI2_EFFECTS_3,
+    AGS_RECALL_MIDI2_EFFECTS_4,
+    AGS_RECALL_MIDI2_EFFECTS_5,
     -1,
   };
     
