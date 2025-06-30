@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2024 Joël Krähemann
+# Copyright (C) 2005-2025 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -276,7 +276,12 @@ ags_expander_set_get_type
 <SECTION>
 <FILE>ags_file_dialog</FILE>
 <TITLE>AgsFileDialog</TITLE>
+AgsFileDialogFlags
+ags_file_dialog_test_flags
+ags_file_dialog_set_flags
+ags_file_dialog_unset_flags
 ags_file_dialog_get_file_widget
+ags_file_dialog_get_download_link
 ags_file_dialog_response
 ags_file_dialog_new
 <SUBSECTION Standard>
@@ -289,6 +294,30 @@ AGS_TYPE_FILE_DIALOG
 AgsFileDialog
 AgsFileDialogClass
 ags_file_dialog_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_file_entry</FILE>
+<TITLE>AgsFileEntry</TITLE>
+AGS_FILE_ENTRY_DEFAULT_MAX_FILENAME_LENGTH
+AgsFileEntryFlags
+AgsFileEntryKeyMask
+ags_file_entry_test_flags
+ags_file_entry_set_flags
+ags_file_entry_unset_flags
+ags_file_entry_get_filename
+ags_file_entry_set_filename
+ags_file_entry_new
+<SUBSECTION Standard>
+AGS_FILE_ENTRY
+AGS_FILE_ENTRY_CLASS
+AGS_FILE_ENTRY_GET_CLASS
+AGS_IS_FILE_ENTRY
+AGS_IS_FILE_ENTRY_CLASS
+AGS_TYPE_FILE_ENTRY
+AgsFileEntry
+AgsFileEntryClass
+ags_file_entry_get_type
 </SECTION>
 
 <SECTION>
@@ -434,6 +463,7 @@ AgsInputDialogFlags
 ags_input_dialog_test_flags
 ags_input_dialog_set_flags
 ags_input_dialog_unset_flags
+ags_input_dialog_set_message
 ags_input_dialog_set_text
 ags_input_dialog_set_spin_button_label
 ags_input_dialog_get_entry

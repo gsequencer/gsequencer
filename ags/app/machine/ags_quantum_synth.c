@@ -3257,6 +3257,9 @@ ags_quantum_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(quantum_synth->synth_0_seq_tuning_pingpong, "toggled",
 			 G_CALLBACK(ags_quantum_synth_synth_0_seq_tuning_pingpong_callback), quantum_synth);
+  
+  g_signal_connect_after(quantum_synth->synth_0_seq_tuning_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_quantum_synth_synth_0_seq_tuning_lfo_frequency_callback), quantum_synth);
 
   /* seq volume */
   g_signal_connect_after(quantum_synth->synth_0_seq_volume_0, "value-changed",
@@ -3286,6 +3289,9 @@ ags_quantum_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(quantum_synth->synth_0_seq_volume_pingpong, "toggled",
 			 G_CALLBACK(ags_quantum_synth_synth_0_seq_volume_pingpong_callback), quantum_synth);
   
+  g_signal_connect_after(quantum_synth->synth_0_seq_volume_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_quantum_synth_synth_0_seq_volume_lfo_frequency_callback), quantum_synth);
+
   /* sync */
   g_signal_connect_after(quantum_synth->synth_0_sync_enabled, "toggled",
 			 G_CALLBACK(ags_quantum_synth_synth_0_sync_enabled_callback), quantum_synth);
@@ -3317,13 +3323,14 @@ ags_quantum_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(quantum_synth->synth_0_sync_phase_3, "value-changed",
 			 G_CALLBACK(ags_quantum_synth_synth_0_sync_phase_3_callback), quantum_synth);
 
-  /* LFO */
+  /* sync LFO */
   g_signal_connect_after(quantum_synth->synth_0_sync_lfo_oscillator, "notify::selected",
 			 G_CALLBACK(ags_quantum_synth_synth_0_sync_lfo_oscillator_callback), quantum_synth);
   
   g_signal_connect_after(quantum_synth->synth_0_sync_lfo_frequency, "value-changed",
 			 G_CALLBACK(ags_quantum_synth_synth_0_sync_lfo_frequency_callback), quantum_synth);
 
+  /* LFO */
   g_signal_connect_after(quantum_synth->synth_0_lfo_oscillator, "notify::selected",
 			 G_CALLBACK(ags_quantum_synth_synth_0_lfo_oscillator_callback), quantum_synth);
   
@@ -3379,6 +3386,9 @@ ags_quantum_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(quantum_synth->synth_1_seq_tuning_pingpong, "toggled",
 			 G_CALLBACK(ags_quantum_synth_synth_1_seq_tuning_pingpong_callback), quantum_synth);
+  
+  g_signal_connect_after(quantum_synth->synth_1_seq_tuning_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_quantum_synth_synth_1_seq_tuning_lfo_frequency_callback), quantum_synth);
 
   /* seq volume */
   g_signal_connect_after(quantum_synth->synth_1_seq_volume_0, "value-changed",
@@ -3407,6 +3417,9 @@ ags_quantum_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(quantum_synth->synth_1_seq_volume_pingpong, "toggled",
 			 G_CALLBACK(ags_quantum_synth_synth_1_seq_volume_pingpong_callback), quantum_synth);
+
+  g_signal_connect_after(quantum_synth->synth_1_seq_volume_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_quantum_synth_synth_1_seq_volume_lfo_frequency_callback), quantum_synth);
   
   /* sync */  
   g_signal_connect_after(quantum_synth->synth_1_sync_enabled, "toggled",
@@ -3473,27 +3486,6 @@ ags_quantum_synth_connect(AgsConnectable *connectable)
   //  g_signal_connect_after(quantum_synth->chorus_enabled, "toggled",
   //			 G_CALLBACK(ags_quantum_synth_chorus_enabled_callback), quantum_synth);
   
-  g_signal_connect_after(quantum_synth->chorus_input_volume, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_input_volume_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_output_volume, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_output_volume_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_lfo_oscillator, "notify::selected",
-			 G_CALLBACK(ags_quantum_synth_chorus_lfo_oscillator_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_lfo_frequency, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_lfo_frequency_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_depth, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_depth_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_mix, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_mix_callback), quantum_synth);
-  
-  g_signal_connect_after(quantum_synth->chorus_delay, "value-changed",
-			 G_CALLBACK(ags_quantum_synth_chorus_delay_callback), quantum_synth);
-
   g_signal_connect_after(quantum_synth->chorus_input_volume, "value-changed",
 			 G_CALLBACK(ags_quantum_synth_chorus_input_volume_callback), quantum_synth);
   
@@ -3648,6 +3640,12 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
 		      quantum_synth,
 		      NULL);
 
+  g_object_disconnect(quantum_synth->synth_0_seq_tuning_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_quantum_synth_synth_0_seq_tuning_lfo_frequency_callback),
+		      quantum_synth,
+		      NULL);
+
   /* seq volume */
   g_object_disconnect(quantum_synth->synth_0_seq_volume_0,
 		      "any_signal::value-changed",
@@ -3700,6 +3698,12 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect(quantum_synth->synth_0_seq_volume_pingpong,
 		      "any_signal::toggled",
 		      G_CALLBACK(ags_quantum_synth_synth_0_seq_volume_pingpong_callback),
+		      quantum_synth,
+		      NULL);
+  
+  g_object_disconnect(quantum_synth->synth_0_seq_volume_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_quantum_synth_synth_0_seq_volume_lfo_frequency_callback),
 		      quantum_synth,
 		      NULL);
   
@@ -3887,6 +3891,12 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
 		      quantum_synth,
 		      NULL);
 
+  g_object_disconnect(quantum_synth->synth_1_seq_tuning_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_quantum_synth_synth_1_seq_tuning_lfo_frequency_callback),
+		      quantum_synth,
+		      NULL);
+
   /* seq volume */
   g_object_disconnect(quantum_synth->synth_1_seq_volume_0,
 		      "any_signal::value-changed",
@@ -3939,6 +3949,12 @@ ags_quantum_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect(quantum_synth->synth_1_seq_volume_pingpong,
 		      "any_signal::toggled",
 		      G_CALLBACK(ags_quantum_synth_synth_1_seq_volume_pingpong_callback),
+		      quantum_synth,
+		      NULL);
+
+  g_object_disconnect(quantum_synth->synth_1_seq_volume_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_quantum_synth_synth_1_seq_volume_lfo_frequency_callback),
 		      quantum_synth,
 		      NULL);
   
@@ -4817,6 +4833,28 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* synth-0 seq tuning lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-tuning-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(quantum_synth->synth_0_seq_tuning_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
     /* synth-0 seq volume 0 */
     port = NULL;
 
@@ -5016,6 +5054,28 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
 	gtk_check_button_set_active(quantum_synth->synth_0_seq_volume_pingpong,
 				    FALSE);
       }
+
+      g_object_unref(port);
+    }
+
+    /* synth-0 seq volume lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-0-seq-volume-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(quantum_synth->synth_0_seq_volume_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -5669,6 +5729,28 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* synth-1 seq tuning lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-tuning-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(quantum_synth->synth_1_seq_tuning_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
     /* synth-1 seq volume 0 */
     port = NULL;
 
@@ -5868,6 +5950,28 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
 	gtk_check_button_set_active(quantum_synth->synth_1_seq_volume_pingpong,
 				    FALSE);
       }
+
+      g_object_unref(port);
+    }
+
+    /* synth-1 seq volume lfo frequency */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "synth-1-seq-volume-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_spin_button_set_value(quantum_synth->synth_1_seq_volume_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }
@@ -6252,6 +6356,7 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
     }
 
     /* chorus enabled */
+#if 0
     port = NULL;
 
     g_object_get(recall->data,
@@ -6277,6 +6382,7 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
 
       g_object_unref(port);
     }
+#endif
     
     /* chorus LFO oscillator */
     port = NULL;

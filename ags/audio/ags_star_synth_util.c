@@ -3888,7 +3888,6 @@ ags_star_synth_util_compute_sin(AgsStarSynthUtil *star_synth_util)
   }
 }
 
-
 /**
  * ags_star_synth_util_compute_sawtooth_s8:
  * @star_synth_util: the #AgsStarSynthUtil-struct

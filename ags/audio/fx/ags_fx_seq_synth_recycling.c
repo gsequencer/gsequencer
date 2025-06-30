@@ -30,7 +30,7 @@ void ags_fx_seq_synth_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_seq_synth_recycling
- * @short_description: fx SEQ synth recycling
+ * @short_description: fx seq synth recycling
  * @title: AgsFxSeqSynthRecycling
  * @section_id:
  * @include: ags/audio/fx/ags_fx_seq_synth_recycling.h

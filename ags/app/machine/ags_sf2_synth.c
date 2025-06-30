@@ -2536,6 +2536,7 @@ ags_sf2_synth_refresh_port(AgsMachine *machine)
     }    
 
     /* chorus enabled */
+#if 0
     port = NULL;
 
     g_object_get(recall->data,
@@ -2561,6 +2562,7 @@ ags_sf2_synth_refresh_port(AgsMachine *machine)
 
       g_object_unref(port);
     }
+#endif
     
     /* chorus LFO oscillator */
     port = NULL;

@@ -1822,7 +1822,7 @@ ags_volume_util_compute_float(AgsVolumeUtil *volume_util)
  * ags_volume_util_compute_double:
  * @volume_util: the #AgsVolumeUtil-struct
  * 
- * Compute volume of double floating point data.
+ * Compute volume of double precision floating point data.
  *
  * Since: 3.9.2
  */

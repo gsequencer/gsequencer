@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,6 +54,7 @@ void ags_quantum_synth_synth_0_seq_tuning_6_callback(AgsDial *dial, AgsQuantumSy
 void ags_quantum_synth_synth_0_seq_tuning_7_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_0_seq_tuning_pingpong_callback(GtkCheckButton *button, AgsQuantumSynth *quantum_synth);
+void ags_quantum_synth_synth_0_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_button, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_0_seq_volume_0_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
 void ags_quantum_synth_synth_0_seq_volume_1_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
@@ -65,6 +66,7 @@ void ags_quantum_synth_synth_0_seq_volume_6_callback(AgsDial *dial, AgsQuantumSy
 void ags_quantum_synth_synth_0_seq_volume_7_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_0_seq_volume_pingpong_callback(GtkCheckButton *button, AgsQuantumSynth *quantum_synth);
+void ags_quantum_synth_synth_0_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_0_sync_enabled_callback(GtkButton *button, AgsQuantumSynth *quantum_synth);
 
@@ -115,6 +117,7 @@ void ags_quantum_synth_synth_1_seq_tuning_6_callback(AgsDial *dial, AgsQuantumSy
 void ags_quantum_synth_synth_1_seq_tuning_7_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_1_seq_tuning_pingpong_callback(GtkCheckButton *button, AgsQuantumSynth *quantum_synth);
+void ags_quantum_synth_synth_1_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_button, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_1_seq_volume_0_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
 void ags_quantum_synth_synth_1_seq_volume_1_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
@@ -126,6 +129,7 @@ void ags_quantum_synth_synth_1_seq_volume_6_callback(AgsDial *dial, AgsQuantumSy
 void ags_quantum_synth_synth_1_seq_volume_7_callback(AgsDial *dial, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_1_seq_volume_pingpong_callback(GtkCheckButton *button, AgsQuantumSynth *quantum_synth);
+void ags_quantum_synth_synth_1_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_button, AgsQuantumSynth *quantum_synth);
 
 void ags_quantum_synth_synth_1_sync_enabled_callback(GtkButton *button, AgsQuantumSynth *quantum_synth);
 

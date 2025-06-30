@@ -945,7 +945,7 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	synth_0_sync_relative_attack_factor = (gboolean) g_value_get_float(&value);
+	synth_0_sync_relative_attack_factor = (gdouble) g_value_get_float(&value);
       
 	g_object_unref(port);
       }
@@ -1664,7 +1664,7 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 	ags_port_safe_read(port,
 			   &value);
 
-	synth_1_sync_relative_attack_factor = (gboolean) g_value_get_float(&value);
+	synth_1_sync_relative_attack_factor = (gdouble) g_value_get_float(&value);
       
 	g_object_unref(port);
       }

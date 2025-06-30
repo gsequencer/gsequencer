@@ -259,9 +259,14 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 
   gtk_window_set_title((GtkWindow *) midi_dialog,
 		       i18n("MIDI connection"));
+  gtk_window_set_hide_on_close(GTK_WINDOW(midi_dialog),
+			       TRUE);
 
   gtk_window_set_deletable(GTK_WINDOW(midi_dialog),
 			   TRUE);
+
+  g_signal_connect(midi_dialog, "close-request",
+		   G_CALLBACK(ags_midi_dialog_close_request_callback), NULL);  
 
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) midi_dialog,

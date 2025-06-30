@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2024 Joël Krähemann
+# Copyright (C) 2005-2025 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -66,6 +66,30 @@ AgsApplicationContext
 AgsApplicationContextClass
 ags_application_context_flags_get_type
 ags_application_context_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_atomic</FILE>
+ags_atomic_boolean_get
+ags_atomic_uint_get
+ags_atomic_int_get
+ags_atomic_pointer_get
+ags_atomic_boolean_set
+ags_atomic_uint_set
+ags_atomic_int_set
+ags_atomic_pointer_set
+ags_atomic_uint_or
+ags_atomic_int_or
+ags_atomic_uint_and
+ags_atomic_int_and
+ags_atomic_uint_increment
+ags_atomic_int_increment
+ags_atomic_uint_decrement
+ags_atomic_int_decrement
+ags_atomic_uint_add
+ags_atomic_int_add
+ags_atomic_uint_sub
+ags_atomic_int_sub
 </SECTION>
 
 <SECTION>
@@ -1339,6 +1363,7 @@ AGS_SEQUENCER_DEFAULT_SCALE
 AGS_SEQUENCER_DEFAULT_DELAY
 AGS_SEQUENCER_DEFAULT_PERIOD
 AGS_SEQUENCER_DEFAULT_LATENCY
+AgsSequencerMidiVersion
 ags_sequencer_set_device
 ags_sequencer_get_device
 ags_sequencer_list_cards
@@ -1364,6 +1389,7 @@ ags_sequencer_set_start_note_offset
 ags_sequencer_get_start_note_offset
 ags_sequencer_set_note_offset
 ags_sequencer_get_note_offset
+ags_sequencer_get_midi_version
 <SUBSECTION Standard>
 AGS_IS_SEQUENCER
 AGS_IS_SEQUENCER_INTERFACE
@@ -1476,6 +1502,8 @@ ags_solver_matrix_get_source_function
 ags_solver_matrix_set_source_function
 ags_solver_matrix_get_row_count
 ags_solver_matrix_get_column_count
+ags_solver_matrix_get_solver_path
+ags_solver_matrix_set_solver_path
 ags_solver_matrix_to_string
 ags_solver_matrix_parse
 ags_solver_matrix_insert_vector
@@ -1493,6 +1521,24 @@ AGS_TYPE_SOLVER_MATRIX
 AgsSolverMatrix
 AgsSolverMatrixClass
 ags_solver_matrix_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_solver_path</FILE>
+ags_solver_path_alloc
+ags_solver_path_copy
+ags_solver_path_free
+ags_solver_path_set_nth_column
+ags_solver_path_get_nth_column
+ags_solver_path_set_nth_row_a
+ags_solver_path_get_nth_row_a
+ags_solver_path_set_nth_row_b
+ags_solver_path_get_nth_row_b
+<SUBSECTION Standard>
+AGS_SOLVER_PATH
+AGS_TYPE_SOLVER_PATH
+AgsSolverPath
+ags_solver_path_get_type
 </SECTION>
 
 <SECTION>
@@ -1566,8 +1612,10 @@ ags_sound_server_get_soundcard
 ags_sound_server_set_sequencer
 ags_sound_server_get_sequencer
 ags_sound_server_register_soundcard
+ags_sound_server_register_soundcard_with_params
 ags_sound_server_unregister_soundcard
 ags_sound_server_register_sequencer
+ags_sound_server_register_sequencer_with_params
 ags_sound_server_unregister_sequencer
 <SUBSECTION Standard>
 AGS_IS_SOUND_SERVER
@@ -1597,6 +1645,8 @@ AGS_SOUNDCARD_DEFAULT_FORMAT
 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE
 AGS_SOUNDCARD_MIN_BUFFER_SIZE
 AGS_SOUNDCARD_MAX_BUFFER_SIZE
+AGS_SOUNDCARD_DEFAULT_USE_CACHE
+AGS_SOUNDCARD_DEFAULT_CACHE_BUFFER_SIZE
 AGS_SOUNDCARD_DEFAULT_BPM
 AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR
 AGS_SOUNDCARD_DEFAULT_JIFFIE
@@ -1685,6 +1735,8 @@ ags_soundcard_helper_config_get_pcm_channels
 ags_soundcard_helper_config_get_samplerate
 ags_soundcard_helper_config_get_buffer_size
 ags_soundcard_helper_config_get_format
+ags_soundcard_helper_config_get_use_cache
+ags_soundcard_helper_config_get_cache_buffer_size
 </SECTION>
 
 <SECTION>
@@ -1869,6 +1921,7 @@ ags_thread_add_start_queue_all
 ags_thread_start
 ags_thread_run
 ags_thread_stop
+ags_thread_recover_dead_lock
 ags_thread_new
 <SUBSECTION Standard>
 AGS_IS_THREAD

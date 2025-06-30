@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,8 @@
 #include <ags/app/editor/ags_envelope_dialog.h>
 
 G_BEGIN_DECLS
+
+gboolean ags_envelope_dialog_close_request_callback(GtkWindow *window, gpointer user_data);
 
 int ags_envelope_dialog_apply_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);
 int ags_envelope_dialog_ok_callback(GtkWidget *widget, AgsEnvelopeDialog *envelope_dialog);

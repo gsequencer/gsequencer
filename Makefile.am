@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2024 Joel Kraehemann
+#Copyright (C) 2005-2025 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -772,7 +772,7 @@ defexec_DATA =
 # library libags
 libags_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
 libags_la_CFLAGS =  $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
-libags_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
+libags_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_la_LIBADD = -lm
 libags_la_LDFLAGS += $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(W32API_LIBS) 
@@ -796,7 +796,7 @@ endif
 # library libags-thread
 libags_thread_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
 libags_thread_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
-libags_thread_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
+libags_thread_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_thread_la_LIBADD = libags.la -lm
 libags_thread_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(W32API_LIBS)
@@ -820,7 +820,7 @@ endif
 # library libags-server
 libags_server_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
 libags_server_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
-libags_server_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
+libags_server_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_server_la_LIBADD = -lm libags_thread.la libags.la
 libags_server_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(W32API_LIBS)
@@ -851,7 +851,7 @@ endif
 libags_audio_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
 
 libags_audio_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
-libags_audio_la_CXXFLAGS = $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
+libags_audio_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
 libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread 
 libags_audio_la_LIBADD = -lm 
 
@@ -886,7 +886,7 @@ libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) 
 # library libags-gui
 libags_gui_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
 libags_gui_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
-libags_gui_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
+libags_gui_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
 libags_gui_la_LIBADD = -lm
 libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(LIBXML2_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
@@ -916,7 +916,7 @@ endif
 
 libgsequencer_la_CPPFLAGS += $(CPPFLAGS) $(LIBGSEQUENCER_CPPFLAGS)
 libgsequencer_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
-libgsequencer_la_CXXFLAGS = $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
+libgsequencer_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
 libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -pthread
 libgsequencer_la_LIBADD = -lm
 
@@ -948,7 +948,7 @@ libgsequencer_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS)
 # library libags-vst
 if WITH_VST3
 libags_vst_la_CPPFLAGS = -std=c++2a $(libags_vst3_RELEASE_TYPE) $(libags_vst3_CPPFLAGS) -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
-libags_vst_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GLIB_CFLAGS) $(libags_vst3_CXXFLAGS) $(W32API_CFLAGS)
+libags_vst_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ --include string --include codecvt $(GLIB_CFLAGS) $(libags_vst3_CXXFLAGS) $(W32API_CFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 7:0:0 -pthread 
 libags_vst_la_LIBADD = -lm
 
@@ -1325,6 +1325,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_synth_enums.h \
 	ags/audio/ags_acceleration.h \
+	ags/audio/ags_amplifier_util.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h \
@@ -1347,6 +1348,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_raven_synth_util.h \
 	ags/audio/ags_seq_synth_util.h \
 	ags/audio/ags_star_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
@@ -1360,6 +1362,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_input.h \
 	ags/audio/ags_lfo_synth_util.h \
 	ags/audio/ags_linear_interpolate_util.h \
+	ags/audio/ags_low_pass_filter_util.h \
 	ags/audio/ags_marker.h \
 	ags/audio/ags_midi.h \
 	ags/audio/ags_noise_util.h \
@@ -1430,6 +1433,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_sound_enums.c \
 	ags/audio/ags_synth_enums.c \
 	ags/audio/ags_acceleration.c \
+	ags/audio/ags_amplifier_util.c \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
 	ags/audio/ags_audio_buffer_util.c \
@@ -1452,6 +1456,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_raven_synth_util.c \
 	ags/audio/ags_seq_synth_util.c \
 	ags/audio/ags_star_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
@@ -1465,6 +1470,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_input.c \
 	ags/audio/ags_lfo_synth_util.c \
 	ags/audio/ags_linear_interpolate_util.c \
+	ags/audio/ags_low_pass_filter_util.c \
 	ags/audio/ags_marker.c \
 	ags/audio/ags_midi.c \
 	ags/audio/ags_noise_util.c \
@@ -2122,6 +2128,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_fm_synth_recycling.h \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_raven_synth_audio.h \
+	ags/audio/fx/ags_fx_raven_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_raven_synth_channel.h \
+	ags/audio/fx/ags_fx_raven_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_raven_synth_recycling.h \
+	ags/audio/fx/ags_fx_raven_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_sf2_synth_audio.h \
 	ags/audio/fx/ags_fx_sf2_synth_audio_processor.h \
 	ags/audio/fx/ags_fx_sf2_synth_channel.h \
@@ -2289,6 +2301,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_fm_synth_recycling.c \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_raven_synth_audio.c \
+	ags/audio/fx/ags_fx_raven_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_raven_synth_channel.c \
+	ags/audio/fx/ags_fx_raven_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_raven_synth_recycling.c \
+	ags/audio/fx/ags_fx_raven_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_sf2_synth_audio.c \
 	ags/audio/fx/ags_fx_sf2_synth_audio_processor.c \
 	ags/audio/fx/ags_fx_sf2_synth_channel.c \
@@ -3004,6 +3022,8 @@ libgsequencer_machine_h_sources = \
 	ags/app/machine/ags_pitch_sampler_callbacks.h \
 	ags/app/machine/ags_pitch_sampler_file.h \
 	ags/app/machine/ags_pitch_sampler_file_callbacks.h \
+	ags/app/machine/ags_raven_synth.h \
+	ags/app/machine/ags_raven_synth_callbacks.h \
 	ags/app/machine/ags_sfz_synth.h \
 	ags/app/machine/ags_sfz_synth_callbacks.h \
 	ags/app/machine/ags_synth_callbacks.h \
@@ -3135,6 +3155,8 @@ libgsequencer_machine_c_sources = \
 	ags/app/machine/ags_pitch_sampler_callbacks.c \
 	ags/app/machine/ags_pitch_sampler_file.c \
 	ags/app/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/app/machine/ags_raven_synth.c \
+	ags/app/machine/ags_raven_synth_callbacks.c \
 	ags/app/machine/ags_sfz_synth.c \
 	ags/app/machine/ags_sfz_synth_callbacks.c \
 	ags/app/machine/ags_syncsynth.c \
@@ -3411,7 +3433,9 @@ libags_vst_h_sources = \
 
 deprecated_libags_vst_c_sources =
 
-EXTRA_DIST +=
+EXTRA_DIST += \
+	ags/vst3-capi/host/updatehandler.h 	\
+	ags/vst3-capi/host/updatehandler.cpp
 
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
@@ -3421,8 +3445,6 @@ libags_vst_c_sources = \
 	ags/vst3-capi/host/hostcontext.h \
 	ags/vst3-capi/host/componenthandler.cpp \
 	ags/vst3-capi/host/hostcontext.cpp \
-	ags/vst3-capi/host/updatehandler.h \
-	ags/vst3-capi/host/updatehandler.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view.cpp \
 	ags/vst3-capi/pluginterfaces/gui/ags_vst_iplug_view_content_scale_support.cpp \
 	ags/vst3-capi/pluginterfaces/vst/ags_vst_iattributes.cpp \
@@ -3677,7 +3699,7 @@ fix-online-html:
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-audio-html@../libags-audio@g' {} \;
 	find $(top_builddir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec $(AM_V_GEN)sed -i 's@../libags-gui-html@../libags-gui@g' {} \;
 
-install-html-mkdir-links:
+install-html-mkdir-links: install-html-mkdir
 	echo "creating upstream API reference manual directory [$(AGS_WITH_UPSTREAM_GTK_DOC)]"
 if AGS_WITH_UPSTREAM_GTK_DOC
 if ENABLE_GTK_DOC
@@ -3730,7 +3752,7 @@ endif
 endif
 endif
 
-install-html: install-html-mkdir install-html-links
+install-html: install-html-links
 if AGS_WITH_SINGLE_DOCDIR
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)$(docdir)/images/
 	install -c -p -m 644 $(userdocadwaitaimages) $(DESTDIR)$(docdir)/images/adwaita/

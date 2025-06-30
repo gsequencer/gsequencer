@@ -7,7 +7,7 @@
   %gtkdocentities;
 ]>
 
-<!-- Copyright (C) 2005-2023 Joel Kraehemann -->
+<!-- Copyright (C) 2005-2025 Joel Kraehemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -136,6 +136,9 @@
       <xi:include href="xml/ags_resample_util.xml"/>
       <xi:include href="xml/ags_synth_util.xml"/>
       <xi:include href="xml/ags_fm_synth_util.xml"/>
+      <xi:include href="xml/ags_star_synth_util.xml"/>
+      <xi:include href="xml/ags_seq_synth_util.xml"/>
+      <xi:include href="xml/ags_raven_synth_util.xml"/>
       <xi:include href="xml/ags_sfz_synth_util.xml"/>
       <xi:include href="xml/ags_lfo_synth_util.xml"/>
       <xi:include href="xml/ags_port_util.xml"/>
@@ -488,6 +491,27 @@
       <xi:include href="xml/ags_fx_fm_synth_channel.xml"/>
       <xi:include href="xml/ags_fx_fm_synth_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_fm_synth_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_star_synth_audio.xml"/>
+      <xi:include href="xml/ags_fx_star_synth_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_star_synth_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_star_synth_channel.xml"/>
+      <xi:include href="xml/ags_fx_star_synth_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_star_synth_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_seq_synth_audio.xml"/>
+      <xi:include href="xml/ags_fx_seq_synth_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_seq_synth_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_seq_synth_channel.xml"/>
+      <xi:include href="xml/ags_fx_seq_synth_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_seq_synth_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_raven_synth_audio.xml"/>
+      <xi:include href="xml/ags_fx_raven_synth_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_raven_synth_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_raven_synth_channel.xml"/>
+      <xi:include href="xml/ags_fx_raven_synth_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_raven_synth_recycling.xml"/>
 
 @LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE@      
 

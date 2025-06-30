@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-03-22 12:49+0100\n"
+"POT-Creation-Date: 2025-05-30 07:37+0200\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -98,63 +98,63 @@ msgstr "effet: "
 msgid "Ports"
 msgstr "Porte"
 
-#: ags/app/ags_machine_callbacks.c:759
+#: ags/app/ags_machine_callbacks.c:781
 #, fuzzy
 msgid "rename machine"
 msgstr "renommer l'audio"
 
-#: ags/app/ags_machine_callbacks.c:767
+#: ags/app/ags_machine_callbacks.c:789
 msgid "The name of the machine is displayed on top of it or within editor."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:770
+#: ags/app/ags_machine_callbacks.c:792
 #, fuzzy
 msgid "machine's name"
 msgstr "machine nom: "
 
-#: ags/app/ags_machine_callbacks.c:825
+#: ags/app/ags_machine_callbacks.c:847
 msgid "rename audio"
 msgstr "renommer l'audio"
 
-#: ags/app/ags_machine_callbacks.c:833
+#: ags/app/ags_machine_callbacks.c:855
 msgid ""
 "The name of an audio object can be used to address it within a OSC message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:836
+#: ags/app/ags_machine_callbacks.c:858
 #, fuzzy
 msgid "audio object's name"
 msgstr "connexion du audio"
 
-#: ags/app/ags_machine_callbacks.c:915
+#: ags/app/ags_machine_callbacks.c:937
 msgid "reposition audio"
 msgstr "repositionner l'audio"
 
-#: ags/app/ags_machine_callbacks.c:923
+#: ags/app/ags_machine_callbacks.c:945
 msgid ""
 "The position of an audio object can be used to address it within a OSC "
 "message."
 msgstr ""
 
-#: ags/app/ags_machine_callbacks.c:928
+#: ags/app/ags_machine_callbacks.c:950
 #, fuzzy
 msgid "audio object's position"
 msgstr "connexion du audio"
 
-#: ags/app/ags_machine_callbacks.c:931 ags/app/editor/ags_automation_meta.c:593
+#: ags/app/ags_machine_callbacks.c:953 ags/app/editor/ags_automation_meta.c:593
 #: ags/app/editor/ags_wave_meta.c:426 ags/app/editor/ags_notation_meta.c:484
 msgid "position"
 msgstr "position"
 
-#: ags/app/ags_machine_callbacks.c:987
+#: ags/app/ags_machine_callbacks.c:1009
 msgid "properties"
 msgstr "propriétés"
 
-#: ags/app/ags_machine_callbacks.c:1067
+#: ags/app/ags_machine_callbacks.c:1089
 msgid "envelope"
 msgstr "envelope"
 
-#: ags/app/ags_machine_callbacks.c:1110
+#: ags/app/ags_machine_callbacks.c:1132
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
@@ -163,7 +163,7 @@ msgstr "envelope"
 msgid "preset"
 msgstr "préposition"
 
-#: ags/app/ags_machine_callbacks.c:1207
+#: ags/app/ags_machine_callbacks.c:1229
 msgid "connections"
 msgstr "connexion"
 
@@ -177,8 +177,8 @@ msgstr "Ouvrir d'audio fichier"
 msgid "machine editor"
 msgstr "machine type: "
 
-#: ags/app/ags_machine_editor_dialog.c:192
-#: ags/app/editor/ags_envelope_dialog.c:362 ags/app/ags_midi_dialog.c:556
+#: ags/app/ags_machine_editor_dialog.c:194
+#: ags/app/editor/ags_envelope_dialog.c:367 ags/app/ags_midi_dialog.c:561
 #: ags/app/ags_plugin_browser.c:364 ags/app/ags_preferences.c:282
 msgid "ok"
 msgstr ""
@@ -295,7 +295,7 @@ msgstr ""
 
 #: ags/app/ags_pcm_file_dialog.c:293
 #: ags/app/export/ags_midi_export_wizard.c:481
-#: ags/app/export/ags_wave_export_dialog.c:417
+#: ags/app/export/ags_wave_export_dialog.c:418
 #: ags/app/import/ags_midi_import_wizard.c:472
 #: ags/app/ags_export_soundcard.c:336
 msgid "open"
@@ -332,7 +332,7 @@ msgstr ""
 msgid "Plugin file not present"
 msgstr "Plugin fichier n'est pas présent"
 
-#: ags/app/ags_composite_editor.c:374
+#: ags/app/ags_composite_editor.c:375
 #, fuzzy
 msgid "selector"
 msgstr "sélectionner"
@@ -357,26 +357,26 @@ msgstr ""
 msgid "audio fast export"
 msgstr "Audio vite exporter"
 
-#: ags/app/export/ags_wave_export_dialog.c:307
+#: ags/app/export/ags_wave_export_dialog.c:308
 msgid "start tact"
 msgstr "premier tact"
 
-#: ags/app/export/ags_wave_export_dialog.c:328
+#: ags/app/export/ags_wave_export_dialog.c:329
 msgid "end tact"
 msgstr "dernier tact"
 
-#: ags/app/export/ags_wave_export_dialog.c:362
+#: ags/app/export/ags_wave_export_dialog.c:363
 #: ags/app/ags_export_soundcard.c:341
 msgid "output format"
 msgstr "sortant format"
 
-#: ags/app/export/ags_wave_export_dialog.c:404
+#: ags/app/export/ags_wave_export_dialog.c:405
 #: ags/app/machine/ags_pitch_sampler.c:311 ags/app/machine/ags_audiorec.c:272
 #: ags/app/ags_export_soundcard.c:289
 msgid "file"
 msgstr "fichier"
 
-#: ags/app/export/ags_wave_export_dialog.c:431 ags/app/ags_export_window.c:416
+#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:416
 msgid "export"
 msgstr "exporter"
 
@@ -388,7 +388,7 @@ msgstr "exporter"
 #: ags/app/machine/ags_sf2_synth.c:1052 ags/app/machine/ags_sf2_synth.c:1206
 #: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
-#: ags/app/import/ags_track_mapper.c:242
+#: ags/app/import/ags_track_mapper.c:243
 #: ags/app/ags_connection_editor_listing.c:177
 #: ags/app/ags_connection_editor_collection.c:175
 #: ags/app/ags_machine_editor_listing.c:177
@@ -637,7 +637,7 @@ msgid "position tool"
 msgstr "position x"
 
 #: ags/app/editor/ags_composite_toolbar.c:937
-#: ags/app/ags_gsequencer_application.c:847
+#: ags/app/ags_gsequencer_application.c:858
 #, fuzzy
 msgid "Edit"
 msgstr "_Édition"
@@ -1009,15 +1009,15 @@ msgstr "bouger en bas"
 msgid "envelope info"
 msgstr "envelope"
 
-#: ags/app/editor/ags_envelope_dialog.c:326
+#: ags/app/editor/ags_envelope_dialog.c:331
 msgid "editor"
 msgstr "éditeur"
 
-#: ags/app/editor/ags_envelope_dialog.c:343
+#: ags/app/editor/ags_envelope_dialog.c:348
 msgid "info"
 msgstr "information"
 
-#: ags/app/editor/ags_envelope_dialog.c:670 ags/app/machine/ags_drum.c:368
+#: ags/app/editor/ags_envelope_dialog.c:675 ags/app/machine/ags_drum.c:368
 msgid "pattern"
 msgstr "dessin"
 
@@ -1161,125 +1161,125 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr "exclure séquencer"
 
-#: ags/app/ags_gsequencer_application.c:757
+#: ags/app/ags_gsequencer_application.c:766
 #, fuzzy
 msgid "Open"
 msgstr "_Ouvrir"
 
-#: ags/app/ags_gsequencer_application.c:762
+#: ags/app/ags_gsequencer_application.c:771
 #, fuzzy
 msgid "Save"
 msgstr "_Mémoriser"
 
-#: ags/app/ags_gsequencer_application.c:767
+#: ags/app/ags_gsequencer_application.c:776
 msgid "Save as"
 msgstr "Mémoriser comme"
 
-#: ags/app/ags_gsequencer_application.c:772
+#: ags/app/ags_gsequencer_application.c:781
 #, fuzzy
 msgid "Export"
 msgstr "exporter"
 
-#: ags/app/ags_gsequencer_application.c:777
+#: ags/app/ags_gsequencer_application.c:786
 #, fuzzy
 msgid "Quit"
 msgstr "_Quitter"
 
-#: ags/app/ags_gsequencer_application.c:784
+#: ags/app/ags_gsequencer_application.c:793
 #, fuzzy
 msgid "File"
 msgstr "_Fichier"
 
-#: ags/app/ags_gsequencer_application.c:797
+#: ags/app/ags_gsequencer_application.c:807
 msgid "Add"
 msgstr "Ajouter"
 
-#: ags/app/ags_gsequencer_application.c:800
+#: ags/app/ags_gsequencer_application.c:811
 #, fuzzy
 msgid "Notation"
 msgstr "notation"
 
-#: ags/app/ags_gsequencer_application.c:805
+#: ags/app/ags_gsequencer_application.c:816
 msgid "Automation"
 msgstr "Automation"
 
-#: ags/app/ags_gsequencer_application.c:810
+#: ags/app/ags_gsequencer_application.c:821
 msgid "Wave"
 msgstr "Forme d'onde"
 
-#: ags/app/ags_gsequencer_application.c:817
+#: ags/app/ags_gsequencer_application.c:828
 msgid "Sheet"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:823
+#: ags/app/ags_gsequencer_application.c:834
 msgid "Tempo"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:828
+#: ags/app/ags_gsequencer_application.c:839
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:833
+#: ags/app/ags_gsequencer_application.c:844
 msgid "Preferences"
 msgstr "Préréglage"
 
-#: ags/app/ags_gsequencer_application.c:839
+#: ags/app/ags_gsequencer_application.c:850
 msgid "Downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:853
-#: ags/app/ags_gsequencer_application.c:1122
+#: ags/app/ags_gsequencer_application.c:864
+#: ags/app/ags_gsequencer_application.c:1133
 #, fuzzy
 msgid "SMF import"
 msgstr "MIDI importer"
 
-#: ags/app/ags_gsequencer_application.c:858
-#: ags/app/ags_gsequencer_application.c:1131
+#: ags/app/ags_gsequencer_application.c:869
+#: ags/app/ags_gsequencer_application.c:1142
 #, fuzzy
 msgid "SMF export"
 msgstr "MIDI exporter"
 
-#: ags/app/ags_gsequencer_application.c:865
+#: ags/app/ags_gsequencer_application.c:876
 #, fuzzy
 msgid "MIDI"
 msgstr "MIDI carte"
 
-#: ags/app/ags_gsequencer_application.c:876
+#: ags/app/ags_gsequencer_application.c:887
 msgid "Window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:883
-#: ags/app/ags_gsequencer_application.c:895
+#: ags/app/ags_gsequencer_application.c:894
+#: ags/app/ags_gsequencer_application.c:906
 #, fuzzy
 msgid "Help"
 msgstr "_Aide"
 
-#: ags/app/ags_gsequencer_application.c:888
+#: ags/app/ags_gsequencer_application.c:899
 msgid "About"
 msgstr "Briefer"
 
-#: ags/app/ags_gsequencer_application.c:1076
+#: ags/app/ags_gsequencer_application.c:1087
 msgid "application window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1084 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1095 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr "préréglage"
 
-#: ags/app/ags_gsequencer_application.c:1094
+#: ags/app/ags_gsequencer_application.c:1105
 msgid "sample downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1104
+#: ags/app/ags_gsequencer_application.c:1115
 msgid "meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1113
+#: ags/app/ags_gsequencer_application.c:1124
 #, fuzzy
 msgid "audio export"
 msgstr "Audio exporter"
 
-#: ags/app/ags_gsequencer_application.c:1140
+#: ags/app/ags_gsequencer_application.c:1151
 msgid "help"
 msgstr ""
 
@@ -1308,12 +1308,12 @@ msgstr "lien intrant"
 msgid "resize channels"
 msgstr "réajuster canal"
 
-#: ags/app/ags_app_action_util.c:158
+#: ags/app/ags_app_action_util.c:159
 #, fuzzy
 msgid "open file"
 msgstr "Ouvrir fichier"
 
-#: ags/app/ags_app_action_util.c:670
+#: ags/app/ags_app_action_util.c:671
 #, fuzzy
 msgid "save file as"
 msgstr "Mémoriser comme"
@@ -1362,32 +1362,32 @@ msgstr "délai d'inactivité"
 msgid "MIDI connection"
 msgstr "MIDI connexion"
 
-#: ags/app/ags_midi_dialog.c:303
+#: ags/app/ags_midi_dialog.c:308
 #, fuzzy
 msgid "midi group"
 msgstr "groupe"
 
-#: ags/app/ags_midi_dialog.c:317
+#: ags/app/ags_midi_dialog.c:322
 msgid "midi channel"
 msgstr "midi canal"
 
-#: ags/app/ags_midi_dialog.c:354
+#: ags/app/ags_midi_dialog.c:359
 msgid "audio start mapping"
 msgstr "audio premier assigner"
 
-#: ags/app/ags_midi_dialog.c:391
+#: ags/app/ags_midi_dialog.c:396
 msgid "audio end mapping"
 msgstr "audio dernier assigner"
 
-#: ags/app/ags_midi_dialog.c:422
+#: ags/app/ags_midi_dialog.c:427
 msgid "midi start mapping"
 msgstr "midi premier assigner"
 
-#: ags/app/ags_midi_dialog.c:459
+#: ags/app/ags_midi_dialog.c:464
 msgid "midi end mapping"
 msgstr "midi dernier assigner"
 
-#: ags/app/ags_midi_dialog.c:512
+#: ags/app/ags_midi_dialog.c:517
 msgid "midi device"
 msgstr "midi équipement"
 
@@ -1407,7 +1407,7 @@ msgstr "lancer"
 msgid "capability"
 msgstr "aptitude"
 
-#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:368
+#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:371
 msgid "audio channels"
 msgstr "audio canals"
 
@@ -2052,8 +2052,8 @@ msgstr "activer"
 msgid "base key"
 msgstr "ton dominant"
 
-#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:270
-#: ags/app/import/ags_track_mapper.c:458
+#: ags/app/machine/ags_ffplayer.c:375 ags/app/import/ags_track_mapper.c:271
+#: ags/app/import/ags_track_mapper.c:461
 msgid "instrument"
 msgstr "l'instrument: "
 
@@ -2102,20 +2102,20 @@ msgstr "premier lien ligne"
 msgid "line"
 msgstr "ligne"
 
-#: ags/app/import/ags_track_mapper.c:283 ags/app/import/ags_track_mapper.c:485
+#: ags/app/import/ags_track_mapper.c:284 ags/app/import/ags_track_mapper.c:488
 msgid "sequence"
 msgstr "séquence"
 
-#: ags/app/import/ags_track_mapper.c:295
+#: ags/app/import/ags_track_mapper.c:296
 msgid "soft synth"
 msgstr ""
 
-#: ags/app/import/ags_track_mapper.c:344
+#: ags/app/import/ags_track_mapper.c:347
 #, fuzzy
 msgid "MIDI channel"
 msgstr "canal"
 
-#: ags/app/import/ags_track_mapper.c:391
+#: ags/app/import/ags_track_mapper.c:394
 msgid "offset"
 msgstr ""
 

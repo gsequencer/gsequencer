@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2329,6 +2329,7 @@ ags_stargazer_synth_connect(AgsConnectable *connectable)
   /* AgsStargazerSynth */
   stargazer_synth = AGS_STARGAZER_SYNTH(connectable);
 
+  /* synth 0 */
   g_signal_connect_after(stargazer_synth->synth_0_oscillator, "changed",
 			 G_CALLBACK(ags_stargazer_synth_synth_0_oscillator_callback), stargazer_synth);
   
@@ -2392,6 +2393,7 @@ ags_stargazer_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(stargazer_synth->synth_0_lfo_tuning, "value-changed",
 			 G_CALLBACK(ags_stargazer_synth_synth_0_lfo_tuning_callback), stargazer_synth);
 
+  /* synth 1 */
   g_signal_connect_after(stargazer_synth->synth_1_oscillator, "changed",
 			 G_CALLBACK(ags_stargazer_synth_synth_1_oscillator_callback), stargazer_synth);
   
@@ -2455,15 +2457,18 @@ ags_stargazer_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(stargazer_synth->synth_1_lfo_tuning, "value-changed",
 			 G_CALLBACK(ags_stargazer_synth_synth_1_lfo_tuning_callback), stargazer_synth);
 
+  /* pitch */
   g_signal_connect((GObject *) stargazer_synth->pitch_type, "notify::selected",
 		   G_CALLBACK(ags_stargazer_synth_pitch_type_callback), (gpointer) stargazer_synth);
 
   g_signal_connect_after(stargazer_synth->pitch_tuning, "value-changed",
 			 G_CALLBACK(ags_stargazer_synth_pitch_tuning_callback), stargazer_synth);
   
+  /* noise */
   g_signal_connect_after(stargazer_synth->noise_gain, "value-changed",
 			 G_CALLBACK(ags_stargazer_synth_noise_gain_callback), stargazer_synth);
     
+  /* chorus */
   //  g_signal_connect_after(stargazer_synth->chorus_enabled, "toggled",
   //			 G_CALLBACK(ags_stargazer_synth_chorus_enabled_callback), stargazer_synth);
   
@@ -2488,27 +2493,7 @@ ags_stargazer_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(stargazer_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_stargazer_synth_chorus_delay_callback), stargazer_synth);
 
-  g_signal_connect_after(stargazer_synth->chorus_input_volume, "value-changed",
-			 G_CALLBACK(ags_stargazer_synth_chorus_input_volume_callback), stargazer_synth);
-  
-  g_signal_connect_after(stargazer_synth->chorus_output_volume, "value-changed",
-			 G_CALLBACK(ags_stargazer_synth_chorus_output_volume_callback), stargazer_synth);
-  
-  g_signal_connect_after(stargazer_synth->chorus_lfo_oscillator, "changed",
-			 G_CALLBACK(ags_stargazer_synth_chorus_lfo_oscillator_callback), stargazer_synth);
-  
-  g_signal_connect_after(stargazer_synth->chorus_lfo_frequency, "value-changed",
-			 G_CALLBACK(ags_stargazer_synth_chorus_lfo_frequency_callback), stargazer_synth);
-  
-  g_signal_connect_after(stargazer_synth->chorus_depth, "value-changed",
-			 G_CALLBACK(ags_stargazer_synth_chorus_depth_callback), stargazer_synth);
-  
-  g_signal_connect_after(stargazer_synth->chorus_mix, "value-changed",
-			 G_CALLBACK(ags_stargazer_synth_chorus_mix_callback), stargazer_synth);
-  
-  g_signal_connect_after(stargazer_synth->chorus_delay, "value-changed",
-			 G_CALLBACK(ags_stargazer_synth_chorus_delay_callback), stargazer_synth);
-
+  /* tremolo */
   g_signal_connect_after(stargazer_synth->tremolo_enabled, "toggled",
 			 G_CALLBACK(ags_stargazer_synth_tremolo_enabled_callback), stargazer_synth);
 
@@ -2524,6 +2509,7 @@ ags_stargazer_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(stargazer_synth->tremolo_tuning, "value-changed",
 			 G_CALLBACK(ags_stargazer_synth_tremolo_tuning_callback), stargazer_synth);
 
+  /* vibrato */
   g_signal_connect_after(stargazer_synth->vibrato_enabled, "toggled",
 			 G_CALLBACK(ags_stargazer_synth_vibrato_enabled_callback), stargazer_synth);
 
@@ -4190,6 +4176,7 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
     }
 
     /* chorus enabled */
+#if 0
     port = NULL;
 
     g_object_get(recall->data,
@@ -4215,6 +4202,7 @@ ags_stargazer_synth_refresh_port(AgsMachine *machine)
 
       g_object_unref(port);
     }
+#endif
     
     /* chorus LFO oscillator */
     port = NULL;

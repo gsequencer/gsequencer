@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -291,6 +291,13 @@ ags_gsequencer_add_quantum_synth_callback(GAction *action, GVariant *parameter,
 					  AgsGSequencerApplication *gsequencer_app)
 {
   ags_app_action_util_add_quantum_synth();
+}
+
+void
+ags_gsequencer_add_raven_synth_callback(GAction *action, GVariant *parameter,
+					AgsGSequencerApplication *gsequencer_app)
+{
+  ags_app_action_util_add_raven_synth();
 }
 
 void

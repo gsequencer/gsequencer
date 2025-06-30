@@ -1644,7 +1644,7 @@ ags_fx_star_synth_audio_init(AgsFxStarSynthAudio *fx_star_synth_audio)
 								 "port-value-length", 1,
 								 NULL);
   
-  fx_star_synth_audio->synth_0_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
+  fx_star_synth_audio->synth_0_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
 
   g_object_set(fx_star_synth_audio->synth_0_sync_lfo_frequency,
 	       "plugin-port", ags_fx_star_synth_audio_get_synth_0_sync_lfo_frequency_plugin_port(),
@@ -2106,7 +2106,7 @@ ags_fx_star_synth_audio_init(AgsFxStarSynthAudio *fx_star_synth_audio)
 								 "port-value-length", 1,
 								 NULL);
   
-  fx_star_synth_audio->synth_1_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 10.0;
+  fx_star_synth_audio->synth_1_sync_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
 
   g_object_set(fx_star_synth_audio->synth_1_sync_lfo_frequency,
 	       "plugin-port", ags_fx_star_synth_audio_get_synth_1_sync_lfo_frequency_plugin_port(),
@@ -6538,7 +6538,7 @@ ags_fx_star_synth_audio_get_synth_0_sync_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      0.01);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
@@ -7360,7 +7360,7 @@ ags_fx_star_synth_audio_get_synth_1_sync_lfo_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      0.0);
+		      0.01);
     g_value_set_float(plugin_port->lower_value,
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
