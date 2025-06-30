@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@
 #include <ladspa.h>
 #include <dssi.h>
 #include <lv2.h>
+
+#include <ags/ags_api_config.h>
 
 #include <ags/i18n.h>
 
@@ -1019,7 +1021,16 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    ags_recall_set_behaviour_flags(recall->data,
+				   AGS_SOUND_BEHAVIOUR_BULK_MODE);
 
     recall = recall->next;
   }
@@ -1460,7 +1471,16 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    ags_recall_set_behaviour_flags(recall->data,
+				   AGS_SOUND_BEHAVIOUR_BULK_MODE);
 
     recall = recall->next;
   }
@@ -1979,7 +1999,16 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    ags_recall_set_behaviour_flags(recall->data,
+				   AGS_SOUND_BEHAVIOUR_BULK_MODE);
 
     recall = recall->next;
   }
@@ -2400,7 +2429,16 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
   recall = start_recall;
 
   while(recall != NULL){
-    ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    ags_recall_set_behaviour_flags(recall->data,
+				   AGS_SOUND_BEHAVIOUR_BULK_MODE);
 
     recall = recall->next;
   }
@@ -2860,7 +2898,16 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
     recall = start_recall;
 
     while(recall != NULL){
-      ags_recall_set_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE);
+#if defined(AGS_OSXAPI)
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+      
+      ags_recall_set_behaviour_flags(recall->data,
+				     AGS_SOUND_BEHAVIOUR_BULK_MODE);
 
       recall = recall->next;
     }

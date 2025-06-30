@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1320,7 +1320,7 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
   
   AgsLadspaPlugin *ladspa_plugin;
 
-  GList *start_recall;
+  GList *start_recall, *recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
   
@@ -1375,6 +1375,20 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 				       pad, pad + 1,
 				       position,
 				       create_flags | (AGS_IS_OUTPUT(channel) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
+
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
 
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
@@ -1978,7 +1992,7 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
   AgsLv2Manager *lv2_manager;
   AgsLv2Plugin *lv2_plugin;
 
-  GList *start_recall;
+  GList *start_recall, *recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
 
@@ -2124,6 +2138,20 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 				       position,
 				       create_flags | (AGS_IS_OUTPUT(channel) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
   
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
+
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
@@ -2696,7 +2724,7 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
   AgsVst3Manager *vst3_manager;
   AgsVst3Plugin *vst3_plugin;
 
-  GList *start_recall;
+  GList *start_recall, *recall;
   GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
   
@@ -2761,6 +2789,20 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 				       position,
 				       create_flags | (AGS_IS_OUTPUT(channel) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
   
+  recall = start_recall;
+
+  while(recall != NULL){
+#if defined(AGS_OSXAPI)
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+#else
+    ags_recall_set_flags(recall->data,
+			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+#endif
+
+    recall = recall->next;
+  }
+
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 

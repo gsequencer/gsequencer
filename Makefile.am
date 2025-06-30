@@ -207,6 +207,12 @@ EXTRA_DIST += \
 
 EXTRA_DIST += \
 	gen-symbols-all.pl \
+	gen-sym-libags.pl \
+	gen-sym-libags-thread.pl \
+	gen-sym-libags-server.pl \
+	gen-sym-libags-audio.pl \
+	gen-sym-libags-vst.pl \
+	gen-sym-libags-gui.pl \
 	libags.sym.in \
 	libags_thread.sym.in \
 	libags_server.sym.in \
@@ -773,7 +779,7 @@ defexec_DATA =
 libags_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
 libags_la_CFLAGS =  $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
+libags_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread
 libags_la_LIBADD = -lm
 libags_la_LDFLAGS += $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(W32API_LIBS) 
 
@@ -797,7 +803,7 @@ endif
 libags_thread_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
 libags_thread_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
+libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread
 libags_thread_la_LIBADD = libags.la -lm
 libags_thread_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(W32API_LIBS)
 
@@ -821,7 +827,7 @@ endif
 libags_server_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
 libags_server_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
+libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread
 libags_server_la_LIBADD = -lm libags_thread.la libags.la
 libags_server_la_LDFLAGS += $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(W32API_LIBS)
 
@@ -852,7 +858,7 @@ libags_audio_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
 
 libags_audio_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
 libags_audio_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread 
+libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread 
 libags_audio_la_LIBADD = -lm 
 
 if WITH_VST3
@@ -887,7 +893,7 @@ libags_audio_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS) 
 libags_gui_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_GUI_CPPFLAGS)
 libags_gui_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(LIBXML2_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
 libags_gui_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(GOBJECT_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(W32API_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 7:0:0 -pthread
+libags_gui_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread
 libags_gui_la_LIBADD = -lm
 libags_gui_la_LDFLAGS += $(GOBJECT_LIBS) $(LIBXML2_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(W32API_LIBS)
 
@@ -949,7 +955,7 @@ libgsequencer_la_LDFLAGS += $(CORE_AUDIO_LIBS) $(WASAPI_LIBS) $(LIBASOUND2_LIBS)
 if WITH_VST3
 libags_vst_la_CPPFLAGS = -std=c++2a $(libags_vst3_RELEASE_TYPE) $(libags_vst3_CPPFLAGS) -Wall -Wformat -Werror=format-security -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
 libags_vst_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ --include string --include codecvt $(GLIB_CFLAGS) $(libags_vst3_CXXFLAGS) $(W32API_CFLAGS)
-libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 7:0:0 -pthread 
+libags_vst_la_LDFLAGS = $(LDFLAGS) $(libags_vst3_LDFLAGS) -version-info 8:0:0 -pthread 
 libags_vst_la_LIBADD = -lm
 
 if WITH_W32API
@@ -1538,6 +1544,7 @@ libags_audio_thread_h_sources = \
        $(deprecated_libags_audio_thread_h_sources) \
        ags/audio/thread/ags_audio_loop.h \
        ags/audio/thread/ags_audio_thread.h \
+       ags/audio/thread/ags_audio_tree_dispatcher.h \
        ags/audio/thread/ags_channel_thread.h \
        ags/audio/thread/ags_sequencer_thread.h \
        ags/audio/thread/ags_soundcard_thread.h \
@@ -1563,6 +1570,7 @@ libags_audio_thread_c_sources = \
        $(deprecated_libags_audio_thread_c_sources) \
        ags/audio/thread/ags_audio_loop.c \
        ags/audio/thread/ags_audio_thread.c \
+       ags/audio/thread/ags_audio_tree_dispatcher.c \
        ags/audio/thread/ags_channel_thread.c \
        ags/audio/thread/ags_sequencer_thread.c \
        ags/audio/thread/ags_soundcard_thread.c \
@@ -2675,6 +2683,8 @@ libgsequencer_h_sources = \
 	ags/app/ags_machine_editor_bulk.h \
 	ags/app/ags_machine_editor_bulk_callbacks.h \
 	ags/app/ags_meta_data_window.h \
+	ags/app/ags_midi_cc_dialog.h \
+	ags/app/ags_midi_cc_dialog_callbacks.h \
 	ags/app/ags_midi_cc_editor.h \
 	ags/app/ags_midi_cc_editor_callbacks.h \
 	ags/app/ags_midi_dialog_callbacks.h \
@@ -2807,6 +2817,8 @@ libgsequencer_c_sources = \
 	ags/app/ags_machine_editor_line.c \
 	ags/app/ags_machine_editor_line_callbacks.c \
 	ags/app/ags_meta_data_window.c \
+	ags/app/ags_midi_cc_dialog.c \
+	ags/app/ags_midi_cc_dialog_callbacks.c \
 	ags/app/ags_midi_cc_editor.c \
 	ags/app/ags_midi_cc_editor_callbacks.c \
 	ags/app/ags_midi_dialog.c \
@@ -3918,49 +3930,76 @@ gen-symbols-ags:
 	touch libags.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags.sym.in
 	echo -e -n "\n" >> libags.sym.in
-	find ags/util -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags.pl $(srcdir)
+else
+	find ags/util -name "*.h" | xargs perl -p -e "/(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()/g" >> libags.sym.in
 	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+endif
 	echo "ags_application_context" >> libags.sym.in
+if WITH_OSXAPI
+else
 	find ags/object -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(ags_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags.sym.in
 	find ags/file -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+endif
 
 gen-symbols-ags-thread:
 	rm -f libags_thread.sym.in
 	touch libags_thread.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_thread.sym.in
 	echo -e -n "\n" >> libags_thread.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-thread.pl $(srcdir)
+else
 	find ags/thread -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_thread.sym.in
+endif
 
 gen-symbols-ags-server:
 	rm -f libags_server.sym.in
 	touch libags_server.sym.in
 	cat license-notice-gnu-agpl-3-0+-sym.txt >> libags_server.sym.in
 	echo -e -n "\n" >> libags_server.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-server.pl $(srcdir)
+else
 	find ags/server -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_server.sym.in
+endif
 
 gen-symbols-ags-audio:
 	rm -f libags_audio.sym.in
 	touch libags_audio.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_audio.sym.in
 	echo -e -n "\n" >> libags_audio.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-audio.pl $(srcdir)
+else
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
+endif
 
 gen-symbols-ags-vst:
 	rm -f libags_vst.sym.in
 	touch libags_vst.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_vst.sym.in
 	echo -e -n "\n" >> libags_vst.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-vst.pl $(srcdir)
+else
 	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
+endif
 
 gen-symbols-ags-gui:
 	rm -f libags_gui.sym.in
 	touch libags_gui.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_gui.sym.in
 	echo -e -n "\n" >> libags_gui.sym.in
+if WITH_OSXAPI
+	$(PERL) $(srcdir)/gen-sym-libags-gui.pl $(srcdir)
+else
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
 	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
+endif
 
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
 	echo "Generated all symbols"

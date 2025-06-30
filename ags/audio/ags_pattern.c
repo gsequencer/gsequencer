@@ -413,6 +413,33 @@ ags_pattern_set_property(GObject *gobject,
     g_rec_mutex_unlock(pattern_mutex);
   }
   break;
+  case PROP_PORT:
+  {
+    AgsPort *port;
+
+    port = (AgsPort *) g_value_get_object(value);
+
+    g_rec_mutex_lock(pattern_mutex);
+
+    if(port == pattern->port){
+      g_rec_mutex_unlock(pattern_mutex);
+
+      return;
+    }
+
+    if(pattern->port != NULL){
+      g_object_unref(G_OBJECT(pattern->port));
+    }
+
+    if(port != NULL){
+      g_object_ref(G_OBJECT(port));
+    }
+
+    pattern->port = (GObject *) port;
+
+    g_rec_mutex_unlock(pattern_mutex);
+  }
+  break;
   case PROP_TIMESTAMP:
   {
     AgsTimestamp *timestamp;
@@ -1565,6 +1592,67 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   g_rec_mutex_unlock(pattern_mutex);  
 }
 
+/**
+ * ags_pattern_get_port:
+ * @pattern: the #AgsPattern
+ * 
+ * Get port.
+ * 
+ * Returns: (transfer full): the #AgsPort
+ * 
+ * Since: 8.0.0
+ */
+GObject*
+ags_pattern_get_port(AgsPattern *pattern)
+{
+  GObject *port;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return(NULL);
+  }
+
+  port = NULL;
+  
+  g_object_get(pattern,
+	       "port", &port,
+	       NULL);
+
+  return(port);
+}
+
+/**
+ * ags_pattern_set_port:
+ * @pattern: the #AgsPattern
+ * @port: the #AgsPort
+ * 
+ * Set port.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_pattern_set_port(AgsPattern *pattern, GObject *port)
+{
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+
+  g_object_set(pattern,
+	       "port", port,
+	       NULL);
+}
+
+/**
+ * ags_pattern_is_empty:
+ * @pattern: an #AgsPattern
+ * @i: bank 0
+ * @j: bank 1
+ *
+ * Check if @pattern is empty at given bank.
+ *
+ * Returns: %TRUE if empty otherwise %FALSE
+ *
+ * Since: 3.0.0 
+ */
 gboolean
 ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
 {

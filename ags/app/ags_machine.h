@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -101,6 +101,7 @@ typedef enum{
   AGS_MACHINE_POPUP_MIDI_DIALOG               = 1 <<  3,
   AGS_MACHINE_SHOW_MIDI_INPUT                 = 1 <<  4,
   AGS_MACHINE_SHOW_MIDI_OUTPUT                = 1 <<  5,
+  AGS_MACHINE_POPUP_MIDI_CC_DIALOG            = 1 <<  6,
 }AgsMachineConnectionOptions;
 
 typedef enum{
@@ -195,6 +196,7 @@ struct _AgsMachine
   GtkWindow *reposition_audio;
   GtkWindow *connection_editor_dialog;
   GtkWindow *midi_dialog;
+  GtkWindow *midi_cc_dialog;
   GtkWindow *envelope_dialog;
   GtkWindow *envelope_info;
   GtkWindow *preset_dialog;

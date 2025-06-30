@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #ifndef __LIBAGS_GUI_H__
 #define __LIBAGS_GUI_H__
 
+#include <ags/widget/ags_button.h>
 #include <ags/widget/ags_cartesian.h>
 #include <ags/widget/ags_dial.h>
 #include <ags/widget/ags_expander_set.h>

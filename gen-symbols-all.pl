@@ -218,7 +218,7 @@ sub test_func()
     open(my $current_fh, '<', $current_filename) or return;
 
     while(my $line = <$current_fh>){
-	if($line =~ /(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()/){
+	if($line =~ /(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()/){
 	    print $fh "$1\n";
 	}
     }

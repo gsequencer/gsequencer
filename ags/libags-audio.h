@@ -145,6 +145,7 @@
 /* audio thread */
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_audio_tree_dispatcher.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>

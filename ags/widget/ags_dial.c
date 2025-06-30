@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -140,6 +140,7 @@ enum{
   PROP_RADIUS,
   PROP_OUTLINE_STRENGTH,
   PROP_FONT_SIZE,
+  PROP_FONT_NAME,
   PROP_BUTTON_WIDTH,
   PROP_BUTTON_HEIGHT,
   PROP_MARGIN_LEFT,
@@ -179,6 +180,27 @@ ags_dial_get_type(void)
   }
 
   return(g_define_type_id__static);
+}
+
+GType
+ags_dial_flags_get_type(void)
+{
+  static gsize g_flags_type_id__static;
+
+  if(g_once_init_enter(&g_flags_type_id__static)){
+    static const GFlagsValue values[] = {
+      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_WITH_BUTTONS", "dial-with-buttons" },
+      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_SEEMLESS_MODE", "dial-seemless-mode" },
+      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_INVERSE_LIGHT", "dial-inverse-light" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsDialFlags"), values);
+
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
+  }
+  
+  return(g_flags_type_id__static);
 }
 
 void
@@ -252,6 +274,22 @@ ags_dial_class_init(AgsDialClass *dial)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FONT_SIZE,
+				  param_spec);
+
+  /**
+   * AgsDial:font-name:
+   *
+   * The font name of the dials.
+   * 
+   * Since: 8.0.0
+   */
+  param_spec = g_param_spec_string("font-name",
+				   "font name",
+				   "The dials font-name",
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FONT_NAME,
 				  param_spec);
 
   /**
@@ -401,16 +439,23 @@ void
 ags_dial_init(AgsDial *dial)
 {
   GtkEventController *event_controller;
-  
+    
+  dial->flags = (AGS_DIAL_WITH_BUTTONS |
+		 AGS_DIAL_SEEMLESS_MODE |
+		 AGS_DIAL_INVERSE_LIGHT);
+  dial->state_flags = 0;
+
+  /* focus */
   gtk_widget_set_can_focus((GtkWidget *) dial,
 			   TRUE);
 
+  /* expand */
   gtk_widget_set_hexpand((GtkWidget *) dial,
 			 TRUE);
-  
   gtk_widget_set_vexpand((GtkWidget *) dial,
 			 TRUE);  
 
+  /* key controller */
   event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
@@ -424,6 +469,7 @@ ags_dial_init(AgsDial *dial)
   g_signal_connect(event_controller, "modifiers",
 		   G_CALLBACK(ags_dial_modifiers_callback), dial);
 
+  /* gesture controller */
   event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
@@ -434,23 +480,24 @@ ags_dial_init(AgsDial *dial)
   g_signal_connect(event_controller, "released",
 		   G_CALLBACK(ags_dial_gesture_click_released_callback), dial);
 
+  /* motion controller */
   event_controller = gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) dial,
 			    event_controller);
 
   g_signal_connect_after(event_controller, "motion",
 			 G_CALLBACK(ags_dial_motion_callback), dial);
-  
-  dial->flags = (AGS_DIAL_WITH_BUTTONS |
-		 AGS_DIAL_SEEMLESS_MODE |
-		 AGS_DIAL_INVERSE_LIGHT);
 
+  /* fields */
   dial->radius = AGS_DIAL_DEFAULT_RADIUS;
   dial->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
   dial->scale_max_precision = AGS_DIAL_DEFAULT_PRECISION;
   dial->outline_strength = AGS_DIAL_DEFAULT_OUTLINE_STRENGTH;
 
   dial->font_size = AGS_DIAL_DEFAULT_FONT_SIZE;
+  
+  dial->font_name = NULL;
+  
   dial->button_width = AGS_DIAL_DEFAULT_BUTTON_WIDTH;
   dial->button_height = AGS_DIAL_DEFAULT_BUTTON_HEIGHT;
   dial->margin_left = AGS_DIAL_DEFAULT_MARGIN_LEFT;
@@ -491,6 +538,17 @@ ags_dial_set_property(GObject *gobject,
   case PROP_FONT_SIZE:
     {
       dial->font_size = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FONT_NAME:
+    {
+      gchar *font_name;
+      
+      font_name = g_value_get_string(value);
+
+      g_free(dial->font_name);
+
+      dial->font_name = g_strdup(font_name);
     }
     break;
   case PROP_BUTTON_WIDTH:
@@ -603,6 +661,11 @@ ags_dial_get_property(GObject *gobject,
   case PROP_FONT_SIZE:
     {
       g_value_set_uint(value, dial->font_size);
+    }
+    break;
+  case PROP_FONT_NAME:
+    {
+      g_value_set_string(value, dial->font_name);
     }
     break;
   case PROP_BUTTON_WIDTH:
@@ -837,7 +900,7 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   gint padding_left, padding_top;
   gint dial_left_position;
   
-  dial->flags |= AGS_DIAL_MOUSE_BUTTON_PRESSED;
+  dial->state_flags |= AGS_DIAL_STATE_MOUSE_BUTTON_PRESSED;
 
   widget_width = gtk_widget_get_width((GtkWidget *) dial);
   widget_height = gtk_widget_get_height((GtkWidget *) dial);
@@ -861,11 +924,11 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
     if(ags_dial_button_press_is_down_event(dial,
 					   x, y,
 					   padding_left, padding_top)){
-      dial->flags |= AGS_DIAL_BUTTON_DOWN_PRESSED;
+      dial->state_flags |= AGS_DIAL_STATE_BUTTON_DOWN_PRESSED;
     }else if(ags_dial_button_press_is_up_event(dial,
 					       x, y,
 					       padding_left, padding_top)){
-      dial->flags |= AGS_DIAL_BUTTON_UP_PRESSED;
+      dial->state_flags |= AGS_DIAL_STATE_BUTTON_UP_PRESSED;
     }else{
       dial_left_position = padding_left + dial->button_width;
 
@@ -878,8 +941,8 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 	dial->current_x = x;
 	dial->current_y = y;
 
-	dial->flags |= AGS_DIAL_MOTION_CAPTURING_INIT;
-	dial->flags |= AGS_DIAL_MOTION_CAPTURING;
+	dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING_INIT;
+	dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING;
       }
     }
   }else{
@@ -894,8 +957,8 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
       dial->current_x = x;
       dial->current_y = y;
 
-      dial->flags |= AGS_DIAL_MOTION_CAPTURING_INIT;
-      dial->flags |= AGS_DIAL_MOTION_CAPTURING;
+      dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING_INIT;
+      dial->state_flags |= AGS_DIAL_STATE_MOTION_CAPTURING;
     }
   }
 }
@@ -909,9 +972,9 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
 {
   gtk_widget_grab_focus((GtkWidget *) dial);
 
-  dial->flags &= (~AGS_DIAL_MOUSE_BUTTON_PRESSED);
+  dial->state_flags &= (~AGS_DIAL_STATE_MOUSE_BUTTON_PRESSED);
 
-  if((AGS_DIAL_BUTTON_DOWN_PRESSED & (dial->flags)) != 0){
+  if((AGS_DIAL_STATE_BUTTON_DOWN_PRESSED & (dial->state_flags)) != 0){
     GtkAdjustment *adjustment;
 
     adjustment = dial->adjustment;
@@ -924,8 +987,8 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
 
-    dial->flags &= (~AGS_DIAL_BUTTON_DOWN_PRESSED);
-  }else if((AGS_DIAL_BUTTON_UP_PRESSED & (dial->flags)) != 0){
+    dial->state_flags &= (~AGS_DIAL_STATE_BUTTON_DOWN_PRESSED);
+  }else if((AGS_DIAL_STATE_BUTTON_UP_PRESSED & (dial->state_flags)) != 0){
     GtkAdjustment *adjustment;
 
     adjustment = dial->adjustment;
@@ -938,9 +1001,9 @@ ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
 
-    dial->flags &= (~AGS_DIAL_BUTTON_UP_PRESSED);
-  }else if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
-    dial->flags &= (~AGS_DIAL_MOTION_CAPTURING);
+    dial->state_flags &= (~AGS_DIAL_STATE_BUTTON_UP_PRESSED);
+  }else if((AGS_DIAL_STATE_MOTION_CAPTURING & (dial->state_flags)) != 0){
+    dial->state_flags &= (~AGS_DIAL_STATE_MOTION_CAPTURING);
   }
 }
 
@@ -1102,9 +1165,9 @@ ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
   widget_width = gtk_widget_get_width((GtkWidget *) dial);
   widget_height = gtk_widget_get_height((GtkWidget *) dial);
 
-  if((AGS_DIAL_MOTION_CAPTURING & (dial->flags)) != 0){
+  if((AGS_DIAL_STATE_MOTION_CAPTURING & (dial->state_flags)) != 0){
     if((AGS_DIAL_SEEMLESS_MODE & (dial->flags)) != 0){
-      if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+      if((AGS_DIAL_STATE_MOTION_CAPTURING_INIT & (dial->state_flags)) != 0){
 	dial->current_x = x;
 	dial->current_y = y;
       }else{
@@ -1117,11 +1180,11 @@ ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
       ags_dial_motion_notify_do_seemless_dial(dial,
 					      x, y);
     }else{
-      if((AGS_DIAL_MOTION_CAPTURING_INIT & (dial->flags)) != 0){
+      if((AGS_DIAL_STATE_MOTION_CAPTURING_INIT & (dial->state_flags)) != 0){
 	dial->current_x = x;
 	dial->current_y = y;
 
-	dial->flags &= (~AGS_DIAL_MOTION_CAPTURING_INIT);
+	dial->state_flags &= (~AGS_DIAL_STATE_MOTION_CAPTURING_INIT);
 
 	ags_dial_motion_notify_do_dial(dial,
 				       x, y);
@@ -1438,12 +1501,34 @@ ags_dial_draw(AgsDial *dial,
   font_name = NULL;
   
   dark_theme = TRUE;
+
+  if(dial->font_name == NULL){
+    g_object_get(settings,
+		 "gtk-font-name", &font_name,
+		 NULL);
+
+    ags_dial_set_font_name(dial,
+			   font_name);
+  }else{
+    font_name = dial->font_name;
+  }
+
+  if(font_name == NULL){
+    font_name = "sans";
+  }
   
   g_object_get(settings,
 	       "gtk-font-name", &font_name,
-	       "gtk-application-prefer-dark-theme", &dark_theme,
 	       NULL);
 
+  if(font_name == NULL){
+    font_name = "sans";
+  }
+  
+  g_object_get(settings,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
+  
   /* colors */
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
@@ -1836,6 +1921,60 @@ ags_dial_draw(AgsDial *dial,
 }
 
 /**
+ * ags_dial_test_flags:
+ * @dial: the #AgsDial
+ * @flags: the flags
+ * 
+ * Test flags of @dial.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 8.0.0
+ */
+gboolean
+ags_dial_test_flags(AgsDial *dial,
+		    AgsDialFlags flags)
+{
+  gboolean success;
+
+  success = ((flags & (dial->flags)) != 0) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_dial_set_flags:
+ * @dial: the #AgsDial
+ * @flags: the flags
+ * 
+ * Set flags of @dial.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_dial_set_flags(AgsDial *dial,
+		   AgsDialFlags flags)
+{
+  dial->flags |= flags;
+}
+
+/**
+ * ags_dial_unset_flags:
+ * @dial: the #AgsDial
+ * @flags: the flags
+ * 
+ * Set flags of @dial.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_dial_unset_flags(AgsDial *dial,
+		     AgsDialFlags flags)
+{
+  dial->flags &= (~flags);
+}
+
+/**
  * ags_dial_set_radius:
  * @dial: the #AgsDial
  * @radius: the radius
@@ -1977,6 +2116,56 @@ ags_dial_get_scale_precision(AgsDial *dial)
 	       NULL);
 
   return(scale_precision);
+}
+
+/**
+ * ags_dial_set_font_name:
+ * @dial: the #AgsDial
+ * @font_name: the font name
+ * 
+ * Set font name of @dial.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_dial_set_font_name(AgsDial *dial,
+		       gchar *font_name)
+{
+  if(!AGS_IS_DIAL(dial)){
+    return;
+  }
+  
+  g_object_set(dial,
+	       "font-name", font_name,
+	       NULL);
+}
+
+/**
+ * ags_dial_get_font_name:
+ * @dial: the #AgsDial
+ * 
+ * Get font name of @dial.
+ * 
+ * Returns: the font name
+ * 
+ * Since: 8.0.0
+ */
+gchar*
+ags_dial_get_font_name(AgsDial *dial)
+{
+  gchar *font_name;
+  
+  if(!AGS_IS_DIAL(dial)){
+    return(0);
+  }
+
+  font_name = NULL;
+  
+  g_object_get(dial,
+	       "font-name", &font_name,
+	       NULL);
+
+  return(font_name);
 }
 
 /**
@@ -2273,7 +2462,7 @@ ags_dial_get_adjustment(AgsDial *dial)
  * ags_dial_value_changed:
  * @dial: the #AgsDial
  *
- * draws the widget
+ * The value-changed event of @dial.
  *
  * Since: 3.0.0
  */

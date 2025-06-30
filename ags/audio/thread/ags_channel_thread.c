@@ -219,7 +219,11 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   guint buffer_size;
   
   static const guint staging_program[] = {
-    (AGS_SOUND_STAGING_AUTOMATE | AGS_SOUND_STAGING_RUN_INTER | AGS_SOUND_STAGING_FX),
+    (AGS_SOUND_STAGING_AUTOMATE
+     | AGS_SOUND_STAGING_RUN_INTER
+     | AGS_SOUND_STAGING_FX
+     | AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE
+     | AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE),
   };
 
   thread = (AgsThread *) channel_thread;
@@ -269,6 +273,11 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   channel_thread->processing = FALSE;
 
   channel_thread->task_launcher = ags_task_launcher_new();  
+
+  channel_thread->audio_tree_dispatcher = ags_audio_tree_dispatcher_new();
+
+  ags_audio_tree_dispatcher_set_staging_program(channel_thread->audio_tree_dispatcher,
+						channel_thread->staging_program, channel_thread->staging_program_count);
 }
 
 void
@@ -508,6 +517,7 @@ ags_channel_thread_run(AgsThread *thread)
   
   AgsAudioLoop *audio_loop;
   AgsChannelThread *channel_thread;
+  AgsAudioTreeDispatcher *audio_tree_dispatcher;
 
   AgsTaskLauncher *task_launcher;
 
@@ -619,6 +629,7 @@ ags_channel_thread_run(AgsThread *thread)
     /* 
      * do audio processing
      */
+#if 0
     if(default_soundcard != NULL &&
        !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
        ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
@@ -678,6 +689,13 @@ ags_channel_thread_run(AgsThread *thread)
 	}
       }
     }
+#else      
+    if(default_soundcard != NULL &&
+       !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
+       ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
+      ags_audio_tree_dispatcher_run(channel_thread->audio_tree_dispatcher);
+    }
+#endif
     
     /* sync */
     g_mutex_lock(&(channel_thread->done_mutex));
@@ -1059,6 +1077,9 @@ ags_channel_thread_set_staging_program(AgsChannelThread *channel_thread,
   channel_thread->staging_program_count = staging_program_count;
   
   g_rec_mutex_unlock(thread_mutex);
+
+  ags_audio_tree_dispatcher_set_staging_program(channel_thread->audio_tree_dispatcher,
+						staging_program, staging_program_count);
 }
 
 /**

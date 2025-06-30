@@ -202,7 +202,10 @@ ags_navigation_init(AgsNavigation *navigation)
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(navigation),
 				 GTK_ORIENTATION_VERTICAL);
-
+  
+  gtk_box_set_spacing((GtkBox *) navigation,
+		      AGS_UI_PROVIDER_DEFAULT_PADDING);
+  
   navigation->flags = AGS_NAVIGATION_BLOCK_TIC;
   navigation->connectable_flags = 0;
 

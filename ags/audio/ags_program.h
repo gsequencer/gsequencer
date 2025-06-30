@@ -124,11 +124,6 @@ GList* ags_program_add(GList *program,
 
 GList* ags_program_remove_all_empty(GList *program);
 
-//TODO:JK: remove these 2 functions
-GObject* ags_program_get_audio(AgsProgram *program);
-void ags_program_set_audio(AgsProgram *program,
-			   GObject *audio);
-
 AgsTimestamp* ags_program_get_timestamp(AgsProgram *program);
 void ags_program_set_timestamp(AgsProgram *program,
 			       AgsTimestamp *timestamp);
@@ -140,11 +135,6 @@ void ags_program_set_control_key(AgsProgram *program,
 gchar* ags_program_get_control_name(AgsProgram *program);
 void ags_program_set_control_name(AgsProgram *program,
 				  gchar *control_name);
-
-//TODO:JK: remove these 2 functions
-GObject* ags_program_get_port(AgsProgram *program);
-void ags_program_set_port(AgsProgram *program,
-			  GObject *port);
 
 GList* ags_program_get_marker(AgsProgram *program);
 void ags_program_set_marker(AgsProgram *program,

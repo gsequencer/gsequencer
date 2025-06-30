@@ -2530,6 +2530,8 @@ ags_note_duplicate(AgsNote *note)
  *
  * Deserialize note.
  *
+ * returns: (transfer full): the newly instantiated #AgsNote
+ * 
  * Since: 7.2.0
  */
 AgsNote*
