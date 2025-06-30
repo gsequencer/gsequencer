@@ -600,18 +600,34 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
   while(recall != NULL){
     GHashTable *midi1_cc_to_port_specifier;
+    GHashTable *midi2_cc_to_port_specifier;
 
     recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
+    /* MIDI 1 remove all CC */
     midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
-    /* MIDI 1 remove all CC */
     if(midi1_cc_to_port_specifier != NULL){
       g_rec_mutex_lock(recall_mutex);
       
       g_hash_table_remove_all(midi1_cc_to_port_specifier);
       
       g_rec_mutex_unlock(recall_mutex);
+
+      g_hash_table_unref(midi1_cc_to_port_specifier);
+    }
+
+    /* MIDI 2 remove all CC */
+    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+    if(midi2_cc_to_port_specifier != NULL){
+      g_rec_mutex_lock(recall_mutex);
+      
+      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+      
+      g_rec_mutex_unlock(recall_mutex);
+      
+      g_hash_table_unref(midi2_cc_to_port_specifier);
     }
     
     /* iterate */
@@ -626,18 +642,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
     start_recall = ags_audio_get_recall(audio);
 
   while(recall != NULL){
+    GHashTable *midi1_cc_to_port_specifier;
     GHashTable *midi2_cc_to_port_specifier;
 
     recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+    /* MIDI 1 remove all CC */
+    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
+    if(midi1_cc_to_port_specifier != NULL){
+      g_rec_mutex_lock(recall_mutex);
+      
+      g_hash_table_remove_all(midi1_cc_to_port_specifier);
+      
+      g_rec_mutex_unlock(recall_mutex);
+      
+      g_hash_table_unref(midi1_cc_to_port_specifier);
+    }
+    
     /* MIDI 2 remove all CC */
-    g_rec_mutex_lock(recall_mutex);
+    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+    
+    if(midi2_cc_to_port_specifier != NULL){
+      g_rec_mutex_lock(recall_mutex);
   
-    g_hash_table_remove_all(midi2_cc_to_port_specifier);
+      g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-    g_rec_mutex_unlock(recall_mutex);
+      g_rec_mutex_unlock(recall_mutex);
+      
+      g_hash_table_unref(midi2_cc_to_port_specifier);
+    }
   
     /* iterate */
     recall = recall->next;
@@ -646,7 +680,7 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
-  /* recall channel - output */
+  /* channel - output */
   channel = ags_audio_get_output(audio);
 
   while(channel != NULL){
@@ -657,18 +691,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
       start_recall = ags_channel_get_play(channel);
 
     while(recall != NULL){
+      GHashTable *midi1_cc_to_port_specifier;
       GHashTable *midi2_cc_to_port_specifier;
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
+      /* MIDI 1 remove all CC */
+      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+      if(midi1_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
+      
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+      
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+      
+      /* MIDI 2 remove all CC */
       midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
 
-      /* MIDI 2 remove all CC */
-      g_rec_mutex_lock(recall_mutex);
+      if(midi2_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
   
-      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
   
       /* iterate */
       recall = recall->next;
@@ -682,18 +734,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
       start_recall = ags_channel_get_recall(channel);
 
     while(recall != NULL){
+      GHashTable *midi1_cc_to_port_specifier;
       GHashTable *midi2_cc_to_port_specifier;
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      /* MIDI 1 remove all CC */
+      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
+      if(midi1_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
+      
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+      
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+      
       /* MIDI 2 remove all CC */
-      g_rec_mutex_lock(recall_mutex);
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      
+      if(midi2_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
   
-      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
   
       /* iterate */
       recall = recall->next;
@@ -710,7 +780,7 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
     channel = next;
   }
   
-  /* recall channel - output */
+  /* channel - input */
   channel = ags_audio_get_input(audio);
 
   while(channel != NULL){
@@ -721,19 +791,37 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
       start_recall = ags_channel_get_play(channel);
 
     while(recall != NULL){
+      GHashTable *midi1_cc_to_port_specifier;
       GHashTable *midi2_cc_to_port_specifier;
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      /* MIDI 1 remove all CC */
+      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
+      if(midi1_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
+      
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+      
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+      
       /* MIDI 2 remove all CC */
-      g_rec_mutex_lock(recall_mutex);
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      
+      if(midi2_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
   
-      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-      g_rec_mutex_unlock(recall_mutex);
-  
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
+      
       /* iterate */
       recall = recall->next;
     }
@@ -746,18 +834,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
       start_recall = ags_channel_get_recall(channel);
 
     while(recall != NULL){
+      GHashTable *midi1_cc_to_port_specifier;
       GHashTable *midi2_cc_to_port_specifier;
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      /* MIDI 1 remove all CC */
+      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
+      if(midi1_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
+      
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+      
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
+      
       /* MIDI 2 remove all CC */
-      g_rec_mutex_lock(recall_mutex);
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      
+      if(midi2_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
   
-      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
+	
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
   
       /* iterate */
       recall = recall->next;
@@ -1326,9 +1432,6 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 		     7)){
 	xmlChar *control;
 	xmlChar *port;
-	xmlChar *midi2_group;
-	xmlChar *midi2_channel;
-	xmlChar *midi2_note;
 	
 	control = xmlGetProp(child,
 			     BAD_CAST "control");
@@ -1336,10 +1439,47 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 	port = xmlGetProp(child,
 			  BAD_CAST "port");
 
+	/* MIDI 1 */
+	editor = ags_midi_cc_editor_find_midi1_control(start_editor,
+						       control);
+
+	if(editor != NULL &&
+	   ags_midi_cc_editor_test_flags((AgsMidiCCEditor *) editor->data, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	  xmlChar *midi1_channel;
+	  
+	  gint position;
+
+	  position = ags_strv_index(AGS_MIDI_CC_EDITOR(editor->data)->port,
+				    port);
+
+	  if(position >= 0){
+	    gtk_drop_down_set_selected(AGS_MIDI_CC_EDITOR(editor->data)->midi1_port_drop_down,
+				       (guint) position);
+	  }
+
+	  /* MIDI channel */
+	  midi1_channel = xmlGetProp(child,
+				     BAD_CAST "midi-channel");
+
+	  if(midi1_channel != NULL){
+	    gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi1_channel,
+				      g_ascii_strtod(midi1_channel,
+						     NULL));
+	
+	    xmlFree(midi1_channel);
+	  }
+	}
+
+	/* MIDI 2 */
 	editor = ags_midi_cc_editor_find_midi2_control(start_editor,
 						       control);
 
-	if(editor != NULL){
+	if(editor != NULL &&
+	   ags_midi_cc_editor_test_flags((AgsMidiCCEditor *) editor->data, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	  xmlChar *midi2_group;
+	  xmlChar *midi2_channel;
+	  xmlChar *midi2_note;
+	  
 	  gint position;
 
 	  position = ags_strv_index(AGS_MIDI_CC_EDITOR(editor->data)->port,
@@ -1349,40 +1489,53 @@ ags_midi_cc_dialog_from_xml_node(AgsMidiCCDialog *midi_cc_dialog,
 	    gtk_drop_down_set_selected(AGS_MIDI_CC_EDITOR(editor->data)->midi2_port_drop_down,
 				       (guint) position);
 	  }
+
+	  /* MIDI group */
+	  midi2_group = xmlGetProp(child,
+				   BAD_CAST "midi-group");
+
+	  if(midi2_group != NULL){
+	    gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_group,
+				      g_ascii_strtod(midi2_group,
+						     NULL));
+
+	    xmlFree(midi2_group);
+	  }
+	
+	  /* MIDI channel */
+	  midi2_channel = xmlGetProp(child,
+				     BAD_CAST "midi-channel");
+
+	  if(midi2_channel != NULL){
+	    gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_channel,
+				      g_ascii_strtod(midi2_channel,
+						     NULL));
+	
+	    xmlFree(midi2_channel);
+	  }
+	
+	  /* MIDI note */
+	  midi2_note = xmlGetProp(child,
+				  BAD_CAST "midi-note");
+
+	  if(midi2_note != NULL){
+	    gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_note,
+				      g_ascii_strtod(midi2_note,
+						     NULL));
+
+	    xmlFree(midi2_note);
+	  }
 	}
 	
 	xmlFree(control);
 	xmlFree(port);
-
-	/* MIDI group */
-	midi2_group = xmlGetProp(child,
-				BAD_CAST "midi-group");
-	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_group,
-				  g_ascii_strtod(midi2_group,
-						 NULL));
-	
-	/* MIDI channel */
-	midi2_channel = xmlGetProp(child,
-				BAD_CAST "midi-channel");
-	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_channel,
-				  g_ascii_strtod(midi2_channel,
-						 NULL));
-
-	/* MIDI note */
-	midi2_note = xmlGetProp(child,
-				BAD_CAST "midi-note");
-	gtk_spin_button_set_value(AGS_MIDI_CC_EDITOR(editor->data)->midi2_note,
-				  g_ascii_strtod(midi2_note,
-						 NULL));
-
-	xmlFree(midi2_group);
-	xmlFree(midi2_channel);
-	xmlFree(midi2_note);
       }
     }
 
     child = child->next;
   }
+
+  g_list_free(start_editor);
 }
 
 /**
