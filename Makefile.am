@@ -3933,15 +3933,15 @@ gen-symbols-ags:
 if WITH_OSXAPI
 	$(PERL) $(srcdir)/gen-sym-libags.pl $(srcdir)
 else
-	find ags/util -name "*.h" | xargs perl -p -e "/(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()/g" >> libags.sym.in
-	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+	find ags/util -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 endif
 	echo "ags_application_context" >> libags.sym.in
 if WITH_OSXAPI
 else
-	find ags/object -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
-	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(ags_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags.sym.in
-	find ags/file -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+	find ags/object -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
+	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(?<!#define )(ags_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags.sym.in
+	find ags/file -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 endif
 
 gen-symbols-ags-thread:
@@ -3952,7 +3952,7 @@ gen-symbols-ags-thread:
 if WITH_OSXAPI
 	$(PERL) $(srcdir)/gen-sym-libags-thread.pl $(srcdir)
 else
-	find ags/thread -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_thread.sym.in
+	find ags/thread -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_thread.sym.in
 endif
 
 gen-symbols-ags-server:
@@ -3963,7 +3963,7 @@ gen-symbols-ags-server:
 if WITH_OSXAPI
 	$(PERL) $(srcdir)/gen-sym-libags-server.pl $(srcdir)
 else
-	find ags/server -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_server.sym.in
+	find ags/server -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_server.sym.in
 endif
 
 gen-symbols-ags-audio:
@@ -3974,8 +3974,8 @@ gen-symbols-ags-audio:
 if WITH_OSXAPI
 	$(PERL) $(srcdir)/gen-sym-libags-audio.pl $(srcdir)
 else
-	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
-	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
+	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
+	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 endif
 
 gen-symbols-ags-vst:
@@ -3986,7 +3986,7 @@ gen-symbols-ags-vst:
 if WITH_OSXAPI
 	$(PERL) $(srcdir)/gen-sym-libags-vst.pl $(srcdir)
 else
-	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
+	find ags/vst3-capi -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_vst.sym.in
 endif
 
 gen-symbols-ags-gui:
@@ -3997,8 +3997,8 @@ gen-symbols-ags-gui:
 if WITH_OSXAPI
 	$(PERL) $(srcdir)/gen-sym-libags-gui.pl $(srcdir)
 else
-	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
-	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
+	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<!#define )(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
+	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(?<!#define )(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
 endif
 
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-vst gen-symbols-ags-gui
