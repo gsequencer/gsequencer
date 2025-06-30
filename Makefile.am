@@ -348,39 +348,39 @@ include $(top_srcdir)/introspection.mk
 if HAVE_INTROSPECTION
 introspection_sources = $(libags_la_SOURCES) $(libags_thread_la_SOURCES) $(libags_server_la_SOURCES) $(libags_audio_la_SOURCES) $(libags_gui_la_SOURCES)
 
-Ags-7.0.gir: libags.la libags_thread.la libags_server.la
-Ags_7_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0
-Ags_7_0_gir_C_INCLUDES = ags/libags.h
-Ags_7_0_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
-Ags_7_0_gir_LIBS = libags.la libags_thread.la libags_server.la
-Ags_7_0_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
-Ags_7_0_gir_NAMESPACE = Ags
-Ags_7_0_gir_VERSION = 7.0
-Ags_7_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=7.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-7.0.gir
-INTROSPECTION_GIRS += Ags-7.0.gir
+Ags-8.0.gir: libags.la libags_thread.la libags_server.la
+Ags_8_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0
+Ags_8_0_gir_C_INCLUDES = ags/libags.h
+Ags_8_0_gir_CFLAGS = $(INCLUDES) $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(LIBSOUP_CFLAGS)
+Ags_8_0_gir_LIBS = libags.la libags_thread.la libags_server.la
+Ags_8_0_gir_FILES = $(libags_la_HEADERS_0) $(libags_la_SOURCES) $(libags_thread_la_HEADERS_0) $(libags_thread_la_SOURCES) $(libags_server_la_HEADERS_0) $(libags_server_la_SOURCES)
+Ags_8_0_gir_NAMESPACE = Ags
+Ags_8_0_gir_VERSION = 8.0
+Ags_8_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --namespace=Ags --nsversion=8.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/Ags-8.0.gir
+INTROSPECTION_GIRS += Ags-8.0.gir
 
-AgsAudio-7.0.gir: libags_audio.la $(top_builddir)/Ags-7.0.gir
-AgsAudio_7_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0 Gst-1.0 GstBase-1.0 GstAudio-1.0 Ags-7.0
-AgsAudio_7_0_gir_C_INCLUDES = ags/libags-audio.h
-AgsAudio_7_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS)
-AgsAudio_7_0_gir_LIBS = libags_audio.la
-AgsAudio_7_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
+AgsAudio-8.0.gir: libags_audio.la $(top_builddir)/Ags-8.0.gir
+AgsAudio_8_0_gir_INCLUDES = libxml2-2.0 GObject-2.0 Soup-3.0 Gst-1.0 GstBase-1.0 GstAudio-1.0 Ags-8.0
+AgsAudio_8_0_gir_C_INCLUDES = ags/libags-audio.h
+AgsAudio_8_0_gir_CFLAGS = $(INCLUDES) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS)
+AgsAudio_8_0_gir_LIBS = libags_audio.la
+AgsAudio_8_0_gir_FILES = $(libags_audio_la_HEADERS_0) $(libags_audio_la_SOURCES)
 
-AgsAudio_7_0_gir_NAMESPACE = AgsAudio
-AgsAudio_7_0_gir_VERSION = 7.0
-AgsAudio_7_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gst-1.0 --include=GstBase-1.0 --include=GstAudio-1.0 --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-7.0 --namespace=AgsAudio --nsversion=7.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-7.0.gir
-INTROSPECTION_GIRS += AgsAudio-7.0.gir
+AgsAudio_8_0_gir_NAMESPACE = AgsAudio
+AgsAudio_8_0_gir_VERSION = 8.0
+AgsAudio_8_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gst-1.0 --include=GstBase-1.0 --include=GstAudio-1.0 --include=Soup-3.0 --include=GObject-2.0 --include=libxml2-2.0 --include=Ags-8.0 --namespace=AgsAudio --nsversion=8.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsAudio-8.0.gir
+INTROSPECTION_GIRS += AgsAudio-8.0.gir
 
-AgsGui-7.0.gir: libags_gui.la
-AgsGui_7_0_gir_INCLUDES = GObject-2.0 Gtk-4.0
-AgsGui_7_0_gir_C_INCLUDES = ags/libags-gui.h
-AgsGui_7_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS) $(LIBXML2_CFLAGS)
-AgsGui_7_0_gir_LIBS = libags_gui.la
-AgsGui_7_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
-AgsGui_7_0_gir_NAMESPACE = AgsGui
-AgsGui_7_0_gir_VERSION = 7.0
-AgsGui_7_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --include=libxml2-2.0 --namespace=AgsGui --nsversion=7.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-7.0.gir
-INTROSPECTION_GIRS += AgsGui-7.0.gir
+AgsGui-8.0.gir: libags_gui.la
+AgsGui_8_0_gir_INCLUDES = GObject-2.0 Gtk-4.0
+AgsGui_8_0_gir_C_INCLUDES = ags/libags-gui.h
+AgsGui_8_0_gir_CFLAGS = $(INCLUDES) $(GTK_CFLAGS) $(LIBXML2_CFLAGS)
+AgsGui_8_0_gir_LIBS = libags_gui.la
+AgsGui_8_0_gir_FILES = $(libags_gui_la_HEADERS_0) $(libags_gui_la_SOURCES)
+AgsGui_8_0_gir_NAMESPACE = AgsGui
+AgsGui_8_0_gir_VERSION = 8.0
+AgsGui_8_0_gir_SCANNERFLAGS = --add-include-path=$(top_srcdir) --add-include-path=$(top_builddir) -I$(top_srcdir) -I$(top_builddir) --warn-all --include=Gtk-4.0 --include=libxml2-2.0 --namespace=AgsGui --nsversion=8.0 --identifier-prefix=Ags --symbol-prefix=ags_ --output=$(top_builddir)/AgsGui-8.0.gir
+INTROSPECTION_GIRS += AgsGui-8.0.gir
 
 girdir = $(datadir)/gir-1.0
 gir_DATA = $(INTROSPECTION_GIRS)
@@ -3619,9 +3619,9 @@ sphinx:
 	pandoc -f docbook $(top_builddir)/xml/oscBook.xml -o $(top_builddir)/sphinx/oscBook.rst
 
 gi-docgen:
-	gi-docgen generate --add-include-path ./ -C docs/reference/libags/Ags.conf --output-dir docs/reference/libags/ Ags-7.0.gir
-	gi-docgen generate --add-include-path ./ -C docs/reference/libags-audio/AgsAudio.conf --output-dir docs/reference/libags-audio/ AgsAudio-7.0.gir
-	gi-docgen generate --add-include-path ./ -C docs/reference/libags-gui/AgsGui.conf --output-dir docs/reference/libags-gui/ AgsGui-7.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags/Ags.conf --output-dir docs/reference/libags/ Ags-8.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags-audio/AgsAudio.conf --output-dir docs/reference/libags-audio/ AgsAudio-8.0.gir
+	gi-docgen generate --add-include-path ./ -C docs/reference/libags-gui/AgsGui.conf --output-dir docs/reference/libags-gui/ AgsGui-8.0.gir
 
 doxygen:
 	doxygen
