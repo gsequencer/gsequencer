@@ -6861,8 +6861,10 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	  
 	    midi_iter += (3 + midi_iter[2]);
 	  }else{
+#if defined(AGS_DEBUG)
 	    g_warning("ags_recall.c - unexpected byte %x", midi_iter[0]);
-	  
+#endif
+	    
 	    midi_iter++;
 	  }
 	}
@@ -7959,6 +7961,12 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 		g_value_set_float(&port_value,
 				  value);
+
+		//#if defined(AGS_DEBUG)
+		g_message("write port: %s -> %f",
+			  port_specifier,
+			  value);
+		//#endif
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
@@ -8092,7 +8100,9 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    	    
 	    midi_iter += 4;
 	  }else{
+#if defined(AGS_DEBUG)
 	    g_warning("ags_recall.c - unexpected bytes %x %x %x %x", midi_iter[3], midi_iter[2], midi_iter[1], midi_iter[0]);
+#endif
 	    
 	    midi_iter += 4;
 	  }

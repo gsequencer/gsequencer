@@ -1040,13 +1040,6 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
 	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
 
 	if(midi1_cc_to_port_specifier != NULL){
-	  /* remove all */
-	  g_rec_mutex_lock(recall_mutex);
-  
-	  g_hash_table_remove_all(midi1_cc_to_port_specifier);
-
-	  g_rec_mutex_unlock(recall_mutex);
-
 	  /* apply */
 	  ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
 						(AgsRecall *) recall_channel->data,
@@ -1064,13 +1057,6 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
 	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
 
 	if(midi2_cc_to_port_specifier != NULL){
-	  /* remove all */
-	  g_rec_mutex_lock(recall_mutex);
-  
-	  g_hash_table_remove_all(midi2_cc_to_port_specifier);
-
-	  g_rec_mutex_unlock(recall_mutex);
-
 	  /* apply */
 	  ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
 						(AgsRecall *) recall_channel->data,

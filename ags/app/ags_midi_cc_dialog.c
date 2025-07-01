@@ -604,30 +604,34 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
     recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-    /* MIDI 1 remove all CC */
-    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+    if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){    
+      /* MIDI 1 remove all CC */
+      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
-    if(midi1_cc_to_port_specifier != NULL){
-      g_rec_mutex_lock(recall_mutex);
+      if(midi1_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
       
-      g_hash_table_remove_all(midi1_cc_to_port_specifier);
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
       
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
 
-      g_hash_table_unref(midi1_cc_to_port_specifier);
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
     }
 
-    /* MIDI 2 remove all CC */
-    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+    if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+      /* MIDI 2 remove all CC */
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
 
-    if(midi2_cc_to_port_specifier != NULL){
-      g_rec_mutex_lock(recall_mutex);
+      if(midi2_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
       
-      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
       
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
       
-      g_hash_table_unref(midi2_cc_to_port_specifier);
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
     }
     
     /* iterate */
@@ -647,32 +651,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
     recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-    /* MIDI 1 remove all CC */
-    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+    if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){    
+      /* MIDI 1 remove all CC */
+      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
-    if(midi1_cc_to_port_specifier != NULL){
-      g_rec_mutex_lock(recall_mutex);
+      if(midi1_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
       
-      g_hash_table_remove_all(midi1_cc_to_port_specifier);
+	g_hash_table_remove_all(midi1_cc_to_port_specifier);
       
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
       
-      g_hash_table_unref(midi1_cc_to_port_specifier);
+	g_hash_table_unref(midi1_cc_to_port_specifier);
+      }
     }
     
-    /* MIDI 2 remove all CC */
-    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+    if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+      /* MIDI 2 remove all CC */
+      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
     
-    if(midi2_cc_to_port_specifier != NULL){
-      g_rec_mutex_lock(recall_mutex);
+      if(midi2_cc_to_port_specifier != NULL){
+	g_rec_mutex_lock(recall_mutex);
   
-      g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-      g_rec_mutex_unlock(recall_mutex);
+	g_rec_mutex_unlock(recall_mutex);
       
-      g_hash_table_unref(midi2_cc_to_port_specifier);
+	g_hash_table_unref(midi2_cc_to_port_specifier);
+      }
     }
-  
+    
     /* iterate */
     recall = recall->next;
   }
@@ -696,32 +704,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-      /* MIDI 1 remove all CC */
-      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){    
+	/* MIDI 1 remove all CC */
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
-      if(midi1_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi1_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
       
-	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi1_cc_to_port_specifier);
       
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi1_cc_to_port_specifier);
+	  g_hash_table_unref(midi1_cc_to_port_specifier);
+	}
       }
       
-      /* MIDI 2 remove all CC */
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	/* MIDI 2 remove all CC */
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
 
-      if(midi2_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi2_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
   
-	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi2_cc_to_port_specifier);
+	  g_hash_table_unref(midi2_cc_to_port_specifier);
+	}
       }
-  
+      
       /* iterate */
       recall = recall->next;
     }
@@ -739,32 +751,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-      /* MIDI 1 remove all CC */
-      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){    
+	/* MIDI 1 remove all CC */
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
-      if(midi1_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi1_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
       
-	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi1_cc_to_port_specifier);
       
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi1_cc_to_port_specifier);
+	  g_hash_table_unref(midi1_cc_to_port_specifier);
+	}
       }
       
-      /* MIDI 2 remove all CC */
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	/* MIDI 2 remove all CC */
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
       
-      if(midi2_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi2_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
   
-	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi2_cc_to_port_specifier);
+	  g_hash_table_unref(midi2_cc_to_port_specifier);
+	}
       }
-  
+      
       /* iterate */
       recall = recall->next;
     }
@@ -796,30 +812,34 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-      /* MIDI 1 remove all CC */
-      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){    
+	/* MIDI 1 remove all CC */
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
-      if(midi1_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi1_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
       
-	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi1_cc_to_port_specifier);
       
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi1_cc_to_port_specifier);
+	  g_hash_table_unref(midi1_cc_to_port_specifier);
+	}
       }
       
-      /* MIDI 2 remove all CC */
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	/* MIDI 2 remove all CC */
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
       
-      if(midi2_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi2_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
   
-	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi2_cc_to_port_specifier);
+	  g_hash_table_unref(midi2_cc_to_port_specifier);
+	}
       }
       
       /* iterate */
@@ -839,32 +859,36 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
       recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
-      /* MIDI 1 remove all CC */
-      midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){    
+	/* MIDI 1 remove all CC */
+	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
 
-      if(midi1_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi1_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
       
-	g_hash_table_remove_all(midi1_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi1_cc_to_port_specifier);
       
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi1_cc_to_port_specifier);
+	  g_hash_table_unref(midi1_cc_to_port_specifier);
+	}
       }
       
-      /* MIDI 2 remove all CC */
-      midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+      if(ags_recall_test_flags(recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	/* MIDI 2 remove all CC */
+	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
       
-      if(midi2_cc_to_port_specifier != NULL){
-	g_rec_mutex_lock(recall_mutex);
+	if(midi2_cc_to_port_specifier != NULL){
+	  g_rec_mutex_lock(recall_mutex);
   
-	g_hash_table_remove_all(midi2_cc_to_port_specifier);
+	  g_hash_table_remove_all(midi2_cc_to_port_specifier);
 
-	g_rec_mutex_unlock(recall_mutex);
+	  g_rec_mutex_unlock(recall_mutex);
 	
-	g_hash_table_unref(midi2_cc_to_port_specifier);
+	  g_hash_table_unref(midi2_cc_to_port_specifier);
+	}
       }
-  
+      
       /* iterate */
       recall = recall->next;
     }
