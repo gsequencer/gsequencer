@@ -6382,7 +6382,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	      g_list_free_full(start_port,
 			       (GDestroyNotify) g_object_unref);
 	    }
-	    	    
+	    
 	    midi_iter += 3;
 	  }else if(ags_midi_util_is_pitch_bend(recall->midi_util,
 					       midi_iter)){
@@ -6779,7 +6779,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    
 	    g_hash_table_insert(midi1_cc_to_value,
 				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)), GUINT_TO_POINTER(song_select));
-
+	    
 	    g_rec_mutex_unlock(recall_mutex);
 	    
 	    start_port = ags_recall_get_port(recall);
@@ -6877,31 +6877,31 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 
 	      if(port != NULL){
 		AgsPluginPort *plugin_port;
-
+		
 		GValue *upper;
 		GValue *lower;	    
 		
 		GValue port_value = G_VALUE_INIT;
-
+		
 		gfloat value;
 		
 		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		g_value_init(&port_value,
 			     G_TYPE_FLOAT);
-
+		
 		lower = ags_plugin_port_get_lower_value(plugin_port);
 		upper = ags_plugin_port_get_upper_value(plugin_port);
 
 		g_rec_mutex_lock(recall_mutex);
-	    
+		
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)));
 		
-		g_rec_mutex_unlock(recall_mutex);}
-
-		value = (gfloat) TRUE);
-
+		g_rec_mutex_unlock(recall_mutex);
+	      
+		value = (gfloat) TRUE;
+	      
 		g_value_set_float(&port_value,
 				  value);
 
