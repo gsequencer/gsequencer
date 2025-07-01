@@ -1,6 +1,8 @@
 ags (8.0.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AGS_CONFIG_RECALL and midi1-cc-dump config switch of ags.conf
+	* implemented AGS_CONFIG_RECALL and midi2-cc-dump config switch of ags.conf
 	* fixed ags_audio_real_play_recall() missing call to ::midi1-control-change()
 	* fixed ags_channel_real_play_recall() missing call to ::midi2-control-change()
 

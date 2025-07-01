@@ -46,6 +46,7 @@
 #include <libxml/tree.h>
 
 #include <string.h>
+#include <inttypes.h>
 
 #include <ags/i18n.h>
 
@@ -6128,6 +6129,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 {
   AgsAudio *audio;
 
+  AgsConfig *config;
+
   GObject *input_sequencer;
 
   GHashTable *midi1_cc_to_value;
@@ -6136,8 +6139,10 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   GList *start_port, *port;
 
   guchar *midi_buffer;
+  gchar *str;
 
   guint buffer_length;
+  gboolean dump_midi1_cc_message;
   
   GRecMutex *recall_mutex;
 
@@ -6148,6 +6153,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   
+  config = ags_config_get_instance();
+
   audio = NULL;
 
   input_sequencer = NULL;
@@ -6160,6 +6167,19 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   midi_buffer = NULL;
   
   buffer_length = 0;
+  
+  dump_midi1_cc_message = FALSE;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_RECALL,
+			     "midi1-cc-dump");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str, "true", 5)){
+    dump_midi1_cc_message = TRUE;
+  }
+
+  g_free(str);
   
   if(AGS_IS_RECALL_AUDIO(recall)){
     g_rec_mutex_lock(recall_mutex);
@@ -6249,6 +6269,13 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					       midi_iter,
 					       &channel, &control, &value);
 
+	    if(dump_midi1_cc_message){
+	      g_message("MIDI 1 CC - change parameter channel=%d control=%d value=%d",
+			channel,
+			control,
+			value);
+	    }
+	    
 	    if(control >= 0 && control <= 31){
 	      /* MSB */
 	      g_rec_mutex_lock(recall_mutex);
@@ -6339,6 +6366,12 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    ags_midi_util_get_pitch_bend(recall->midi_util,
 					 midi_iter,      
 					 &channel, &transmitter);
+
+	    if(dump_midi1_cc_message){
+	      g_message("MIDI 1 CC - pitch bend channel=%d transmitter=%d",
+			channel,
+			transmitter);
+	    }
 	    
 	    /* MSB and LSB */
 	    g_rec_mutex_lock(recall_mutex);
@@ -6414,6 +6447,12 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					     midi_iter,
 					     &channel, &program);
 
+	    if(dump_midi1_cc_message){
+	      g_message("MIDI 1 CC - change program channel=%d program=%d",
+			channel,
+			program);
+	    }
+
 	    /* insert value */
 	    g_rec_mutex_lock(recall_mutex);
 	    
@@ -6487,6 +6526,12 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    ags_midi_util_get_change_pressure(recall->midi_util,
 					      midi_iter,
 					      &channel, &pressure);
+
+	    if(dump_midi1_cc_message){
+	      g_message("MIDI 1 CC - change pressure channel=%d pressure=%d",
+			channel,
+			pressure);
+	    }
 
 	    /* insert value */
 	    g_rec_mutex_lock(recall_mutex);
@@ -6575,6 +6620,11 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					    midi_iter,
 					    &song_position);
 
+	    if(dump_midi1_cc_message){
+	      g_message("MIDI 1 CC - song position song_position=%d",
+			song_position);
+	    }
+
 	    /* insert value */
 	    g_rec_mutex_lock(recall_mutex);
 	    
@@ -6648,6 +6698,11 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					  midi_iter,
 					  &song_select);
 
+	    if(dump_midi1_cc_message){
+	      g_message("MIDI 1 CC - song select song_select=%d",
+			song_select);
+	    }
+
 	    /* insert value */
 	    g_rec_mutex_lock(recall_mutex);
 	    
@@ -6713,6 +6768,10 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    gpointer ptr;
 	    
 	    gchar *port_specifier;
+
+	    if(dump_midi1_cc_message){
+	      g_message("MIDI 1 CC - tune request");
+	    }
 
 	    /* insert value */
 	    g_rec_mutex_lock(recall_mutex);
@@ -6827,14 +6886,18 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
   GObject *input_sequencer;
 
+  AgsConfig *config;
+
   GHashTable *midi2_cc_to_value;
   GHashTable *midi2_cc_to_port_specifier;
     
   GList *start_port, *port;
 
   guchar *midi_buffer;
+  gchar *str;
 
   guint buffer_length;
+  gboolean dump_midi2_cc_message;
   
   GRecMutex *recall_mutex;
 
@@ -6845,6 +6908,8 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   
+  config = ags_config_get_instance();
+
   audio = NULL;
 
   input_sequencer = NULL;
@@ -6857,6 +6922,19 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
   midi_buffer = NULL;
   
   buffer_length = 0;
+  
+  dump_midi2_cc_message = FALSE;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_RECALL,
+			     "midi2-cc-dump");
+
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str, "true", 5)){
+    dump_midi2_cc_message = TRUE;
+  }
+
+  g_free(str);
   
   if(AGS_IS_RECALL_AUDIO(recall)){
     g_rec_mutex_lock(recall_mutex);
@@ -6949,6 +7027,15 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL,
 						       NULL,
 						       NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - control change group=%d channel=%d index_key=%d data=%d",
+			group,
+			channel,
+			index_key,
+			data);
+	    }
+
 	    if(index_key >= 0 && index_key <= 31){
 	      /* MSB */
 	      g_rec_mutex_lock(recall_mutex);
@@ -7048,6 +7135,13 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						   NULL,
 						   NULL);
 
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi1 pitch bend group=%d channel=%d data=%d",
+			group,
+			channel,
+			data);
+	    }
+
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi2_cc_to_value,
@@ -7130,6 +7224,14 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL,
 						       NULL,
 						       NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi1 program change group=%d channel=%d program=%d",
+			group,
+			channel,
+			program);
+	    }
+
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi2_cc_to_value,
@@ -7212,6 +7314,13 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 							 NULL,
 							 NULL,
 							 NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi1 channel pressure group=%d channel=%d pressure=%d",
+			group,
+			channel,
+			pressure);
+	    }
 
 	    g_rec_mutex_lock(recall_mutex);
 
@@ -7315,6 +7424,14 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL,
 						       NULL,
 						       NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi2 control change group=%d channel=%d index_key=%d data=%"PRIu32,
+			group,
+			channel,
+			index_key,
+			data);
+	    }
 	    
 	    /* value */
 	    g_rec_mutex_lock(recall_mutex);
@@ -7410,7 +7527,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    gint option_flags;
 	    gint program;
 	    gint bank;
-	    AgsUmpWord data;
+	    gint data;
 
 	    ags_midi_ump_util_get_midi2_program_change(recall->midi_ump_util,
 						       midi_iter,
@@ -7422,6 +7539,14 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL,
 						       NULL,
 						       NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi2 program change group=%d channel=%d program=%d bank=%d",
+			group,
+			channel,
+			program,
+			bank);
+	    }
 
 	    //NOTE:JK: it is synthesized
 	    g_rec_mutex_lock(recall_mutex);
@@ -7563,7 +7688,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 	    gint group;
 	    gint channel;
-	    AgsUmpWord data;
+	    gint data;
 
 	    ags_midi_ump_util_get_midi2_channel_pressure(recall->midi_ump_util,
 							 midi_iter,
@@ -7573,6 +7698,13 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 							 NULL,
 							 NULL,
 							 NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi2 channel pressure group=%d channel=%d data=%d",
+			group,
+			channel,
+			data);
+	    }
 	    
 	    /* value */
 	    g_rec_mutex_lock(recall_mutex);
@@ -7645,7 +7777,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 	    gint group;
 	    gint channel;
-	    AgsUmpWord data;
+	    gint data;
 
 	    ags_midi_ump_util_get_midi2_pitch_bend(recall->midi_ump_util,
 						   midi_iter,
@@ -7655,6 +7787,13 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						   NULL,
 						   NULL,
 						   NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi2 pitch bend group=%d channel=%d data=%d",
+			group,
+			channel,
+			data);
+	    }
 	    
 	    /* value */
 	    g_rec_mutex_lock(recall_mutex);
@@ -7728,7 +7867,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    gint group;
 	    gint channel;
 	    gint key;
-	    AgsUmpWord data;
+	    gint data;
 
 	    ags_midi_ump_util_get_midi2_per_note_pitch_bend(recall->midi_ump_util,
 							    midi_iter,
@@ -7739,6 +7878,14 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 							    NULL,
 							    NULL,
 							    NULL);
+
+	    if(dump_midi2_cc_message){
+	      g_message("MIDI 2 CC - midi2 per note pitch bend group=%d channel=%d key=%d data=%d",
+			group,
+			channel,
+			key,
+			data);
+	    }
 	    
 	    /* value */
 	    g_rec_mutex_lock(recall_mutex);
