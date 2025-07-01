@@ -6150,7 +6150,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
   
   GRecMutex *recall_mutex;
 
-  if(!ags_recall_test_flags(recall, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+  if(recall->midi_util == NULL ||
+     !ags_recall_test_flags(recall, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
     return;
   }
   
@@ -6905,7 +6906,8 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
   
   GRecMutex *recall_mutex;
 
-  if(!ags_recall_test_flags(recall, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+  if(recall->midi_ump_util == NULL ||
+     !ags_recall_test_flags(recall, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
     return;
   }
 
@@ -8070,7 +8072,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    	    
 	    midi_iter += 4;
 	  }else{
-	    g_warning("ags_recall.c - unexpected byte %x", midi_iter[0]);
+	    g_warning("ags_recall.c - unexpected bytes %x %x %x %x", midi_iter[3], midi_iter[2], midi_iter[1], midi_iter[0]);
 	    
 	    midi_iter += 4;
 	  }
