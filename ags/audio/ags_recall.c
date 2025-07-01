@@ -1938,7 +1938,9 @@ ags_recall_get_property(GObject *gobject,
       
       midi1_cc_to_value = recall->midi1_cc_to_value;
 
-      g_hash_table_ref(midi1_cc_to_value);
+      if(midi1_cc_to_value != NULL){
+	g_hash_table_ref(midi1_cc_to_value);
+      }
       
       g_value_set_pointer(value, midi1_cc_to_value);      
       
@@ -1953,7 +1955,9 @@ ags_recall_get_property(GObject *gobject,
       
       midi1_cc_to_port_specifier = recall->midi1_cc_to_port_specifier;
 
-      g_hash_table_ref(midi1_cc_to_port_specifier);
+      if(midi1_cc_to_port_specifier != NULL){
+	g_hash_table_ref(midi1_cc_to_port_specifier);
+      }
       
       g_value_set_pointer(value, midi1_cc_to_port_specifier);      
       
@@ -1968,7 +1972,9 @@ ags_recall_get_property(GObject *gobject,
       
       midi2_cc_to_value = recall->midi2_cc_to_value;
 
-      g_hash_table_ref(midi2_cc_to_value);
+      if(midi2_cc_to_value != NULL){
+	g_hash_table_ref(midi2_cc_to_value);
+      }
       
       g_value_set_pointer(value, midi2_cc_to_value);      
       
@@ -1983,7 +1989,9 @@ ags_recall_get_property(GObject *gobject,
       
       midi2_cc_to_port_specifier = recall->midi2_cc_to_port_specifier;
 
-      g_hash_table_ref(midi2_cc_to_port_specifier);
+      if(midi2_cc_to_port_specifier != NULL){
+	g_hash_table_ref(midi2_cc_to_port_specifier);
+      }
       
       g_value_set_pointer(value, midi2_cc_to_port_specifier);      
       
@@ -2791,6 +2799,8 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
 							g_direct_equal,
 							NULL,
 							NULL);
+
+      g_hash_table_ref(recall->midi1_cc_to_value);
     }
 
     if(recall->midi1_cc_to_port_specifier == NULL){
@@ -2798,6 +2808,8 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
 								 g_direct_equal,
 								 NULL,
 								 g_free);
+
+      g_hash_table_ref(recall->midi1_cc_to_port_specifier);
     }
   }
 
@@ -2813,6 +2825,8 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
 							g_direct_equal,
 							NULL,
 							NULL);
+
+      g_hash_table_ref(recall->midi2_cc_to_value);
     }
 
     if(recall->midi2_cc_to_port_specifier == NULL){
@@ -2820,6 +2834,8 @@ ags_recall_set_flags(AgsRecall *recall, AgsRecallFlags flags)
 								 g_direct_equal,
 								 NULL,
 								 g_free);
+
+      g_hash_table_ref(recall->midi2_cc_to_port_specifier);
     }
   }
 
@@ -8041,6 +8057,10 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 										NULL,
 										NULL,
 										NULL);
+
+	    if(msg_length < 4){
+	      msg_length = 4;
+	    }
 
 	    midi_iter += msg_length;
 	  }else if(ags_midi_ump_util_is_start_of_clip(recall->midi_ump_util, midi_iter)){
