@@ -759,13 +759,12 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   AgsMidiCCDialog *midi_cc_dialog;
   AgsMidiCCEditor *midi_cc_editor;
 
-  AgsRecallAudio *recall_audio;
-  AgsRecallContainer *play_container, *recall_container;
+  AgsAudio *audio;
+  AgsChannel *channel;
   
   GObject *gobject;
 
   GList *start_recall, *recall;
-  GList *start_recall_channel, *recall_channel;
   GList *start_port, *port;
   
   gchar *specifier;
@@ -792,8 +791,7 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
     return;
   }
 
-  play_container = NULL;
-  recall_container = NULL;
+  audio = machine->audio;
   
   /* port */
   specifier = NULL;
@@ -810,30 +808,76 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   midi2_channel = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_channel);
   midi2_note = (guint32) gtk_spin_button_get_value_as_int(midi_cc_editor->midi2_note);
   
-  /* recall */
+  /* audio - play */
   recall = 
-    start_recall = ags_audio_get_play(machine->audio);
+    start_recall = ags_audio_get_play(audio);
 
   while(recall != NULL){
     gboolean success;
     
     port =
-      start_port = ags_recall_get_port(recall->data);
+      start_port = ags_recall_get_port((AgsRecall *) recall->data);
 
     success = FALSE;
-    
-    if((port = ags_port_find_specifier(port, specifier)) != NULL){
-      play_container = (AgsRecallContainer *) ags_recall_get_recall_container(recall->data);
 
-      success = TRUE;
+    if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+      while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	/* MIDI 1 */
+	if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	  GHashTable *midi1_cc_to_port_specifier;
+
+	  midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	  /* apply */
+	  if(midi1_cc_to_port_specifier != NULL){
+	    ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+						  (AgsRecall *) recall->data,
+						  midi1_channel,
+						  specifier);
+
+	    g_hash_table_unref(midi1_cc_to_port_specifier);
+	  }
+	}
+
+	success = TRUE;
+	
+	/* iterate */
+	port = port->next;
+      }
     }
 
+    port = start_port;
+    
+    if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+      while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	/* MIDI 2 */
+	if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	  GHashTable *midi2_cc_to_port_specifier;
+
+	  midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	  /* apply */
+	  if(midi2_cc_to_port_specifier != NULL){
+	    ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+						  (AgsRecall *) recall->data,
+						  midi2_group,
+						  midi2_channel,
+						  midi2_note,
+						  specifier);
+
+	    g_hash_table_unref(midi2_cc_to_port_specifier);
+	  }
+	}
+
+	success = TRUE;
+	
+	/* iterate */
+	port = port->next;
+      }
+    }
+    
     g_list_free_full(start_port,
 		     (GDestroyNotify) g_object_unref);
-    
-    if(success){
-      break;
-    }
     
     /* iterate */
     recall = recall->next;
@@ -842,30 +886,76 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
-  /* recall */
+  /* audio - recall */
   recall = 
-    start_recall = ags_audio_get_recall(machine->audio);
+    start_recall = ags_audio_get_recall(audio);
 
   while(recall != NULL){
     gboolean success;
     
     port =
-      start_port = ags_recall_get_port(recall->data);
+      start_port = ags_recall_get_port((AgsRecall *) recall->data);
 
     success = FALSE;
-    
-    if((port = ags_port_find_specifier(port, specifier)) != NULL){
-      recall_container = (AgsRecallContainer *) ags_recall_get_recall_container(recall->data);
 
-      success = TRUE;
+    if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+      while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	/* MIDI 1 */
+	if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	  GHashTable *midi1_cc_to_port_specifier;
+
+	  midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	  /* apply */
+	  if(midi1_cc_to_port_specifier != NULL){
+	    ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+						  (AgsRecall *) recall->data,
+						  midi1_channel,
+						  specifier);
+
+	    g_hash_table_unref(midi1_cc_to_port_specifier);
+	  }
+	}
+
+	success = TRUE;
+	
+	/* iterate */
+	port = port->next;
+      }
+    }
+
+    port = start_port;
+    
+    if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+      while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	/* MIDI 2 */
+	if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	  GHashTable *midi2_cc_to_port_specifier;
+
+	  midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	  /* apply */
+	  if(midi2_cc_to_port_specifier != NULL){
+	    ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+						  (AgsRecall *) recall->data,
+						  midi2_group,
+						  midi2_channel,
+						  midi2_note,
+						  specifier);
+
+	    g_hash_table_unref(midi2_cc_to_port_specifier);
+	  }
+	}
+
+	success = TRUE;
+	
+	/* iterate */
+	port = port->next;
+      }
     }
 
     g_list_free_full(start_port,
 		     (GDestroyNotify) g_object_unref);
-    
-    if(success){
-      break;
-    }
     
     /* iterate */
     recall = recall->next;
@@ -874,207 +964,347 @@ ags_midi_cc_editor_apply(AgsApplicable *applicable)
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);
 
-  /* apply to recall audio - play container */
-  recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(play_container);
 
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio);
 
-  if(recall_audio != NULL){
-    start_port = ags_recall_get_port((AgsRecall *) recall_audio);
 
-    if(ags_port_find_specifier(start_port, specifier) != NULL){
-      /* MIDI 1 */
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
-	GHashTable *midi1_cc_to_port_specifier;
+    /* channel - output */
+  channel = ags_audio_get_output(audio);
 
-	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
+  while(channel != NULL){
+    AgsChannel *next;
 
-	/* apply */
-	if(midi1_cc_to_port_specifier != NULL){
-	  ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_audio,
-						midi1_channel,
-						specifier);
+    /* play */
+    recall = 
+      start_recall = ags_channel_get_play(channel);
 
-	  g_hash_table_unref(midi1_cc_to_port_specifier);
+    while(recall != NULL){
+      gboolean success;
+    
+      port =
+	start_port = ags_recall_get_port((AgsRecall *) recall->data);
+
+      success = FALSE;
+
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 1 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	    GHashTable *midi1_cc_to_port_specifier;
+
+	    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	    /* apply */
+	    if(midi1_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi1_channel,
+						    specifier);
+
+	      g_hash_table_unref(midi1_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
 	}
       }
+
+      port = start_port;
+    
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 2 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	    GHashTable *midi2_cc_to_port_specifier;
+
+	    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	    /* apply */
+	    if(midi2_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi2_group,
+						    midi2_channel,
+						    midi2_note,
+						    specifier);
+
+	      g_hash_table_unref(midi2_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
+	}
+      }
+    
+      g_list_free_full(start_port,
+		       (GDestroyNotify) g_object_unref);
       
-      /* MIDI 2 */
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
-	GHashTable *midi2_cc_to_port_specifier;
-
-	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
-
-	/* apply */
-	if(midi2_cc_to_port_specifier != NULL){
-	  ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_audio,
-						midi2_group,
-						midi2_channel,
-						midi2_note,
-						specifier);
-
-	  g_hash_table_unref(midi2_cc_to_port_specifier);
-	}
-      }
+      /* iterate */
+      recall = recall->next;
     }
 
-    g_list_free_full(start_port,
+    g_list_free_full(start_recall,
 		     (GDestroyNotify) g_object_unref);
-  }
 
-  /* apply to recall audio - recall container */
-  recall_audio = (AgsRecallAudio *) ags_recall_container_get_recall_audio(recall_container);
+    /* recall */
+    recall = 
+      start_recall = ags_channel_get_recall(channel);
 
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio);
-  
-  if(recall_audio != NULL){
-    start_port = ags_recall_get_port((AgsRecall *) recall_audio);
-
-    if(ags_port_find_specifier(start_port, specifier) != NULL){
-      /* MIDI 1 */
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
-	GHashTable *midi1_cc_to_port_specifier;
-
-	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
-
-	/* apply */
-	if(midi1_cc_to_port_specifier != NULL){
-	  ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_audio,
-						midi1_channel,
-						specifier);
-
-	  g_hash_table_unref(midi1_cc_to_port_specifier);
-	}
-      }
-
-      /* MIDI 2 */
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
-	GHashTable *midi2_cc_to_port_specifier;
-
-	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_audio);
-
-	/* apply */
-	if(midi2_cc_to_port_specifier != NULL){
-	  ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_audio,
-						midi2_group,
-						midi2_channel,
-						midi2_note,
-						specifier);
-
-	  g_hash_table_unref(midi2_cc_to_port_specifier);
-	}
-      }
-    }
-
-    g_list_free_full(start_port,
-		     (GDestroyNotify) g_object_unref);
-  }
-
-  /* apply to recall channel - play container */
-  recall_channel =
-    start_recall_channel = ags_recall_container_get_recall_channel(play_container);
-
-  while(recall_channel != NULL){
-    start_port = ags_recall_get_port((AgsRecall *) recall_channel->data);
-
-    if(ags_port_find_specifier(start_port, specifier) != NULL){
-      /* MIDI 1 */
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
-	GHashTable *midi1_cc_to_port_specifier;
-
-	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
-
-	/* apply */
-	if(midi1_cc_to_port_specifier != NULL){
-	  ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_channel->data,
-						midi1_channel,
-						specifier);
-
-	  g_hash_table_unref(midi1_cc_to_port_specifier);
-	}
-      }
-
-      /* MIDI 2 */
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
-	GHashTable *midi2_cc_to_port_specifier;
-
-	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
-
-	/* apply */
-	if(midi2_cc_to_port_specifier != NULL){
-	  ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_channel->data,
-						midi2_group,
-						midi2_channel,
-						midi2_note,
-						specifier);
-
-	  g_hash_table_unref(midi2_cc_to_port_specifier);
-	}
-      }
-    }
-
-    g_list_free_full(start_port,
-		     (GDestroyNotify) g_object_unref);
+    while(recall != NULL){
+      gboolean success;
     
+      port =
+	start_port = ags_recall_get_port((AgsRecall *) recall->data);
+
+      success = FALSE;
+
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 1 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	    GHashTable *midi1_cc_to_port_specifier;
+
+	    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	    /* apply */
+	    if(midi1_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi1_channel,
+						    specifier);
+
+	      g_hash_table_unref(midi1_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
+	}
+      }
+
+      port = start_port;
+    
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 2 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	    GHashTable *midi2_cc_to_port_specifier;
+
+	    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	    /* apply */
+	    if(midi2_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi2_group,
+						    midi2_channel,
+						    midi2_note,
+						    specifier);
+
+	      g_hash_table_unref(midi2_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
+	}
+      }
+    
+      g_list_free_full(start_port,
+		       (GDestroyNotify) g_object_unref);
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
     /* iterate */
-    recall_channel = recall_channel->next;
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
   }
   
-  /* apply to recall channel - recall container */
-  recall_channel =
-    start_recall_channel = ags_recall_container_get_recall_channel(recall_container);
+  /* channel - input */
+  channel = ags_audio_get_input(audio);
 
-  while(recall_channel != NULL){
-    start_port = ags_recall_get_port((AgsRecall *) recall_channel->data);
+  while(channel != NULL){
+    AgsChannel *next;
 
-    if(ags_port_find_specifier(start_port, specifier) != NULL){
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
-	GHashTable *midi1_cc_to_port_specifier;
+    /* play */
+    recall = 
+      start_recall = ags_channel_get_play(channel);
 
-	midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall_audio);
+    while(recall != NULL){
+      gboolean success;
+    
+      port =
+	start_port = ags_recall_get_port((AgsRecall *) recall->data);
 
-	if(midi1_cc_to_port_specifier != NULL){
-	  /* apply */
-	  ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_channel->data,
-						midi1_channel,
-						specifier);
+      success = FALSE;
 
-	  g_hash_table_unref(midi1_cc_to_port_specifier);
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 1 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	    GHashTable *midi1_cc_to_port_specifier;
+
+	    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	    /* apply */
+	    if(midi1_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi1_channel,
+						    specifier);
+
+	      g_hash_table_unref(midi1_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
 	}
       }
 
-      /* MIDI 2 */
-      if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
-	GHashTable *midi2_cc_to_port_specifier;
+      port = start_port;
+    
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 2 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	    GHashTable *midi2_cc_to_port_specifier;
 
-	midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall_channel->data);
+	    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
 
-	if(midi2_cc_to_port_specifier != NULL){
-	  /* apply */
-	  ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
-						(AgsRecall *) recall_channel->data,
-						midi2_group,
-						midi2_channel,
-						midi2_note,
-						specifier);
+	    /* apply */
+	    if(midi2_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi2_group,
+						    midi2_channel,
+						    midi2_note,
+						    specifier);
 
-	  g_hash_table_unref(midi2_cc_to_port_specifier);
+	      g_hash_table_unref(midi2_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
 	}
       }
+    
+      g_list_free_full(start_port,
+		       (GDestroyNotify) g_object_unref);
+      
+      /* iterate */
+      recall = recall->next;
     }
 
-    g_list_free_full(start_port,
+    g_list_free_full(start_recall,
 		     (GDestroyNotify) g_object_unref);
+
+    /* recall */
+    recall = 
+      start_recall = ags_channel_get_recall(channel);
+
+    while(recall != NULL){
+      gboolean success;
     
+      port =
+	start_port = ags_recall_get_port((AgsRecall *) recall->data);
+
+      success = FALSE;
+
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI1_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 1 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_1_0)){
+	    GHashTable *midi1_cc_to_port_specifier;
+
+	    midi1_cc_to_port_specifier = ags_recall_get_midi1_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	    /* apply */
+	    if(midi1_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi1_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi1_channel,
+						    specifier);
+
+	      g_hash_table_unref(midi1_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
+	}
+      }
+
+      port = start_port;
+    
+      if(ags_recall_test_flags((AgsRecall *) recall->data, AGS_RECALL_MIDI2_CONTROL_CHANGE)){
+	while((port = ags_port_find_specifier(port, specifier)) != NULL){
+	  /* MIDI 2 */
+	  if(ags_midi_cc_editor_test_flags(midi_cc_editor, AGS_MIDI_CC_EDITOR_SHOW_MIDI_2_0)){
+	    GHashTable *midi2_cc_to_port_specifier;
+
+	    midi2_cc_to_port_specifier = ags_recall_get_midi2_cc_to_port_specifier((AgsRecall *) recall->data);
+
+	    /* apply */
+	    if(midi2_cc_to_port_specifier != NULL){
+	      ags_midi_cc_editor_midi2_apply_recall(midi_cc_editor,
+						    (AgsRecall *) recall->data,
+						    midi2_group,
+						    midi2_channel,
+						    midi2_note,
+						    specifier);
+
+	      g_hash_table_unref(midi2_cc_to_port_specifier);
+	    }
+	  }
+
+	  success = TRUE;
+	
+	  /* iterate */
+	  port = port->next;
+	}
+      }
+    
+      g_list_free_full(start_port,
+		       (GDestroyNotify) g_object_unref);
+      
+      /* iterate */
+      recall = recall->next;
+    }
+
+    g_list_free_full(start_recall,
+		     (GDestroyNotify) g_object_unref);
+
     /* iterate */
-    recall_channel = recall_channel->next;
+    next = ags_channel_next(channel);
+
+    g_object_unref(channel);
+
+    channel = next;
   }
 }
 

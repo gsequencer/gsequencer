@@ -574,8 +574,6 @@ ags_midi_cc_dialog_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
   AgsChannel *channel;
-  AgsRecallAudio *recall_audio;
-  AgsRecallContainer *play_container, *recall_container;
   
   xmlNode *node;
   
