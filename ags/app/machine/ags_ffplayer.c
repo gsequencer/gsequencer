@@ -1064,14 +1064,17 @@ ags_ffplayer_map_recall(AgsMachine *machine)
   recall = start_recall;
 
   while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
 #else
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
 #endif
-
+    }
+    
     recall = recall->next;
   }
 
@@ -1093,13 +1096,16 @@ ags_ffplayer_map_recall(AgsMachine *machine)
   recall = start_recall;
 
   while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
 #else
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
 #endif
+    }
 
     recall = recall->next;
   }
@@ -1122,13 +1128,16 @@ ags_ffplayer_map_recall(AgsMachine *machine)
   recall = start_recall;
 
   while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
 #else
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
 #endif
+    }
 
     recall = recall->next;
   }
@@ -1244,14 +1253,17 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
 	recall = start_recall;
 
 	while(recall != NULL){
+	  if(AGS_IS_RECALL_AUDIO(recall->data) ||
+	     AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-	  ags_recall_set_flags(recall->data,
-			       AGS_RECALL_MIDI2_CONTROL_CHANGE);
+	    ags_recall_set_flags(recall->data,
+				 AGS_RECALL_MIDI2_CONTROL_CHANGE);
 #else
-	  ags_recall_set_flags(recall->data,
-			       AGS_RECALL_MIDI1_CONTROL_CHANGE);
+	    ags_recall_set_flags(recall->data,
+				 AGS_RECALL_MIDI1_CONTROL_CHANGE);
 #endif
-
+	  }
+	  
 	  recall = recall->next;
 	}
 
@@ -1272,13 +1284,16 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
 	recall = start_recall;
 
 	while(recall != NULL){
+	  if(AGS_IS_RECALL_AUDIO(recall->data) ||
+	     AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-	  ags_recall_set_flags(recall->data,
-			       AGS_RECALL_MIDI2_CONTROL_CHANGE);
+	    ags_recall_set_flags(recall->data,
+				 AGS_RECALL_MIDI2_CONTROL_CHANGE);
 #else
-	  ags_recall_set_flags(recall->data,
-			       AGS_RECALL_MIDI1_CONTROL_CHANGE);
+	    ags_recall_set_flags(recall->data,
+				 AGS_RECALL_MIDI1_CONTROL_CHANGE);
 #endif
+	  }
 
 	  recall = recall->next;
 	}
@@ -1300,13 +1315,16 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
 	recall = start_recall;
 
 	while(recall != NULL){
+	  if(AGS_IS_RECALL_AUDIO(recall->data) ||
+	     AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-	  ags_recall_set_flags(recall->data,
-			       AGS_RECALL_MIDI2_CONTROL_CHANGE);
+	    ags_recall_set_flags(recall->data,
+				 AGS_RECALL_MIDI2_CONTROL_CHANGE);
 #else
-	  ags_recall_set_flags(recall->data,
-			       AGS_RECALL_MIDI1_CONTROL_CHANGE);
+	    ags_recall_set_flags(recall->data,
+				 AGS_RECALL_MIDI1_CONTROL_CHANGE);
 #endif
+	  }
 
 	  recall = recall->next;
 	}
