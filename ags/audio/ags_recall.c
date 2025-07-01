@@ -7997,6 +7997,10 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 									  NULL,
 									  NULL);
 
+	    if(msg_length < 4){
+	      msg_length = 4;
+	    }
+	    
 	    midi_iter += msg_length;
 	  }else if(ags_midi_ump_util_is_product_instance_id_notification(recall->midi_ump_util, midi_iter)){
 	    guint msg_length;
@@ -8007,6 +8011,10 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 										NULL,
 										NULL,
 										NULL);
+
+	    if(msg_length < 4){
+	      msg_length = 4;
+	    }
 
 	    midi_iter += msg_length;
 	  }else if(ags_midi_ump_util_is_stream_configuration_request(recall->midi_ump_util, midi_iter)){
@@ -8055,12 +8063,16 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    midi_iter += 4;
 	  }else if(ags_midi_ump_util_is_delta_clock_ticks_per_quarter_note(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
 	  }else if(ags_midi_ump_util_is_delta_clock_ticks_since_last_event(recall->midi_ump_util, midi_iter)){
 	    //TODO:JK: implement me
+	    	    
+	    midi_iter += 4;
 	  }else{
 	    g_warning("ags_recall.c - unexpected byte %x", midi_iter[0]);
 	    
-	    midi_iter++;
+	    midi_iter += 4;
 	  }
 	}
       }

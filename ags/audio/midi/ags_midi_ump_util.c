@@ -2926,7 +2926,6 @@ ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
   nth--;
   
   buffer[offset + nth] = (0xff & (ticks_per_quarter_note_count));
-  nth--;
 }
 
 /**
