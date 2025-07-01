@@ -13803,14 +13803,14 @@ ags_audio_real_play_recall(AgsAudio *audio,
       list_start = g_list_reverse(list_start);
   }
 
-  /* automate, midi 1 and midi 2 control change */
+  /* automate, midi 1 and 2 control change */
   staging_flags = staging_flags & staging_mask;
   
   while(list != NULL){
     recall = AGS_RECALL(list->data);
       
+    /* play stages */
     if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
-      /* play stages */
       if(AGS_IS_RECALL_AUDIO(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_AUTOMATE);
@@ -13822,7 +13822,6 @@ ags_audio_real_play_recall(AgsAudio *audio,
     }
 
     if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0){
-      /* play stages */
       if(AGS_IS_RECALL_AUDIO(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
@@ -13834,7 +13833,6 @@ ags_audio_real_play_recall(AgsAudio *audio,
     }
 
     if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0){
-      /* play stages */
       if(AGS_IS_RECALL_AUDIO(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);

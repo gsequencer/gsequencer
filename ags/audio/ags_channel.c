@@ -10082,14 +10082,14 @@ ags_channel_real_play_recall(AgsChannel *channel,
       list_start = g_list_reverse(list_start);
   }
   
-  /* automate */
+  /* automate, midi 1 and 2 control change */
   staging_flags = staging_flags & staging_mask;
 
-  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
+  while(list != NULL){
+    recall = AGS_RECALL(list->data);
     
-      /* play stages */
+    /* play stages */
+    if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
       if(AGS_IS_RECALL_CHANNEL(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_AUTOMATE);
@@ -10098,21 +10098,9 @@ ags_channel_real_play_recall(AgsChannel *channel,
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_AUTOMATE);
       }
-      
-      list = list->next;
     }
-  }
-
-  staging_flags = staging_flags & (~AGS_SOUND_STAGING_AUTOMATE);
-  
-  /* midi1_control_change */
-  staging_flags = staging_flags & staging_mask;
-
-  if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
     
-      /* play stages */
+    if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0){
       if(AGS_IS_RECALL_CHANNEL(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
@@ -10121,21 +10109,9 @@ ags_channel_real_play_recall(AgsChannel *channel,
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
       }
-      
-      list = list->next;
     }
-  }
-
-  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
-  
-  /* midi2_control_change */
-  staging_flags = staging_flags & staging_mask;
-
-  if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
     
-      /* play stages */
+    if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0){
       if(AGS_IS_RECALL_CHANNEL(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
@@ -10144,13 +10120,15 @@ ags_channel_real_play_recall(AgsChannel *channel,
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
       }
-      
-      list = list->next;
     }
+      
+    list = list->next;
   }
 
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_AUTOMATE);
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
   staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
-
+  
   /* play */
   list = list_start;
   
