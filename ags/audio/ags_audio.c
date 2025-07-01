@@ -13803,13 +13803,13 @@ ags_audio_real_play_recall(AgsAudio *audio,
       list_start = g_list_reverse(list_start);
   }
 
-  /* automate */
+  /* automate, midi 1 and midi 2 control change */
   staging_flags = staging_flags & staging_mask;
   
-  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
+  while(list != NULL){
+    recall = AGS_RECALL(list->data);
       
+    if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
       /* play stages */
       if(AGS_IS_RECALL_AUDIO(recall)){
 	ags_recall_set_staging_flags(recall,
@@ -13819,20 +13819,9 @@ ags_audio_real_play_recall(AgsAudio *audio,
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_AUTOMATE);
       }
-      
-      list = list->next;
     }
-  }
 
-  staging_flags = staging_flags & (~AGS_SOUND_STAGING_AUTOMATE);
-
-  /* midi 1 control change */
-  staging_flags = staging_flags & staging_mask;
-  
-  if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
-      
+    if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0){
       /* play stages */
       if(AGS_IS_RECALL_AUDIO(recall)){
 	ags_recall_set_staging_flags(recall,
@@ -13842,20 +13831,9 @@ ags_audio_real_play_recall(AgsAudio *audio,
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
       }
-      
-      list = list->next;
     }
-  }
 
-  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
-
-  /* midi 2 control change */
-  staging_flags = staging_flags & staging_mask;
-  
-  if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
-      
+    if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0){
       /* play stages */
       if(AGS_IS_RECALL_AUDIO(recall)){
 	ags_recall_set_staging_flags(recall,
@@ -13865,11 +13843,13 @@ ags_audio_real_play_recall(AgsAudio *audio,
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
       }
-      
-      list = list->next;
     }
+      
+    list = list->next;
   }
 
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_AUTOMATE);
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
   staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
   
   /* play */
