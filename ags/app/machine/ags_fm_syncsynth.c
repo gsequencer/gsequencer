@@ -795,10 +795,10 @@ ags_fm_syncsynth_map_recall(AgsMachine *machine)
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
 
@@ -827,10 +827,10 @@ ags_fm_syncsynth_map_recall(AgsMachine *machine)
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
 
@@ -945,10 +945,10 @@ ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
 
@@ -976,10 +976,10 @@ ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
 

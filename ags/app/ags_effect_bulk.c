@@ -1025,10 +1025,10 @@ ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
     
@@ -1478,10 +1478,10 @@ ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
     
@@ -2009,10 +2009,10 @@ ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
     
@@ -2442,10 +2442,10 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
     
@@ -2914,10 +2914,10 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 	 AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
 	ags_recall_set_flags(recall->data,
-			     AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			     (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
 	ags_recall_set_flags(recall->data,
-			     AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			     (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
       }
       

@@ -1383,10 +1383,10 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
     
@@ -2148,10 +2148,10 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
     
@@ -2802,10 +2802,10 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
        AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI2_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
       ags_recall_set_flags(recall->data,
-			   AGS_RECALL_MIDI1_CONTROL_CHANGE);
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
     }
     
