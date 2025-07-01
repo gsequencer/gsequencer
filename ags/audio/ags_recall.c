@@ -766,6 +766,10 @@ ags_recall_class_init(AgsRecallClass *recall)
 
   recall->child_added = NULL;
 
+  recall->midi1_control_change = ags_recall_real_midi1_control_change;
+
+  recall->midi2_control_change = ags_recall_real_midi2_control_change;
+
   /* signals */
   /**
    * AgsRecall::resolve-dependency:
