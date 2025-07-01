@@ -6342,6 +6342,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		  GValue port_value = G_VALUE_INIT;
 
+		  gfloat value;
+
 		  plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		  g_value_init(&port_value,
@@ -6356,10 +6358,18 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					    GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 
 		  g_rec_mutex_unlock(recall_mutex);
-		
+
+		  value = g_value_get_float(lower) + ((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0));
+		  
 		  g_value_set_float(&port_value,
-				    ((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				    value);
 		
+		  if(dump_midi1_cc_message){
+		    g_message("MIDI 1 CC - write port: %s -> %f",
+			      port_specifier,
+			      value);
+		  }
+		  
 		  ags_port_safe_write(port->data,
 				      &port_value);
 
@@ -6423,6 +6433,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		GValue port_value = G_VALUE_INIT;
 
+		gfloat value;
+		
 		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		g_value_init(&port_value,
@@ -6437,10 +6449,18 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xe0 | channel), 0x0)));
 
 		g_rec_mutex_unlock(recall_mutex);
+
+		value = g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0));
 		
 		g_value_set_float(&port_value,
-				  g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0)));
+				  value);
 		
+		if(dump_midi1_cc_message){
+		  g_message("MIDI 1 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -6503,6 +6523,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		GValue port_value = G_VALUE_INIT;
 
+		gfloat value;
+		
 		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		g_value_init(&port_value,
@@ -6517,10 +6539,18 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xc0 | channel), 0x0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
-	    
-		g_value_set_float(&port_value,
-				  g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0)));
+
+		value = g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0));
 		
+		g_value_set_float(&port_value,
+				  value);
+		
+		if(dump_midi1_cc_message){
+		  g_message("MIDI 1 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -6583,6 +6613,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		GValue port_value = G_VALUE_INIT;
 
+		gfloat value;
+
 		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		g_value_init(&port_value,
@@ -6597,10 +6629,18 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xd0 | channel), 0x0)));
 
 		g_rec_mutex_unlock(recall_mutex);	    
+
+		value = g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0));
 		
 		g_value_set_float(&port_value,
-				  (gfloat) GPOINTER_TO_UINT(ptr));
+				  value);
 		
+		if(dump_midi1_cc_message){
+		  g_message("MIDI 1 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -6675,6 +6715,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		GValue port_value = G_VALUE_INIT;
 
+		gfloat value;
+
 		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		g_value_init(&port_value,
@@ -6690,8 +6732,16 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		g_rec_mutex_unlock(recall_mutex);
 	    
+		value = g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0));
+
 		g_value_set_float(&port_value,
-				  g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0)));
+				  value);
+
+		if(dump_midi1_cc_message){
+		  g_message("MIDI 1 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
@@ -6753,6 +6803,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		GValue port_value = G_VALUE_INIT;
 
+		gfloat value;
+		
 		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		g_value_init(&port_value,
@@ -6767,9 +6819,17 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
+
+		value = g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0));
 	    
 		g_value_set_float(&port_value,
-				  g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0)));
+				  value);
+
+		if(dump_midi1_cc_message){
+		  g_message("MIDI 1 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
@@ -6823,6 +6883,8 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		
 		GValue port_value = G_VALUE_INIT;
 
+		gfloat value;
+		
 		plugin_port = (AgsPluginPort *) ags_port_get_plugin_port(port->data);
 		
 		g_value_init(&port_value,
@@ -6836,10 +6898,18 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
 					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)));
 		
-		g_rec_mutex_unlock(recall_mutex);
-	    
+		g_rec_mutex_unlock(recall_mutex);}
+
+		value = (gfloat) TRUE);
+
 		g_value_set_float(&port_value,
-				  ((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
+				  value);
+
+		if(dump_midi1_cc_message){
+		  g_message("MIDI 1 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
@@ -7126,7 +7196,13 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    
 		  g_value_set_float(&port_value,
 				    value);
-		
+
+		  if(dump_midi2_cc_message){
+		    g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		  }
+		  
 		  ags_port_safe_write(port->data,
 				      &port_value);
 
@@ -7215,6 +7291,12 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		
 		g_value_set_float(&port_value,
 				  value);
+
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
@@ -7305,7 +7387,13 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 		g_value_set_float(&port_value,
 				  value);
-		
+
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+				  
 		ags_port_safe_write(port->data,
 				    &port_value);
 		
@@ -7395,6 +7483,12 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		
 		g_value_set_float(&port_value,
 				    value);
+
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
@@ -7508,6 +7602,12 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_value_set_float(&port_value,
 				  value);
 		
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -7638,6 +7738,12 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_value_set_float(&port_value,
 				  value);
 		
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -7691,6 +7797,12 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_value_set_float(&port_value,
 				  value);
 		
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -7781,6 +7893,12 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_value_set_float(&port_value,
 				  value);
 		
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -7869,7 +7987,13 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 		g_value_set_float(&port_value,
 				  value);
-		
+
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
+
 		ags_port_safe_write(port->data,
 				    &port_value);
 
@@ -7962,11 +8086,11 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_value_set_float(&port_value,
 				  value);
 
-		//#if defined(AGS_DEBUG)
-		g_message("write port: %s -> %f",
-			  port_specifier,
-			  value);
-		//#endif
+		if(dump_midi2_cc_message){
+		  g_message("MIDI 2 CC - write port: %s -> %f",
+			    port_specifier,
+			    value);
+		}
 		
 		ags_port_safe_write(port->data,
 				    &port_value);
