@@ -13698,6 +13698,8 @@ ags_audio_real_play_recall(AgsAudio *audio,
 						    AGS_SOUND_STAGING_RUN_INIT_POST |
 						    AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 						    AGS_SOUND_STAGING_AUTOMATE |
+						    AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE |
+						    AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE |
 						    AGS_SOUND_STAGING_RUN_PRE |
 						    AGS_SOUND_STAGING_RUN_INTER |
 						    AGS_SOUND_STAGING_RUN_POST |
@@ -13801,7 +13803,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
       list_start = g_list_reverse(list_start);
   }
 
-  /* automate and play  */
+  /* automate */
   staging_flags = staging_flags & staging_mask;
   
   if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
@@ -13823,7 +13825,54 @@ ags_audio_real_play_recall(AgsAudio *audio,
   }
 
   staging_flags = staging_flags & (~AGS_SOUND_STAGING_AUTOMATE);
+
+  /* midi 1 control change */
+  staging_flags = staging_flags & staging_mask;
   
+  if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0){
+    while(list != NULL){
+      recall = AGS_RECALL(list->data);
+      
+      /* play stages */
+      if(AGS_IS_RECALL_AUDIO(recall)){
+	ags_recall_set_staging_flags(recall,
+				     AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
+	
+	//NOTE:JK: improve me not a necessity
+	ags_recall_unset_staging_flags(recall,
+				       AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
+      }
+      
+      list = list->next;
+    }
+  }
+
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
+
+  /* midi 2 control change */
+  staging_flags = staging_flags & staging_mask;
+  
+  if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0){
+    while(list != NULL){
+      recall = AGS_RECALL(list->data);
+      
+      /* play stages */
+      if(AGS_IS_RECALL_AUDIO(recall)){
+	ags_recall_set_staging_flags(recall,
+				     AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
+	
+	//NOTE:JK: improve me not a necessity
+	ags_recall_unset_staging_flags(recall,
+				       AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
+      }
+      
+      list = list->next;
+    }
+  }
+
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
+  
+  /* play */
   list = list_start;
 
   while((list = ags_recall_find_recycling_context(list,

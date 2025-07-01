@@ -1,3 +1,9 @@
+ags (8.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_audio_real_play_recall() missing call to ::midi1-control-change()
+	* fixed ags_channel_real_play_recall() missing call to ::midi2-control-change()
+
 ags (8.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
