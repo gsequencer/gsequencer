@@ -6724,7 +6724,7 @@ ags_midi_ump_util_get_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
     
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & (buffer[offset + nth - 3]));
+    data[0] = (buffer[offset + nth] << 24) | (buffer[offset + nth - 1] << 16) | (buffer[offset + nth - 2] << 8) | (buffer[offset + nth - 3]);
   }
 
   offset += 4;
