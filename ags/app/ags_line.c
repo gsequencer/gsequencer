@@ -1482,14 +1482,17 @@ ags_line_add_ladspa_plugin(AgsLine *line,
   recall = start_recall;
 
   while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
-
+    }
+    
     recall = recall->next;
   }
   
@@ -2197,14 +2200,17 @@ ags_line_add_lv2_plugin(AgsLine *line,
   recall = start_recall;
 
   while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
-
+    }
+    
     recall = recall->next;
   }
 
@@ -2802,14 +2808,17 @@ ags_line_add_vst3_plugin(AgsLine *line,
   recall = start_recall;
 
   while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
 #if defined(AGS_OSXAPI)
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI2_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
 #else
-    ags_recall_set_flags(recall->data,
-			 AGS_RECALL_MIDI1_CONTROL_CHANGE);
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
 #endif
-
+    }
+    
     recall = recall->next;
   }
 

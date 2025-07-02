@@ -2126,9 +2126,9 @@ ags_fx_notation_audio_processor_real_midi1_record(AgsFxNotationAudioProcessor *f
 	  
 	midi_iter += (3 + midi_iter[2]);
       }else{
-	//#if defined(AGS_DEBUG)
+#if defined(AGS_DEBUG)
 	g_warning("ags_fx_notation_audio_processor.c - unexpected byte %x", midi_iter[0]);
-	//#endif
+#endif
 	
 	midi_iter++;
       }
@@ -2954,6 +2954,10 @@ ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *f
 								      NULL,
 								      NULL);
 
+	if(msg_length < 4){
+	  msg_length = 4;
+	}
+
 	midi_iter += msg_length;
       }else if(ags_midi_ump_util_is_product_instance_id_notification(recall->midi_ump_util, midi_iter)){
 	guint msg_length;
@@ -2964,6 +2968,10 @@ ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *f
 									    NULL,
 									    NULL,
 									    NULL);
+
+	if(msg_length < 4){
+	  msg_length = 4;
+	}
 
 	midi_iter += msg_length;
       }else if(ags_midi_ump_util_is_stream_configuration_request(recall->midi_ump_util, midi_iter)){
@@ -2988,6 +2996,10 @@ ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *f
 									    NULL,
 									    NULL,
 									    NULL);
+
+	if(msg_length < 4){
+	  msg_length = 4;
+	}
 
 	midi_iter += msg_length;
       }else if(ags_midi_ump_util_is_start_of_clip(recall->midi_ump_util, midi_iter)){
@@ -3023,9 +3035,9 @@ ags_fx_notation_audio_processor_real_midi2_record(AgsFxNotationAudioProcessor *f
 
 	midi_iter += 4;
       }else{
-	//#if defined(AGS_DEBUG)
+#if defined(AGS_DEBUG)
 	g_warning("ags_fx_notation_audio_processor.c - unexpected bytes %x %x %x %x", midi_iter[3], midi_iter[2], midi_iter[1], midi_iter[0]);
-	//#endif
+#endif
 	
 	midi_iter += 4;
       }
