@@ -1,3 +1,8 @@
+ags (8.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_ump_util_get_midi2_control_change()
+
 ags (8.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
