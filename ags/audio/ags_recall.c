@@ -7555,7 +7555,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)), GUINT_TO_POINTER(data));
+				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)), GUINT_TO_POINTER((guint) data));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
