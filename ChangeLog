@@ -1,3 +1,9 @@
+ags (8.0.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added MIDI 1 and 2 control change 24 - 31 to AgsMidiCCDialog
+	* added MIDI 1 and 2 control change 24 - 31 macros and enums to ags_recall.h
+
 ags (8.0.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
