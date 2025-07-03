@@ -7545,6 +7545,11 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL);
 
 	    data_val = (guint) data;
+
+	    if(index_key >= 24 &&
+	       index_key < 32){
+	      data_val = (guint) (0x7f & data);
+	    }
 	    
 	    if(dump_midi2_cc_message){
 	      g_message("MIDI 2 CC - midi2 control change group=%d channel=%d index_key=%d data=%u",
@@ -7552,11 +7557,6 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 			channel,
 			index_key,
 			data_val);
-	    }
-
-	    if(index_key >= 24 &&
-	       index_key < 32){
-	      data_val = ((0x7f << 25) & data) >> 25;
 	    }
 	    
 	    /* value */
