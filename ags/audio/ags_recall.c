@@ -7548,7 +7548,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 	    if(index_key >= 24 &&
 	       index_key < 32){
-	      data_val = (guint) (0x3fff & (data >> 18));
+	      data_val = (guint) (0x3fff & ((AgsUmpWord) data >> 18));
 	    }
 	    
 	    if(dump_midi2_cc_message){
@@ -7607,7 +7607,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 		if(index_key >= 24 &&
 		   index_key < 32){
-		  value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0)));
+		  value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		}else{
 		  value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(32.0) - 1.0)));
 		}
