@@ -131,6 +131,14 @@ static const struct _AgsMidi1CCLabel midi1_control_change[] = {
   {AGS_RECALL_MIDI1_SONG_POSITION, "song position"},
   {AGS_RECALL_MIDI1_SONG_SELECT, "song select"},
   {AGS_RECALL_MIDI1_TUNE_REQUEST, "tune request"},
+  {AGS_RECALL_MIDI1_CC_24, "control change 24"},
+  {AGS_RECALL_MIDI1_CC_25, "control change 25"},
+  {AGS_RECALL_MIDI1_CC_26, "control change 26"},
+  {AGS_RECALL_MIDI1_CC_27, "control change 27"},
+  {AGS_RECALL_MIDI1_CC_28, "control change 28"},
+  {AGS_RECALL_MIDI1_CC_29, "control change 29"},
+  {AGS_RECALL_MIDI1_CC_30, "control change 30"},
+  {AGS_RECALL_MIDI1_CC_31, "control change 31"},
   {0x0, NULL, 0}
 };
 
@@ -178,6 +186,14 @@ static const struct _AgsMidi2CCLabel midi2_control_change[] = {
   {AGS_RECALL_MIDI2_EFFECTS_3, "MIDI v2.0 effects 3"},
   {AGS_RECALL_MIDI2_EFFECTS_4, "MIDI v2.0 effects 4"},
   {AGS_RECALL_MIDI2_EFFECTS_5, "MIDI v2.0 effects 5"},
+  {AGS_RECALL_MIDI2_CC_24, "MIDI v2.0 control change 24"},
+  {AGS_RECALL_MIDI2_CC_25, "MIDI v2.0 control change 25"},
+  {AGS_RECALL_MIDI2_CC_26, "MIDI v2.0 control change 26"},
+  {AGS_RECALL_MIDI2_CC_27, "MIDI v2.0 control change 27"},
+  {AGS_RECALL_MIDI2_CC_28, "MIDI v2.0 control change 28"},
+  {AGS_RECALL_MIDI2_CC_29, "MIDI v2.0 control change 29"},
+  {AGS_RECALL_MIDI2_CC_30, "MIDI v2.0 control change 30"},
+  {AGS_RECALL_MIDI2_CC_31, "MIDI v2.0 control change 31"},
   {0x0, NULL, 0}
 };
 

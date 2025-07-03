@@ -60,6 +60,14 @@ G_BEGIN_DECLS
 #define AGS_RECALL_MIDI1_CC_BALANCE(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x8))
 #define AGS_RECALL_MIDI1_CC_PAN(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0xa))
 #define AGS_RECALL_MIDI1_CC_EXPRESSION_CONTROLLER(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0xb))
+#define AGS_RECALL_MIDI1_CC_24(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x18))
+#define AGS_RECALL_MIDI1_CC_25(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x19))
+#define AGS_RECALL_MIDI1_CC_26(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x1a))
+#define AGS_RECALL_MIDI1_CC_27(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x1b))
+#define AGS_RECALL_MIDI1_CC_28(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x1c))
+#define AGS_RECALL_MIDI1_CC_29(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x1d))
+#define AGS_RECALL_MIDI1_CC_30(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x1e))
+#define AGS_RECALL_MIDI1_CC_31(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x1f))
 #define AGS_RECALL_MIDI1_CC_EFFECT_CONTROL_1(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0xc))
 #define AGS_RECALL_MIDI1_CC_EFFECT_CONTROL_2(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0xd))
 #define AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_1(midi_channel) (AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | midi_channel), 0x10))
@@ -102,6 +110,14 @@ G_BEGIN_DECLS
 #define AGS_RECALL_MIDI2_CC_BALANCE(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 8))
 #define AGS_RECALL_MIDI2_CC_PAN(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 10))
 #define AGS_RECALL_MIDI2_CC_EXPRESSION(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 11))
+#define AGS_RECALL_MIDI2_CC_24(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 24))
+#define AGS_RECALL_MIDI2_CC_25(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 25))
+#define AGS_RECALL_MIDI2_CC_26(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 26))
+#define AGS_RECALL_MIDI2_CC_27(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 27))
+#define AGS_RECALL_MIDI2_CC_28(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 28))
+#define AGS_RECALL_MIDI2_CC_29(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 29))
+#define AGS_RECALL_MIDI2_CC_30(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 30))
+#define AGS_RECALL_MIDI2_CC_31(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 31))
 #define AGS_RECALL_MIDI2_CC_SOUND_VARIATION(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 70))
 #define AGS_RECALL_MIDI2_CC_TIMBRE(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 71))
 #define AGS_RECALL_MIDI2_CC_RELEASE(midi_group, midi_channel, midi_note) (AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | midi_group), (0xb0 | midi_channel), 0x0, 72))
@@ -183,6 +199,14 @@ typedef enum{
  * @AGS_RECALL_MIDI1_BALANCE: MIDI version 1 balance
  * @AGS_RECALL_MIDI1_PAN: MIDI version 1 PAN
  * @AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER: MIDI version 1 expression controller
+ * @AGS_RECALL_MIDI1_CC_24: MIDI version 1 control change 24
+ * @AGS_RECALL_MIDI1_CC_25: MIDI version 1 control change 25
+ * @AGS_RECALL_MIDI1_CC_26: MIDI version 1 control change 26
+ * @AGS_RECALL_MIDI1_CC_27: MIDI version 1 control change 27
+ * @AGS_RECALL_MIDI1_CC_28: MIDI version 1 control change 28
+ * @AGS_RECALL_MIDI1_CC_29: MIDI version 1 control change 29
+ * @AGS_RECALL_MIDI1_CC_30: MIDI version 1 control change 30
+ * @AGS_RECALL_MIDI1_CC_31: MIDI version 1 control change 31
  * @AGS_RECALL_MIDI1_EFFECT_CONTROL_1: MIDI version 1 effect control 1
  * @AGS_RECALL_MIDI1_EFFECT_CONTROL_2: MIDI version 1 effect control 2
  * @AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1: MIDI version 1 general purpose controller 1
@@ -207,6 +231,14 @@ typedef enum{
   AGS_RECALL_MIDI1_CHANNEL_VOLUME = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x7),
   AGS_RECALL_MIDI1_BALANCE = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x8),
   AGS_RECALL_MIDI1_PAN = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0xa),
+  AGS_RECALL_MIDI1_CC_24 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x18),
+  AGS_RECALL_MIDI1_CC_25 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x19),
+  AGS_RECALL_MIDI1_CC_26 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x1a),
+  AGS_RECALL_MIDI1_CC_27 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x1b),
+  AGS_RECALL_MIDI1_CC_28 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x1c),
+  AGS_RECALL_MIDI1_CC_29 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x1d),
+  AGS_RECALL_MIDI1_CC_30 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x1e),
+  AGS_RECALL_MIDI1_CC_31 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0x1f),
   AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0xb),
   AGS_RECALL_MIDI1_EFFECT_CONTROL_1 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0xc),
   AGS_RECALL_MIDI1_EFFECT_CONTROL_2 = AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, 0xd),
@@ -252,6 +284,14 @@ typedef enum{
  * @AGS_RECALL_MIDI2_BALANCE: MIDI version 2 balance
  * @AGS_RECALL_MIDI2_PAN: MIDI version 2 pan
  * @AGS_RECALL_MIDI2_EXPRESSION: MIDI version 2 expression
+ * @AGS_RECALL_MIDI2_CC_24: MIDI version 2 control change 24
+ * @AGS_RECALL_MIDI2_CC_25: MIDI version 2 control change 25
+ * @AGS_RECALL_MIDI2_CC_26: MIDI version 2 control change 26
+ * @AGS_RECALL_MIDI2_CC_27: MIDI version 2 control change 27
+ * @AGS_RECALL_MIDI2_CC_28: MIDI version 2 control change 28
+ * @AGS_RECALL_MIDI2_CC_29: MIDI version 2 control change 29
+ * @AGS_RECALL_MIDI2_CC_30: MIDI version 2 control change 30
+ * @AGS_RECALL_MIDI2_CC_31: MIDI version 2 control change 31
  * @AGS_RECALL_MIDI2_SOUND_VARIATION: MIDI version 2 sound variation
  * @AGS_RECALL_MIDI2_TIMBRE: MIDI version 2 timbre
  * @AGS_RECALL_MIDI2_RELEASE: MIDI version 2 release
@@ -299,6 +339,14 @@ typedef enum{
   AGS_RECALL_MIDI2_BALANCE                             = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 8),
   AGS_RECALL_MIDI2_PAN                                 = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 10),
   AGS_RECALL_MIDI2_EXPRESSION                          = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 11),
+  AGS_RECALL_MIDI2_CC_24                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 24),
+  AGS_RECALL_MIDI2_CC_25                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 25),
+  AGS_RECALL_MIDI2_CC_26                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 26),
+  AGS_RECALL_MIDI2_CC_27                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 27),
+  AGS_RECALL_MIDI2_CC_28                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 28),
+  AGS_RECALL_MIDI2_CC_29                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 29),
+  AGS_RECALL_MIDI2_CC_30                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 30),
+  AGS_RECALL_MIDI2_CC_31                               = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 31),
   AGS_RECALL_MIDI2_SOUND_VARIATION                     = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 70),
   AGS_RECALL_MIDI2_TIMBRE                              = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 71),
   AGS_RECALL_MIDI2_RELEASE                             = AGS_RECALL_MIDI2_CONTROL_CHANGE(0x40, 0xb0, 0x0, 72),
