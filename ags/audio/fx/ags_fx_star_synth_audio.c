@@ -4831,6 +4831,7 @@ ags_fx_star_synth_audio_notify_buffer_size_callback(GObject *gobject,
   AgsFxStarSynthAudio *fx_star_synth_audio;
 
   guint buffer_size;
+  guint format;
   guint i, j;
   
   GRecMutex *recall_mutex;
@@ -4840,11 +4841,13 @@ ags_fx_star_synth_audio_notify_buffer_size_callback(GObject *gobject,
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_star_synth_audio);
 
-  /* get buffer size */
+  /* get buffer size and format */
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format =  AGS_SOUNDCARD_DEFAULT_FORMAT;
   
   g_object_get(fx_star_synth_audio,
 	       "buffer-size", &buffer_size,
+	       "format", &format,
 	       NULL);
   
   /* reallocate buffer - apply buffer size */
@@ -4864,7 +4867,7 @@ ags_fx_star_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	gpointer destination;
 
 	channel_data = scope_data->channel_data[j];
- 
+
 	/* free chorus destination */
 	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
 	
@@ -4891,6 +4894,12 @@ ags_fx_star_synth_audio_notify_buffer_size_callback(GObject *gobject,
 						channel_data->pitch_type,
 						buffer_size);
 
+	/* pitch buffer */
+	ags_stream_free(channel_data->pitch_buffer);
+  
+	channel_data->pitch_buffer = ags_stream_alloc(buffer_size,
+						      format);
+	
 	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					  buffer_size);
       }
@@ -4907,6 +4916,7 @@ ags_fx_star_synth_audio_notify_format_callback(GObject *gobject,
 {
   AgsFxStarSynthAudio *fx_star_synth_audio;
 
+  guint buffer_size;
   guint format;
   guint i, j;
   
@@ -4917,9 +4927,11 @@ ags_fx_star_synth_audio_notify_format_callback(GObject *gobject,
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_star_synth_audio);
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format =  AGS_SOUNDCARD_DEFAULT_FORMAT;
 
   g_object_get(fx_star_synth_audio,
+	       "buffer-size", &buffer_size,
 	       "format", &format,
 	       NULL);
 
@@ -4940,7 +4952,8 @@ ags_fx_star_synth_audio_notify_format_callback(GObject *gobject,
 	gpointer destination;
 
 	channel_data = scope_data->channel_data[j];
-
+	
+	/*  */
 	ags_star_synth_util_set_format(channel_data->star_synth_0,
 				       format);
 
@@ -4965,6 +4978,12 @@ ags_fx_star_synth_audio_notify_format_callback(GObject *gobject,
 	ags_common_pitch_util_set_format(channel_data->pitch_util,
 					 channel_data->pitch_type,
 					 format);
+
+	/* pitch buffer */
+	ags_stream_free(channel_data->pitch_buffer);
+  
+	channel_data->pitch_buffer = ags_stream_alloc(buffer_size,
+						      format);
 
 	ags_chorus_util_set_format(channel_data->chorus_util,
 				   format);
@@ -5105,7 +5124,7 @@ ags_fx_star_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 
 	  channel_data =
 	    scope_data->channel_data[j] = ags_fx_star_synth_audio_channel_data_alloc();
-
+	
 	  ags_star_synth_util_set_buffer_length(channel_data->star_synth_0,
 						buffer_size);
 	  ags_star_synth_util_set_format(channel_data->star_synth_0,
@@ -5136,6 +5155,9 @@ ags_fx_star_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  ags_common_pitch_util_set_samplerate(channel_data->pitch_util,
 					       channel_data->pitch_type,
 					       samplerate);
+
+	  channel_data->pitch_buffer = ags_stream_alloc(buffer_size,
+							format);
 
 	  ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					    buffer_size);
@@ -5795,6 +5817,8 @@ ags_fx_star_synth_audio_channel_data_alloc()
   channel_data->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
   channel_data->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
+  channel_data->pitch_buffer = NULL;
+
   /* chorus util */
   channel_data->chorus_util = ags_chorus_util_alloc();
   
@@ -5830,6 +5854,9 @@ ags_fx_star_synth_audio_channel_data_free(AgsFxStarSynthAudioChannelData *channe
   /* star synth util */
   ags_star_synth_util_free(channel_data->star_synth_0);
   ags_star_synth_util_free(channel_data->star_synth_1);
+
+  /* pitch buffer */
+  ags_stream_free(channel_data->pitch_buffer);
   
   /* chorus util */
   ags_chorus_util_free(channel_data->chorus_util);
