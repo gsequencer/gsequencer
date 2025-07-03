@@ -7545,11 +7545,6 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL);
 
 	    data_val = (guint) data;
-
-	    if(index_key >= 24 &&
-	       index_key < 32){
-	      data_val = (guint) (0x3fff & ((AgsUmpWord) data >> 18));
-	    }
 	    
 	    if(dump_midi2_cc_message){
 	      g_message("MIDI 2 CC - midi2 control change group=%d channel=%d index_key=%d data=%u",
@@ -7605,12 +7600,8 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 		g_rec_mutex_unlock(recall_mutex);
 
-		if(index_key >= 24 &&
-		   index_key < 32){
-		  value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
-		}else{
-		  value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(32.0) - 1.0)));
-		}
+
+		value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(32.0) - 1.0)));
 		
 		g_value_set_float(&port_value,
 				  value);
