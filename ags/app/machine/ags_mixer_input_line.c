@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,15 +19,15 @@
 
 #include <ags/app/machine/ags_mixer_input_line.h>
 
-#include <ags/libags.h>
-#include <ags/libags-audio.h>
-#include <ags/libags-gui.h>
-
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_line_callbacks.h>
 
 #include <ags/app/machine/ags_mixer.h>
+
+#include <ags/ags_api_config.h>
+
+#include <ags/i18n.h>
 
 void ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line);
 void ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -245,7 +245,7 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   AgsAudio *audio;
   AgsChannel *source;
 
-  GList *start_recall;
+  GList *start_recall, *recall;
 
   guint pad, audio_channel;
   gint position;
@@ -281,7 +281,23 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 				       position,
 				       (AGS_FX_FACTORY_REMAP | AGS_FX_FACTORY_INPUT),
 				       0);
+  recall = start_recall;
 
+  while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
+#if defined(AGS_OSXAPI)
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
+#else
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
+#endif
+    }
+
+    recall = recall->next;
+  }
+  
   /* unref */
   g_list_free_full(start_recall,
 		   (GDestroyNotify) g_object_unref);

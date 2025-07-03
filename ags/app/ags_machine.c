@@ -654,6 +654,14 @@ ags_machine_init(AgsMachine *machine)
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
 
+  /* MIDI CC connection */
+  action = g_simple_action_new("midi_cc_connection",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_machine_midi_cc_connection_callback), machine);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
   /* audio_export */
   action = g_simple_action_new("audio_export",
 			       NULL);
@@ -811,6 +819,7 @@ ags_machine_init(AgsMachine *machine)
   machine->reposition_audio = NULL;
   machine->connection_editor_dialog = NULL;
   machine->midi_dialog = NULL;
+  machine->midi_cc_dialog = NULL;
   machine->envelope_dialog = NULL;
 
   machine->preset_dialog = NULL;

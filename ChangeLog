@@ -1,3 +1,48 @@
+ags (8.0.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added MIDI 1 and 2 control change 24 - 31 to AgsMidiCCDialog
+	* added MIDI 1 and 2 control change 24 - 31 macros and enums to ags_recall.h
+
+ags (8.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AGS_CONFIG_RECALL and midi1-cc-dump config switch of ags.conf
+	* implemented AGS_CONFIG_RECALL and midi2-cc-dump config switch of ags.conf
+	* fixed ags_audio_real_play_recall() missing call to ::midi1-control-change()
+	* fixed ags_channel_real_play_recall() missing call to ::midi2-control-change()
+	* fixed AGS_RECALL_MIDI2_CC_CHANGE_PROGRAM
+	* fixed AGS_RECALL_MIDI2_CC_CHANGE_PRESSURE
+	* fixed AGS_RECALL_MIDI2_CC_PITCH_BEND
+
+ags (8.0.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* breaking ABI of ags_midi_ump_util_put_midi2_control_change() because of missing data field
+	* breaking ABI of ags_midi_ump_util_get_midi2_control_change() because of missing data field
+	* implemented MIDI v2.0 CC support within UI
+	* implemented AgsMidiCCDialog
+	* implemented AgsMidiCCEditor
+	* implemented AgsAudioTreeDispatcher
+	* fixed ags_recall.h MIDI 1 and 2 CC macros and enum
+	* improved ags_recall_midi1_control_change() completed missing functionality
+	* improved ags_recall_midi2_control_change() completed missing functionality
+	* improved AgsDial small refactoring
+	* improved AgsHybridSynth label text enumerating starting from 1
+	* improved AgsQuantumSynth label text enumerating starting from 1
+	* improved AgsStargazerSynth label text enumerating starting from 1
+	* improved AgsRavenSynth label text enumerating starting from 1
+	* refactored all AgsMachine implementations supporting MIDI CC
+	* refactored AgsEffectBulk to support MIDI CC for plugins
+	* refactored AgsLine to support MIDI CC for plugins
+	* refactored AgsEffectLine to support MIDI CC for plugins
+	* minor bug-fixes
+
+ags (7.8.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
 ags (7.7.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

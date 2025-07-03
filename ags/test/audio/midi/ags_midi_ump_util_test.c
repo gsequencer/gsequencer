@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2425,18 +2425,20 @@ ags_midi_ump_util_test_put_midi2_control_change()
   const guchar filled_buffer[512] = "\x00\x7f\xb0\x40\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
   gint index_key = 0x7f;
+  AgsUmpWord data = 0x0;
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
   memset(buffer, 0, 512 * sizeof(guchar));
   
   ags_midi_ump_util_put_midi2_control_change(midi_ump_util,
-						  buffer,
-						  0,
-						  0,
-						  index_key,
-						  NULL, NULL,
-						  0);
+					     buffer,
+					     0,
+					     0,
+					     index_key,
+					     data,
+					     NULL, NULL,
+					     0);
   
   CU_ASSERT(!memcmp(buffer, filled_buffer, 16 * sizeof(guchar)));
 }
@@ -2451,6 +2453,7 @@ ags_midi_ump_util_test_get_midi2_control_change()
   gint group;
   gint channel;
   gint index_key;
+  AgsUmpWord data;
 
   midi_ump_util = ags_midi_ump_util_alloc();
 
@@ -2459,12 +2462,14 @@ ags_midi_ump_util_test_get_midi2_control_change()
 					     &group,
 					     &channel,
 					     &index_key,
+					     &data,
 					     NULL, NULL,
 					     0);
   
   CU_ASSERT(group == 0);
   CU_ASSERT(channel == 0);
   CU_ASSERT(index_key == 127);
+  CU_ASSERT(data == 0);
 }
 
 void

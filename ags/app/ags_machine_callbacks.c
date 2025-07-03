@@ -25,6 +25,7 @@
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_connection_editor.h>
 #include <ags/app/ags_midi_dialog.h>
+#include <ags/app/ags_midi_cc_dialog.h>
 #include <ags/app/ags_machine_editor_dialog.h>
 #include <ags/app/ags_connection_editor_dialog.h>
 #include <ags/app/ags_composite_editor_callbacks.h>
@@ -1290,6 +1291,33 @@ ags_machine_midi_connection_callback(GAction *action, GVariant *parameter,
 			 TRUE);
 
   gtk_window_present((GtkWindow *) midi_dialog);
+}
+
+void
+ags_machine_midi_cc_connection_callback(GAction *action, GVariant *parameter,
+					AgsMachine *machine)
+{
+  AgsMidiCCDialog *midi_cc_dialog;
+
+  AgsApplicationContext *application_context;
+
+  application_context = ags_application_context_get_instance();
+
+  midi_cc_dialog = (AgsMidiCCDialog *) machine->midi_cc_dialog;
+  
+  if(machine->midi_cc_dialog == NULL){
+    midi_cc_dialog = ags_midi_cc_dialog_new((GtkWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context)),
+				      machine);
+    machine->midi_cc_dialog = (GtkWindow *) midi_cc_dialog;
+
+    ags_connectable_connect(AGS_CONNECTABLE(midi_cc_dialog));
+    ags_applicable_reset(AGS_APPLICABLE(midi_cc_dialog));
+  }
+
+  gtk_widget_set_visible((GtkWidget *) midi_cc_dialog,
+			 TRUE);
+
+  gtk_window_present((GtkWindow *) midi_cc_dialog);
 }
 
 void

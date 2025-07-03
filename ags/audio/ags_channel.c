@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -9973,6 +9973,8 @@ ags_channel_real_play_recall(AgsChannel *channel,
 				     AGS_SOUND_STAGING_RUN_INIT_POST |
 				     AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 				     AGS_SOUND_STAGING_AUTOMATE |
+				     AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE |
+				     AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE |
 				     AGS_SOUND_STAGING_RUN_PRE |
 				     AGS_SOUND_STAGING_RUN_INTER |
 				     AGS_SOUND_STAGING_RUN_POST |
@@ -10080,14 +10082,14 @@ ags_channel_real_play_recall(AgsChannel *channel,
       list_start = g_list_reverse(list_start);
   }
   
-  /* automate and play  */
+  /* automate, midi 1 and 2 control change */
   staging_flags = staging_flags & staging_mask;
 
-  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
-    while(list != NULL){
-      recall = AGS_RECALL(list->data);
+  while(list != NULL){
+    recall = AGS_RECALL(list->data);
     
-      /* play stages */
+    /* play stages */
+    if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
       if(AGS_IS_RECALL_CHANNEL(recall)){
 	ags_recall_set_staging_flags(recall,
 				     AGS_SOUND_STAGING_AUTOMATE);
@@ -10096,13 +10098,38 @@ ags_channel_real_play_recall(AgsChannel *channel,
 	ags_recall_unset_staging_flags(recall,
 				       AGS_SOUND_STAGING_AUTOMATE);
       }
-      
-      list = list->next;
     }
+    
+    if((AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE & (staging_flags)) != 0){
+      if(AGS_IS_RECALL_CHANNEL(recall)){
+	ags_recall_set_staging_flags(recall,
+				     AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
+
+	//NOTE:JK: improve me not a necessity
+	ags_recall_unset_staging_flags(recall,
+				       AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
+      }
+    }
+    
+    if((AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE & (staging_flags)) != 0){
+      if(AGS_IS_RECALL_CHANNEL(recall)){
+	ags_recall_set_staging_flags(recall,
+				     AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
+
+	//NOTE:JK: improve me not a necessity
+	ags_recall_unset_staging_flags(recall,
+				       AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
+      }
+    }
+      
+    list = list->next;
   }
 
   staging_flags = staging_flags & (~AGS_SOUND_STAGING_AUTOMATE);
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI1_CONTROL_CHANGE);
+  staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
   
+  /* play */
   list = list_start;
   
   while((list = ags_recall_find_recycling_context(list,
@@ -10698,9 +10725,11 @@ ags_channel_real_start(AgsChannel *channel,
 
   GList *start_message_queue;
   GList *start_recall_id;
+  GList *start_tree_list, *current_tree_list;
 
   gint i;
   guint success_counter, current_success_counter;
+  gboolean super_threaded_channel;  
 
   static const AgsSoundStagingFlags staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
 						     AGS_SOUND_STAGING_RUN_INIT_PRE |
@@ -10753,6 +10782,12 @@ ags_channel_real_start(AgsChannel *channel,
   start_recall_id = NULL;
 
   success_counter = 0;
+
+  super_threaded_channel = FALSE;
+
+  if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+    super_threaded_channel = TRUE;
+  }
 
   if(sound_scope >= 0){
     current_recall_id = ags_playback_get_recall_id(playback,
@@ -10827,6 +10862,24 @@ ags_channel_real_start(AgsChannel *channel,
 	  if(audio_thread != NULL){
 	    ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					    TRUE);
+
+	    if(!ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
+	      start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
+									    (GObject *) channel,
+									    sound_scope);
+	      
+	      current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher);
+
+	      if(current_tree_list != NULL){
+		start_tree_list = g_list_concat(current_tree_list,
+						start_tree_list);
+	      }
+	      
+	      ags_audio_tree_dispatcher_set_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
+						      start_tree_list);
+
+	      g_object_unref(audio_thread);
+	    }
 	  }
 	}
     
@@ -10837,6 +10890,22 @@ ags_channel_real_start(AgsChannel *channel,
 	  if(channel_thread != NULL){
 	    ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					      TRUE);
+
+	    start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
+									  (GObject *) channel,
+									  sound_scope);
+
+	    current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher);
+	    
+	    if(current_tree_list != NULL){
+	      start_tree_list = g_list_concat(current_tree_list,
+					      start_tree_list);
+	    }
+
+	    ags_audio_tree_dispatcher_set_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
+						    start_tree_list);
+
+	    g_object_unref(channel_thread);
 	  }
 	}
       }
@@ -10917,6 +10986,25 @@ ags_channel_real_start(AgsChannel *channel,
 	    if(audio_thread != NULL){
 	      ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					      TRUE);
+
+	      if(!super_threaded_channel){
+		start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
+									      (GObject *) audio,
+									      sound_scope);
+
+		current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher);
+
+		if(current_tree_list != NULL){
+		  start_tree_list = g_list_concat(current_tree_list,
+						  start_tree_list);
+		}
+
+		ags_audio_tree_dispatcher_set_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
+							start_tree_list);
+
+	      } 
+
+	      g_object_unref(audio_thread);
 	    }
 	  }
       
@@ -10927,6 +11015,24 @@ ags_channel_real_start(AgsChannel *channel,
 	    if(channel_thread != NULL){
 	      ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 						TRUE);
+
+	      if(super_threaded_channel){
+		start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
+									      (GObject *) audio,
+									      sound_scope);
+		
+		current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher);
+
+		if(current_tree_list != NULL){
+		  start_tree_list = g_list_concat(current_tree_list,
+						  start_tree_list);
+		}
+
+		ags_audio_tree_dispatcher_set_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
+							start_tree_list);
+	      } 
+
+	      g_object_unref(channel_thread);
 	    }
 	  }
 	}
@@ -11110,12 +11216,20 @@ ags_channel_real_stop(AgsChannel *channel,
       ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 				      FALSE);
 
+      ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
+						       (GObject *) channel,
+						       sound_scope);
+
       g_object_unref(audio_thread);
     }
 
     if(channel_thread != NULL){
       ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					FALSE);
+
+      ags_audio_tree_dispatcher_remove_dispatch_source(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
+						       (GObject *) channel,
+						       sound_scope);
 
       g_object_unref(channel_thread);
     }
@@ -11144,6 +11258,9 @@ ags_channel_real_stop(AgsChannel *channel,
 	ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					FALSE);
 
+	ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
+							 (GObject *) channel,
+							 sound_scope);
 	g_object_unref(audio_thread);
       }
 
@@ -11151,6 +11268,10 @@ ags_channel_real_stop(AgsChannel *channel,
 	ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					  FALSE);
 
+	ags_audio_tree_dispatcher_remove_dispatch_source(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
+							 (GObject *) channel,
+							 sound_scope);
+	
 	g_object_unref(channel_thread);
       }
     }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2926,7 +2926,6 @@ ags_midi_ump_util_put_delta_clock_ticks_per_quarter_note(AgsMidiUmpUtil *midi_um
   nth--;
   
   buffer[offset + nth] = (0xff & (ticks_per_quarter_note_count));
-  nth--;
 }
 
 /**
@@ -5029,7 +5028,7 @@ ags_midi_ump_util_get_midi2_assignable_per_note_controller(AgsMidiUmpUtil *midi_
 
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & buffer[offset + nth - 3]);
+    data[0] = (buffer[offset + nth] << 24) | (buffer[offset + nth - 1] << 16) | (buffer[offset + nth - 2] << 8) | (buffer[offset + nth - 3]);
   }
 
   offset += 4;
@@ -5241,6 +5240,7 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gint group,
 					   gint channel,
 					   gint index_key,
+					   AgsUmpWord data,
 					   gchar **extension_name, GValue *extension_value,
 					   guint extension_count)
 {
@@ -5276,11 +5276,18 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   nth = 3;
 
   /* data */
-  buffer[offset + nth] = 0x0;  
-  buffer[offset + nth - 1] = 0x0;  
-  buffer[offset + nth - 2] = 0x0;  
-  buffer[offset + nth - 3] = 0x0;  
+  buffer[offset + nth] = 0xff & (data >> 24);
+  nth--;
 
+  buffer[offset + nth] = 0xff & (data >> 16);  
+  nth--;
+
+  buffer[offset + nth] = 0xff & (data >> 8);  
+  nth--;
+
+  buffer[offset + nth] = 0xff & (data);  
+
+#if 0  
   if((position = ags_strv_index(extension_name, "portamento")) >= 0){
     gint source_note_number;
 
@@ -5300,6 +5307,7 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   }
 
   nth--;
+#endif
 }
 
 /**
@@ -5325,6 +5333,7 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
 					   gint *group,
 					   gint *channel,
 					   gint *index_key,
+					   AgsUmpWord *data,
 					   gchar ***extension_name, GValue **extension_value,
 					   guint *extension_count)
 {
@@ -5361,11 +5370,15 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   nth--;
 
   /* reserved */
-  offset += 4;
-
   nth = 3;
   
   /* data */
+  if(data != NULL){
+    data[0] = (buffer[offset + nth] << 24) | (buffer[offset + nth - 1] << 16) | (buffer[offset + nth - 2] << 8) | (buffer[offset + nth - 3]);
+  }
+  
+  offset += 4;
+#if 0
   if(extension_name != NULL){
     if((position = ags_strv_index(extension_name[0], "portamento")) >= 0){
       gpointer source_note_number;
@@ -5391,8 +5404,7 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   }
 
   nth--;
-
-  offset += 4;
+#endif
   
   return(offset);
 }
@@ -6711,7 +6723,7 @@ ags_midi_ump_util_get_midi2_pitch_bend(AgsMidiUmpUtil *midi_ump_util,
     
   /* data */
   if(data != NULL){
-    data[0] = (0xff000000 & (buffer[offset + nth] << 24)) | (0xff0000 & (buffer[offset + nth - 1] << 16)) | (0xff00 & (buffer[offset + nth - 2] << 8)) | (0xff & (buffer[offset + nth - 3]));
+    data[0] = (buffer[offset + nth] << 24) | (buffer[offset + nth - 1] << 16) | (buffer[offset + nth - 2] << 8) | (buffer[offset + nth - 3]);
   }
 
   offset += 4;

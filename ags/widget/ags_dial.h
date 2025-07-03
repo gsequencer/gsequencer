@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,14 +53,17 @@ typedef struct _AgsDialClass AgsDialClass;
 
 typedef enum{
   AGS_DIAL_WITH_BUTTONS           = 1,
-  AGS_DIAL_MOUSE_BUTTON_PRESSED   = 1 <<  1,
-  AGS_DIAL_BUTTON_DOWN_PRESSED    = 1 <<  2,
-  AGS_DIAL_BUTTON_UP_PRESSED      = 1 <<  3,
-  AGS_DIAL_MOTION_CAPTURING_INIT  = 1 <<  4,
-  AGS_DIAL_MOTION_CAPTURING       = 1 <<  5,
-  AGS_DIAL_SEEMLESS_MODE          = 1 <<  6,
-  AGS_DIAL_INVERSE_LIGHT          = 1 <<  7,
+  AGS_DIAL_SEEMLESS_MODE          = 1 <<  1,
+  AGS_DIAL_INVERSE_LIGHT          = 1 <<  2,
 }AgsDialFlags;
+
+typedef enum{
+  AGS_DIAL_STATE_MOUSE_BUTTON_PRESSED   = 1,
+  AGS_DIAL_STATE_BUTTON_DOWN_PRESSED    = 1 <<  1,
+  AGS_DIAL_STATE_BUTTON_UP_PRESSED      = 1 <<  2,
+  AGS_DIAL_STATE_MOTION_CAPTURING_INIT  = 1 <<  3,
+  AGS_DIAL_STATE_MOTION_CAPTURING       = 1 <<  4,
+}AgsDialStateFlags;
 
 typedef enum{
   AGS_DIAL_INCREMENT,
@@ -72,6 +75,7 @@ struct _AgsDial
   GtkWidget widget;
 
   AgsDialFlags flags;
+  AgsDialStateFlags state_flags;
 
   guint radius;
   guint outline_strength;
@@ -79,6 +83,9 @@ struct _AgsDial
   guint scale_max_precision;
   
   guint font_size;
+  
+  gchar *font_name;
+  
   gint button_width;
   gint button_height;
   gint margin_left;
@@ -103,6 +110,15 @@ struct _AgsDialClass
 };
 
 GType ags_dial_get_type(void);
+GType ags_dial_flags_get_type(void);
+
+/* flags */
+gboolean ags_dial_test_flags(AgsDial *dial,
+			     AgsDialFlags flags);
+void ags_dial_set_flags(AgsDial *dial,
+			AgsDialFlags flags);
+void ags_dial_unset_flags(AgsDial *dial,
+			  AgsDialFlags flags);
 
 /* getter and setter */
 void ags_dial_set_radius(AgsDial *dial,
@@ -120,6 +136,10 @@ guint ags_dial_get_scale_precision(AgsDial *dial);
 void ags_dial_set_font_size(AgsDial *dial,
 			    guint font_size);
 guint ags_dial_get_font_size(AgsDial *dial);
+
+void ags_dial_set_font_name(AgsDial *dial,
+			      gchar *font_name);
+gchar* ags_dial_get_font_name(AgsDial *dial);
 
 void ags_dial_set_button_width(AgsDial *dial,
 			       gint button_width);

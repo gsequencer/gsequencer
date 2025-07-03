@@ -77,6 +77,8 @@ void ags_machine_audio_connection_callback(GAction *action, GVariant *parameter,
 					   AgsMachine *machine);
 void ags_machine_midi_connection_callback(GAction *action, GVariant *parameter,
 					  AgsMachine *machine);
+void ags_machine_midi_cc_connection_callback(GAction *action, GVariant *parameter,
+					     AgsMachine *machine);
 
 void ags_machine_audio_export_callback(GAction *action, GVariant *parameter,
 				       AgsMachine *machine);

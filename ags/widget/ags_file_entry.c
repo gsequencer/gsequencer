@@ -163,6 +163,26 @@ ags_file_entry_get_type(void)
   return(g_define_type_id__static);
 }
 
+GType
+ags_file_entry_flags_get_type(void)
+{
+  static gsize g_flags_type_id__static;
+
+  if(g_once_init_enter(&g_flags_type_id__static)){
+    static const GFlagsValue values[] = {
+      { AGS_FILE_ENTRY_AUTO_COMPLETION, "AGS_FILE_ENTRY_AUTO_COMPLETION", "file-entry-auto-completion" },
+      { AGS_FILE_ENTRY_SELECTION, "AGS_FILE_ENTRY_SELECTION", "file-entry-selection" },
+      { AGS_FILE_ENTRY_EDIT_DROPDOWN, "AGS_FILE_ENTRY_EDIT_DROPDOWN", "file-entry-edit-dropdown" },
+      { 0, NULL, NULL }
+    };
+
+    GType g_flags_type_id = g_flags_register_static(g_intern_static_string("AgsFileEntryFlags"), values);
+
+    g_once_init_leave(&g_flags_type_id__static, g_flags_type_id);
+  }
+  
+  return(g_flags_type_id__static);
+}
 void
 ags_file_entry_class_init(AgsFileEntryClass *file_entry)
 {
@@ -1517,6 +1537,60 @@ void
 ags_file_entry_real_activate(AgsFileEntry *file_entry)
 {
   //TODO:JK: implement me
+}
+
+/**
+ * ags_file_entry_test_flags:
+ * @file_entry: the #AgsFileEntry
+ * @flags: the flags
+ * 
+ * Test flags of @file_entry.
+ *
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
+ * Since: 8.0.0
+ */
+gboolean
+ags_file_entry_test_flags(AgsFileEntry *file_entry,
+			  AgsFileEntryFlags flags)
+{
+  gboolean success;
+
+  success = ((flags & (file_entry->flags)) != 0) ? TRUE: FALSE;
+
+  return(success);
+}
+
+/**
+ * ags_file_entry_set_flags:
+ * @file_entry: the #AgsFileEntry
+ * @flags: the flags
+ * 
+ * Set flags of @file_entry.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_file_entry_set_flags(AgsFileEntry *file_entry,
+			 AgsFileEntryFlags flags)
+{
+  file_entry->flags |= flags;
+}
+
+/**
+ * ags_file_entry_unset_flags:
+ * @file_entry: the #AgsFileEntry
+ * @flags: the flags
+ * 
+ * Set flags of @file_entry.
+ * 
+ * Since: 8.0.0
+ */
+void
+ags_file_entry_unset_flags(AgsFileEntry *file_entry,
+			   AgsFileEntryFlags flags)
+{
+  file_entry->flags &= (~flags);
 }
 
 /**

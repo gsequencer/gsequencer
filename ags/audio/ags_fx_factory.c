@@ -12355,10 +12355,8 @@ ags_fx_factory_create(AgsAudio *audio,
 {
   GList *start_recall;
 
-  if(!AGS_IS_AUDIO(audio) ||
-     plugin_name == NULL){
-    return(NULL);
-  }
+  g_return_val_if_fail(AGS_IS_AUDIO(audio), NULL);
+  g_return_val_if_fail(plugin_name != NULL, NULL);
   
   start_recall = NULL;
 

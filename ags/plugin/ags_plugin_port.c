@@ -981,7 +981,7 @@ ags_plugin_port_set_scale_steps(AgsPluginPort *plugin_port,
  * 
  * Get scale point.
  * 
- * Returns: the scale point
+ * Returns: (transfer full): the scale point
  * 
  * Since: 3.1.0
  */
@@ -994,6 +994,8 @@ ags_plugin_port_get_scale_point(AgsPluginPort *plugin_port)
     return(NULL);
   }
 
+  scale_point = NULL;
+  
   g_object_get(plugin_port,
 	       "scale-point", &scale_point,
 	       NULL);

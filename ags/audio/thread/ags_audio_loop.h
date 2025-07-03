@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_enums.h>
+
+#include <ags/audio/thread/ags_audio_tree_dispatcher.h>
 
 #include <math.h>
 
@@ -89,6 +91,8 @@ struct _AgsAudioLoop
   
   guint *staging_program;
   guint staging_program_count;
+
+  AgsAudioTreeDispatcher *audio_tree_dispatcher;
 };
 
 struct _AgsAudioLoopClass

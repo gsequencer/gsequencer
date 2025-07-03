@@ -483,6 +483,8 @@ ags_machine_editor_bulk_apply(AgsApplicable *applicable)
   if(start_input){
     g_object_unref(start_input);
   }
+
+  g_list_free(start_dialog_model);
 }
 
 void

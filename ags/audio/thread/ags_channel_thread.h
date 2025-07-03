@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_enums.h>
+
+#include <ags/audio/thread/ags_audio_tree_dispatcher.h>
 
 G_BEGIN_DECLS
 
@@ -84,6 +86,8 @@ struct _AgsChannelThread
   gboolean processing;
 
   AgsTaskLauncher *task_launcher;
+
+  AgsAudioTreeDispatcher *audio_tree_dispatcher;
 };
 
 struct _AgsChannelThreadClass

@@ -886,8 +886,8 @@ ags_window_load_add_menu_lv2(AgsWindow *window,
       gchar *filename, *effect;
     
       /* get filename and effect */
-      filename = lv2_manager->quick_scan_plugin_filename[i];
-      effect = lv2_manager->quick_scan_plugin_effect[i];
+      filename = g_strdup(lv2_manager->quick_scan_plugin_filename[i]);
+      effect = g_strdup(lv2_manager->quick_scan_plugin_effect[i]);
       
       /* create item */
       if(filename != NULL &&
@@ -1175,8 +1175,8 @@ ags_window_load_add_menu_live_lv2(AgsWindow *window,
       gchar *filename, *effect;
     
       /* get filename and effect */
-      filename = lv2_manager->quick_scan_instrument_filename[i];
-      effect = lv2_manager->quick_scan_instrument_effect[i];
+      filename = g_strdup(lv2_manager->quick_scan_instrument_filename[i]);
+      effect = g_strdup(lv2_manager->quick_scan_instrument_effect[i]);
     
       /* create item */
       if(filename != NULL &&

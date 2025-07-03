@@ -50,6 +50,23 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="8.0.0" date="2025-06-30">
+      <description>
+	<p>
+	  Implemented MIDI CC dialog and editor.
+	</p>
+	<p>
+	  Improved performance because of new audio tree dispatcher.
+	</p>
+	<p>
+	  Fixed some synths labeling controls starting from 1.
+	</p>
+	<p>
+	  Minor improvements.
+	</p>
+      </description>
+    </release>
+
     <release version="7.7.0" date="2025-04-01">
       <description>
 	<p>

@@ -109,11 +109,11 @@ GType ags_file_entry_get_type();
 
 /* flags */
 gboolean ags_file_entry_test_flags(AgsFileEntry *file_entry,
-				    guint flags);
+				   AgsFileEntryFlags flags);
 void ags_file_entry_set_flags(AgsFileEntry *file_entry,
-			       guint flags);
+			      AgsFileEntryFlags flags);
 void ags_file_entry_unset_flags(AgsFileEntry *file_entry,
-				 guint flags);
+				AgsFileEntryFlags flags);
 
 gchar* ags_file_entry_get_filename(AgsFileEntry *file_entry);
 void ags_file_entry_set_filename(AgsFileEntry *file_entry,
