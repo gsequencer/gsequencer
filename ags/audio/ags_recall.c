@@ -7556,7 +7556,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 	    if(index_key >= 24 &&
 	       index_key < 32){
-	      data_val = ((0xfe << 24) & data) >> 24;
+	      data_val = ((0x7f << 25) & data) >> 25;
 	    }
 	    
 	    /* value */
