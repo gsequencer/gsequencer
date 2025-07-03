@@ -5,6 +5,9 @@ ags (8.0.1)
 	* implemented AGS_CONFIG_RECALL and midi2-cc-dump config switch of ags.conf
 	* fixed ags_audio_real_play_recall() missing call to ::midi1-control-change()
 	* fixed ags_channel_real_play_recall() missing call to ::midi2-control-change()
+	* fixed AGS_RECALL_MIDI2_CC_CHANGE_PROGRAM
+	* fixed AGS_RECALL_MIDI2_CC_CHANGE_PRESSURE
+	* fixed AGS_RECALL_MIDI2_CC_PITCH_BEND
 
 ags (8.0.0)
 
