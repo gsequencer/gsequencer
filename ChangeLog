@@ -1,3 +1,15 @@
+ags (8.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-star-synth dedicated pitch buffer
+	* fixed ags-fx-seq-synth dedicated pitch buffer
+	* fixed ags-fx-raven-synth dedicated pitch buffer
+
+ags (8.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_ump_util_get_midi2_control_change()
+
 ags (8.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

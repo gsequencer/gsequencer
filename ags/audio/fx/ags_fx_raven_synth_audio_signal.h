@@ -47,6 +47,7 @@ struct _AgsFxRavenSynthAudioSignal
   AgsFxNotationAudioSignal fx_notation_audio_signal;
 
   AgsAudioBufferUtil audio_buffer_util;
+  gpointer pitch_buffer;
 };
 
 struct _AgsFxRavenSynthAudioSignalClass
