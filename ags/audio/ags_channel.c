@@ -10854,7 +10854,7 @@ ags_channel_real_start(AgsChannel *channel,
       audio_thread = NULL;
       channel_thread = NULL;
     
-      if(AGS_SOUND_SCOPE_PLAYBACK != sound_scope){    
+      if(AGS_SOUND_SCOPE_PLAYBACK == sound_scope){    
 	if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
 	  audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							      sound_scope);
@@ -10978,7 +10978,7 @@ ags_channel_real_start(AgsChannel *channel,
 	audio_thread = NULL;
 	channel_thread = NULL;
 
-	if(AGS_SOUND_SCOPE_PLAYBACK != i){
+	if(AGS_SOUND_SCOPE_PLAYBACK == i){
 	  if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
 	    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 								i);
