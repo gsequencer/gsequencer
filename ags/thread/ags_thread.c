@@ -3165,11 +3165,13 @@ ags_thread_add_start_queue(AgsThread *thread,
 
   /* add */
   g_rec_mutex_lock(thread_mutex);
-  
-  thread->start_queue = g_list_prepend(thread->start_queue,
-				       child);
-  g_object_ref(child);
-  
+
+  if(g_list_find(thread->start_queue, child) == NULL){
+    thread->start_queue = g_list_prepend(thread->start_queue,
+					 child);
+    g_object_ref(child);
+  }
+    
   g_rec_mutex_unlock(thread_mutex);
 }
 
@@ -3199,11 +3201,14 @@ ags_thread_add_start_queue_all(AgsThread *thread,
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* add all */
+  g_rec_mutex_lock(thread_mutex);
+  
   start_queue = NULL;
   
   while(child != NULL){
     if(AGS_THREAD(child->data)->thread == NULL &&
-       !ags_thread_test_status_flags(child->data, AGS_THREAD_STATUS_RUNNING)){
+       !ags_thread_test_status_flags(child->data, AGS_THREAD_STATUS_RUNNING) &&
+       g_list_find(thread->start_queue, child->data) == NULL){
       start_queue = g_list_prepend(start_queue,
 				   child->data);
 
@@ -3214,17 +3219,15 @@ ags_thread_add_start_queue_all(AgsThread *thread,
     child = child->next;
   }
 
-  start_queue = g_list_reverse(start_queue);
-  
-  g_rec_mutex_lock(thread_mutex);
-  
-  if(thread->start_queue == NULL){
-    thread->start_queue = start_queue;
-  }else{
-    thread->start_queue = g_list_concat(thread->start_queue,
-				        start_queue);
+  if(start_queue != NULL){
+    if(thread->start_queue == NULL){
+      thread->start_queue = start_queue;
+    }else{
+      thread->start_queue = g_list_concat(start_queue,
+					  thread->start_queue);
+    }
   }
-    
+  
   g_rec_mutex_unlock(thread_mutex);
 }
 
