@@ -3091,17 +3091,18 @@ ags_thread_real_start(AgsThread *thread)
     g_thread_yield();
     
     current_time = g_get_monotonic_time();
-  }while(current_time < start_time + G_USEC_PER_SEC &&
+  }while(current_time < start_time + 4 &&
 	 thread->thread != NULL);
 
   if(thread->thread != NULL ||
-     ags_atomic_uint_get(&(thread->is_running)) > 0){
-    ags_thread_recover_dead_lock(thread);
+     ags_atomic_int_get(&(thread->is_running)) > 0){
+    //    ags_thread_recover_dead_lock(thread);
   }
   
   if(thread->thread != NULL ||
-     ags_atomic_uint_get(&(thread->is_running)) > 0){
-    g_critical("failed to recover dead-lock");
+     ags_atomic_int_get(&(thread->is_running)) > 0){
+    g_critical("failed to recover dead-lock - is_running = %d",
+	       ags_atomic_int_get(&(thread->is_running)));
     
     return;
   }
@@ -3153,7 +3154,9 @@ ags_thread_add_start_queue(AgsThread *thread,
   GRecMutex *thread_mutex;
 
   if(!AGS_IS_THREAD(thread) ||
-     !AGS_IS_THREAD(child)){
+     !AGS_IS_THREAD(child) ||
+     child->thread != NULL ||
+     ags_thread_test_status_flags(child, AGS_THREAD_STATUS_RUNNING)){
     return;
   }
 
@@ -3183,6 +3186,8 @@ void
 ags_thread_add_start_queue_all(AgsThread *thread,
 			       GList *child)
 {
+  GList *start_queue;
+  
   GRecMutex *thread_mutex;
 
   if(!AGS_IS_THREAD(thread) ||
@@ -3194,17 +3199,30 @@ ags_thread_add_start_queue_all(AgsThread *thread,
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* add all */
+  start_queue = NULL;
+  
+  while(child != NULL){
+    if(AGS_THREAD(child->data)->thread == NULL &&
+       !ags_thread_test_status_flags(child->data, AGS_THREAD_STATUS_RUNNING)){
+      start_queue = g_list_prepend(start_queue,
+				   child->data);
+
+      g_object_ref(child->data);
+    }
+
+    /* iterate */
+    child = child->next;
+  }
+
+  start_queue = g_list_reverse(start_queue);
+  
   g_rec_mutex_lock(thread_mutex);
   
   if(thread->start_queue == NULL){
-    thread->start_queue = g_list_copy_deep(child,
-					   (GCopyFunc) g_object_ref,
-					   NULL);
+    thread->start_queue = start_queue;
   }else{
     thread->start_queue = g_list_concat(thread->start_queue,
-					g_list_copy_deep(child,
-							 (GCopyFunc) g_object_ref,
-							 NULL));
+				        start_queue);
   }
     
   g_rec_mutex_unlock(thread_mutex);
@@ -3235,7 +3253,8 @@ void
 ags_thread_real_stop(AgsThread *thread)
 {
   if(thread->thread == NULL ||
-     !ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
+     !ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING) ||
+     ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_INITIAL_RUN)){
     return;
   }
   

@@ -376,8 +376,8 @@ ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
 
       g_object_ref(channel);
     
-      dispatch_audio->tree_element_type = AGS_TYPE_OUTPUT;
-      dispatch_audio->tree_element.input = (GObject *) channel;
+      dispatch_audio->tree_element_type = AGS_TYPE_AUDIO;
+      dispatch_audio->tree_element.input = (GObject *) current_audio;
 
       g_object_ref(current_recall_id);
 
