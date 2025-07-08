@@ -58,6 +58,7 @@
 
 #include "base/source/fobject.h"
 #include "base/thread/include/flock.h"
+#include <public.sdk/source/vst/utility/stringconvert.h>
 #include "pluginterfaces/base/iupdatehandler.h"
 
 namespace Steinberg {

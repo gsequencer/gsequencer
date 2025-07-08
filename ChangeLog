@@ -3,8 +3,9 @@ ags (8.0.5)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed pad playback with new dispatcher
 	* fixed notation clipboard
+	* fixed raven synth seq LFO refresh port
 	* fixed raven synth seq LFO callback
-
+	* fixed VST3 support added missing stringconvert.h and stringconvert.cpp
 
 ags (8.0.4)
 
