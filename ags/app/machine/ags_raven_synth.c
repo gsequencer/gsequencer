@@ -8669,11 +8669,11 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
-    /* synth-1 seq tuning pingpong */
+    /* synth-1 seq tuning lfo frequency */
     port = NULL;
 
     g_object_get(recall->data,
-		 "synth-1-seq-tuning-pingpong", &port,
+		 "synth-1-seq-tuning-lfo-frequency", &port,
 		 NULL);
 
     if(port != NULL){
@@ -8685,13 +8685,8 @@ ags_raven_synth_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      if(g_value_get_float(&value) != 0.0){
-	gtk_check_button_set_active(raven_synth->synth_1_seq_tuning_pingpong,
-				    TRUE);
-      }else{
-	gtk_check_button_set_active(raven_synth->synth_1_seq_tuning_pingpong,
-				    FALSE);
-      }
+      gtk_spin_button_set_value(raven_synth->synth_1_seq_tuning_lfo_frequency,
+				(gdouble) g_value_get_float(&value));
 
       g_object_unref(port);
     }

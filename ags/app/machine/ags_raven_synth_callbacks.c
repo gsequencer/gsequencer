@@ -2195,7 +2195,7 @@ ags_raven_synth_synth_0_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_bu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -3185,7 +3185,7 @@ ags_raven_synth_synth_0_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_bu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -5939,7 +5939,7 @@ ags_raven_synth_synth_1_seq_tuning_lfo_frequency_callback(GtkSpinButton *spin_bu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
@@ -6929,7 +6929,7 @@ ags_raven_synth_synth_1_seq_volume_lfo_frequency_callback(GtkSpinButton *spin_bu
   recall =
     start_recall = g_list_concat(start_play, start_recall);
 
-  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SEQ_SYNTH_AUDIO)) != NULL){
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_RAVEN_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
     port = NULL;
