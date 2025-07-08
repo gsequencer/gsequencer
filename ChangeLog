@@ -5,6 +5,7 @@ ags (8.0.5)
 	* fixed notation clipboard
 	* fixed raven synth seq LFO callback
 
+
 ags (8.0.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
