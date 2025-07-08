@@ -1630,6 +1630,75 @@ ags_notation_find_point(AgsNotation *notation,
 
   return(retval);
 }
+/**
+ * ags_notation_find_exact_point:
+ * @notation: the #AgsNotation
+ * @x: offset
+ * @y: note
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find note by offset and tone.
+ *
+ * Returns: (transfer none): the matching note.
+ *
+ * Since: 8.0.5
+ */ 
+AgsNote*
+ags_notation_find_exact_note_256th_point(AgsNotation *notation,
+					 guint x_256th, guint y,
+					 gboolean use_selection_list)
+{
+  AgsNote *retval;
+  
+  GList *note;
+
+  guint current_x0_256th, current_x1_256th, current_y;
+
+  GRecMutex *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  /* get notation mutex */
+  notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation);
+
+  /* find note */
+  g_rec_mutex_lock(notation_mutex);
+
+  if(use_selection_list){
+    note = notation->selection;
+  }else{
+    note = notation->note;
+  }
+
+  retval = NULL;
+  
+  while(note != NULL){
+    g_object_get(note->data,
+		 "x0-256th", &current_x0_256th,
+		 "x1-256th", &current_x1_256th,
+		 "y", &current_y,
+		 NULL);
+    
+    if(current_x0_256th > x_256th){
+      break;
+    }
+
+    if(x_256th == current_x0_256th &&
+       current_y == y){
+      retval = note->data;
+
+      break;
+    }
+    
+    note = note->next;
+  }
+
+  g_rec_mutex_unlock(notation_mutex);
+
+  return(retval);
+}
 
 /**
  * ags_notation_find_region:
@@ -2887,48 +2956,50 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 
 	/* calculate new offset */
 	if(reset_x_offset){
-	  errno = 0;
-
 	  if(subtract_x){
-	    x0_val -= base_x_difference;
-	    x0_256th_val -= (16 * base_x_difference);
+	    if(x0_val >= base_x_difference){
+	      x0_val -= base_x_difference;
 
-	    if(errno != 0){
-	      node = node->next;
-	      
-	      continue;
+	      if(x0_256th_val >= (16 * base_x_difference)){
+		x0_256th_val -= (16 * base_x_difference);
+	      }else{
+		x0_256th_val = 0;
+	      }
+	    }else{
+	      x0_val = 0;
+	      x0_256th_val = 0;
 	    }
 
-	    x1_val -= base_x_difference;
-	    x1_256th_val -= (16 * base_x_difference);
+	    if(x1_val >= base_x_difference;){
+	      x1_val -= base_x_difference;
+
+	      if(x1_256th_val > (16 * base_x_difference);){
+		x1_256th_val -= (16 * base_x_difference);
+	      }else{
+		x1_256th_val = 1;
+	      }
+	    }else{
+	      x1_val = 1;
+	      x1_256th_val = 16;
+	    }
 	  }else{
 	    x0_val += base_x_difference;
 	    x0_256th_val += (16 * base_x_difference);
 
 	    x1_val += base_x_difference;
 	    x1_256th_val += (16 * base_x_difference);
-
-	    if(errno != 0){
-	      node = node->next;
-	      
-	      continue;
-	    }
 	  }
 	}
 
 	if(reset_y_offset){
-	  errno = 0;
-
 	  if(subtract_y){
-	    y_val -= base_y_difference;
+	    if(y_val >= base_y_difference){
+	      y_val -= base_y_difference;
+	    }else{
+	      y_val = 0;
+	    }
 	  }else{
 	    y_val += base_y_difference;
-	  }
-
-	  if(errno != 0){
-	    node = node->next;
-	    
-	    continue;
 	  }
 	}
 
@@ -2941,9 +3012,9 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 
 	/* check duplicate */
 	if(no_duplicates &&
-	   ags_notation_find_point(notation,
-				   x0_val, y_val,
-				   FALSE) != NULL){
+	   ags_notation_find_exact_note_256th_point(notation,
+						    x0_256th_val, y_val,
+						    FALSE) != NULL){
 	  node = node->next;
 	  
 	  continue;

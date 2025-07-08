@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -160,6 +160,9 @@ gboolean ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note);
 AgsNote* ags_notation_find_point(AgsNotation *notation,
 				 guint x, guint y,
 				 gboolean use_selection_list);
+AgsNote* ags_notation_find_exact_256th_point(AgsNotation *notation,
+					     guint x_256th, guint y,
+					     gboolean use_selection_list);
 GList* ags_notation_find_region(AgsNotation *notation,
 				guint x0, guint y0,
 				guint x1, guint y1,
