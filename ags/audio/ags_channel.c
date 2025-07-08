@@ -10989,7 +10989,7 @@ ags_channel_real_start(AgsChannel *channel,
 
 	      if(!super_threaded_channel){
 		start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
-									      (GObject *) audio,
+									      (GObject *) channel,
 									      sound_scope);
 
 		current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher);
@@ -11018,7 +11018,7 @@ ags_channel_real_start(AgsChannel *channel,
 
 	      if(super_threaded_channel){
 		start_tree_list = ags_audio_tree_dispatcher_compile_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
-									      (GObject *) audio,
+									      (GObject *) channel,
 									      sound_scope);
 		
 		current_tree_list = ags_audio_tree_dispatcher_get_tree_list(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher);

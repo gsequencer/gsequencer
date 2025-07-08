@@ -2970,10 +2970,10 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	      x0_256th_val = 0;
 	    }
 
-	    if(x1_val >= base_x_difference;){
+	    if(x1_val >= base_x_difference){
 	      x1_val -= base_x_difference;
 
-	      if(x1_256th_val > (16 * base_x_difference);){
+	      if(x1_256th_val > (16 * base_x_difference)){
 		x1_256th_val -= (16 * base_x_difference);
 	      }else{
 		x1_256th_val = 1;
