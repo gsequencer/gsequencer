@@ -1,3 +1,8 @@
+ags (8.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 for vst3sdk v3.7.7_build_19
+
 ags (8.0.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

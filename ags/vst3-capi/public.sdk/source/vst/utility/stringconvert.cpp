@@ -42,8 +42,8 @@
 #endif
 #endif // SMTG_OS_WINDOWS
 
-#include "public.sdk/source/vst/utility/stringconvert.h"
-#include "public.sdk/source/common/commonstringconvert.h"
+#include <ags/vst3-capi/public.sdk/source/vst/utility/stringconvert.h>
+#include <ags/vst3-capi/public.sdk/source/common/commonstringconvert.h>
 
 #include <codecvt>
 #include <istream>
