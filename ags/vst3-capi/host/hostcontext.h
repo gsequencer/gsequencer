@@ -61,6 +61,7 @@
 
 #include <pluginterfaces/base/conststringtable.h>
 #include <pluginterfaces/base/funknown.h>
+#include <public.sdk/source/vst/utility/stringconvert.h>
 #include <public.sdk/source/vst/hosting/pluginterfacesupport.h>
 #include <base/source/fstring.h>
 #include <pluginterfaces/vst/ivsthostapplication.h>

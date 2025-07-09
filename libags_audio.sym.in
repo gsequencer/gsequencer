@@ -3868,6 +3868,7 @@ ags_notation_remove_note_at_position
 ags_notation_get_selection
 ags_notation_is_note_selected
 ags_notation_find_point
+ags_notation_find_exact_256th_point
 ags_notation_find_region
 ags_notation_find_offset
 ags_notation_find_note_256th_range

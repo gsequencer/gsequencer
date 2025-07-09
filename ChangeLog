@@ -1,3 +1,22 @@
+ags (8.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 for vst3sdk v3.7.7_build_19
+
+ags (8.0.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 support added missing commonstringconvert.h and commonstringconvert.cpp
+
+ags (8.0.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed pad playback with new dispatcher
+	* fixed notation clipboard
+	* fixed raven synth seq LFO refresh port
+	* fixed raven synth seq LFO callback
+	* fixed VST3 support added missing stringconvert.h and stringconvert.cpp
+
 ags (8.0.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

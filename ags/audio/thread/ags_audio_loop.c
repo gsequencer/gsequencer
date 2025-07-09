@@ -966,46 +966,13 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   //FIXME:JK: missing else
   ags_audio_loop_unset_flags(audio_loop, AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING);
   ags_audio_loop_set_flags(audio_loop, AGS_AUDIO_LOOP_PLAYING_CHANNEL);
-  
-  /* run the 3 stages */
-  play_channel = start_play_channel;
 
-  while(play_channel != NULL){
-    playback = (AgsPlayback *) play_channel->data;
-
-    channel = NULL;
-    g_object_get(playback,
-		 "channel", &channel,
-		 NULL);
-        
-    /* play */
-    if(default_soundcard != NULL &&
-       !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
-       ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
-      /* not super threaded */
-      sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
-      
-      if(ags_playback_get_recall_id(playback, sound_scope) == NULL){	
-	goto ags_audio_loop_play_channel_NO_PLAYBACK;
-      }
-    
-      if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
-	ags_audio_tree_dispatcher_run(audio_loop->audio_tree_dispatcher);
-
-	g_list_free_full(recall_id,
-			 g_object_unref);
-      }
-    }
-  ags_audio_loop_play_channel_NO_PLAYBACK:
-    
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
-    
-    /* iterate */
-    play_channel = play_channel->next;
+  if(default_soundcard != NULL &&
+     !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
+     ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
+    ags_audio_tree_dispatcher_run(audio_loop->audio_tree_dispatcher);
   }
-
+  
   /* unref */  
   if(default_soundcard != NULL){
     g_object_unref(default_soundcard);
@@ -1226,20 +1193,6 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 					       playback_domain);
     }else{
       /* not super threaded */
-      if(default_soundcard != NULL &&
-	 !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
-	 ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
-	for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
-	  if(sound_scope != AGS_SOUND_SCOPE_PLAYBACK){
-	    if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
-	      ags_audio_tree_dispatcher_run(audio_loop->audio_tree_dispatcher);
-	  
-	      g_list_free_full(recall_id,
-			       g_object_unref);
-	    }
-	  }
-	}
-      }
     }
     
     if(audio != NULL){
