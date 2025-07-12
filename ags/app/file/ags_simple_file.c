@@ -3030,7 +3030,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	       audio_channel == AGS_NOTATION(current_notation->data)->audio_channel){
 	      matched_notation = current_notation->data;
 	    }else{
-	      matched_notation = ags_notation_new(gobject->audio,
+	      matched_notation = ags_notation_new((GObject *) gobject->audio,
 						  audio_channel);
 	      
 	      ags_timestamp_set_ags_offset(matched_notation->timestamp,

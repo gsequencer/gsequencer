@@ -4,6 +4,10 @@ ags (8.0.9)
 	* fixed buffer-overflow ags-fx-lv2
 	* fixed buffer-overflow ags-fx-wah-wah
 	* fixed buffer-overflow in ags_sf2_synth_util.c
+	* improved notation restore from AgsSimpleFile
+	* improved AgsLed and AgsIndicator frame clock
+	* improved disabled frame clock of AgsDial and others
+	* improved run AgsUiProvider::update-ui() from window frame clock callback
 
 ags (8.0.8)
 
