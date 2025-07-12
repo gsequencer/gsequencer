@@ -977,14 +977,14 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 					 input_data->lv2_handle[0],
 					 output_port[nth],
-					 &(input_data->output[nth]));
+					 input_data->output);
 	  }
 
 	  for(nth = 0; nth < input_port_count; nth++){
 	    ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 					 input_data->lv2_handle[0],
 					 input_port[nth],
-					 &(input_data->input[nth]));
+					 input_data->input);
 	  }
 
 	  if(has_midiin_event_port){
@@ -1211,14 +1211,14 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 				     input_data->lv2_handle[0],
 				     output_port[nth],
-				     &(input_data->output[nth]));
+				     input_data->output);
       }
 
       for(nth = 0; nth < input_port_count; nth++){
 	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 				     input_data->lv2_handle[0],
 				     input_port[nth],
-				     &(input_data->input[nth]));
+				     input_data->input);
       }
       
       ags_base_plugin_activate((AgsBasePlugin *) lv2_plugin,

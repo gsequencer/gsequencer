@@ -3025,14 +3025,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
 	    matched_notation = NULL;
 	    
-	    if(current_notation != NULL){
+	    if(current_notation != NULL &&
+	       ags_timestamp_get_ags_offset(timestamp) ==  ags_timestamp_get_ags_offset(AGS_NOTATION(current_notation->data)->timestamp) &&
+	       audio_channel == AGS_NOTATION(current_notation->data)->audio_channel){
 	      matched_notation = current_notation->data;
 	    }else{
 	      matched_notation = ags_notation_new(gobject->audio,
 						  audio_channel);
 	      
 	      ags_timestamp_set_ags_offset(matched_notation->timestamp,
-					   (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / AGS_NOTATION_DEFAULT_OFFSET)));
+					   ags_timestamp_get_ags_offset(timestamp));
 
 	      ags_audio_add_notation(gobject->audio,
 				     (GObject *) matched_notation);

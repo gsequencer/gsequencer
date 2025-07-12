@@ -347,7 +347,7 @@ ags_led_snapshot(GtkWidget *widget,
   
   cr = gtk_snapshot_append_cairo(snapshot,
 				 &GRAPHENE_RECT_INIT (0.0f, 0.0f, (float) width, (float) height));
-  cairo_reference(cr);
+  //  cairo_reference(cr);
   
   style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
 
