@@ -1,3 +1,10 @@
+ags (8.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed buffer-overflow ags-fx-lv2
+	* fixed buffer-overflow ags-fx-wah-wah
+	* fixed buffer-overflow in ags_sf2_synth_util.c
+
 ags (8.0.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
