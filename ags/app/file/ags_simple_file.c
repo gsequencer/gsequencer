@@ -2977,17 +2977,6 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
 	  xmlFree(version);
 	}
-
-	str = xmlGetProp(child,
-			 "channel");
-
-	if(str != NULL){
-	  audio_channel = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-
-	  xmlFree(str);
-	}
 	
 	if(major == 0 ||
 	   (major == 1 && minor < 2)){
@@ -3006,6 +2995,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	  note = 
 	    start_note = ags_notation_get_note((AgsNotation *) notation->data);
 
+	  audio_channel = ags_notation_get_audio_channel((AgsNotation *) notation->data);
+	  
 	  while(note != NULL){
 	    AgsNotation *matched_notation;
 	    
