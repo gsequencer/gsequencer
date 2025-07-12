@@ -711,11 +711,9 @@ ags_core_audio_devout_init(AgsCoreAudioDevout *core_audio_devout)
   /* delay and attack */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(core_audio_devout));
   
-  core_audio_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-						  sizeof(gdouble));
+  core_audio_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(gdouble));
   
-  core_audio_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-						 sizeof(guint));
+  core_audio_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
 
   core_audio_devout->note_256th_delay = absolute_delay / 16.0;
 
@@ -727,8 +725,7 @@ ags_core_audio_devout_init(AgsCoreAudioDevout *core_audio_devout)
   for(i = 0; i < 32; i++){
     guint *note_256th_attack;
     
-    note_256th_attack = (guint *) malloc((int) AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(guint));
+    note_256th_attack = (guint *) g_malloc((int) AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
     
     start_note_256th_attack = g_list_prepend(start_note_256th_attack,
 					     note_256th_attack);

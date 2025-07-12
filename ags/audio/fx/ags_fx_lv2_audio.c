@@ -1903,14 +1903,14 @@ ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
 	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 				     channel_data->lv2_handle[0],
 				     output_port[nth],
-				     &(channel_data->output[nth]));
+				     channel_data->output);
       }
 
       for(nth = 0; nth < input_port_count; nth++){
 	ags_base_plugin_connect_port((AgsBasePlugin *) lv2_plugin,
 				     channel_data->lv2_handle[0],
 				     input_port[nth],
-				     &(channel_data->input[nth]));
+				     channel_data->input);
       }
     }
     

@@ -344,8 +344,10 @@ ags_animation_window_draw(GtkWidget *widget,
   }
 
   cairo_set_source_surface(cr, surface, 0, 0);
-  cairo_paint(cr);    
+  cairo_paint(cr);
 
+  font_name = NULL;
+  
   g_object_get(gtk_settings_get_default(),
 	       "gtk-font-name", &font_name,
 	       NULL);
@@ -419,8 +421,6 @@ ags_animation_window_draw(GtkWidget *widget,
   }
 
   animation_window->message_count = i_stop;
-
-  g_free(font_name);
   
   cairo_surface_mark_dirty(cairo_get_target(cr));
 

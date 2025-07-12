@@ -1315,9 +1315,10 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
       audio_signal->stream_current = audio_signal->stream;
 
       ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-      ags_recycling_add_audio_signal(recycling,
 
+      ags_recycling_add_audio_signal(recycling,
 				     audio_signal);
+      
 #if 0 // AGS_DEBUG
       g_message("ags-fx-notation [key-on] 0x%x", audio_signal);
 #endif
@@ -1617,16 +1618,10 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
   note =
     start_note = g_list_copy(fx_notation_audio_processor->note_256th);
 #else
-  g_rec_mutex_lock(audio_mutex);
-    
-  start_notation = g_list_copy_deep(audio->notation,
-				    (GCopyFunc) g_object_ref,
-				    NULL);
-
-  g_rec_mutex_unlock(audio_mutex);
+  start_notation = ags_audio_get_notation(audio);
 
   ags_timestamp_set_ags_offset(timestamp,
-			       AGS_NOTATION_DEFAULT_OFFSET * floor(note_offset / AGS_NOTATION_DEFAULT_OFFSET));
+			       (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor(note_offset / AGS_NOTATION_DEFAULT_OFFSET)));
     
   /* find near timestamp */
   notation = ags_notation_find_near_timestamp(start_notation, audio_channel,
@@ -1670,17 +1665,14 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 					     current,
 					     AGS_FX_NOTATION_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY,
 					     AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_PLAY);
-
-      fx_notation_audio_processor->note_256th = g_list_remove(fx_notation_audio_processor->note_256th,
-							      current);
-      g_object_unref(current);
     }  
       
     /* iterate */
     note = note->next;
   }
 
-  g_list_free(start_note);
+  g_list_free_full(start_note,
+		   (GDestroyNotify) g_object_unref);
 
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);

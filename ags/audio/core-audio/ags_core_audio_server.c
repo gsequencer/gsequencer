@@ -1214,7 +1214,7 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 		 "core-audio-port", core_audio_port,
 		 NULL);
     
-    core_audio_devout->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+    core_audio_devout->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
     core_audio_devout->port_name[0] = g_strdup(str);
     core_audio_devout->port_name[1] = NULL;
     
@@ -1273,7 +1273,7 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 		 "core-audio-port", core_audio_port,
 		 NULL);
     
-    core_audio_devin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+    core_audio_devin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
     core_audio_devin->port_name[0] = g_strdup(str);
     core_audio_devin->port_name[1] = NULL;
     
@@ -1517,7 +1517,7 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
   g_message("%s", str);
 #endif
 
-  core_audio_midiin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+  core_audio_midiin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
   core_audio_midiin->port_name[0] = g_strdup(str);
   core_audio_midiin->port_name[1] = NULL;
   
@@ -1715,7 +1715,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
   g_message("%s", str);
 #endif    
   
-  core_audio_devout->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+  core_audio_devout->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
   core_audio_devout->port_name[0] = g_strdup(str);
   core_audio_devout->port_name[1] = NULL;
   

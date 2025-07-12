@@ -719,12 +719,14 @@ ags_dial_realize(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_dial_parent_class)->realize(widget);
 
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_signal_connect(frame_clock, "update", 
 		   G_CALLBACK(ags_dial_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+#endif
 }
 
 void
@@ -733,7 +735,8 @@ ags_dial_unrealize(GtkWidget *widget)
   GdkFrameClock *frame_clock;
 
   frame_clock = gtk_widget_get_frame_clock(widget);
-  
+
+#if 0  
   g_object_disconnect(frame_clock,
 		      "any_signal::update", 
 		      G_CALLBACK(ags_dial_frame_clock_update_callback),
@@ -741,6 +744,7 @@ ags_dial_unrealize(GtkWidget *widget)
 		      NULL);
 
   gdk_frame_clock_end_updating(frame_clock);
+#endif
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_dial_parent_class)->unrealize(widget);
@@ -802,33 +806,43 @@ ags_dial_snapshot(GtkWidget *widget,
 
   cairo_t *cr;
 
-  graphene_rect_t rect;
-  
   gint width, height;
   
-  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
-
   width = gtk_widget_get_width(widget);
   height = gtk_widget_get_height(widget);
   
-  graphene_rect_init(&rect,
-		     0.0, 0.0,
-		     (float) width, (float) height);
-  
   cr = gtk_snapshot_append_cairo(snapshot,
-				 &rect);
+				 &GRAPHENE_RECT_INIT (0.0f, 0.0f, (float) width, (float) height));
+  //  cairo_reference(cr);
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
+
+  gtk_style_context_save(style_context);
   
   /* clear bg */
+#if 0
+  cairo_save(cr);
+  cairo_clip(cr);
+
   gtk_render_background(style_context,
 			cr,
 			0.0, 0.0,
 			(gdouble) width, (gdouble) height);
 
+  cairo_restore(cr);
+#endif
+  
+  /* draw */
+  cairo_save(cr);
+  
   ags_dial_draw((AgsDial *) widget,
 		cr,
 		TRUE);
   
-  cairo_destroy(cr);
+  cairo_restore(cr);
+  
+  gtk_style_context_restore(style_context);
+  cairo_destroy(cr);  
 }
 
 gboolean
@@ -1465,6 +1479,8 @@ ags_dial_draw(AgsDial *dial,
   GtkStyleContext *style_context;
   GtkSettings *settings;
 
+  PangoLayout *inc_layout, *dec_layout;
+
   cairo_text_extents_t te_up, te_down;
 
   GdkRGBA fg_color;
@@ -1498,6 +1514,9 @@ ags_dial_draw(AgsDial *dial,
 
   settings = gtk_settings_get_default();
 
+  inc_layout = NULL;
+  dec_layout = NULL;
+  
   font_name = NULL;
   
   dark_theme = TRUE;
@@ -1512,14 +1531,6 @@ ags_dial_draw(AgsDial *dial,
   }else{
     font_name = dial->font_name;
   }
-
-  if(font_name == NULL){
-    font_name = "sans";
-  }
-  
-  g_object_get(settings,
-	       "gtk-font-name", &font_name,
-	       NULL);
 
   if(font_name == NULL){
     font_name = "sans";
@@ -1599,12 +1610,11 @@ ags_dial_draw(AgsDial *dial,
   cairo_push_group(cr);
   
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
-    PangoLayout *layout;
     PangoFontDescription *desc;
 
     PangoRectangle ink_rect, logical_rect;
 
-    static const gchar *text = "-";
+    const gchar *text = "-";
     
     /* draw controller button down */
     cairo_set_source_rgba(cr,
@@ -1641,18 +1651,18 @@ ags_dial_draw(AgsDial *dial,
 			  fg_color.alpha);
 #endif
     
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout,
+    dec_layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(dec_layout,
 			  text,
 			  -1);
     desc = pango_font_description_from_string(font_name);
     pango_font_description_set_size(desc,
 				    dial->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout,
+    pango_layout_set_font_description(dec_layout,
 				      desc);
     pango_font_description_free(desc);    
 
-    pango_layout_get_extents(layout,
+    pango_layout_get_extents(dec_layout,
 			      &ink_rect,
 			      &logical_rect);
 
@@ -1661,18 +1671,15 @@ ags_dial_draw(AgsDial *dial,
 		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength - 1.0);
 
     pango_cairo_show_layout(cr,
-			    layout);
-
-    g_object_unref(layout);
+			    dec_layout);
   }
   
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
-    PangoLayout *layout;
     PangoFontDescription *desc;
 
     PangoRectangle ink_rect, logical_rect;
     
-    static const gchar *text = "+";
+    const gchar *text = "+";
     
     /* draw controller button up */
     cairo_set_source_rgba(cr,
@@ -1709,18 +1716,18 @@ ags_dial_draw(AgsDial *dial,
 			  fg_color.alpha);
 #endif
 
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout,
+    inc_layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(inc_layout,
 			  text,
 			  -1);
     desc = pango_font_description_from_string(font_name);
     pango_font_description_set_size(desc,
 				    dial->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout,
+    pango_layout_set_font_description(inc_layout,
 				      desc);
     pango_font_description_free(desc);    
 
-    pango_layout_get_extents(layout,
+    pango_layout_get_extents(inc_layout,
 			      &ink_rect,
 			      &logical_rect);
 
@@ -1729,9 +1736,7 @@ ags_dial_draw(AgsDial *dial,
 		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength - 1.0);
 
     pango_cairo_show_layout(cr,
-			    layout);
-
-    g_object_unref(layout);
+			    inc_layout);
   }
 
   /* border fill * /
@@ -1916,6 +1921,14 @@ ags_dial_draw(AgsDial *dial,
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
+
+  if(dec_layout != NULL){
+    g_object_unref(dec_layout);
+  }
+
+  if(inc_layout != NULL){
+    g_object_unref(inc_layout);
+  }
 
 //  cairo_surface_mark_dirty(cairo_get_target(cr));
 }

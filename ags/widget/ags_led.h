@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,6 +48,8 @@ struct _AgsLed
   guint segment_height;
 
   gboolean active;
+
+  gint64 animation_time;
 };
 
 struct _AgsLedClass

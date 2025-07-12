@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,6 +56,10 @@ void ags_window_get_property(GObject *gobject,
 			     GValue *value,
 			     GParamSpec *param_spec);
 void ags_window_finalize(GObject *gobject);
+
+gboolean ags_window_tick_callback(GtkWidget* widget,
+				  GdkFrameClock* frame_clock,
+				  gpointer user_data);
 
 gboolean ags_window_is_connected(AgsConnectable *connectable);
 void ags_window_connect(AgsConnectable *connectable);
@@ -444,6 +448,13 @@ ags_window_init(AgsWindow *window)
 		      window, ags_window_load_file_timeout);
 
   g_timeout_add(1000 / 4, (GSourceFunc) ags_window_load_file_timeout, (gpointer) window);
+
+  window->animation_time = 0;
+  
+  gtk_widget_add_tick_callback((GtkWidget *) window,
+			       (GtkTickCallback) ags_window_tick_callback,
+			       NULL,
+			       NULL);
 }
 
 void
@@ -583,6 +594,52 @@ ags_window_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_window_parent_class)->finalize(gobject);
+}
+
+
+gboolean
+ags_window_tick_callback(GtkWidget *widget,
+			 GdkFrameClock *frame_clock,
+			 gpointer user_data)
+{
+  AgsWindow *window;
+  
+  AgsApplicationContext *application_context;
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gint64 update_ui_timeout;
+  gint64 current_time;
+
+  window = (AgsWindow *) widget;
+  
+  application_context = ags_application_context_get_instance();
+
+  config = ags_config_get_instance();
+
+  update_ui_timeout = AGS_UI_PROVIDER_UPDATE_UI_TIMEOUT * G_TIME_SPAN_SECOND;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "update-ui-timeout");
+
+  if(str != NULL){
+    update_ui_timeout = g_ascii_strtod(str, NULL) * G_TIME_SPAN_SECOND;
+    
+    g_free(str);
+  }
+  
+  current_time = g_get_monotonic_time();
+  
+  if(window->animation_time == 0 ||
+     current_time - window->animation_time >= update_ui_timeout){
+    window->animation_time = current_time;
+    
+    ags_ui_provider_update_ui(AGS_UI_PROVIDER(application_context));
+  }
+  
+  return(G_SOURCE_CONTINUE);
 }
 
 /**
