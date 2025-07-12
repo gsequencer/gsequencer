@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -533,33 +533,41 @@ ags_ruler_snapshot(GtkWidget *widget,
   GtkStyleContext *style_context;
 
   cairo_t *cr;
-
-  graphene_rect_t rect;
   
   int width, height;
   
-  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
-
   width = gtk_widget_get_width(widget);
   height = gtk_widget_get_height(widget);
   
-  graphene_rect_init(&rect,
-		     0.0, 0.0,
-		     (float) width, (float) height);
-  
   cr = gtk_snapshot_append_cairo(snapshot,
-				 &rect);
+				 &GRAPHENE_RECT_INIT (0, 0, width, height));
+  //  cairo_reference(cr);
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
+
+  gtk_style_context_save(style_context);
   
   /* clear bg */
+  cairo_save(cr);
+  cairo_clip(cr);
+  
   gtk_render_background(style_context,
-			cr,
-			0.0, 0.0,
-			(gdouble) width, (gdouble) height);
+  			cr,
+  			0.0, 0.0,
+  			(gdouble) width, (gdouble) height);
 
+  cairo_restore(cr);
+  
+  /* draw */
+  cairo_save(cr);
+  
   ags_ruler_draw((AgsRuler *) widget,
 		 cr,
 		 TRUE);
   
+  cairo_restore(cr);
+  
+  gtk_style_context_restore(style_context);
   cairo_destroy(cr);
 }
 
@@ -913,8 +921,6 @@ ags_ruler_draw(AgsRuler *ruler,
       cairo_stroke(cr);
     }
   }
-
-  g_free(font_name);
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);

@@ -87,6 +87,8 @@ struct _AgsWindow
   AgsCompositeEditor *composite_editor;
 
   AgsNavigation *navigation;
+
+  gint64 animation_time;
 };
 
 struct _AgsWindowClass

@@ -899,13 +899,13 @@ ags_notation_sort_func(gconstpointer a,
     
   if(offset_a == offset_b){
     return(0);
-  }else if(offset_a < offset_b){
-    return(-1);
-  }else if(offset_a > offset_b){
-    return(1);
   }
 
-  return(0);
+  if(offset_a < offset_b){
+    return(-1);
+  }
+
+  return(1);
 }
 
 /**
@@ -1228,6 +1228,10 @@ ags_notation_add(GList *notation,
     return(notation);
   }
 
+  timestamp = NULL;
+  
+  audio_channel = 0;
+  
   g_object_get(new_notation,
 	       "timestamp", &timestamp,
 	       "audio-channel", &audio_channel,
@@ -1238,7 +1242,8 @@ ags_notation_add(GList *notation,
   g_object_unref(timestamp);
   
   if(list != NULL &&
-     ags_timestamp_get_ags_offset(AGS_NOTATION(list->data)->timestamp) == ags_timestamp_get_ags_offset(timestamp)){
+     ags_timestamp_get_ags_offset(AGS_NOTATION(list->data)->timestamp) == ags_timestamp_get_ags_offset(timestamp) &&
+     AGS_NOTATION(list->data)->audio_channel == audio_channel){
     g_critical("timestamp already present");
 
     return(notation);

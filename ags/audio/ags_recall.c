@@ -3633,6 +3633,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
   g_rec_mutex_unlock(recall_mutex);
   
   /* invoke appropriate staging */
+  g_object_ref(recall);
+  
   if((AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0 &&
      (AGS_SOUND_STATE_IS_TERMINATING & (recall_state_flags)) == 0){
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
@@ -3800,6 +3802,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
 
     list = next;
   }
+
+  g_object_unref(recall);
 
   if(!children_lock_free){
     g_list_free_full(list_start,

@@ -420,12 +420,12 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   
   decrement_delay = FALSE;
   
-  for(i = 0; i < AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
+  for(i = 0; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
     guint current_16th_attack;
     
-    nth_list = floor(16.0 * (double) i / AGS_SOUNDCARD_DEFAULT_PERIOD);
-    note_256th_attack = g_list_nth_data(start_note_256th_attack,
-					nth_list);
+    nth_list = (guint) (16.0 * floor((double) i / AGS_SOUNDCARD_DEFAULT_PERIOD));
+    note_256th_attack = (guint *) g_list_nth_data(start_note_256th_attack,
+						  nth_list);
 
     for(j = 0; j < 16; j++){
       //      fprintf(stdout, " `-> nth list = %d, i = {#%d}\n", nth_list, ((16 * i) + j) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD);
@@ -468,24 +468,6 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
 
       //      delay_overflow_counter -= (double) buffer_size;
     }    
-  }
-  
-  for(; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    guint current_attack;
-
-    current_attack = (guint) attack[2 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD - i - 1];
-
-    if(current_attack < 0){
-      current_attack = -1 * current_attack;
-    }
-    
-    if(current_attack >= buffer_size){
-      attack[i] = buffer_size - 1;
-    }else{
-      attack[i] = (guint) current_attack;
-    }
-
-    delay[i] = corrected_delay;
   }
   
   note_256th_delay[0] = absolute_delay / 16.0;
