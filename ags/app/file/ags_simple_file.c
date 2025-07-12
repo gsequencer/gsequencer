@@ -16010,6 +16010,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
     }
     
     audio_channel = 0;
+    
     str = xmlGetProp(node,
 		     "channel");
 
