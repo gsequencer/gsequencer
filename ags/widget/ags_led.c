@@ -185,6 +185,8 @@ ags_led_init(AgsLed *led)
   /* segment alignment */
   led->segment_width = AGS_LED_DEFAULT_SEGMENT_WIDTH;
   led->segment_height = AGS_LED_DEFAULT_SEGMENT_HEIGHT;
+
+  led->animation_time = 0;
 }
 
 void
@@ -316,9 +318,18 @@ ags_led_size_allocate(GtkWidget *widget,
 
 void
 ags_led_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					  AgsLed *led)
+				    AgsLed *led)
 {
-  gtk_widget_queue_draw((GtkWidget *) led);
+  gint64 current_time;
+  
+  current_time = g_get_monotonic_time();
+  
+  if(led->animation_time == 0 ||
+     current_time - led->animation_time >= 0.25 * G_TIME_SPAN_SECOND){
+    led->animation_time = current_time;
+    
+    gtk_widget_queue_draw((GtkWidget *) led);
+  }
 }
 
 void
@@ -335,7 +346,7 @@ ags_led_snapshot(GtkWidget *widget,
   height = gtk_widget_get_height(widget);
   
   cr = gtk_snapshot_append_cairo(snapshot,
-				 &GRAPHENE_RECT_INIT (0, 0, width, height));
+				 &GRAPHENE_RECT_INIT (0.0f, 0.0f, (float) width, (float) height));
   //  cairo_reference(cr);
   
   style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
@@ -343,6 +354,7 @@ ags_led_snapshot(GtkWidget *widget,
   gtk_style_context_save(style_context);
   
   /* clear bg */
+#if 0
   cairo_save(cr);
   cairo_clip(cr);
 
@@ -352,7 +364,8 @@ ags_led_snapshot(GtkWidget *widget,
   			(gdouble) width, (gdouble) height);
 
   cairo_restore(cr);
-
+#endif
+  
   /* draw */
   cairo_save(cr);
   

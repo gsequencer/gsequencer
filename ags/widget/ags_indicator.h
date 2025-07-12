@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,6 +56,8 @@ struct _AgsIndicator
   guint segment_count;
   
   GtkAdjustment *adjustment;
+
+  gint64 animation_time;
 };
 
 struct _AgsIndicatorClass

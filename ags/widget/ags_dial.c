@@ -719,12 +719,14 @@ ags_dial_realize(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_dial_parent_class)->realize(widget);
 
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_signal_connect(frame_clock, "update", 
 		   G_CALLBACK(ags_dial_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+#endif
 }
 
 void
@@ -733,7 +735,8 @@ ags_dial_unrealize(GtkWidget *widget)
   GdkFrameClock *frame_clock;
 
   frame_clock = gtk_widget_get_frame_clock(widget);
-  
+
+#if 0  
   g_object_disconnect(frame_clock,
 		      "any_signal::update", 
 		      G_CALLBACK(ags_dial_frame_clock_update_callback),
@@ -741,6 +744,7 @@ ags_dial_unrealize(GtkWidget *widget)
 		      NULL);
 
   gdk_frame_clock_end_updating(frame_clock);
+#endif
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_dial_parent_class)->unrealize(widget);
@@ -808,7 +812,7 @@ ags_dial_snapshot(GtkWidget *widget,
   height = gtk_widget_get_height(widget);
   
   cr = gtk_snapshot_append_cairo(snapshot,
-				 &GRAPHENE_RECT_INIT (0, 0, width, height));
+				 &GRAPHENE_RECT_INIT (0.0f, 0.0f, (float) width, (float) height));
   //  cairo_reference(cr);
   
   style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
@@ -816,6 +820,7 @@ ags_dial_snapshot(GtkWidget *widget,
   gtk_style_context_save(style_context);
   
   /* clear bg */
+#if 0
   cairo_save(cr);
   cairo_clip(cr);
 
@@ -825,7 +830,8 @@ ags_dial_snapshot(GtkWidget *widget,
 			(gdouble) width, (gdouble) height);
 
   cairo_restore(cr);
-
+#endif
+  
   /* draw */
   cairo_save(cr);
   

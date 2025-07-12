@@ -634,7 +634,7 @@ ags_window_tick_callback(GtkWidget *widget,
   
   if(window->animation_time == 0 ||
      current_time - window->animation_time >= update_ui_timeout){
-    window->animation_time = g_get_monotonic_time();
+    window->animation_time = current_time;
     
     ags_ui_provider_update_ui(AGS_UI_PROVIDER(application_context));
   }

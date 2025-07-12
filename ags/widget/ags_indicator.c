@@ -283,6 +283,8 @@ ags_indicator_init(AgsIndicator *indicator)
 				 GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(indicator->adjustment),
 				 GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, gtk_adjustment_get_upper(indicator->adjustment),
 				 -1);
+
+  indicator->animation_time = 0;
 }
 
 void
@@ -448,7 +450,7 @@ void
 ags_indicator_unrealize(GtkWidget *widget)
 {
   GdkFrameClock *frame_clock;
-  
+
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_object_disconnect(frame_clock,
@@ -532,7 +534,16 @@ void
 ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					  AgsIndicator *indicator)
 {
-  gtk_widget_queue_draw((GtkWidget *) indicator);
+  gint64 current_time;
+  
+  current_time = g_get_monotonic_time();
+  
+  if(indicator->animation_time == 0 ||
+     current_time - indicator->animation_time >= 0.25 * G_TIME_SPAN_SECOND){
+    indicator->animation_time = current_time;
+    
+    gtk_widget_queue_draw((GtkWidget *) indicator);
+  }
 }
 
 void
@@ -549,14 +560,15 @@ ags_indicator_snapshot(GtkWidget *widget,
   height = gtk_widget_get_height(widget);
 
   cr = gtk_snapshot_append_cairo(snapshot,
-				 &GRAPHENE_RECT_INIT (0, 0, width, height));
-  //  cairo_reference(cr);
+				 &GRAPHENE_RECT_INIT (0.0f, 0.0f, (float) width, (float) height));
+ //  cairo_reference(cr);
 
   style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
 
   gtk_style_context_save(style_context);
   
   /* clear bg */
+#if 0
   cairo_save(cr);
   cairo_clip(cr);
   
@@ -566,7 +578,8 @@ ags_indicator_snapshot(GtkWidget *widget,
   			(gdouble) width, (gdouble) height);
 
   cairo_restore(cr);
-
+#endif
+  
   /* draw */
   cairo_save(cr);
   
