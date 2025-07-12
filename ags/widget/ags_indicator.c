@@ -539,7 +539,7 @@ ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
   current_time = g_get_monotonic_time();
   
   if(indicator->animation_time == 0 ||
-     current_time - indicator->animation_time >= 0.25 * G_TIME_SPAN_SECOND){
+     current_time - indicator->animation_time >= G_TIME_SPAN_SECOND / 5){
     indicator->animation_time = current_time;
     
     gtk_widget_queue_draw((GtkWidget *) indicator);
@@ -561,7 +561,7 @@ ags_indicator_snapshot(GtkWidget *widget,
 
   cr = gtk_snapshot_append_cairo(snapshot,
 				 &GRAPHENE_RECT_INIT (0.0f, 0.0f, (float) width, (float) height));
- //  cairo_reference(cr);
+  cairo_reference(cr);
 
   style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
 
