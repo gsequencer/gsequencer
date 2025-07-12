@@ -423,7 +423,7 @@ ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard)
   for(i = 0; i < 2 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
     guint current_16th_attack;
     
-    nth_list = (guint) (16.0 * floor((double) i / AGS_SOUNDCARD_DEFAULT_PERIOD));
+    nth_list = (guint) (floor(16.0 * (double) i / AGS_SOUNDCARD_DEFAULT_PERIOD));
     note_256th_attack = (guint *) g_list_nth_data(start_note_256th_attack,
 						  nth_list);
 
