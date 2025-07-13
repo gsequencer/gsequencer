@@ -26,7 +26,4 @@ ags_select_acceleration_popover_machine_changed_callback(AgsCompositeEditor *com
 {
   //FIXME:JK: causes crash
   //  ags_applicable_reset(AGS_APPLICABLE(select_acceleration_popover));
-
-  //NOTE:JK: clear port instead of reset
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(select_acceleration_popover->port))));
 }

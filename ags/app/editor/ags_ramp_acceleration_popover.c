@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -416,6 +416,10 @@ ags_ramp_acceleration_popover_finalize(GObject *gobject)
   AgsRampAccelerationPopover *ramp_acceleration_popover;
 
   ramp_acceleration_popover = (AgsRampAccelerationPopover *) gobject;
+
+  if(ags_connectable_is_connected(AGS_CONNECTABLE(ramp_acceleration_popover))){
+    ags_connectable_disconnect(AGS_CONNECTABLE(ramp_acceleration_popover));
+  }
   
   G_OBJECT_CLASS(ags_ramp_acceleration_popover_parent_class)->finalize(gobject);
 }
