@@ -1008,6 +1008,44 @@ ags_buffer_get_data(AgsBuffer *buffer)
 }
 
 /**
+ * ags_buffer_find_range_x:
+ * @buffer: (element-type AgsAudio.Buffer) (transfer none): the #GList-struct containing #AgsBuffer
+ * @start_x: start x offset
+ * @end_x: end x offset
+ * 
+ * Find within range of @start_x and @end_x.
+ *
+ * Returns: (element-type AgsAudio.Buffer) (transfer none): the matching entry as #GList-struct, else %NULL
+ *
+ * Since: 8.0.11
+ */
+GList*
+ags_buffer_find_range_x(GList *buffer,
+			guint64 start_x, guint64 end_x)
+{
+  gboolean matched_range;
+
+  matched_range = FALSE;
+  
+  while(buffer != NULL){
+    guint64 current_x;
+
+    current_x = ags_buffer_get_x(buffer->data);
+    
+    if(current_x >= start_x &&
+       current_x <= end_x){
+      matched_range = TRUE;
+
+      break;
+    }
+    
+    buffer = buffer->next;
+  }
+
+  return(buffer);
+}
+
+/**
  * ags_buffer_duplicate:
  * @buffer: an #AgsBuffer
  * 

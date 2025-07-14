@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -568,6 +568,44 @@ ags_acceleration_set_y(AgsAcceleration *acceleration, gdouble y)
   g_object_set(acceleration,
 	       "y", y,
 	       NULL);
+}
+
+/**
+ * ags_acceleration_find_range_x:
+ * @acceleration: (element-type AgsAudio.Acceleration) (transfer none): the #GList-struct containing #AgsAcceleration
+ * @start_x: start x offset
+ * @end_x: end x offset
+ * 
+ * Find within range of @start_x and @end_x.
+ *
+ * Returns: (element-type AgsAudio.Acceleration) (transfer none): the matching entry as #GList-struct, else %NULL
+ *
+ * Since: 8.0.11
+ */
+GList*
+ags_acceleration_find_range_x(GList *acceleration,
+			      guint start_x, guint end_x)
+{
+  gboolean matched_range;
+
+  matched_range = FALSE;
+  
+  while(acceleration != NULL){
+    guint current_x;
+
+    current_x = ags_acceleration_get_x(acceleration->data);
+    
+    if(current_x >= start_x &&
+       current_x <= end_x){
+      matched_range = TRUE;
+
+      break;
+    }
+    
+    acceleration = acceleration->next;
+  }
+
+  return(acceleration);
 }
 
 /**

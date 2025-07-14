@@ -2008,6 +2008,44 @@ ags_note_find_next(GList *note,
 }
 
 /**
+ * ags_note_find_range_x_256th:
+ * @note: (element-type AgsAudio.Note) (transfer none): the #GList-struct containing #AgsNote
+ * @start_x_256th: start x 256th offset
+ * @end_x_256th: end x 256th offset
+ * 
+ * Find within range of @start_x_256th and @end_x_256th.
+ *
+ * Returns: (element-type AgsAudio.Note) (transfer none): the matching entry as #GList-struct, else %NULL
+ *
+ * Since: 8.0.11
+ */
+GList*
+ags_note_find_range_x_256th(GList *note,
+			    guint start_x_256th, guint end_x_256th)
+{
+  gboolean matched_range;
+
+  matched_range = FALSE;
+  
+  while(note != NULL){
+    guint current_x_256th;
+
+    current_x_256th = ags_note_get_x0_256th(note->data);
+    
+    if(current_x_256th >= start_x_256th &&
+       current_x_256th <= end_x_256th){
+      matched_range = TRUE;
+
+      break;
+    }
+    
+    note = note->next;
+  }
+  
+  return(note);
+}
+
+/**
  * ags_note_length_to_smf_delta_time:
  * @note_length: the note length to convert
  * @bpm: the source bpm

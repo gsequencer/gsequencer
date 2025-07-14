@@ -24,5 +24,6 @@ ags_select_acceleration_popover_machine_changed_callback(AgsCompositeEditor *com
 							 AgsMachine *machine,
 							 AgsSelectAccelerationPopover *select_acceleration_popover)
 {
-  ags_applicable_reset(AGS_APPLICABLE(select_acceleration_popover));
+  //FIXME:JK: causes crash
+  //  ags_applicable_reset(AGS_APPLICABLE(select_acceleration_popover));
 }
