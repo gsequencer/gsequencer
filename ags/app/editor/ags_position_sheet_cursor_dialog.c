@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -252,6 +252,8 @@ ags_position_sheet_cursor_dialog_finalize(GObject *gobject)
   AgsPositionSheetCursorDialog *position_sheet_cursor_dialog;
 
   position_sheet_cursor_dialog = (AgsPositionSheetCursorDialog *) gobject;
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(position_sheet_cursor_dialog));
   
   G_OBJECT_CLASS(ags_position_sheet_cursor_dialog_parent_class)->finalize(gobject);
 }

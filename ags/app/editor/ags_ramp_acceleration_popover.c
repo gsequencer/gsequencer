@@ -417,9 +417,7 @@ ags_ramp_acceleration_popover_finalize(GObject *gobject)
 
   ramp_acceleration_popover = (AgsRampAccelerationPopover *) gobject;
 
-  if(ags_connectable_is_connected(AGS_CONNECTABLE(ramp_acceleration_popover))){
-    ags_connectable_disconnect(AGS_CONNECTABLE(ramp_acceleration_popover));
-  }
+  ags_connectable_disconnect(AGS_CONNECTABLE(ramp_acceleration_popover));
   
   G_OBJECT_CLASS(ags_ramp_acceleration_popover_parent_class)->finalize(gobject);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -299,7 +299,9 @@ ags_position_automation_cursor_popover_finalize(GObject *gobject)
   AgsPositionAutomationCursorPopover *position_automation_cursor_popover;
 
   position_automation_cursor_popover = (AgsPositionAutomationCursorPopover *) gobject;
-  
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(position_automation_cursor_popover));
+
   G_OBJECT_CLASS(ags_position_automation_cursor_popover_parent_class)->finalize(gobject);
 }
 

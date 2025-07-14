@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -491,6 +491,8 @@ ags_select_note_popover_finalize(GObject *gobject)
   AgsSelectNotePopover *select_note_popover;
 
   select_note_popover = (AgsSelectNotePopover *) gobject;
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(select_note_popover));
   
   G_OBJECT_CLASS(ags_select_note_popover_parent_class)->finalize(gobject);
 }
