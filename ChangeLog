@@ -1,3 +1,10 @@
+ags (8.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed uninitialized in ags_lfo_synth_util.c
+	* fixed uninitialized in ags_core_audio_port.c
+	* fixed uninitialized in ags_amplifier_util.c
+
 ags (8.0.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
