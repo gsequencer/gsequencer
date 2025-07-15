@@ -785,7 +785,7 @@ ags_lfo_synth_util_compute_sin_s8(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -828,7 +828,7 @@ ags_lfo_synth_util_compute_sin_s8(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint8) ((gint16) source[0] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[1 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[2 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
@@ -938,7 +938,7 @@ ags_lfo_synth_util_compute_sin_s16(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -981,7 +981,7 @@ ags_lfo_synth_util_compute_sin_s16(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint16) ((gint32) source[0] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[1 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[2 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
@@ -1091,7 +1091,7 @@ ags_lfo_synth_util_compute_sin_s24(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -1134,7 +1134,7 @@ ags_lfo_synth_util_compute_sin_s24(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint32) source[0] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[1 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[2 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
@@ -1244,7 +1244,7 @@ ags_lfo_synth_util_compute_sin_s32(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -1287,7 +1287,7 @@ ags_lfo_synth_util_compute_sin_s32(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint64) source[0] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[1 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[2 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
@@ -1397,7 +1397,7 @@ ags_lfo_synth_util_compute_sin_s64(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -1440,7 +1440,7 @@ ags_lfo_synth_util_compute_sin_s64(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint64) ((gint64) source[0] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[1 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[2 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
@@ -1550,7 +1550,7 @@ ags_lfo_synth_util_compute_sin_float(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -1593,7 +1593,7 @@ ags_lfo_synth_util_compute_sin_float(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gfloat) ((gdouble) source[0] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[1 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[2 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
@@ -1703,7 +1703,7 @@ ags_lfo_synth_util_compute_sin_double(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -1746,7 +1746,7 @@ ags_lfo_synth_util_compute_sin_double(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gdouble) ((gdouble) source[0] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[1 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[2 * lfo_synth_util->source_stride] * sin((gdouble) (offset + i + phase) * 2.0 * M_PI * ((exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) * lfo_depth));
@@ -1969,7 +1969,7 @@ ags_lfo_synth_util_compute_sawtooth_s8(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -2013,7 +2013,7 @@ ags_lfo_synth_util_compute_sawtooth_s8(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint8) ((gint16) source[0] * ((((fmod(ceil(offset + i + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[1 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 1 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[2 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 2 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
@@ -2126,7 +2126,7 @@ ags_lfo_synth_util_compute_sawtooth_s16(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -2170,7 +2170,7 @@ ags_lfo_synth_util_compute_sawtooth_s16(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint16) ((gint32) source[0] * ((((fmod(ceil(offset + i + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[1 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 1 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[2 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 2 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
@@ -2283,7 +2283,7 @@ ags_lfo_synth_util_compute_sawtooth_s24(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -2327,7 +2327,7 @@ ags_lfo_synth_util_compute_sawtooth_s24(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint32) source[0] * ((((fmod(ceil(offset + i + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[1 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 1 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[2 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 2 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
@@ -2440,7 +2440,7 @@ ags_lfo_synth_util_compute_sawtooth_s32(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -2484,7 +2484,7 @@ ags_lfo_synth_util_compute_sawtooth_s32(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint64) source[0] * ((((fmod(ceil(offset + i + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[1 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 1 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[2 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 2 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
@@ -2597,7 +2597,7 @@ ags_lfo_synth_util_compute_sawtooth_s64(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -2641,7 +2641,7 @@ ags_lfo_synth_util_compute_sawtooth_s64(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint64) ((gint64) source[0] * ((((fmod(ceil(offset + i + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[1 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 1 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[2 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 2 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
@@ -2754,7 +2754,7 @@ ags_lfo_synth_util_compute_sawtooth_float(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -2798,7 +2798,7 @@ ags_lfo_synth_util_compute_sawtooth_float(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gfloat) ((gdouble) source[0] * ((((fmod(ceil(offset + i + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[1 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 1 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[2 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 2 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
@@ -2911,7 +2911,7 @@ ags_lfo_synth_util_compute_sawtooth_double(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)  
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -2955,7 +2955,7 @@ ags_lfo_synth_util_compute_sawtooth_double(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gdouble) ((gdouble) source[0] * ((((fmod(ceil(offset + i + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[1 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 1 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[2 * lfo_synth_util->source_stride] * ((((fmod(ceil(offset + i + 2 + phase), ceil(samplerate / (exp2((tuning / 100.0) / 12.0) + (frequency))))) * 2.0 * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate) - 1.0) * lfo_depth));
@@ -3178,7 +3178,7 @@ ags_lfo_synth_util_compute_triangle_s8(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -3222,7 +3222,7 @@ ags_lfo_synth_util_compute_triangle_s8(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint8) ((gint16) source[0] * ((((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[0] * ((((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[0] * ((((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
@@ -3332,7 +3332,7 @@ ags_lfo_synth_util_compute_triangle_s16(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -3376,7 +3376,7 @@ ags_lfo_synth_util_compute_triangle_s16(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint16) ((gint32) source[0] * ((((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[0] * ((((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[0] * ((((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
@@ -3486,7 +3486,7 @@ ags_lfo_synth_util_compute_triangle_s24(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -3530,7 +3530,7 @@ ags_lfo_synth_util_compute_triangle_s24(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint32) source[0] * ((((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[0] * ((((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[0] * ((((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
@@ -3640,7 +3640,7 @@ ags_lfo_synth_util_compute_triangle_s32(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -3684,7 +3684,7 @@ ags_lfo_synth_util_compute_triangle_s32(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint64) source[0] * ((((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[0] * ((((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[0] * ((((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
@@ -3794,7 +3794,7 @@ ags_lfo_synth_util_compute_triangle_s64(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -3838,7 +3838,7 @@ ags_lfo_synth_util_compute_triangle_s64(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint64) ((gint64) source[0] * ((((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[0] * ((((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[0] * ((((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
@@ -3948,7 +3948,7 @@ ags_lfo_synth_util_compute_triangle_float(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -3992,7 +3992,7 @@ ags_lfo_synth_util_compute_triangle_float(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gfloat) ((gdouble) source[0] * ((((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[0] * ((((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[0] * ((((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
@@ -4102,7 +4102,7 @@ ags_lfo_synth_util_compute_triangle_double(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -4146,7 +4146,7 @@ ags_lfo_synth_util_compute_triangle_double(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gdouble) ((gdouble) source[0] * ((((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[0] * ((((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 1 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[0] * ((((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate * 2.0) - (((double) (((offset + i + 2 + phase) * (exp2((tuning / 100.0) / 12.0) + (frequency)) / samplerate)) / 2.0) * 2) - 1.0) * lfo_depth));
@@ -4366,7 +4366,7 @@ ags_lfo_synth_util_compute_square_s8(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -4410,7 +4410,7 @@ ags_lfo_synth_util_compute_square_s8(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint8) ((gint16) source[0] * (((sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[1 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[2 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
@@ -4520,7 +4520,7 @@ ags_lfo_synth_util_compute_square_s16(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -4564,7 +4564,7 @@ ags_lfo_synth_util_compute_square_s16(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint16) ((gint32) source[0] * (((sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[1 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[2 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
@@ -4674,7 +4674,7 @@ ags_lfo_synth_util_compute_square_s24(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -4718,7 +4718,7 @@ ags_lfo_synth_util_compute_square_s24(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint32) source[0] * (((sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[1 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[2 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
@@ -4828,7 +4828,7 @@ ags_lfo_synth_util_compute_square_s32(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -4872,7 +4872,7 @@ ags_lfo_synth_util_compute_square_s32(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint64) source[0] * (((sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[1 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[2 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
@@ -4982,7 +4982,7 @@ ags_lfo_synth_util_compute_square_s64(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -5026,7 +5026,7 @@ ags_lfo_synth_util_compute_square_s64(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint64) ((gint64) source[0] * (((sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[1 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[2 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
@@ -5136,7 +5136,7 @@ ags_lfo_synth_util_compute_square_float(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -5180,7 +5180,7 @@ ags_lfo_synth_util_compute_square_float(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gfloat) ((gdouble) source[0] * (((sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[1 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[2 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
@@ -5290,7 +5290,7 @@ ags_lfo_synth_util_compute_square_double(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -5334,7 +5334,7 @@ ags_lfo_synth_util_compute_square_double(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gdouble) ((gdouble) source[0] * (((sin((gdouble) (offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[1 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[2 * lfo_synth_util->source_stride] * (((sin((gdouble) (offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * lfo_depth));
@@ -5554,7 +5554,7 @@ ags_lfo_synth_util_compute_impulse_s8(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -5598,7 +5598,7 @@ ags_lfo_synth_util_compute_impulse_s8(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint8) ((gint16) source[0] * ((sin((gdouble) ((offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint8) ((gint16) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
@@ -5708,7 +5708,7 @@ ags_lfo_synth_util_compute_impulse_s16(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -5752,7 +5752,7 @@ ags_lfo_synth_util_compute_impulse_s16(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint16) ((gint32) source[0] * ((sin((gdouble) ((offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint16) ((gint32) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
@@ -5862,7 +5862,7 @@ ags_lfo_synth_util_compute_impulse_s24(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -5906,7 +5906,7 @@ ags_lfo_synth_util_compute_impulse_s24(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint32) source[0] * ((sin((gdouble) ((offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint32) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
@@ -6016,7 +6016,7 @@ ags_lfo_synth_util_compute_impulse_s32(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -6060,7 +6060,7 @@ ags_lfo_synth_util_compute_impulse_s32(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint32) ((gint64) source[0] * ((sin((gdouble) ((offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint32) ((gint64) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
@@ -6170,7 +6170,7 @@ ags_lfo_synth_util_compute_impulse_s64(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -6214,7 +6214,7 @@ ags_lfo_synth_util_compute_impulse_s64(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gint64) ((gint64) source[0] * ((sin((gdouble) ((offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gint64) ((gint64) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
@@ -6324,7 +6324,7 @@ ags_lfo_synth_util_compute_impulse_float(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -6368,7 +6368,7 @@ ags_lfo_synth_util_compute_impulse_float(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gfloat) ((gdouble) source[0] * ((sin((gdouble) ((offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gfloat) ((gdouble) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
@@ -6478,7 +6478,7 @@ ags_lfo_synth_util_compute_impulse_double(AgsLFOSynthUtil *lfo_synth_util)
 #elif defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     double ret_v_buffer[8];
 
     tmp_source = source;
@@ -6522,7 +6522,7 @@ ags_lfo_synth_util_compute_impulse_double(AgsLFOSynthUtil *lfo_synth_util)
 #else
   i_stop = lfo_synth_util->buffer_length - (lfo_synth_util->buffer_length % 8);
 
-  for(; i < i_stop;){
+  for(i = 0; i < i_stop;){
     source[0] = (gdouble) ((gdouble) source[0] * ((sin((gdouble) ((offset + i + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[1 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 1 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));
     source[2 * lfo_synth_util->source_stride] = (gdouble) ((gdouble) source[1 * lfo_synth_util->source_stride] * ((sin((gdouble) ((offset + i + 2 + phase) * 2.0 * M_PI * (exp2((tuning / 100.0) / 12.0) + (frequency)) / (gdouble) samplerate)) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * lfo_depth));

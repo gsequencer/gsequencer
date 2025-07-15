@@ -1584,7 +1584,9 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     ags_atomic_int_and(&(core_audio_devout->sync_flags),
 		     (~(AGS_CORE_AUDIO_DEVOUT_PASS_THROUGH)));
   }
-  
+
+  empty_run = FALSE;
+
   no_event = TRUE;
 
   initial_callback = FALSE;
@@ -1821,6 +1823,8 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 		     (~(AGS_CORE_AUDIO_DEVIN_PASS_THROUGH)));
   }
   
+  empty_run = FALSE;
+
   no_event = TRUE;
   
   if(is_recording){
@@ -2709,6 +2713,8 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
   g_rec_mutex_lock(core_audio_port_mutex);
 
   core_audio_devout = (AgsCoreAudioDevout *) core_audio_port->core_audio_device;
+
+  core_audio_devin = NULL;
   
   switch(core_audio_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
