@@ -31,15 +31,16 @@ void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
 void ags_animation_window_finalize(GObject *gobject);
 
+gboolean ags_animation_window_tick_callback(GtkWidget *widget,
+					    GdkFrameClock *frame_clock,
+					    gpointer user_data);
+
 void ags_animation_window_snapshot(GtkWidget *widget,
 				   GtkSnapshot *snapshot);
 
 void ags_animation_window_draw(GtkWidget *widget,
 			       cairo_t *cr,
 			       gboolean is_animation);
-
-void ags_animation_window_update_ui_callback(GObject *ui_provider,
-					     AgsAnimationWindow *animation_window);
 
 static gpointer ags_animation_window_parent_class = NULL;
 
@@ -237,8 +238,10 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   gtk_widget_set_size_request((GtkWidget *) animation_window,
 			      800, 450);
 
-  g_signal_connect(application_context, "update-ui",
-		   G_CALLBACK(ags_animation_window_update_ui_callback), animation_window);
+  gtk_widget_add_tick_callback((GtkWidget *) animation_window,
+			       (GtkTickCallback) ags_animation_window_tick_callback,
+			       NULL,
+			       NULL);
 }
 
 void
@@ -251,12 +254,6 @@ ags_animation_window_finalize(GObject *gobject)
   animation_window = AGS_ANIMATION_WINDOW(gobject);
 
   application_context = ags_application_context_get_instance();
-
-  g_object_disconnect(application_context,
-		      "any_signal::update-ui",
-		      G_CALLBACK(ags_animation_window_update_ui_callback),
-		      (gpointer) animation_window,
-		      NULL);
   
   /* call parent */
   G_OBJECT_CLASS(ags_animation_window_parent_class)->finalize(gobject);
@@ -427,12 +424,17 @@ ags_animation_window_draw(GtkWidget *widget,
   cairo_surface_destroy(surface);
 }
 
-void
-ags_animation_window_update_ui_callback(GObject *ui_provider,
-					AgsAnimationWindow *animation_window)
+gboolean
+ags_window_tick_callback(GtkWidget *widget,
+			 GdkFrameClock *frame_clock,
+			 gpointer user_data)
 {
+  AgsAnimationWindow *animation_window;
+  
   AgsApplicationContext *application_context;
 
+  animation_window = AGS_ANIMATION_WINDOW(widget);
+  
   application_context = ags_application_context_get_instance();
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(ui_provider))){
@@ -460,6 +462,8 @@ ags_animation_window_update_ui_callback(GObject *ui_provider,
       ags_ui_provider_setup_completed(AGS_UI_PROVIDER(application_context));
     }
   }
+  
+  return(G_SOURCE_CONTINUE);
 }
 
 /**

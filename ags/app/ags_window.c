@@ -57,8 +57,8 @@ void ags_window_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_window_finalize(GObject *gobject);
 
-gboolean ags_window_tick_callback(GtkWidget* widget,
-				  GdkFrameClock* frame_clock,
+gboolean ags_window_tick_callback(GtkWidget *widget,
+				  GdkFrameClock *frame_clock,
 				  gpointer user_data);
 
 gboolean ags_window_is_connected(AgsConnectable *connectable);
