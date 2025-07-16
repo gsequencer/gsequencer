@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -425,9 +425,9 @@ ags_animation_window_draw(GtkWidget *widget,
 }
 
 gboolean
-ags_window_tick_callback(GtkWidget *widget,
-			 GdkFrameClock *frame_clock,
-			 gpointer user_data)
+ags_animation_window_tick_callback(GtkWidget *widget,
+				   GdkFrameClock *frame_clock,
+				   gpointer user_data)
 {
   AgsAnimationWindow *animation_window;
   
@@ -437,7 +437,7 @@ ags_window_tick_callback(GtkWidget *widget,
   
   application_context = ags_application_context_get_instance();
 
-  if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(ui_provider))){
+  if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     AgsLog *log;
     
     GList *start_list;
