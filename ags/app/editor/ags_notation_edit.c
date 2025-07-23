@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2267,7 +2267,7 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
   /* upper */
   old_upper = gtk_adjustment_get_upper(adjustment);
   
-  zoom_correction = 1.0 / 16;
+  zoom_correction = 1.0 / 16.0;
 
   map_width = ((64.0) * (16.0 * 16.0 * 1200.0) * zoom * zoom_correction);
   upper = map_width - allocation.width;
@@ -3252,28 +3252,22 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   /* clip */
   if(x < 0.0){
     if(x + width < 0.0){
-      return;
     }else{
       width += x;
       x = 0.0;
     }
-  }else if(x > allocation.width){
-    return;
   }
-
+  
   if(x + width > allocation.width){
     width = ((double) allocation.width) - x;
   }
   
   if(y < 0.0){
     if(y + height < 0.0){
-      return;
     }else{
       height += y;
       y = 0.0;
     }
-  }else if(y > allocation.height){
-    return;
   }
 
   if(y + height > allocation.height){
@@ -3366,6 +3360,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 
   gdouble opacity;
   gdouble zoom, zoom_factor;
+  guint x0_offset, x1_offset;
   guint x0, x1;
   guint offset;
   guint audio_channel;
@@ -3398,8 +3393,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
   }
   
   /* get visisble region */
-  x0 = (zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar))) / notation_edit->control_width;
-  x1 = ((zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar))) / notation_edit->control_width) + (allocation.width * zoom);
+  x0_offset = (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)) / (1.0 / 16.0) / zoom);
+  x1_offset = ((gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)) / (1.0 / 16.0) / zoom)) + ((allocation.width / (1.0 / 16.0) / zoom));
   
   /* draw notation */
   timestamp = ags_timestamp_new();
@@ -3411,66 +3406,58 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit, cairo_t *cr)
 	       "notation", &start_list_notation,
 	       NULL);
 
-  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+  x0 = (x0_offset / 64.0);
+  x1 = (x1_offset / 64.0);    
 
   i = 0;
   
   while((i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
-    list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
-						     timestamp);
+    guint current_x0;
     
-    while(list_notation != NULL){
-      AgsNotation *notation;
-
-      GList *start_list_note, *list_note;
-
-      notation = AGS_NOTATION(list_notation->data);
-
-      g_object_get(notation,
-		   "audio-channel", &audio_channel,
-		   "timestamp", &current_timestamp,
-		   NULL);
-
-      g_object_unref(current_timestamp);
-
-      if(ags_timestamp_get_ags_offset(current_timestamp) > AGS_NOTATION_DEFAULT_OFFSET * floor((double) x1 / (double) AGS_NOTATION_DEFAULT_OFFSET) + AGS_NOTATION_DEFAULT_OFFSET){
-	break;
-      }
-
-      if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_NOTATION_DEFAULT_OFFSET < x0){
-	list_notation = list_notation->next;
-
-	continue;
-      }
+    for(current_x0 = x0; current_x0 < x1 + AGS_NOTATION_DEFAULT_OFFSET;){
+      timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) current_x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
       
-      if(i != audio_channel){
-	list_notation = list_notation->next;
+      list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
+						       timestamp);
+    
+      if(list_notation != NULL){
+	AgsNotation *notation;
 
-	continue;
+	GList *start_list_note, *list_note;
+
+	notation = AGS_NOTATION(list_notation->data);
+
+	g_object_get(notation,
+		     "audio-channel", &audio_channel,
+		     NULL);
+
+	if(i == audio_channel){
+	  g_object_get(notation,
+		       "note", &start_list_note,
+		       NULL);
+      
+	  list_note = start_list_note;
+
+	  while(list_note != NULL){
+	    ags_notation_edit_draw_note(notation_edit,
+					list_note->data,
+					cr,
+					opacity);
+
+	    list_note = list_note->next;
+	  }
+
+	  g_list_free_full(start_list_note,
+			   g_object_unref);
+	}
       }
 
-      g_object_get(notation,
-		   "note", &start_list_note,
-		   NULL);
-      
-      list_note = start_list_note;
-
-      while(list_note != NULL){
-	ags_notation_edit_draw_note(notation_edit,
-				    list_note->data,
-				    cr,
-				    opacity);
-
-	list_note = list_note->next;
-      }
-
-      g_list_free_full(start_list_note,
-		       g_object_unref);
-      
-      list_notation = list_notation->next;
+      /* iterate */
+      current_x0 += AGS_NOTATION_DEFAULT_OFFSET;
     }
-    
+
+    /* iterate */
     i++;
   }
 

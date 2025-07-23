@@ -771,30 +771,28 @@ GList*
 ags_wave_find_near_timestamp(GList *wave, guint line,
 			     AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_timestamp;
+  GList *bisect_start, *bisect_end, *bisect_center;
+  GList *bisect_match;
 
-  GList *retval;
-  GList *current_start, *current_end, *current;
-
-  guint current_line;
-  guint64 current_x, x;
-  guint length, position;
+  guint64 x;
+  guint length;
   gboolean use_ags_offset;
-  gboolean success;
+  gboolean has_more;
 
   if(wave == NULL){
     return(NULL);
   }
 
-  current_start = wave;
-  current_end = g_list_last(wave);
+  bisect_start = wave;
+  bisect_end = g_list_last(wave);
   
   length = g_list_length(wave);
-  position = (length - 1) / 2;
 
-  current = g_list_nth(current_start,
-		       position);
+  bisect_center = g_list_nth(bisect_start,
+			     length / 2);
 
+  use_ags_offset = TRUE;
+  
   if(ags_timestamp_test_flags(timestamp,
 			      AGS_TIMESTAMP_OFFSET)){
     x = ags_timestamp_get_ags_offset(timestamp);
@@ -808,225 +806,240 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
   }else{
     return(NULL);
   }
-
-  current_x = 0;
   
-  retval = NULL;
-  success = FALSE;
+  bisect_match = NULL;
+  has_more = TRUE;
   
-  while(!success && current != NULL){
-    guint64 relative_offset;
-    guint samplerate;
+  while(has_more &&
+	bisect_start != NULL &&
+	bisect_end != NULL &&
+	bisect_center != NULL){
+    AgsTimestamp *current_timestamp;
 
+    GList *current_match;
+    
+    guint bisect_start_line, bisect_end_line, bisect_center_line;
+    guint64 bisect_start_x, bisect_end_x, bisect_center_x;
+    
+    gboolean bisect_head;
+
+    current_match = NULL;
+    
+    bisect_head = TRUE;
+    
     /* check current - start */
-    g_object_get(current_start->data,
-		 "line", &current_line,
-		 NULL);
+    bisect_start_line = ags_wave_get_line((AgsWave *) bisect_start->data);
 
-    if(current_line == line){
-      if(timestamp == NULL){
-	retval = current_start;
-	
-	break;
-      }
+    current_timestamp = ags_wave_get_timestamp((AgsWave *) bisect_start->data);
 
-      samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-      current_timestamp = NULL;
-      
-      g_object_get(current_start->data,
-		   "samplerate", &samplerate,
-		   "timestamp", &current_timestamp,
-		   NULL);
-
-      relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-
-      if(current_timestamp != NULL){
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-	  
-	  g_object_unref(current_timestamp);
-
-#if 0
-	  if(x + relative_offset < current_x){
-	    break;
-	  }
-#endif
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	  g_object_unref(current_timestamp);
-
-#if 0
-	  if(x < current_x){
-	    break;
-	  }
-#endif
-	}
-
-	if(use_ags_offset){
-	  if(x >= current_x &&
-	     x < current_x + relative_offset){
-	    retval = current_start;
-	    
-	    break;
-	  }
-	}else{
-	  if(x >= current_x &&
-	     x < current_x + AGS_WAVE_DEFAULT_DURATION){
-	    retval = current_start;
-	    
-	    break;
-	  }
-	}
-      }else{
-	g_warning("inconsistent data");
-      }
-    }
-
-    /* check current - end */
-    g_object_get(current_end->data,
-		 "line", &current_line,
-		 NULL);
+    bisect_start_x = 0;
     
-    if(current_line == line){
-      if(timestamp == NULL){
-	retval = current_end;
-	
-	break;
-      }
-
-      samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-      current_timestamp = NULL;
-
-      g_object_get(current_end->data,
-		   "samplerate", &samplerate,
-		   "timestamp", &current_timestamp,
-		   NULL);
-
-      relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-	  
-      if(current_timestamp != NULL){
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	  g_object_unref(current_timestamp);
-
-#if 0
-	  if(x + relative_offset < current_x){
-	    break;
-	  }
-#endif
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	  g_object_unref(current_timestamp);
-
-#if 0
-	  if(x < current_x){
-	    break;
-	  }
-#endif
-	}
-
-	if(use_ags_offset){
-	  if(x >= current_x &&
-	     x < current_x + relative_offset){
-	    retval = current_end;
-
-	    break;
-	  }
-	}else{
-	  if(x >= current_x &&
-	     x < current_x + AGS_WAVE_DEFAULT_DURATION){
-	    retval = current_end;
-	    
-	    break;
-	  }
-	}
-      }else{
-	g_warning("inconsistent data");
-      }
-    }
-
-    /* check current - center */
-    g_object_get(current->data,
-		 "line", &current_line,
-		 NULL);
-
-    if(timestamp == NULL){
-      retval = current;
-	
-      break;
-    }
-
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-
-    current_timestamp = NULL;
-    
-    g_object_get(current->data,
-		 "samplerate", &samplerate,
-		 "timestamp", &current_timestamp,
-		 NULL);
-
-    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-
     if(current_timestamp != NULL){
       if(use_ags_offset){
-	current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	g_object_unref(current_timestamp);
-    
-	if(x >= current_x &&
-	   x < current_x + relative_offset &&
-	   current_line == line){
-	  retval = current;
-
-	  break;
-	}
+	bisect_start_x = ags_timestamp_get_ags_offset(current_timestamp);
       }else{
-	current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	g_object_unref(current_timestamp);
-
-	if(x >= current_x &&
-	   x < current_x + relative_offset &&
-	   current_line == line){
-	  retval = current;
-	    
-	  break;
-	}
+	bisect_start_x = ags_timestamp_get_unix_time(current_timestamp);
       }
+
+      g_object_unref(current_timestamp);
+    }else{
+      g_warning("inconsistent data");
+    }
+
+    if(bisect_start_line == line){
+      if(timestamp == NULL){
+	current_match = bisect_start;
+      }
+    }
+   
+    /* check current - end */
+    bisect_end_line = ags_wave_get_line((AgsWave *) bisect_end->data);
+
+    current_timestamp = ags_wave_get_timestamp((AgsWave *) bisect_end->data);
+
+    bisect_end_x = 0;
+    
+    if(current_timestamp != NULL){
+      if(use_ags_offset){
+	bisect_end_x = ags_timestamp_get_ags_offset(current_timestamp);
+      }else{
+	bisect_end_x = ags_timestamp_get_unix_time(current_timestamp);
+      }
+
+      g_object_unref(current_timestamp);
     }else{
       g_warning("inconsistent data");
     }
     
-    if(length <= 3){
-      break;
-    }
+    /* check current - center */
+    bisect_center_line = ags_wave_get_line((AgsWave *) bisect_center->data);
 
-    if(x < current_x){
-      current_start = current_start->next;
-      current_end = current->prev;
-    }else if(x > current_x){
-      current_start = current->next;
-      current_end = current_end->prev;
+    current_timestamp = ags_wave_get_timestamp((AgsWave *) bisect_center->data);
+
+    bisect_center_x = 0;
+    
+    if(current_timestamp != NULL){
+      if(use_ags_offset){
+	bisect_center_x = ags_timestamp_get_ags_offset(current_timestamp);
+      }else{
+	bisect_center_x = ags_timestamp_get_unix_time(current_timestamp);
+      }
+
+      g_object_unref(current_timestamp);
     }else{
-      current_start = current_start->next;
-      //NOTE:JK: we want progression
-      //      current_end = current_end->prev;
+      g_warning("inconsistent data");
+    }
+    
+    /* check x */    	
+    if(use_ags_offset){
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_WAVE_DEFAULT_OFFSET){
+	if(ags_wave_get_line((AgsWave *) bisect_end->data) == line){
+	  current_match = bisect_end;
+	}
+
+	bisect_head = FALSE;
+      }
+    }else{
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_WAVE_DEFAULT_DURATION){
+	if(ags_wave_get_line((AgsWave *) bisect_end->data) == line){
+	  current_match = bisect_end;
+	}
+	
+	bisect_head = FALSE;
+      }
+    }
+	
+    if(use_ags_offset){
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_WAVE_DEFAULT_OFFSET){
+	if(ags_wave_get_line((AgsWave *) bisect_center->data) == line){
+	  current_match = bisect_center;
+	}
+	
+	bisect_head = TRUE;
+      }
+    }else{
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_WAVE_DEFAULT_DURATION){
+	if(ags_wave_get_line((AgsWave *) bisect_center->data) == line){
+	  current_match = bisect_center;
+	}
+	
+	bisect_head = TRUE;
+      }
+    }
+    
+    if(use_ags_offset){
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_WAVE_DEFAULT_OFFSET){
+	if(ags_wave_get_line((AgsWave *) bisect_start->data) == line){
+	  current_match = bisect_start;
+	}
+	
+	bisect_head = TRUE;
+      }
+    }else{
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_WAVE_DEFAULT_DURATION){
+	if(ags_wave_get_line((AgsWave *) bisect_start->data) == line){
+	  current_match = bisect_start;
+	}
+	
+	bisect_head = TRUE;
+      }
     }
 
-    length = g_list_position(current_start,
-			     current_end) + 1;
-    position = (length - 1) / 2;
+    if(bisect_start_x == bisect_center_x){
+      if(ags_wave_get_line((AgsWave *) bisect_center->data) < line){
+	bisect_head = FALSE;
+      }
+    }
+    
+    if(current_match != NULL){
+      AgsTimestamp *match_timestamp;
 
-    current = g_list_nth(current_start,
-			 position);
+      guint64 match_x, current_x;
+      
+      if(bisect_match != NULL){
+	current_timestamp = ags_wave_get_timestamp((AgsWave *) current_match->data);
+	match_timestamp = ags_wave_get_timestamp((AgsWave *) bisect_match->data);
+
+	match_x = 0;
+	current_x = 0;
+
+	if(use_ags_offset){
+	  match_x = ags_timestamp_get_ags_offset(match_timestamp);
+	}else{
+	  match_x = ags_timestamp_get_unix_time(match_timestamp);
+	}
+
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	}
+	
+	if(current_x < match_x){
+	  bisect_match = current_match;
+	}
+
+	if(current_timestamp != NULL){
+	  g_object_unref(current_timestamp);
+	}
+	
+	if(match_timestamp != NULL){
+	  g_object_unref(match_timestamp);
+	}
+      }else{
+	bisect_match = current_match;
+      }
+    }
+    
+    /* iterate */
+    if(length <= 3){
+      has_more = FALSE;
+    }
+
+    if(has_more){
+      if(bisect_head){
+	bisect_start = bisect_start->next;
+	bisect_end = bisect_center->prev;
+
+	length = 0;
+
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+	
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }else{
+	bisect_start = bisect_center->next;
+	bisect_end = bisect_end->prev;
+
+	length = 0;
+	
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }
+    }
   }
 
-  return(retval);
+  return(bisect_match);  
 }
 
 /**

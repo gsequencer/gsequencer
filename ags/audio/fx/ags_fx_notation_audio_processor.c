@@ -1566,58 +1566,6 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
     has_16th_pulse = TRUE;
   }
 
-#if 0
-  if(has_16th_pulse &&
-     note_offset % 4 == 0){
-    g_rec_mutex_lock(audio_mutex);
-    
-    start_notation = g_list_copy_deep(audio->notation,
-				      (GCopyFunc) g_object_ref,
-				      NULL);
-
-    g_rec_mutex_unlock(audio_mutex);
-    
-    ags_timestamp_set_ags_offset(timestamp,
-				 AGS_NOTATION_DEFAULT_OFFSET * floor(note_offset / AGS_NOTATION_DEFAULT_OFFSET));
-    
-    /* find near timestamp */
-    notation = ags_notation_find_near_timestamp(start_notation, audio_channel,
-						timestamp);
-
-    if(notation != NULL){
-      start_note = ags_notation_find_note_256th_range(notation->data,
-						      note_256th_offset_lower,
-						      note_256th_offset_lower + 80,
-						      FALSE);
-
-      if(fx_notation_audio_processor->note_256th == NULL){
-	fx_notation_audio_processor->note_256th = start_note;
-      }else{
-	note = start_note;
-
-	while(note != NULL){
-	  if(g_list_find(fx_notation_audio_processor->note_256th, note->data) == NULL){
-	    fx_notation_audio_processor->note_256th = g_list_prepend(fx_notation_audio_processor->note_256th,
-								     note->data);
-
-	    g_object_ref(note->data);
-	  }
-
-	  note = note->next;
-	}	
-
-	g_list_free_full(start_note,
-			 g_object_unref);
-      }
-    }
-
-    g_list_free_full(start_notation,
-		     g_object_unref);
-  }
-  
-  note =
-    start_note = g_list_copy(fx_notation_audio_processor->note_256th);
-#else
   start_notation = ags_audio_get_notation(audio);
 
   ags_timestamp_set_ags_offset(timestamp,
@@ -1634,7 +1582,11 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
     note = 
       start_note = ags_notation_get_note(notation->data);
   }
-#endif
+
+  if(start_note != NULL){
+    note = ags_note_find_range_x_256th(start_note,
+				       note_256th_offset_lower, note_256th_offset_upper);
+  }
 
   while(note != NULL){
     AgsNote *current;

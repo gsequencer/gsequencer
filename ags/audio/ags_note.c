@@ -2023,26 +2023,131 @@ GList*
 ags_note_find_range_x_256th(GList *note,
 			    guint start_x_256th, guint end_x_256th)
 {
-  gboolean matched_range;
-
-  matched_range = FALSE;
+  GList *bisect_start, *bisect_end, *bisect_center;
+  GList *bisect_match;
   
-  while(note != NULL){
-    guint current_x_256th;
+  gint length;
+  gboolean has_more;
 
-    current_x_256th = ags_note_get_x0_256th(note->data);
-    
-    if(current_x_256th >= start_x_256th &&
-       current_x_256th <= end_x_256th){
-      matched_range = TRUE;
-
-      break;
-    }
-    
-    note = note->next;
+  if(note == NULL){
+    return(NULL);
   }
   
-  return(note);
+  bisect_start = note;
+  bisect_end = g_list_last(note);
+
+  length = g_list_length(note);
+  
+  bisect_center = g_list_nth(bisect_start,
+			     length / 2);
+
+  bisect_match = NULL;
+  
+  has_more = TRUE;
+  
+  while(has_more &&
+	bisect_start != NULL &&
+	bisect_end != NULL &&
+	bisect_center != NULL){
+    GList *current_match;
+    
+    guint bisect_start_x_256th, bisect_end_x_256th, bisect_center_x_256th;
+    
+    gboolean bisect_head;
+
+    current_match = NULL;
+    
+    bisect_head = TRUE;
+
+    bisect_start_x_256th = ags_note_get_x0_256th(bisect_start->data);
+    bisect_end_x_256th = ags_note_get_x0_256th(bisect_end->data);    
+    bisect_center_x_256th = ags_note_get_x0_256th(bisect_center->data);
+
+    if(bisect_end_x_256th >= start_x_256th &&
+       bisect_end_x_256th <= end_x_256th){
+      current_match = bisect_end;
+
+      bisect_head = FALSE;
+    }
+
+    if(bisect_center_x_256th >= start_x_256th &&
+       bisect_center_x_256th <= end_x_256th){
+      current_match = bisect_center;
+
+      bisect_head = TRUE;
+    }
+
+    if(bisect_center_x_256th < start_x_256th){
+      bisect_head = FALSE;
+    }
+    
+    if(bisect_start_x_256th >= start_x_256th &&
+       bisect_start_x_256th <= end_x_256th){
+      current_match = bisect_start;
+
+      bisect_head = TRUE;
+    }
+
+    if(current_match != NULL){
+      if(bisect_match != NULL){
+	if(ags_note_get_x0_256th(current_match->data) < ags_note_get_x0_256th(bisect_match->data) ||
+	   (ags_note_get_x0_256th(current_match->data) == ags_note_get_x0_256th(bisect_match->data) &&
+	    ags_note_get_y(current_match->data) < ags_note_get_y(bisect_match->data))){
+	  bisect_match = current_match;
+	}
+      }else{
+	bisect_match = current_match;
+      }
+    }
+    
+    /* iterate */
+    //NOTE:JK: bisect all, because multiple occurances of x_256th possible
+    //    if(bisect_end_x_256th < start_x_256th){
+    //      has_more = FALSE;
+    //    }
+    
+    if(length <= 3){
+      has_more = FALSE;
+    }
+
+    if(has_more){
+      if(bisect_head){
+	bisect_start = bisect_start->next;
+	bisect_end = bisect_center->prev;
+
+	length = 0;
+
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+	
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }else{
+	bisect_start = bisect_center->next;
+	bisect_end = bisect_end->prev;
+
+	length = 0;
+	
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }
+    }
+  }
+  
+  return(bisect_match);
 }
 
 /**
