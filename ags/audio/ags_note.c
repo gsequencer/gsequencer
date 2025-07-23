@@ -2052,7 +2052,7 @@ ags_note_find_range_x_256th(GList *note,
     GList *current_match;
     
     guint bisect_start_x_256th, bisect_end_x_256th, bisect_center_x_256th;
-
+    
     gboolean bisect_head;
 
     bisect_head = TRUE;
