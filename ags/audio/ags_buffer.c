@@ -1069,7 +1069,7 @@ ags_buffer_find_range_x(GList *buffer,
     }
 
     if(bisect_center_x >= start_x &&
-       bisect_center_x <= center_x){
+       bisect_center_x <= end_x){
       current_match = bisect_center;
 
       bisect_head = TRUE;
@@ -1080,7 +1080,7 @@ ags_buffer_find_range_x(GList *buffer,
     }
     
     if(bisect_start_x >= start_x &&
-       bisect_start_x <= start_x){
+       bisect_start_x <= end_x){
       current_match = bisect_start;
 
       bisect_head = TRUE;

@@ -1585,8 +1585,7 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 
   if(start_note != NULL){
     note = ags_note_find_range_x_256th(start_note,
-				       note_256th_offset_lower, note_256th_offset_upper)
-
+				       note_256th_offset_lower, note_256th_offset_upper);
   }
 
   while(note != NULL){

@@ -818,7 +818,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 
     GList *current_match;
     
-    guint bisect_start_line, bisect_end_line, bisect_center_x;
+    guint bisect_start_line, bisect_end_line, bisect_center_line;
     guint64 bisect_start_x, bisect_end_x, bisect_center_x;
     
     gboolean bisect_head;
@@ -828,9 +828,9 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     current_match = NULL;
     
     /* check current - start */
-    bisect_start_line = ags_wave_get_line((AgsWave *) current_start->data);
+    bisect_start_line = ags_wave_get_line((AgsWave *) bisect_start->data);
 
-    current_timestamp = ags_wave_get_timestamp((AgsWave *) current_start->data);
+    current_timestamp = ags_wave_get_timestamp((AgsWave *) bisect_start->data);
 
     bisect_start_x = 0;
     
@@ -846,16 +846,16 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       g_warning("inconsistent data");
     }
 
-    if(current_line == line){
+    if(bisect_start_line == line){
       if(timestamp == NULL){
 	current_match = bisect_start;
       }
     }
    
     /* check current - end */
-    bisect_end_line = ags_wave_get_line((AgsWave *) current_end->data);
+    bisect_end_line = ags_wave_get_line((AgsWave *) bisect_end->data);
 
-    current_timestamp = ags_wave_get_timestamp((AgsWave *) current_end->data);
+    current_timestamp = ags_wave_get_timestamp((AgsWave *) bisect_end->data);
 
     bisect_end_x = 0;
     
@@ -872,9 +872,9 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     }
     
     /* check current - center */
-    bisect_center_line = ags_wave_get_line((AgsWave *) current_center->data);
+    bisect_center_line = ags_wave_get_line((AgsWave *) bisect_center->data);
 
-    current_timestamp = ags_wave_get_timestamp((AgsWave *) current_center->data);
+    current_timestamp = ags_wave_get_timestamp((AgsWave *) bisect_center->data);
 
     bisect_center_x = 0;
     
@@ -892,8 +892,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     
     /* check x */    	
     if(use_ags_offset){
-      if(end_x >= x &&
-	 end_x < x + AGS_WAVE_DEFAULT_OFFSET){
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_WAVE_DEFAULT_OFFSET){
 	if(ags_wave_get_line((AgsWave *) bisect_end->data) == line){
 	  current_match = bisect_end;
 	}
@@ -901,8 +901,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	bisect_head = FALSE;
       }
     }else{
-      if(end_x >= x &&
-	 end_x < x + AGS_WAVE_DEFAULT_DURATION){
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_WAVE_DEFAULT_DURATION){
 	if(ags_wave_get_line((AgsWave *) bisect_end->data) == line){
 	  current_match = bisect_end;
 	}
@@ -912,8 +912,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     }
 	
     if(use_ags_offset){
-      if(center_x >= x &&
-	 center_x < x + AGS_WAVE_DEFAULT_OFFSET){
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_WAVE_DEFAULT_OFFSET){
 	if(ags_wave_get_line((AgsWave *) bisect_center->data) == line){
 	  current_match = bisect_center;
 	}
@@ -921,8 +921,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	bisect_head = TRUE;
       }
     }else{
-      if(center_x >= x &&
-	 center_x < x + AGS_WAVE_DEFAULT_DURATION){
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_WAVE_DEFAULT_DURATION){
 	if(ags_wave_get_line((AgsWave *) bisect_center->data) == line){
 	  current_match = bisect_center;
 	}
@@ -932,8 +932,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     }
     
     if(use_ags_offset){
-      if(start_x >= x &&
-	 start_x < x + AGS_WAVE_DEFAULT_OFFSET){
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_WAVE_DEFAULT_OFFSET){
 	if(ags_wave_get_line((AgsWave *) bisect_start->data) == line){
 	  current_match = bisect_start;
 	}
@@ -941,8 +941,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	bisect_head = TRUE;
       }
     }else{
-      if(start_x >= x &&
-	 start_x < x + AGS_WAVE_DEFAULT_DURATION){
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_WAVE_DEFAULT_DURATION){
 	if(ags_wave_get_line((AgsWave *) bisect_start->data) == line){
 	  current_match = bisect_start;
 	}
@@ -951,7 +951,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
     }
 
-    if(start_x == center_x){
+    if(bisect_start_x == bisect_center_x){
       if(ags_wave_get_line((AgsWave *) bisect_center->data) < line){
 	bisect_head = FALSE;
       }

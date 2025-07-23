@@ -632,7 +632,7 @@ ags_acceleration_find_range_x(GList *acceleration,
     }
 
     if(bisect_center_x >= start_x &&
-       bisect_center_x <= center_x){
+       bisect_center_x <= end_x){
       current_match = bisect_center;
 
       bisect_head = TRUE;
@@ -643,7 +643,7 @@ ags_acceleration_find_range_x(GList *acceleration,
     }
     
     if(bisect_start_x >= start_x &&
-       bisect_start_x <= start_x){
+       bisect_start_x <= end_x){
       current_match = bisect_start;
 
       bisect_head = TRUE;

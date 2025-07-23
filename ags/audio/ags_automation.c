@@ -1148,7 +1148,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 
     GList *current_match;
     
-    guint bisect_start_line, bisect_end_line, bisect_center_x;
+    guint bisect_start_line, bisect_end_line, bisect_center_line;
     guint64 bisect_start_x, bisect_end_x, bisect_center_x;
     
     gboolean bisect_head;
@@ -1158,9 +1158,9 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     current_match = NULL;
 
     /* check current - start */
-    bisect_start_line = ags_automation_get_line((AgsAutomation *) current_start->data);
+    bisect_start_line = ags_automation_get_line((AgsAutomation *) bisect_start->data);
 
-    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) current_start->data);
+    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) bisect_start->data);
 
     bisect_start_x = 0;
     
@@ -1176,16 +1176,16 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
       g_warning("inconsistent data");
     }
 
-    if(current_line == line){
+    if(ags_automation_get_line((AgsAutomation *) bisect_start->data) == line){
       if(timestamp == NULL){
 	current_match = bisect_start;
       }
     }
    
     /* check current - end */
-    bisect_end_line = ags_automation_get_line((AgsAutomation *) current_end->data);
+    bisect_end_line = ags_automation_get_line((AgsAutomation *) bisect_end->data);
 
-    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) current_end->data);
+    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) bisect_end->data);
 
     bisect_end_x = 0;
     
@@ -1202,9 +1202,9 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     }
     
     /* check current - center */
-    bisect_center_line = ags_automation_get_line((AgsAutomation *) current_center->data);
+    bisect_center_line = ags_automation_get_line((AgsAutomation *) bisect_center->data);
 
-    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) current_center->data);
+    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) bisect_center->data);
 
     bisect_center_x = 0;
     
@@ -1222,18 +1222,18 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     
     /* check x */    	
     if(use_ags_offset){
-      if(end_x >= x &&
-	 end_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	if(ags_automation_get_line((AgsAutomation *) bisect_end->data) == line){
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	if(bisect_end_line == line){
 	  current_match = bisect_end;
 	}
 
 	bisect_head = FALSE;
       }
     }else{
-      if(end_x >= x &&
-	 end_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
-	if(ags_automation_get_line((AgsAutomation *) bisect_end->data) == line){
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(bisect_end_line == line){
 	  current_match = bisect_end;
 	}
 	
@@ -1242,18 +1242,18 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     }
 	
     if(use_ags_offset){
-      if(center_x >= x &&
-	 center_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	if(ags_automation_get_line((AgsAutomation *) bisect_center->data) == line){
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	if(bisect_center_line == line){
 	  current_match = bisect_center;
 	}
 
 	bisect_head = TRUE;
       }
     }else{
-      if(center_x >= x &&
-	 center_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
-	if(ags_automation_get_line((AgsAutomation *) bisect_center->data) == line){
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(bisect_center_line == line){
 	  current_match = bisect_center;
 	}
 	
@@ -1262,18 +1262,18 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     }
     
     if(use_ags_offset){
-      if(start_x >= x &&
-	 start_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	if(ags_automation_get_line((AgsAutomation *) bisect_start->data) == line){
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	if(bisect_start_line == line){
 	  current_match = bisect_start;
 	}
 	
 	bisect_head = TRUE;
       }
     }else{
-      if(start_x >= x &&
-	 start_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
-	if(ags_automation_get_line((AgsAutomation *) bisect_start->data) == line){
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(bisect_start_line == line){
 	  current_match = bisect_start;
 	}
 	
@@ -1281,8 +1281,8 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
       }
     }
 
-    if(start_x == center_x){
-      if(ags_automation_get_line((AgsAutomation *) bisect_center->data) < line){
+    if(bisect_start_x == bisect_center_x){
+      if(bisect_center_line < line){
 	bisect_head = FALSE;
       }
     }
@@ -1443,7 +1443,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 
     GList *current_match;
     
-    guint bisect_start_line, bisect_end_line, bisect_center_x;
+    guint bisect_start_line, bisect_end_line, bisect_center_line;
     guint64 bisect_start_x, bisect_end_x, bisect_center_x;
     
     gboolean bisect_head;
@@ -1453,9 +1453,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
     current_match = NULL;
 
     /* check current - start */
-    bisect_start_line = ags_automation_get_line((AgsAutomation *) current_start->data);
+    bisect_start_line = ags_automation_get_line((AgsAutomation *) bisect_start->data);
 
-    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) current_start->data);
+    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) bisect_start->data);
 
     bisect_start_x = 0;
     
@@ -1471,16 +1471,16 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
       g_warning("inconsistent data");
     }
 
-    if(current_line == line){
+    if(bisect_start_line == line){
       if(timestamp == NULL){
 	current_match = bisect_start;
       }
     }
    
     /* check current - end */
-    bisect_end_line = ags_automation_get_line((AgsAutomation *) current_end->data);
+    bisect_end_line = ags_automation_get_line((AgsAutomation *) bisect_end->data);
 
-    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) current_end->data);
+    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) bisect_end->data);
 
     bisect_end_x = 0;
     
@@ -1497,9 +1497,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
     }
     
     /* check current - center */
-    bisect_center_line = ags_automation_get_line((AgsAutomation *) current_center->data);
+    bisect_center_line = ags_automation_get_line((AgsAutomation *) bisect_center->data);
 
-    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) current_center->data);
+    current_timestamp = ags_automation_get_timestamp((AgsAutomation *) bisect_center->data);
 
     bisect_center_x = 0;
     
@@ -1517,9 +1517,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
     
     /* check x */    	
     if(use_ags_offset){
-      if(end_x >= x &&
-	 end_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	if(ags_automation_get_line((AgsAutomation *) bisect_end->data) == line &&
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	if(bisect_end_line == line &&
 	   !g_strcmp0(control_name, AGS_AUTOMATION(bisect_end->data)->control_name) &&
 	   ags_automation_get_channel_type((AgsAutomation *) bisect_end->data) == channel_type){
 	  current_match = bisect_end;
@@ -1528,9 +1528,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	bisect_head = FALSE;
       }
     }else{
-      if(end_x >= x &&
-	 end_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
-	if(ags_automation_get_line((AgsAutomation *) bisect_end->data) == line &&
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(bisect_end_line == line &&
 	   !g_strcmp0(control_name, AGS_AUTOMATION(bisect_end->data)->control_name) &&
 	   ags_automation_get_channel_type((AgsAutomation *) bisect_end->data) == channel_type){
 	  current_match = bisect_end;
@@ -1541,9 +1541,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
     }
 	
     if(use_ags_offset){
-      if(center_x >= x &&
-	 center_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	if(ags_automation_get_line((AgsAutomation *) bisect_center->data) == line &&
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	if(bisect_center_line == line &&
 	   !g_strcmp0(control_name, AGS_AUTOMATION(bisect_center->data)->control_name) &&
 	   ags_automation_get_channel_type((AgsAutomation *) bisect_center->data) == channel_type){
 	  current_match = bisect_center;
@@ -1552,9 +1552,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	bisect_head = TRUE;
       }
     }else{
-      if(center_x >= x &&
-	 center_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
-	if(ags_automation_get_line((AgsAutomation *) bisect_center->data) == line &&
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(bisect_center_line == line &&
 	   !g_strcmp0(control_name, AGS_AUTOMATION(bisect_center->data)->control_name) &&
 	   ags_automation_get_channel_type((AgsAutomation *) bisect_center->data) == channel_type){
 	  current_match = bisect_center;
@@ -1565,9 +1565,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
     }
     
     if(use_ags_offset){
-      if(start_x >= x &&
-	 start_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	if(ags_automation_get_line((AgsAutomation *) bisect_start->data) == line &&
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	if(bisect_start_line == line &&
 	   !g_strcmp0(control_name, AGS_AUTOMATION(bisect_start->data)->control_name) &&
 	   ags_automation_get_channel_type((AgsAutomation *) bisect_start->data) == channel_type){
 	  current_match = bisect_start;
@@ -1576,9 +1576,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	bisect_head = TRUE;
       }
     }else{
-      if(start_x >= x &&
-	 start_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
-	if(ags_automation_get_line((AgsAutomation *) bisect_start->data) == line &&
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(bisect_start_line == line &&
 	   !g_strcmp0(control_name, AGS_AUTOMATION(bisect_start->data)->control_name) &&
 	   ags_automation_get_channel_type((AgsAutomation *) bisect_start->data) == channel_type){
 	  current_match = bisect_start;
@@ -1588,15 +1588,15 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
       }
     }
     
-    if(start_x == center_x){
+    if(bisect_start_x == bisect_center_x){
       if(ags_automation_get_line((AgsAutomation *) bisect_center->data) < line){
 	bisect_head = FALSE;
-      }else if(ags_automation_get_line((AgsAutomation *) bisect_center->data) == line &&
+      }else if(bisect_center_line == line &&
 	       ags_automation_get_channel_type((AgsAutomation *) bisect_center->data) < channel_type){
 	bisect_head = FALSE;
-      }else if(ags_automation_get_line((AgsAutomation *) bisect_center->data) == line &&
-	       ags_automation_get_channel_type((AgsAutomation *) bisect_center->data) = channel_type &&
-	       g_strcmp0(control_name, AGS_AUTOMATION(bisect_center->data)->control_name)) < 0){
+      }else if(bisect_center_line == line &&
+	       ags_automation_get_channel_type((AgsAutomation *) bisect_center->data) == channel_type &&
+	       g_strcmp0(control_name, AGS_AUTOMATION(bisect_center->data)->control_name) < 0){
 	bisect_head = FALSE;
       }
     }

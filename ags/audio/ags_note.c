@@ -2071,7 +2071,7 @@ ags_note_find_range_x_256th(GList *note,
     }
 
     if(bisect_center_x_256th >= start_x_256th &&
-       bisect_center_x_256th <= center_x_256th){
+       bisect_center_x_256th <= end_x_256th){
       current_match = bisect_center;
 
       bisect_head = TRUE;
@@ -2082,7 +2082,7 @@ ags_note_find_range_x_256th(GList *note,
     }
     
     if(bisect_start_x_256th >= start_x_256th &&
-       bisect_start_x_256th <= start_x_256th){
+       bisect_start_x_256th <= end_x_256th){
       current_match = bisect_start;
 
       bisect_head = TRUE;

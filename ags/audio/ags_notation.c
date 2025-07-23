@@ -675,7 +675,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 
     GList *current_match;
     
-    guint bisect_start_audio_channel, bisect_end_audio_channel, bisect_center_x;
+    guint bisect_start_audio_channel, bisect_end_audio_channel, bisect_center_audio_channel;
     guint64 bisect_start_x, bisect_end_x, bisect_center_x;
     
     gboolean bisect_head;
@@ -685,9 +685,9 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     current_match = NULL;
     
     /* check current - start */
-    bisect_start_audio_channel = ags_notation_get_audio_channel((AgsNotation *) current_start->data);
+    bisect_start_audio_channel = ags_notation_get_audio_channel((AgsNotation *) bisect_start->data);
 
-    current_timestamp = ags_notation_get_timestamp((AgsNotation *) current_start->data);
+    current_timestamp = ags_notation_get_timestamp((AgsNotation *) bisect_start->data);
 
     bisect_start_x = 0;
     
@@ -703,16 +703,16 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       g_warning("inconsistent data");
     }
 
-    if(current_audio_channel == audio_channel){
+    if(bisect_start_audio_channel == audio_channel){
       if(timestamp == NULL){
 	current_match = bisect_start;
       }
     }
    
     /* check current - end */
-    bisect_end_audio_channel = ags_notation_get_audio_channel((AgsNotation *) current_end->data);
+    bisect_end_audio_channel = ags_notation_get_audio_channel((AgsNotation *) bisect_end->data);
 
-    current_timestamp = ags_notation_get_timestamp((AgsNotation *) current_end->data);
+    current_timestamp = ags_notation_get_timestamp((AgsNotation *) bisect_end->data);
 
     bisect_end_x = 0;
     
@@ -729,9 +729,9 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     }
     
     /* check current - center */
-    bisect_center_audio_channel = ags_notation_get_audio_channel((AgsNotation *) current_center->data);
+    bisect_center_audio_channel = ags_notation_get_audio_channel((AgsNotation *) bisect_center->data);
 
-    current_timestamp = ags_notation_get_timestamp((AgsNotation *) current_center->data);
+    current_timestamp = ags_notation_get_timestamp((AgsNotation *) bisect_center->data);
 
     bisect_center_x = 0;
     
@@ -749,18 +749,18 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     
     /* check x */    	
     if(use_ags_offset){
-      if(end_x >= x &&
-	 end_x < x + AGS_NOTATION_DEFAULT_OFFSET){
-	if(ags_notation_get_audio_channel((AgsNotation *) bisect_end->data) == audio_channel){
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_NOTATION_DEFAULT_OFFSET){
+	if(bisect_end_audio_channel == audio_channel){
 	  current_match = bisect_end;
 	}
 
 	bisect_head = FALSE;
       }
     }else{
-      if(end_x >= x &&
-	 end_x < x + AGS_NOTATION_DEFAULT_DURATION){
-	if(ags_notation_get_audio_channel((AgsNotation *) bisect_end->data) == audio_channel){
+      if(bisect_end_x >= x &&
+	 bisect_end_x < x + AGS_NOTATION_DEFAULT_DURATION){
+	if(bisect_end_audio_channel == audio_channel){
 	  current_match = bisect_end;
 	}
 	
@@ -769,18 +769,18 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     }
 	
     if(use_ags_offset){
-      if(center_x >= x &&
-	 center_x < x + AGS_NOTATION_DEFAULT_OFFSET){
-	if(ags_notation_get_audio_channel((AgsNotation *) bisect_center->data) == audio_channel){
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_NOTATION_DEFAULT_OFFSET){
+	if(bisect_center_audio_channel == audio_channel){
 	  current_match = bisect_center;
 	}
 	
 	bisect_head = TRUE;
       }
     }else{
-      if(center_x >= x &&
-	 center_x < x + AGS_NOTATION_DEFAULT_DURATION){
-	if(ags_notation_get_audio_channel((AgsNotation *) bisect_center->data) == audio_channel){
+      if(bisect_center_x >= x &&
+	 bisect_center_x < x + AGS_NOTATION_DEFAULT_DURATION){
+	if(bisect_center_audio_channel == audio_channel){
 	  current_match = bisect_center;
 	}
 	
@@ -789,18 +789,18 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     }
     
     if(use_ags_offset){
-      if(start_x >= x &&
-	 start_x < x + AGS_NOTATION_DEFAULT_OFFSET){
-	if(ags_notation_get_audio_channel((AgsNotation *) bisect_start->data) == audio_channel){
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_NOTATION_DEFAULT_OFFSET){
+	if(bisect_start_audio_channel == audio_channel){
 	  current_match = bisect_start;
 	}
 	
 	bisect_head = TRUE;
       }
     }else{
-      if(start_x >= x &&
-	 start_x < x + AGS_NOTATION_DEFAULT_DURATION){
-	if(ags_notation_get_audio_channel((AgsNotation *) bisect_start->data) == audio_channel){
+      if(bisect_start_x >= x &&
+	 bisect_start_x < x + AGS_NOTATION_DEFAULT_DURATION){
+	if(bisect_start_audio_channel == audio_channel){
 	  current_match = bisect_start;
 	}
 	
@@ -808,8 +808,8 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       }
     }
 
-    if(start_x == center_x){
-      if(ags_notation_get_audio_channel((AgsNotation *) bisect_center->data) < audio_channel){
+    if(bisect_start_x == bisect_center_x){
+      if(bisect_center_audio_channel < audio_channel){
 	bisect_head = FALSE;
       }
     }
