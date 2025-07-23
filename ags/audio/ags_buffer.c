@@ -1086,6 +1086,16 @@ ags_buffer_find_range_x(GList *buffer,
       bisect_head = TRUE;
     }
 
+    if(current_match != NULL){
+      if(bisect_match != NULL){
+	if(ags_buffer_get_x(current_match->data) < ags_buffer_get_x(bisect_match->data)){
+	  bisect_match = current_match;
+	}
+      }else{
+	bisect_match = current_match;
+      }
+    }
+    
     /* iterate */
     //NOTE:JK: bisect all, because multiple occurances of x possible
     //    if(bisect_end_x < start_x){

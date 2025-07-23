@@ -628,32 +628,28 @@ GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 				 AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_timestamp;
+  GList *bisect_start, *bisect_end, *bisect_center;
+  GList *bisect_match;
 
-  GList *retval;
-  GList *current_start, *current_end, *current;
-
-  guint current_audio_channel;
-  guint64 current_x, x;
-  guint length, position;
+  guint64 x;
+  guint length;
   gboolean use_ags_offset;
-  gboolean success;
+  gboolean has_more;
 
-  GRecMutex *mutex;
-  
   if(notation == NULL){
     return(NULL);
   }
 
-  current_start = notation;
-  current_end = g_list_last(notation);
+  bisect_start = notation;
+  bisect_end = g_list_last(notation);
   
   length = g_list_length(notation);
-  position = (length - 1) / 2;
 
-  current = g_list_nth(current_start,
-		       position);
+  bisect_center = g_list_nth(bisect_start,
+			     length / 2);
 
+  use_ags_offset = TRUE;
+  
   if(ags_timestamp_test_flags(timestamp,
 			      AGS_TIMESTAMP_OFFSET)){
     x = ags_timestamp_get_ags_offset(timestamp);
@@ -668,200 +664,220 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     return(NULL);
   }
   
-  retval = NULL;
-  success = FALSE;
+  bisect_match = NULL;
+  has_more = TRUE;
   
-  while(!success && current != NULL){
-    current_x = 0;
+  while(has_more &&
+	bisect_start != NULL &&
+	bisect_end != NULL &&
+	bisect_center != NULL){
+    AgsTimestamp *current_timestamp;
+
+    GList *current_match;
+    
+    guint bisect_start_audio_channel, bisect_end_audio_channel, bisect_center_x;
+    guint64 bisect_start_x, bisect_end_x, bisect_center_x;
+    
+    gboolean bisect_head;
+
+    bisect_head = TRUE;
+    
+    current_match = NULL;
     
     /* check current - start */
-    mutex = AGS_NOTATION_GET_OBJ_MUTEX(current_start->data);
+    bisect_start_audio_channel = ags_notation_get_audio_channel((AgsNotation *) current_start->data);
 
-    g_rec_mutex_lock(mutex);
+    current_timestamp = ags_notation_get_timestamp((AgsNotation *) current_start->data);
 
-    current_audio_channel = ((AgsNotation *) current_start->data)->audio_channel;
+    bisect_start_x = 0;
     
-    g_rec_mutex_unlock(mutex);
-    
-    if(current_audio_channel == audio_channel){
-      if(timestamp == NULL){
-	retval = current_start;
-	
-	break;
-      }
-
-      g_rec_mutex_lock(mutex);
-
-      current_timestamp = ((AgsNotation *) current_start->data)->timestamp;
-    
-      g_rec_mutex_unlock(mutex);
-      
-      if(current_timestamp != NULL){
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	  if(current_x > x){
-	    break;
-	  }
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	  if(current_x > x){
-	    break;
-	  }
-	}
-	
-	if(use_ags_offset){
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_OFFSET){
-	    retval = current_start;
-	    
-	    break;
-	  }
-	}else{
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_DURATION){
-	    retval = current_start;
-	    
-	    break;
-	  }
-	}
+    if(current_timestamp != NULL){
+      if(use_ags_offset){
+	bisect_start_x = ags_timestamp_get_ags_offset(current_timestamp);
       }else{
-	g_warning("inconsistent data");
-      }
-    }
-
-    /* check current - end */
-    mutex = AGS_NOTATION_GET_OBJ_MUTEX(current_end->data);
-
-    g_rec_mutex_lock(mutex);
-
-    current_audio_channel = ((AgsNotation *) current_end->data)->audio_channel;
-    
-    g_rec_mutex_unlock(mutex);
-    
-    if(current_audio_channel == audio_channel){
-      if(timestamp == NULL){
-	retval = current_end;
-	
-	break;
+	bisect_start_x = ags_timestamp_get_unix_time(current_timestamp);
       }
 
-      g_rec_mutex_lock(mutex);
-
-      current_timestamp = ((AgsNotation *) current_end->data)->timestamp;
-    
-      g_rec_mutex_unlock(mutex);
-      
-      if(current_timestamp != NULL){
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	  if(current_x < x){
-	    break;
-	  }
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	  if(current_x < x){
-	    break;
-	  }
-	}
-
-	if(use_ags_offset){
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_OFFSET){
-	    retval = current_end;
-	    
-	    break;
-	  }
-	}else{
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_DURATION){
-	    retval = current_end;
-	    
-	    break;
-	  }
-	}
-      }else{
-	g_warning("inconsistent data");
-      }
-    }
-
-    /* check current - center */
-    mutex = AGS_NOTATION_GET_OBJ_MUTEX(current->data);
-
-    g_rec_mutex_lock(mutex);
-
-    current_audio_channel = ((AgsNotation *) current->data)->audio_channel;
-    
-    g_rec_mutex_unlock(mutex);
-    
-    if(current_audio_channel == audio_channel){
-      if(timestamp == NULL){
-	retval = current;
-	
-	break;
-      }
-
-      g_rec_mutex_lock(mutex);
-
-      current_timestamp = ((AgsNotation *) current->data)->timestamp;
-    
-      g_rec_mutex_unlock(mutex);
-
-      if(current_timestamp != NULL){
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_OFFSET &&
-	     current_audio_channel == audio_channel){
-	    retval = current;
-	    
-	    break;
-	  }
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_DURATION &&
-	     current_audio_channel == audio_channel){
-	    retval = current;
-	    
-	    break;
-	  }
-	}
-      }else{
-	g_warning("inconsistent data");
-      }
-    }
-    
-    if(length <= 3){
-      break;
-    }
-
-    if(current_x < x){
-      current_start = current->next;
-      current_end = current_end->prev;
-    }else if(current_x > x){
-      current_start = current_start->next;
-      current_end = current->prev;
+      g_object_unref(current_timestamp);
     }else{
-      current_start = current_start->next;
-      //NOTE:JK: we want progression
-      //current_end = current_end->prev;
+      g_warning("inconsistent data");
     }
 
-    length = g_list_position(current_start,
-			     current_end) + 1;
-    position = (length - 1) / 2;
+    if(current_audio_channel == audio_channel){
+      if(timestamp == NULL){
+	current_match = bisect_start;
+      }
+    }
+   
+    /* check current - end */
+    bisect_end_audio_channel = ags_notation_get_audio_channel((AgsNotation *) current_end->data);
 
-    current = g_list_nth(current_start,
-			 position);
+    current_timestamp = ags_notation_get_timestamp((AgsNotation *) current_end->data);
+
+    bisect_end_x = 0;
+    
+    if(current_timestamp != NULL){
+      if(use_ags_offset){
+	bisect_end_x = ags_timestamp_get_ags_offset(current_timestamp);
+      }else{
+	bisect_end_x = ags_timestamp_get_unix_time(current_timestamp);
+      }
+
+      g_object_unref(current_timestamp);
+    }else{
+      g_warning("inconsistent data");
+    }
+    
+    /* check current - center */
+    bisect_center_audio_channel = ags_notation_get_audio_channel((AgsNotation *) current_center->data);
+
+    current_timestamp = ags_notation_get_timestamp((AgsNotation *) current_center->data);
+
+    bisect_center_x = 0;
+    
+    if(current_timestamp != NULL){
+      if(use_ags_offset){
+	bisect_center_x = ags_timestamp_get_ags_offset(current_timestamp);
+      }else{
+	bisect_center_x = ags_timestamp_get_unix_time(current_timestamp);
+      }
+
+      g_object_unref(current_timestamp);
+    }else{
+      g_warning("inconsistent data");
+    }
+    
+    /* check x */    	
+    if(use_ags_offset){
+      if(current_x >= x &&
+	 current_x < x + AGS_NOTATION_DEFAULT_OFFSET){
+	current_match = bisect_end;
+
+	bisect_head = FALSE;
+      }
+    }else{
+      if(current_x >= x &&
+	 current_x < x + AGS_NOTATION_DEFAULT_DURATION){
+	current_match = bisect_end;
+
+	bisect_head = FALSE;
+      }
+    }
+	
+    if(use_ags_offset){
+      if(current_x >= x &&
+	 current_x < x + AGS_NOTATION_DEFAULT_OFFSET){
+	current_match = bisect_center;
+
+	bisect_head = TRUE;
+      }
+    }else{
+      if(current_x >= x &&
+	 current_x < x + AGS_NOTATION_DEFAULT_DURATION){
+	current_match = bisect_center;
+
+	bisect_head = TRUE;
+      }
+    }
+    
+    if(use_ags_offset){
+      if(current_x >= x &&
+	 current_x < x + AGS_NOTATION_DEFAULT_OFFSET){
+	current_match = bisect_start;
+
+	bisect_head = TRUE;
+      }
+    }else{
+      if(current_x >= x &&
+	 current_x < x + AGS_NOTATION_DEFAULT_DURATION){
+	current_match = bisect_start;
+	
+	bisect_head = TRUE;
+      }
+    }
+
+    if(current_match != NULL){
+      AgsTimestamp *match_timestamp;
+
+      guint64 match_x, current_x;
+      
+      if(bisect_match != NULL){
+	current_timestamp = ags_notation_get_timestamp(current_match->data);
+	match_timestamp = ags_notation_get_timestamp(bisect_match->data);
+
+	if(use_ags_offset){
+	  match_x = ags_timestamp_get_ags_offset(match_timestamp);
+	}else{
+	  match_x = ags_timestamp_get_unix_time(match_timestamp);
+	}
+
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	}
+	
+	if(current_x < match_x ||
+	   (current_x == match_x &&
+	    ags_notation_get_audio_channel(current_match->data) < ags_notation_get_audio_channel(bisect_match->data))){
+	  bisect_match = current_match;
+	}
+
+	if(current_timestamp != NULL){
+	  g_object_unref(current_timestamp);
+	}
+	
+	if(match_timestamp != NULL){
+	  g_object_unref(match_timestamp);
+	}
+      }else{
+	bisect_match = current_match;
+      }
+    }
+    
+    /* iterate */
+    if(length <= 3){
+      has_more = FALSE;
+    }
+
+    if(has_more){
+      if(bisect_head){
+	bisect_start = bisect_start->next;
+	bisect_end = bisect_center->prev;
+
+	length = 0;
+
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+	
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }else{
+	bisect_start = bisect_center->next;
+	bisect_end = bisect_end->prev;
+
+	length = 0;
+	
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }
+    }
   }
 
-  return(retval);
+  return(bisect_match);
 }
 
 /**
