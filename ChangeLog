@@ -1,3 +1,9 @@
+ags (8.0.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed piano roll draw notation with many timestamp attempts
+	* improved bisect functions of notation, automation, wave and program
+
 ags (8.0.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

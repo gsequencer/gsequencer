@@ -1055,6 +1055,8 @@ ags_buffer_find_range_x(GList *buffer,
 
     gboolean bisect_head;
 
+    current_match = NULL;
+
     bisect_head = TRUE;
 
     bisect_start_x = ags_buffer_get_x(bisect_start->data);

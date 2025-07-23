@@ -823,9 +823,9 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     
     gboolean bisect_head;
 
-    bisect_head = TRUE;
-    
     current_match = NULL;
+    
+    bisect_head = TRUE;
     
     /* check current - start */
     bisect_start_line = ags_wave_get_line((AgsWave *) bisect_start->data);

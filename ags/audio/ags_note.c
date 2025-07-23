@@ -2055,14 +2055,14 @@ ags_note_find_range_x_256th(GList *note,
     
     gboolean bisect_head;
 
+    current_match = NULL;
+    
     bisect_head = TRUE;
 
     bisect_start_x_256th = ags_note_get_x0_256th(bisect_start->data);
     bisect_end_x_256th = ags_note_get_x0_256th(bisect_end->data);    
     bisect_center_x_256th = ags_note_get_x0_256th(bisect_center->data);
 
-    current_match = NULL;
-    
     if(bisect_end_x_256th >= start_x_256th &&
        bisect_end_x_256th <= end_x_256th){
       current_match = bisect_end;

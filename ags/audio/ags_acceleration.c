@@ -618,6 +618,8 @@ ags_acceleration_find_range_x(GList *acceleration,
 
     gboolean bisect_head;
 
+    current_match = NULL;
+    
     bisect_head = TRUE;
 
     bisect_start_x = ags_acceleration_get_x(bisect_start->data);

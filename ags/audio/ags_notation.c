@@ -680,9 +680,9 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     
     gboolean bisect_head;
 
-    bisect_head = TRUE;
-    
     current_match = NULL;
+    
+    bisect_head = TRUE;
     
     /* check current - start */
     bisect_start_audio_channel = ags_notation_get_audio_channel((AgsNotation *) bisect_start->data);

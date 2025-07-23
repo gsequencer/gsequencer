@@ -1153,10 +1153,10 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     
     gboolean bisect_head;
 
-    bisect_head = TRUE;
-    
     current_match = NULL;
 
+    bisect_head = TRUE;
+    
     /* check current - start */
     bisect_start_line = ags_automation_get_line((AgsAutomation *) bisect_start->data);
 
@@ -1448,10 +1448,10 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
     
     gboolean bisect_head;
 
-    bisect_head = TRUE;
-    
     current_match = NULL;
 
+    bisect_head = TRUE;
+    
     /* check current - start */
     bisect_start_line = ags_automation_get_line((AgsAutomation *) bisect_start->data);
 
@@ -1471,7 +1471,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
       g_warning("inconsistent data");
     }
 
-    if(bisect_start_line == line){
+    if(bisect_start_line == line &&
+       !g_strcmp0(control_name, AGS_AUTOMATION(bisect_start->data)->control_name) &&
+       ags_automation_get_channel_type((AgsAutomation *) bisect_start->data) == channel_type){
       if(timestamp == NULL){
 	current_match = bisect_start;
       }
