@@ -696,6 +696,12 @@ ags_audio_loop_run(AgsThread *thread)
 
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
   
+  application_context = ags_application_context_get_instance();
+
+  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
+
   /* real-time setup */
 #ifdef AGS_WITH_RT
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RT_SETUP)){
@@ -744,6 +750,13 @@ ags_audio_loop_run(AgsThread *thread)
   play_channel_ref = audio_loop->play_channel_ref;
   
   g_rec_mutex_unlock(thread_mutex);
+
+  /* audio tree dispatcher */
+  if(soundcard != NULL &&
+     !ags_soundcard_is_starting(AGS_SOUNDCARD(soundcard)) &&
+     ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
+    ags_audio_tree_dispatcher_run(audio_loop->audio_tree_dispatcher);
+  }
   
   /* play channel */
   if(ags_audio_loop_test_flags(audio_loop, AGS_AUDIO_LOOP_PLAY_CHANNEL)){
@@ -765,13 +778,7 @@ ags_audio_loop_run(AgsThread *thread)
     }
   }
 
-  /* check tempo */
-  application_context = ags_application_context_get_instance();
-
-  soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-
-  task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
-  
+  /* check tempo */  
   /* retrieve position */
   note_offset = 0;
 
@@ -967,11 +974,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   ags_audio_loop_unset_flags(audio_loop, AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING);
   ags_audio_loop_set_flags(audio_loop, AGS_AUDIO_LOOP_PLAYING_CHANNEL);
 
-  if(default_soundcard != NULL &&
-     !ags_soundcard_is_starting(AGS_SOUNDCARD(default_soundcard)) &&
-     ags_soundcard_is_playing(AGS_SOUNDCARD(default_soundcard))){
-    ags_audio_tree_dispatcher_run(audio_loop->audio_tree_dispatcher);
-  }
+  //NOTE:JK: empty
   
   /* unref */  
   if(default_soundcard != NULL){

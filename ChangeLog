@@ -1,3 +1,8 @@
+ags (8.1.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsAudioLoop
+
 ags (8.0.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
