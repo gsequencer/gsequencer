@@ -1630,7 +1630,8 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 	       "play", &start_recall,
 	       NULL);
 
-  recall = ags_recall_template_find_type(start_recall, AGS_TYPE_FX_PLAYBACK_AUDIO);
+  recall = ags_recall_template_find_type(start_recall,
+					 AGS_TYPE_FX_PLAYBACK_AUDIO);
 
   if(recall != NULL){
     fx_playback_audio = recall->data;

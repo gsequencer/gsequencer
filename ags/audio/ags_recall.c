@@ -3633,6 +3633,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
   g_rec_mutex_unlock(recall_mutex);
   
   /* invoke appropriate staging */
+  g_object_ref(recall);
+  
   if((AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0 &&
      (AGS_SOUND_STATE_IS_TERMINATING & (recall_state_flags)) == 0){
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
@@ -3800,6 +3802,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, AgsSoundStagingFlags staging_fla
 
     list = next;
   }
+
+  g_object_unref(recall);
 
   if(!children_lock_free){
     g_list_free_full(list_start,
@@ -7532,6 +7536,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    gint channel;
 	    gint index_key;
 	    AgsUmpWord data;
+	    guint data_val;
 
 	    ags_midi_ump_util_get_midi2_control_change(recall->midi_ump_util,
 						       midi_iter,
@@ -7543,19 +7548,21 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 						       NULL,
 						       NULL);
 
+	    data_val = (guint) data;
+	    
 	    if(dump_midi2_cc_message){
-	      g_message("MIDI 2 CC - midi2 control change group=%d channel=%d index_key=%d data=%"PRIu32,
+	      g_message("MIDI 2 CC - midi2 control change group=%d channel=%d index_key=%d data=%u",
 			group,
 			channel,
 			index_key,
-			data);
+			data_val);
 	    }
 	    
 	    /* value */
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)), GUINT_TO_POINTER((guint) data));
+				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)), GUINT_TO_POINTER(data_val));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7597,8 +7604,9 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 
 		g_rec_mutex_unlock(recall_mutex);
 
-		value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(32.0) - 1.0)));
 
+		value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(32.0) - 1.0)));
+		
 		g_value_set_float(&port_value,
 				  value);
 		

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -229,6 +229,8 @@ struct _AgsFxSeqSynthAudioChannelData
   GType pitch_type;
   gpointer pitch_util;
   
+  gpointer pitch_buffer;
+
   AgsChorusUtil *chorus_util;
 
   AgsFxSeqSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];

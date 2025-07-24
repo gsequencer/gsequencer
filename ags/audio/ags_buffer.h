@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,13 +91,16 @@ GRecMutex* ags_buffer_get_obj_mutex(AgsBuffer *buffer);
 void ags_buffer_lock(AgsBuffer *buffer);
 void ags_buffer_unlock(AgsBuffer *buffer);
 
+/* flags */
 gboolean ags_buffer_test_flags(AgsBuffer *buffer, AgsBufferFlags flags);
 void ags_buffer_set_flags(AgsBuffer *buffer, AgsBufferFlags flags);
 void ags_buffer_unset_flags(AgsBuffer *buffer, AgsBufferFlags flags);
 
+/* sort */
 gint ags_buffer_sort_func(gconstpointer a,
 			  gconstpointer b);
 
+/* getter/setter */
 guint64 ags_buffer_get_x(AgsBuffer *buffer);
 void ags_buffer_set_x(AgsBuffer *buffer, guint64 x);
 
@@ -115,8 +118,14 @@ void ags_buffer_set_format(AgsBuffer *buffer,
 
 gpointer ags_buffer_get_data(AgsBuffer *buffer);
 
+/* find */
+GList* ags_buffer_find_range_x(GList *buffer,
+			       guint64 start_x, guint64 end_x);
+
+/* duplicate */
 AgsBuffer* ags_buffer_duplicate(AgsBuffer *buffer);
 
+/* instantiate */
 AgsBuffer* ags_buffer_new();
 
 G_END_DECLS

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -568,6 +568,147 @@ ags_acceleration_set_y(AgsAcceleration *acceleration, gdouble y)
   g_object_set(acceleration,
 	       "y", y,
 	       NULL);
+}
+
+/**
+ * ags_acceleration_find_range_x:
+ * @acceleration: (element-type AgsAudio.Acceleration) (transfer none): the #GList-struct containing #AgsAcceleration
+ * @start_x: start x offset
+ * @end_x: end x offset
+ * 
+ * Find within range of @start_x and @end_x.
+ *
+ * Returns: (element-type AgsAudio.Acceleration) (transfer none): the matching entry as #GList-struct, else %NULL
+ *
+ * Since: 8.0.11
+ */
+GList*
+ags_acceleration_find_range_x(GList *acceleration,
+			      guint start_x, guint end_x)
+{
+  GList *bisect_start, *bisect_end, *bisect_center;
+  GList *bisect_match;
+  
+  gint length;
+  gboolean has_more;
+
+  if(acceleration == NULL){
+    return(NULL);
+  }
+  
+  bisect_start = acceleration;
+  bisect_end = g_list_last(acceleration);
+
+  length = g_list_length(acceleration);
+  
+  bisect_center = g_list_nth(bisect_start,
+			     length / 2);
+
+  bisect_match = NULL;
+  
+  has_more = TRUE;
+  
+  while(has_more &&
+	bisect_start != NULL &&
+	bisect_end != NULL &&
+	bisect_center != NULL){
+    GList *current_match;
+    
+    guint bisect_start_x, bisect_end_x, bisect_center_x;
+
+    gboolean bisect_head;
+
+    current_match = NULL;
+    
+    bisect_head = TRUE;
+
+    bisect_start_x = ags_acceleration_get_x(bisect_start->data);
+    bisect_end_x = ags_acceleration_get_x(bisect_end->data);    
+    bisect_center_x = ags_acceleration_get_x(bisect_center->data);
+
+    if(bisect_end_x >= start_x &&
+       bisect_end_x <= end_x){
+      current_match = bisect_end;
+
+      bisect_head = FALSE;
+    }
+
+    if(bisect_center_x >= start_x &&
+       bisect_center_x <= end_x){
+      current_match = bisect_center;
+
+      bisect_head = TRUE;
+    }
+
+    if(bisect_center_x < start_x){
+      bisect_head = FALSE;
+    }
+    
+    if(bisect_start_x >= start_x &&
+       bisect_start_x <= end_x){
+      current_match = bisect_start;
+
+      bisect_head = TRUE;
+    }
+
+    if(current_match != NULL){
+      if(bisect_match != NULL){
+	if(ags_acceleration_get_x(current_match->data) < ags_acceleration_get_x(bisect_match->data)){
+	  bisect_match = current_match;
+	}
+      }else{
+	bisect_match = current_match;
+      }
+    }
+    
+    /* iterate */
+    //NOTE:JK: bisect all, because multiple occurances of x possible
+    //    if(bisect_end_x < start_x){
+    //      has_more = FALSE;
+    //    }
+    
+    if(length <= 3){
+      has_more = FALSE;
+    }
+
+    if(has_more){
+      if(bisect_head){
+	bisect_start = bisect_start->next;
+	bisect_end = bisect_center->prev;
+
+	length = 0;
+
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+	
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }else{
+	bisect_start = bisect_center->next;
+	bisect_end = bisect_end->prev;
+
+	length = 0;
+	
+	if(bisect_start != NULL &&
+	   bisect_end != NULL){
+	  length = g_list_position(bisect_start,
+				   bisect_end);
+
+	  length++;
+	}
+
+	bisect_center = g_list_nth(bisect_start,
+				   length / 2);
+      }
+    }
+  }
+  
+  return(bisect_match);
 }
 
 /**

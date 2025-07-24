@@ -23,6 +23,8 @@
 
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
 #include <Accelerate/Accelerate.h>
+
+#define AGS_VECTORIZED_BUILTIN_FUNCTIONS 1
 #endif
 
 /**

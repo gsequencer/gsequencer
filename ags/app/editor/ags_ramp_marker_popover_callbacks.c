@@ -78,5 +78,5 @@ ags_ramp_marker_popover_machine_changed_callback(AgsCompositeEditor *composite_e
 						 AgsMachine *machine,
 						 AgsRampMarkerPopover *ramp_marker_popover)
 {
-  ags_applicable_reset(AGS_APPLICABLE(ramp_marker_popover));
+  //  ags_applicable_reset(AGS_APPLICABLE(ramp_marker_popover));
 }

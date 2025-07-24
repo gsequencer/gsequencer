@@ -1879,6 +1879,8 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
   format = amplifier_util->format;
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+
+  t = 0.0;
   
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){
@@ -2098,6 +2100,8 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
   
+  t = 0.0;
+  
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){
     case 0:
@@ -2315,6 +2319,8 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
   format = amplifier_util->format;
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  t = 0.0;
   
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){
@@ -2534,6 +2540,8 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
   
+  t = 0.0;
+  
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){
     case 0:
@@ -2751,6 +2759,8 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
   format = amplifier_util->format;
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  t = 0.0;
   
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){
@@ -2970,6 +2980,8 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
   
+  t = 0.0;
+  
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){
     case 0:
@@ -3188,6 +3200,8 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
   
+  t = 0.0;
+  
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){
     case 0:
@@ -3405,6 +3419,8 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
   format = amplifier_util->format;
   
   fgain = exp2ap(0.1661 * amplifier_util->filter_gain);
+  
+  t = 0.0;
   
   for(j = 0; j < AGS_AMPLIFIER_UTIL_AMP_COUNT; j++){
     switch(j){

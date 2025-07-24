@@ -357,7 +357,7 @@ extern "C" {
   void ags_vst_fuid_print(AgsVstFUID *fuid,
 			  gchar *string, gint32 style)
   {
-    ((Steinberg::FUID *) fuid)->print(string, style);
+    ((Steinberg::FUID *) fuid)->print(style, string);
   }
   
   /**

@@ -2944,15 +2944,31 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-notation-list",
 			   21)){
+	AgsTimestamp *timestamp;
+	
+	GList *start_notation, *notation;
+	GList *start_note, *note;
+	
 	gchar *version;
 
 	guint major, minor;
+	guint audio_channel;
 	
+	timestamp = ags_timestamp_new();
+	ags_timestamp_unset_flags(timestamp,
+				  AGS_TIMESTAMP_UNIX);
+	ags_timestamp_set_flags(timestamp,
+				AGS_TIMESTAMP_OFFSET);
+	
+	start_notation = NULL;
 	version = xmlGetProp(simple_file->root_node,
 			     "version");
+
 	major = 0;
 	minor = 0;
 
+	audio_channel = 0;
+	
 	if(version != NULL){
 	  sscanf(version, "%d.%d",
 		 &major,
@@ -2965,12 +2981,72 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	   (major == 1 && minor < 2)){
 	  ags_simple_file_read_notation_list_fixup_1_0_to_1_2(simple_file,
 							      child,
-							      &(gobject->audio->notation));
+							      &start_notation);
 	}else{
 	  ags_simple_file_read_notation_list(simple_file,
 					     child,
-					     &(gobject->audio->notation));
+					     &start_notation);
 	}
+	
+	notation = start_notation;
+
+	while(notation != NULL){
+	  note = 
+	    start_note = ags_notation_get_note((AgsNotation *) notation->data);
+
+	  audio_channel = ags_notation_get_audio_channel((AgsNotation *) notation->data);
+	  
+	  while(note != NULL){
+	    AgsNotation *matched_notation;
+	    
+	    GList *current_start_notation, *current_notation;
+	    
+	    guint x0;
+
+	    x0 = ags_note_get_x0((AgsNote *) note->data);
+
+	    ags_timestamp_set_ags_offset(timestamp,
+					 (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / AGS_NOTATION_DEFAULT_OFFSET)));
+
+	    current_start_notation = ags_audio_get_notation(gobject->audio);
+
+	    current_notation = ags_notation_find_near_timestamp(current_start_notation, audio_channel,
+								timestamp);
+
+	    matched_notation = NULL;
+	    
+	    if(current_notation != NULL &&
+	       ags_timestamp_get_ags_offset(timestamp) ==  ags_timestamp_get_ags_offset(AGS_NOTATION(current_notation->data)->timestamp) &&
+	       audio_channel == AGS_NOTATION(current_notation->data)->audio_channel){
+	      matched_notation = current_notation->data;
+	    }else{
+	      matched_notation = ags_notation_new((GObject *) gobject->audio,
+						  audio_channel);
+	      
+	      ags_timestamp_set_ags_offset(matched_notation->timestamp,
+					   ags_timestamp_get_ags_offset(timestamp));
+
+	      ags_audio_add_notation(gobject->audio,
+				     (GObject *) matched_notation);
+	    }
+
+	    ags_notation_add_note(matched_notation,
+				  note->data,
+				  FALSE);
+	    
+	    note = note->next;
+	  }
+
+	  g_list_free_full(start_note,
+			   (GDestroyNotify) g_object_unref);
+	  
+	  notation = notation->next;
+	}
+
+	g_object_unref(timestamp);
+	
+	g_list_free_full(start_notation,
+			 (GDestroyNotify) g_object_unref);
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-preset-list",
 			   21)){
@@ -3096,16 +3172,38 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       if(!xmlStrncmp(child->name,
 		     (xmlChar *) "ags-sf-automation-list",
 		     23)){
-	GList *automation;
+	AgsTimestamp *timestamp;
+	
+	GType channel_type;
+	
+	GList *start_automation, *automation;
+	GList *start_acceleration, *acceleration;
 
 	gchar *version;
-
+	gchar *control_name;
+	
 	guint major, minor;
+	guint line;
+	
+	timestamp = ags_timestamp_new();
+	ags_timestamp_unset_flags(timestamp,
+				  AGS_TIMESTAMP_UNIX);
+	ags_timestamp_set_flags(timestamp,
+				AGS_TIMESTAMP_OFFSET);
+
+	channel_type = AGS_TYPE_AUDIO;
+	
+	start_automation = NULL;
 	
 	version = xmlGetProp(simple_file->root_node,
 			     "version");
+
+	control_name = NULL;
+	
 	major = 0;
 	minor = 0;
+
+	line = 0;
 
 	if(version != NULL){
 	  sscanf(version, "%d.%d",
@@ -3119,12 +3217,81 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	   (major == 1 && minor < 3)){
 	  ags_simple_file_read_automation_list_fixup_1_0_to_1_3(simple_file,
 								child,
-								&(gobject->audio->automation));
+							        &start_automation);
 	}else{
 	  ags_simple_file_read_automation_list(simple_file,
 					       child,
-					       &(gobject->audio->automation));
+					       &start_automation);
 	}
+
+	automation = start_automation;
+
+	while(automation != NULL){
+	  acceleration = 
+	    start_acceleration = ags_automation_get_acceleration((AgsAutomation *) automation->data);
+	  
+	  channel_type = ags_automation_get_channel_type((AgsAutomation *) automation->data);
+
+	  line = ags_automation_get_line((AgsAutomation *) automation->data);
+
+	  control_name = ags_automation_get_control_name((AgsAutomation *) automation->data);
+	  
+	  while(acceleration != NULL){
+	    AgsAutomation *matched_automation;
+	  
+	    GList *current_start_automation, *current_automation;
+	  
+	    guint x;
+	    
+	    x = ags_acceleration_get_x((AgsAcceleration *) acceleration->data);
+
+	    ags_timestamp_set_ags_offset(timestamp,
+					 (guint64) (AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) x / AGS_AUTOMATION_DEFAULT_OFFSET)));
+
+	    current_start_automation = ags_audio_get_automation(gobject->audio);
+
+	    current_automation = ags_automation_find_near_timestamp_extended(current_start_automation, line,
+									     channel_type, control_name,
+									     timestamp);
+
+	    matched_automation = NULL;
+	    
+	    if(current_automation != NULL &&
+	       ags_timestamp_get_ags_offset(timestamp) ==  ags_timestamp_get_ags_offset(AGS_AUTOMATION(current_automation->data)->timestamp) &&
+	       line == AGS_AUTOMATION(current_automation->data)->line &&
+	       channel_type == AGS_AUTOMATION(current_automation->data)->channel_type &&
+	       !g_strcmp0(AGS_AUTOMATION(current_automation->data)->control_name, control_name)){
+	      matched_automation = current_automation->data;
+	    }else{
+	      matched_automation = ags_automation_new((GObject *) gobject->audio,
+						      line,
+						      channel_type,
+						      control_name);
+	      
+	      ags_timestamp_set_ags_offset(matched_automation->timestamp,
+					   ags_timestamp_get_ags_offset(timestamp));
+
+	      ags_audio_add_automation(gobject->audio,
+				       (GObject *) matched_automation);
+	    }
+	      
+	    ags_automation_add_acceleration(matched_automation,
+					    acceleration->data,
+					    FALSE);
+	    
+	    acceleration = acceleration->next;
+	  }
+	  
+	  g_list_free_full(start_acceleration,
+			   (GDestroyNotify) g_object_unref);
+	  
+	  automation = automation->next;
+	}
+
+	g_object_unref(timestamp);
+	
+	g_list_free_full(start_automation,
+			 (GDestroyNotify) g_object_unref);
       }
     }
 
@@ -15933,6 +16100,7 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
     }
     
     audio_channel = 0;
+    
     str = xmlGetProp(node,
 		     "channel");
 
@@ -15974,6 +16142,8 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 									 10);
 
 	  xmlFree(str);
+
+	  break;
 	}	
       }
     }

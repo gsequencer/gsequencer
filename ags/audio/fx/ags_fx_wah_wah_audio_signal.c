@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -873,10 +873,10 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
       
 	if(envelope_start_frame <= current_frame &&
 	   envelope_end_frame > current_frame){
-	  if(envelope_end_frame - current_frame < buffer_size){
+	  if(offset + (envelope_end_frame - current_frame) < buffer_size){
 	    current_frame_count = envelope_end_frame - current_frame;
 	  }else{
-	    current_frame_count = buffer_size;
+	    current_frame_count = buffer_size - offset;
 	  }
       
 	  current_ratio = ags_fx_wah_wah_audio_signal_get_ratio(0, envelope_y0,
@@ -886,11 +886,70 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 								  envelope_end_frame - envelope_start_frame);
 
 	  g_rec_mutex_lock(stream_mutex);
+
+	  switch(format){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint8 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint8 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint16 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint16 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint64 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint64 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_FLOAT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gfloat *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gfloat *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_DOUBLE:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gdouble *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gdouble *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_COMPLEX:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((AgsComplex *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((AgsComplex *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  default:
+	    {
+	      g_warning("unsupported format");
+	    }
+	  }
 	  
-	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
-	    
-	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
-	    
 	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
 	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;
@@ -932,7 +991,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
       
 	if(envelope_start_frame <= current_frame &&
 	   envelope_end_frame > current_frame){
-	  if(envelope_end_frame - current_frame < buffer_size){
+	  if(offset + (envelope_end_frame - current_frame) < buffer_size){
 	    current_frame_count = envelope_end_frame - current_frame;
 	  }else{
 	    current_frame_count = buffer_size - offset;
@@ -946,10 +1005,69 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	  
 	  g_rec_mutex_lock(stream_mutex);
 	    
-	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
+	  switch(format){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint8 *) source->stream_current->data) + offset;
 	    
-	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint8 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint16 *) source->stream_current->data) + offset;
 	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint16 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint64 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint64 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_FLOAT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gfloat *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gfloat *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_DOUBLE:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gdouble *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gdouble *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_COMPLEX:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((AgsComplex *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((AgsComplex *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  default:
+	    {
+	      g_warning("unsupported format");
+	    }
+	  }
+	  
 	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
 	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;
@@ -991,7 +1109,7 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
       
 	if(envelope_start_frame <= current_frame &&
 	   envelope_end_frame > current_frame){
-	  if(envelope_end_frame - current_frame < buffer_size){
+	  if(offset + (envelope_end_frame - current_frame) < buffer_size){
 	    current_frame_count = envelope_end_frame - current_frame;
 	  }else{
 	    current_frame_count = buffer_size - offset;
@@ -1004,11 +1122,70 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 								  envelope_end_frame - envelope_start_frame);
 
 	  g_rec_mutex_lock(stream_mutex);
+
+	  switch(format){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint8 *) source->stream_current->data) + offset;
 	    
-	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint8 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint16 *) source->stream_current->data) + offset;
 	    
-	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint16 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
 	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint64 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint64 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_FLOAT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gfloat *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gfloat *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_DOUBLE:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gdouble *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gdouble *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_COMPLEX:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((AgsComplex *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((AgsComplex *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  default:
+	    {
+	      g_warning("unsupported format");
+	    }
+	  }
+	  
 	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
 	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;
@@ -1051,8 +1228,8 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 	if(envelope_start_frame <= current_frame &&
 	   envelope_end_frame > current_frame){
 	  trailing_frame_count = 0;
-
-	  if(envelope_end_frame - current_frame < buffer_size){
+	  
+	  if(offset + (envelope_end_frame - current_frame) < buffer_size){
 	    current_frame_count = envelope_end_frame - current_frame;
 
 	    trailing_frame_count = buffer_size - current_frame_count;
@@ -1068,10 +1245,69 @@ ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall)
 
 	  g_rec_mutex_lock(stream_mutex);
 	    
-	  fx_wah_wah_audio_signal->wah_wah_util.destination = source->stream_current->data + offset;
+	  switch(format){
+	  case AGS_SOUNDCARD_SIGNED_8_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint8 *) source->stream_current->data) + offset;
 	    
-	  fx_wah_wah_audio_signal->wah_wah_util.source = source->stream_current->data + offset;
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint8 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_16_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint16 *) source->stream_current->data) + offset;
 	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint16 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_24_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_32_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint32 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint32 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_SIGNED_64_BIT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gint64 *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gint64 *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_FLOAT:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gfloat *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gfloat *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_DOUBLE:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((gdouble *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((gdouble *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  case AGS_SOUNDCARD_COMPLEX:
+	    {
+	      fx_wah_wah_audio_signal->wah_wah_util.destination = ((AgsComplex *) source->stream_current->data) + offset;
+	    
+	      fx_wah_wah_audio_signal->wah_wah_util.source = ((AgsComplex *) source->stream_current->data) + offset;
+	    }
+	    break;
+	  default:
+	    {
+	      g_warning("unsupported format");
+	    }
+	  }
+	  
 	  fx_wah_wah_audio_signal->wah_wah_util.volume = current_volume;
 
 	  fx_wah_wah_audio_signal->wah_wah_util.amount = current_ratio;

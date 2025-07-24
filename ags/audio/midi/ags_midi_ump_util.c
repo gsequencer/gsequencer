@@ -5370,6 +5370,8 @@ ags_midi_ump_util_get_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
   nth--;
 
   /* reserved */
+  offset += 4;
+
   nth = 3;
   
   /* data */

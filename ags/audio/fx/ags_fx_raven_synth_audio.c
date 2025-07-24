@@ -11694,7 +11694,7 @@ ags_fx_raven_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	gpointer destination;
 
 	channel_data = scope_data->channel_data[j];
- 
+
 	/* free chorus destination */
 	destination = ags_chorus_util_get_destination(channel_data->chorus_util);
 	
@@ -11752,6 +11752,12 @@ ags_fx_raven_synth_audio_notify_buffer_size_callback(GObject *gobject,
 						channel_data->pitch_type,
 						buffer_size);
 
+	/* pitch buffer */
+	ags_stream_free(channel_data->pitch_buffer);
+  
+	channel_data->pitch_buffer = ags_stream_alloc(buffer_size,
+						      format);
+	
 	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					  buffer_size);
       }
@@ -11862,6 +11868,12 @@ ags_fx_raven_synth_audio_notify_format_callback(GObject *gobject,
 	ags_common_pitch_util_set_format(channel_data->pitch_util,
 					 channel_data->pitch_type,
 					 format);
+
+	/* pitch buffer */
+	ags_stream_free(channel_data->pitch_buffer);
+  
+	channel_data->pitch_buffer = ags_stream_alloc(buffer_size,
+						      format);
 
 	ags_chorus_util_set_format(channel_data->chorus_util,
 				   format);
@@ -12051,6 +12063,9 @@ ags_fx_raven_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  ags_common_pitch_util_set_samplerate(channel_data->pitch_util,
 					       channel_data->pitch_type,
 					       samplerate);
+
+	  channel_data->pitch_buffer = ags_stream_alloc(buffer_size,
+							format);
 
 	  ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					    buffer_size);
@@ -12721,6 +12736,8 @@ ags_fx_raven_synth_audio_channel_data_alloc()
   channel_data->pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL;
   channel_data->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
 
+  channel_data->pitch_buffer = NULL;
+
   /* chorus util */
   channel_data->chorus_util = ags_chorus_util_alloc();
   
@@ -12756,6 +12773,9 @@ ags_fx_raven_synth_audio_channel_data_free(AgsFxRavenSynthAudioChannelData *chan
   /* seq synth util */
   ags_raven_synth_util_free(channel_data->raven_synth_0);
   ags_raven_synth_util_free(channel_data->raven_synth_1);
+
+  /* pitch buffer */
+  ags_stream_free(channel_data->pitch_buffer);
   
   /* chorus util */
   ags_chorus_util_free(channel_data->chorus_util);

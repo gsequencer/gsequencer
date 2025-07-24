@@ -5898,7 +5898,7 @@ ags_gsequencer_application_context_update_ui_timeout(AgsGSequencerApplicationCon
   static gint tic = 0;
   
   if(ags_gsequencer_application_context_update_ui){
-    ags_ui_provider_update_ui(AGS_UI_PROVIDER(gsequencer_application_context));
+    //    ags_ui_provider_update_ui(AGS_UI_PROVIDER(gsequencer_application_context));
 
 #if defined(AGS_OSX_DMG_ENV)    
     if(tic == 0 &&

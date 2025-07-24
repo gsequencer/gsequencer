@@ -276,5 +276,5 @@ ags_ramp_acceleration_popover_machine_changed_callback(AgsCompositeEditor *compo
 						       AgsMachine *machine,
 						       AgsRampAccelerationPopover *ramp_acceleration_popover)
 {
-  ags_applicable_reset(AGS_APPLICABLE(ramp_acceleration_popover));
+  //  ags_applicable_reset(AGS_APPLICABLE(ramp_acceleration_popover));
 }

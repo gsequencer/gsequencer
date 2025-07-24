@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -492,12 +492,14 @@ ags_ruler_realize(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_ruler_parent_class)->realize(widget);
 
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_signal_connect(frame_clock, "update", 
 		   G_CALLBACK(ags_ruler_frame_clock_update_callback), widget);
 
   gdk_frame_clock_begin_updating(frame_clock);
+#endif
 }
 
 void
@@ -505,6 +507,7 @@ ags_ruler_unrealize(GtkWidget *widget)
 {
   GdkFrameClock *frame_clock;
 
+#if 0
   frame_clock = gtk_widget_get_frame_clock(widget);
   
   g_object_disconnect(frame_clock,
@@ -514,6 +517,7 @@ ags_ruler_unrealize(GtkWidget *widget)
 		      NULL);
 
   gdk_frame_clock_end_updating(frame_clock);
+#endif
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_ruler_parent_class)->unrealize(widget);
@@ -533,33 +537,43 @@ ags_ruler_snapshot(GtkWidget *widget,
   GtkStyleContext *style_context;
 
   cairo_t *cr;
-
-  graphene_rect_t rect;
   
   int width, height;
   
-  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
-
   width = gtk_widget_get_width(widget);
   height = gtk_widget_get_height(widget);
   
-  graphene_rect_init(&rect,
-		     0.0, 0.0,
-		     (float) width, (float) height);
-  
   cr = gtk_snapshot_append_cairo(snapshot,
-				 &rect);
+				 &GRAPHENE_RECT_INIT (0.0f, 0.0f, (float) width, (float) height));
+  //  cairo_reference(cr);
+  
+  style_context = gtk_widget_get_style_context((GtkWidget *) widget);  
+
+  gtk_style_context_save(style_context);
   
   /* clear bg */
+#if 0
+  cairo_save(cr);
+  cairo_clip(cr);
+  
   gtk_render_background(style_context,
-			cr,
-			0.0, 0.0,
-			(gdouble) width, (gdouble) height);
+  			cr,
+  			0.0, 0.0,
+  			(gdouble) width, (gdouble) height);
 
+  cairo_restore(cr);
+#endif
+  
+  /* draw */
+  cairo_save(cr);
+  
   ags_ruler_draw((AgsRuler *) widget,
 		 cr,
 		 TRUE);
   
+  cairo_restore(cr);
+  
+  gtk_style_context_restore(style_context);
   cairo_destroy(cr);
 }
 
@@ -913,8 +927,6 @@ ags_ruler_draw(AgsRuler *ruler,
       cairo_stroke(cr);
     }
   }
-
-  g_free(font_name);
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);

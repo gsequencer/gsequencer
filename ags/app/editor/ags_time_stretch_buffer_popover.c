@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -338,6 +338,8 @@ ags_time_stretch_buffer_popover_finalize(GObject *gobject)
   AgsTimeStretchBufferPopover *time_stretch_buffer_popover;
 
   time_stretch_buffer_popover = (AgsTimeStretchBufferPopover *) gobject;
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(time_stretch_buffer_popover));
   
   G_OBJECT_CLASS(ags_time_stretch_buffer_popover_parent_class)->finalize(gobject);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,13 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/app/editor/ags_select_acceleration_popover_callbacks.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h>
 
-void
-ags_select_acceleration_popover_machine_changed_callback(AgsCompositeEditor *composite_editor,
-							 AgsMachine *machine,
-							 AgsSelectAccelerationPopover *select_acceleration_popover)
-{
-  //FIXME:JK: causes crash
-  //  ags_applicable_reset(AGS_APPLICABLE(select_acceleration_popover));
-}
+#include <pluginterfaces/vst/vsttypes.h>
+#include <public.sdk/source/vst/utility/stringconvert.h>

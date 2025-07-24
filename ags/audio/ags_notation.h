@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,10 +46,10 @@ G_BEGIN_DECLS
 #define AGS_NOTATION_MINIMUM_NOTE_LENGTH (1.0 / 16.0)
 #define AGS_NOTATION_MAXIMUM_NOTE_LENGTH (16.0)
 
-#define AGS_NOTATION_DEFAULT_LENGTH (16 * 16 * 1200 / AGS_NOTATION_TICS_PER_BEAT)
+#define AGS_NOTATION_DEFAULT_LENGTH (16.0 * 16.0 * 1200.0 / AGS_NOTATION_TICS_PER_BEAT)
 #define AGS_NOTATION_DEFAULT_JIFFIE (60.0 / AGS_NOTATION_DEFAULT_BPM / AGS_NOTATION_TICS_PER_BEAT)
 #define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_USEC_PER_SEC)
-#define AGS_NOTATION_DEFAULT_OFFSET (64 * (1 / AGS_NOTATION_MINIMUM_NOTE_LENGTH))
+#define AGS_NOTATION_DEFAULT_OFFSET (64.0 * (1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH))
 
 #define AGS_NOTATION_DEFAULT_END (64 * 64 * 1200)
 
@@ -160,6 +160,9 @@ gboolean ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note);
 AgsNote* ags_notation_find_point(AgsNotation *notation,
 				 guint x, guint y,
 				 gboolean use_selection_list);
+AgsNote* ags_notation_find_exact_256th_point(AgsNotation *notation,
+					     guint x_256th, guint y,
+					     gboolean use_selection_list);
 GList* ags_notation_find_region(AgsNotation *notation,
 				guint x0, guint y0,
 				guint x1, guint y1,

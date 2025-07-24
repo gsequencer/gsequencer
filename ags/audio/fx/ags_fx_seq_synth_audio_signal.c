@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3035,7 +3035,7 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 					channel_data->pitch_type) != 0.0){
       ags_common_pitch_util_set_destination(channel_data->pitch_util,
 					    channel_data->pitch_type,
-					    source->stream_current->data);
+					    channel_data->pitch_buffer);
 
       ags_common_pitch_util_set_source(channel_data->pitch_util,
 				       channel_data->pitch_type,
@@ -3056,6 +3056,15 @@ ags_fx_seq_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       ags_common_pitch_util_pitch(channel_data->pitch_util,
 				  channel_data->pitch_type);
 
+      ags_audio_buffer_util_clear_buffer(&(fx_seq_synth_audio_signal->audio_buffer_util),
+					 source->stream_current->data, 1,
+					 buffer_size,  audio_buffer_util_format);
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_seq_synth_audio_signal->audio_buffer_util),
+						  source->stream_current->data, 1, 0,
+						  channel_data->pitch_buffer, 1, 0,
+						  buffer_size, copy_mode);
+      
       g_rec_mutex_unlock(source_stream_mutex);
 
       /* reset */

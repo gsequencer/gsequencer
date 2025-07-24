@@ -118,6 +118,7 @@ GType ags_note_flags_get_type();
 
 GRecMutex* ags_note_get_obj_mutex(AgsNote *note);
 
+/* flags */
 gboolean ags_note_test_flags(AgsNote *note, AgsNoteFlags flags);
 void ags_note_set_flags(AgsNote *note, AgsNoteFlags flags);
 void ags_note_unset_flags(AgsNote *note, AgsNoteFlags flags);
@@ -125,9 +126,11 @@ void ags_note_unset_flags(AgsNote *note, AgsNoteFlags flags);
 gboolean ags_note_test_key_format(AgsNote *note, AgsSoundKeyFormat key_format);
 void ags_note_set_key_format(AgsNote *note, AgsSoundKeyFormat key_format);
 
+/* sort */
 gint ags_note_sort_func(gconstpointer a,
 			gconstpointer b);
 
+/* getter/setter */
 gboolean ags_note_get_is_minor(AgsNote *note);
 void ags_note_set_is_minor(AgsNote *note, gboolean is_minor);
 
@@ -173,12 +176,16 @@ void ags_note_set_x0_256th(AgsNote *note, guint x0_256th);
 guint ags_note_get_x1_256th(AgsNote *note);
 void ags_note_set_x1_256th(AgsNote *note, guint x1_256th);
 
-/* */
+/* find */
 GList* ags_note_find_prev(GList *note,
 			  guint x0, guint y);
 GList* ags_note_find_next(GList *note,
 			  guint x0, guint y);
 
+GList* ags_note_find_range_x_256th(GList *note,
+				   guint start_x_256th, guint end_x_256th);
+
+/* SMF */
 glong ags_note_length_to_smf_delta_time(guint note_length,
 					gdouble bpm, gdouble delay_factor,
 					glong nn, glong dd, glong cc, glong bb,
@@ -222,11 +229,14 @@ GList* ags_note_from_seq_event_extended(snd_seq_event_t *event,
 					gdouble bpm, gdouble delay_factor,
 					guint n_events);
 
+/* duplicate */
 AgsNote* ags_note_duplicate(AgsNote *note);
 
+/* from/to string */
 AgsNote* ags_note_from_string(gchar *str);
 gchar* ags_note_to_string(AgsNote *note);
 
+/* instantiate */
 AgsNote* ags_note_new();
 AgsNote* ags_note_new_with_offset(guint x0, guint x1,
 				  guint y,

@@ -1,3 +1,78 @@
+ags (8.0.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed piano roll draw notation with many timestamp attempts
+	* improved bisect functions of notation, automation, wave and program
+
+ags (8.0.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed frame clock of animation window
+
+ags (8.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed uninitialized in ags_lfo_synth_util.c
+	* fixed uninitialized in ags_core_audio_port.c
+	* fixed uninitialized in ags_amplifier_util.c
+
+ags (8.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed popovers to ::disconnect() while ::finalize()
+
+ags (8.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed multi-channel notation restore from XML
+
+ags (8.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed buffer-overflow ags-fx-lv2
+	* fixed buffer-overflow ags-fx-wah-wah
+	* fixed buffer-overflow in ags_sf2_synth_util.c
+	* improved notation restore from AgsSimpleFile
+	* improved AgsLed and AgsIndicator frame clock
+	* improved disabled frame clock of AgsDial and others
+	* improved run AgsUiProvider::update-ui() from window frame clock callback
+
+ags (8.0.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsAudioTreeDispatcher wrong ref-count
+
+ags (8.0.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 for vst3sdk v3.7.7_build_19
+
+ags (8.0.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed VST3 support added missing commonstringconvert.h and commonstringconvert.cpp
+
+ags (8.0.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed pad playback with new dispatcher
+	* fixed notation clipboard
+	* fixed raven synth seq LFO refresh port
+	* fixed raven synth seq LFO callback
+	* fixed VST3 support added missing stringconvert.h and stringconvert.cpp
+
+ags (8.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-star-synth dedicated pitch buffer
+	* fixed ags-fx-seq-synth dedicated pitch buffer
+	* fixed ags-fx-raven-synth dedicated pitch buffer
+
+ags (8.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_midi_ump_util_get_midi2_control_change()
+
 ags (8.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

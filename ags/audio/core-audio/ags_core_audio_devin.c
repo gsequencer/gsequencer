@@ -713,8 +713,8 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
   for(i = 0; i < 32; i++){
     guint *note_256th_attack;
     
-    note_256th_attack = (guint *) malloc((int) AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(guint));
+    note_256th_attack = (guint *) g_malloc((int) AGS_SOUNDCARD_DEFAULT_PERIOD *
+					   sizeof(guint));
     
     start_note_256th_attack = g_list_prepend(start_note_256th_attack,
 					     note_256th_attack);

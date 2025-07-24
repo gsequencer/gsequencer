@@ -292,6 +292,8 @@ struct _AgsFxRavenSynthAudioChannelData
   GType pitch_type;
   gpointer pitch_util;
   
+  gpointer pitch_buffer;
+
   AgsChorusUtil *chorus_util;
 
   AgsFxRavenSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
