@@ -3,6 +3,8 @@ ags (8.1.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented automation port restore from XML
 	* improved AgsAudioLoop
+	* improved AgsDial accessibility
+	* improved AgsIndicator accessibility
 
 ags (8.0.14)
 
