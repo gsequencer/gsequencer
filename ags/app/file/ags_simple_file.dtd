@@ -59,7 +59,7 @@
 <!-- machine -->
 <!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
 
-<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-oscillator-list?, ags-sf-fm-oscillator-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?, ags-sf-dialog-model-list?, ags-sf-equalizer10?)>
+<!ELEMENT ags-sf-machine (ags-sf-automation-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-oscillator-list?, ags-sf-fm-oscillator-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?, ags-sf-dialog-model-list?, ags-sf-equalizer10?)>
 <!ATTLIST ags-sf-machine
 	  id                      CDATA     #REQUIRED
 	  type                    CDATA     #REQUIRED
@@ -110,7 +110,8 @@
 
 <!ELEMENT ags-sf-automation-port EMPTY>
 <!ATTLIST ags-sf-automation-port
-	  specifier       CDATA     #REQUIRED
+	  scope       CDATA     #REQUIRED
+	  specifier   CDATA     #REQUIRED
 	  >
 
 <!-- pad -->
