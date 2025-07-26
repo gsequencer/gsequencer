@@ -2177,7 +2177,7 @@ ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, 
 
   GType channel_type;
   
-  gchar *control_name;
+  xmlChar *control_name;
   xmlChar *str;
   
   channel_type = G_TYPE_NONE;
@@ -2199,6 +2199,8 @@ ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, 
   
   current = ags_machine_automation_port_alloc(channel_type, control_name);
   automation_port[0] = current;
+
+  xmlFree(control_name);
 }
 
 void
