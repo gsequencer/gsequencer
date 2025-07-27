@@ -3252,10 +3252,13 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   /* clip */
   if(x < 0.0){
     if(x + width < 0.0){
+      return;
     }else{
       width += x;
       x = 0.0;
     }
+  }else if(x > allocation.width){
+    return;
   }
   
   if(x + width > allocation.width){
@@ -3264,10 +3267,13 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
   
   if(y < 0.0){
     if(y + height < 0.0){
+      return;
     }else{
       height += y;
       y = 0.0;
     }
+  }else if(y > allocation.height){
+    return;
   }
 
   if(y + height > allocation.height){

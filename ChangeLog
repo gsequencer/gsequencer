@@ -5,6 +5,7 @@ ags (8.1.0)
 	* improved AgsAudioLoop
 	* improved AgsDial accessibility
 	* improved AgsIndicator accessibility
+	* reverted some changes related to clipping in ags_notation_edit_draw_note()
 
 ags (8.0.14)
 
