@@ -143,6 +143,10 @@ void ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValu
 void ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window);
 void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 					AgsWindow *window);
+
+void ags_simple_file_read_automation_port_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation_port);
+void ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, AgsMachineAutomationPort **automation_port);
+
 void ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine);
 void ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine);
 void ags_simple_file_read_machine_resize_audio_channels(AgsMachine *machine,
@@ -2127,6 +2131,79 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 }
 
 void
+ags_simple_file_read_automation_port_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation_port)
+{
+  AgsMachineAutomationPort *current;
+  
+  xmlNode *child;
+
+  GList *list;
+
+  guint i;
+  
+  child = node->children;
+  list = NULL;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-automation-port",
+		     23)){
+	current = NULL;
+	
+	ags_simple_file_read_automation_port(simple_file, child, &current);
+
+	if(current != NULL){
+	  list = g_list_prepend(list, current);
+	}
+	
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *automation_port = list;
+}
+
+void
+ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, AgsMachineAutomationPort **automation_port)
+{
+  AgsMachineAutomationPort *current;
+
+  GType channel_type;
+  
+  xmlChar *control_name;
+  xmlChar *str;
+  
+  channel_type = G_TYPE_NONE;
+  control_name = NULL;
+
+  str = xmlGetProp(node,
+		   BAD_CAST "scope");
+
+  if(!strncmp(str, "output", 7)){
+    channel_type = AGS_TYPE_OUTPUT;
+  }else if(!strncmp(str, "input", 6)){
+    channel_type = AGS_TYPE_INPUT;
+  }
+  
+  xmlFree(str);
+
+  control_name = xmlGetProp(node,
+			    BAD_CAST "specifier");
+  
+  current = ags_machine_automation_port_alloc(channel_type, control_name);
+  automation_port[0] = current;
+
+  xmlFree(control_name);
+}
+
+void
 ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine)
 {
   AgsMachine *current;
@@ -3170,8 +3247,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     (xmlChar *) "ags-sf-automation-list",
+		     (xmlChar *) "ags-sf-automation-port",
 		     23)){
+	ags_simple_file_read_automation_port_list(simple_file, child, &(gobject->enabled_automation_port));
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-automation-list",
+			   23)){
 	AgsTimestamp *timestamp;
 	
 	GType channel_type;
@@ -15567,7 +15648,7 @@ ags_simple_file_read_composite_editor(AgsSimpleFile *simple_file, xmlNode *node,
   }else{
     return;
   }
-
+  
   /* launch AgsLine */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "file", simple_file,
@@ -17931,7 +18012,8 @@ ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *paren
 
       scope = NULL;
 
-      if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
+      if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE ||
+	 AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_AUDIO){
 	scope = "audio";
       }else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
 	scope = "output";

@@ -31,6 +31,7 @@
 #include <math.h>
 
 void ags_dial_class_init(AgsDialClass *dial);
+void ags_dial_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
 void ags_dial_init(AgsDial *dial);
 void ags_dial_set_property(GObject *gobject,
 			   guint prop_id,
@@ -56,6 +57,9 @@ void ags_dial_size_allocate(GtkWidget *widget,
 			    int width,
 			    int height,
 			    int baseline);
+
+gboolean ags_dial_set_current_value(GtkAccessibleRange *accessible_range,
+				    gdouble current_value);
 
 void ags_dial_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					  AgsDial *dial);
@@ -172,14 +176,30 @@ ags_dial_get_type(void)
       (GInstanceInitFunc) ags_dial_init,
     };
 
+    static const GInterfaceInfo ags_accessible_range_interface_info = {
+      (GInterfaceInitFunc) ags_dial_accessible_range_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_dial = g_type_register_static(GTK_TYPE_WIDGET,
 					   "AgsDial", &ags_dial_info,
 					   0);
+
+    g_type_add_interface_static(ags_type_dial,
+				GTK_TYPE_ACCESSIBLE_RANGE,
+				&ags_accessible_range_interface_info);
 
     g_once_init_leave(&g_define_type_id__static, ags_type_dial);
   }
 
   return(g_define_type_id__static);
+}
+
+void
+ags_dial_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range)
+{
+  accessible_range->set_current_value = ags_dial_set_current_value;
 }
 
 GType
@@ -789,6 +809,16 @@ ags_dial_size_allocate(GtkWidget *widget,
 							 width,
 							 height,
 							 baseline);
+}
+
+gboolean
+ags_dial_set_current_value(GtkAccessibleRange *accessible_range,
+			   gdouble current_value)
+{
+  ags_dial_set_value(AGS_DIAL(accessible_range),
+		     current_value);
+
+  return(TRUE);
 }
 
 void
@@ -2505,6 +2535,10 @@ void
 ags_dial_adjustment_value_changed_callback(GtkAdjustment *adjustment,
 					   AgsDial *dial)
 {
+  gtk_accessible_update_property(GTK_ACCESSIBLE(dial),
+				 GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, gtk_adjustment_get_value(adjustment),
+				 -1);
+  
   ags_dial_value_changed(dial);
 }
 

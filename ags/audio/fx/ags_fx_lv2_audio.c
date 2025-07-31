@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -461,20 +461,40 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
 	     buffer_size > 0){
 	    if(channel_data->output == NULL){
 	      channel_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+
+	      channel_data->output_size = buffer_size;
 	    }else{
 	      channel_data->output = (float *) g_realloc(channel_data->output,
-							 output_port_count * buffer_size * sizeof(float));	    
+							 output_port_count * buffer_size * sizeof(float));
+
+	      channel_data->output_size = buffer_size;
 	    }
+	  }else{
+	    g_free(channel_data->output);
+	    
+	    channel_data->output = NULL;
+	    
+	    channel_data->output_size = 0;
 	  }
 
 	  if(input_port_count > 0 &&
 	     buffer_size > 0){
 	    if(channel_data->input == NULL){
 	      channel_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+	      
+	      channel_data->input_size = buffer_size;
 	    }else{
 	      channel_data->input = (float *) g_realloc(channel_data->input,
 							input_port_count * buffer_size * sizeof(float));	    
+
+	      channel_data->input_size = buffer_size;
 	    }
+	  }else{
+	    g_free(channel_data->input);
+	    
+	    channel_data->input = NULL;
+	    
+	    channel_data->input_size = 0;
 	  }
 	}
 	
@@ -488,20 +508,40 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
 	       buffer_size > 0){
 	      if(input_data->output == NULL){
 		input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+
+		channel_data->output_size = buffer_size;
 	      }else{
 		input_data->output = (float *) g_realloc(input_data->output,
 							 output_port_count * buffer_size * sizeof(float));	    
+
+		channel_data->output_size = buffer_size;
 	      }
+	    }else{
+	      g_free(channel_data->output);
+	      
+	      channel_data->output = NULL;
+
+	      channel_data->output_size = 0;
 	    }
 	    
 	    if(input_port_count > 0 &&
 	       buffer_size > 0){
 	      if(input_data->input == NULL){
 		input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+
+		channel_data->input_size = buffer_size;
 	      }else{
 		input_data->input = (float *) g_realloc(input_data->input,
 							input_port_count * buffer_size * sizeof(float));	    
+
+		channel_data->input_size = buffer_size;
 	      }
+	    }else{
+	      g_free(channel_data->input);
+	      
+	      channel_data->input = NULL;
+
+	      channel_data->input_size = 0;
 	    }
 	  }
 	}
@@ -787,21 +827,41 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 	       buffer_size > 0){
 	      if(channel_data->output == NULL){
 		channel_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+
+		channel_data->output_size = buffer_size;
 	      }else{
 		channel_data->output = (float *) g_realloc(channel_data->output,
 							   output_port_count * buffer_size * sizeof(float));	    
+
+		channel_data->output_size = buffer_size;
 	      }
+	    }else{
+	      g_free(channel_data->output);
+	      
+	      channel_data->output = NULL;
+
+	      channel_data->output_size = 0;
 	    }
 
 	    if(input_port_count > 0 &&
 	       buffer_size > 0){
 	      if(channel_data->input == NULL){
 		channel_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+
+		channel_data->input_size = buffer_size;
 	      }else{
 		channel_data->input = (float *) g_realloc(channel_data->input,
 							  input_port_count * buffer_size * sizeof(float));	    
+
+		channel_data->input_size = buffer_size;
 	      }
-	    }	  
+	    }else{
+	      g_free(channel_data->input);
+	      
+	      channel_data->input = NULL;
+
+	      channel_data->input_size = 0;
+	    }
 
 	    if(ags_recall_test_state_flags(AGS_RECALL(fx_lv2_audio),
 					   AGS_SOUND_STATE_PORT_LOADED)){
@@ -826,20 +886,40 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 		 buffer_size > 0){
 		if(input_data->output == NULL){
 		  input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+		
+		  input_data->output_size = buffer_size;
 		}else{
 		  input_data->output = (float *) g_realloc(input_data->output,
 							   output_port_count * buffer_size * sizeof(float));	    
+		
+		  input_data->output_size = buffer_size;
 		}
+	      }else{
+		g_free(input_data->output);
+		
+		input_data->output = NULL;
+		
+		input_data->output_size = 0;
 	      }
 	    
 	      if(input_port_count > 0 &&
 		 buffer_size > 0){
 		if(input_data->input == NULL){
 		  input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+		
+		  input_data->input_size = buffer_size;
 		}else{
 		  input_data->input = (float *) g_realloc(input_data->input,
 							  input_port_count * buffer_size * sizeof(float));	    
+		
+		  input_data->input_size = buffer_size;
 		}
+	      }else{
+		g_free(input_data->input);
+
+		input_data->input = NULL;
+		
+		input_data->input_size = 0;
 	      }
 	    }
 	  }
@@ -1046,7 +1126,10 @@ ags_fx_lv2_audio_channel_data_alloc()
   channel_data->event_count = 0;
 
   channel_data->output = NULL;
+  channel_data->output_size = 0;
+
   channel_data->input = NULL;
+  channel_data->input_size = 0;
 
   channel_data->midiin_event_port = NULL;
   channel_data->midiout_event_port = NULL;
@@ -1212,7 +1295,10 @@ ags_fx_lv2_audio_input_data_alloc()
   input_data->parent = NULL;
 
   input_data->output = NULL;
+  input_data->output_size = 0;
+
   input_data->input = NULL;
+  input_data->input_size = 0;
 
   input_data->midiin_event_port = NULL;
   input_data->midiout_event_port = NULL;
