@@ -3249,7 +3249,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
       if(!xmlStrncmp(child->name,
 		     (xmlChar *) "ags-sf-automation-port",
 		     23)){
-	ags_simple_file_read_automation_port_list(simple_file, child, &(gobject->enalbed_automation_port));
+	ags_simple_file_read_automation_port_list(simple_file, child, &(gobject->enabled_automation_port));
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-automation-list",
 			   23)){

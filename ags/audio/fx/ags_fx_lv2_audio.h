@@ -175,7 +175,10 @@ struct _AgsFxLv2AudioInputData
   gpointer parent;
 
   float *output;
+  guint output_size;
+  
   float *input;
+  guint input_size;
 
   gpointer midiin_event_port;
   gpointer midiout_event_port;

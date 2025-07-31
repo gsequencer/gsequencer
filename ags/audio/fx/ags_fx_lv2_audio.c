@@ -470,9 +470,11 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
 	      channel_data->output_size = buffer_size;
 	    }
 	  }else{
-	      channel_data->output = NULL;
-
-	      channel_data->output_size = 0;
+	    g_free(channel_data->output);
+	    
+	    channel_data->output = NULL;
+	    
+	    channel_data->output_size = 0;
 	  }
 
 	  if(input_port_count > 0 &&
@@ -488,9 +490,11 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
 	      channel_data->input_size = buffer_size;
 	    }
 	  }else{
-	      channel_data->input = NULL;
-
-	      channel_data->input_size = 0;
+	    g_free(channel_data->input);
+	    
+	    channel_data->input = NULL;
+	    
+	    channel_data->input_size = 0;
 	  }
 	}
 	
@@ -513,6 +517,8 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
 		channel_data->output_size = buffer_size;
 	      }
 	    }else{
+	      g_free(channel_data->output);
+	      
 	      channel_data->output = NULL;
 
 	      channel_data->output_size = 0;
@@ -531,6 +537,8 @@ ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
 		channel_data->input_size = buffer_size;
 	      }
 	    }else{
+	      g_free(channel_data->input);
+	      
 	      channel_data->input = NULL;
 
 	      channel_data->input_size = 0;
@@ -828,6 +836,8 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 		channel_data->output_size = buffer_size;
 	      }
 	    }else{
+	      g_free(channel_data->output);
+	      
 	      channel_data->output = NULL;
 
 	      channel_data->output_size = 0;
@@ -846,6 +856,8 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 		channel_data->input_size = buffer_size;
 	      }
 	    }else{
+	      g_free(channel_data->input);
+	      
 	      channel_data->input = NULL;
 
 	      channel_data->input_size = 0;
@@ -883,6 +895,8 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 		  input_data->output_size = buffer_size;
 		}
 	      }else{
+		g_free(input_data->output);
+		
 		input_data->output = NULL;
 		
 		input_data->output_size = 0;
@@ -901,6 +915,8 @@ ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
 		  input_data->input_size = buffer_size;
 		}
 	      }else{
+		g_free(input_data->input);
+
 		input_data->input = NULL;
 		
 		input_data->input_size = 0;

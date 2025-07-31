@@ -21,7 +21,7 @@
 
 void ags_indicator_class_init(AgsIndicatorClass *indicator);
 void ags_indicator_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_indicator_accessible_range_interface_init(GtkAccessibleRange *accessible_range);
+void ags_indicator_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
 void ags_indicator_init(AgsIndicator *indicator);
 void ags_indicator_set_property(GObject *gobject,
 				guint prop_id,
@@ -47,6 +47,9 @@ void ags_indicator_size_allocate(GtkWidget *widget,
 				 int width,
 				 int height,
 				 int baseline);
+
+gboolean ags_indicator_set_current_value(GtkAccessibleRange *accessible_range,
+					 gdouble current_value);
 
 void ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					       AgsIndicator *indicator);
@@ -140,9 +143,9 @@ ags_indicator_orientable_interface_init(GtkOrientableIface *orientable)
 }
 
 void
-ags_indicator_accessible_range_interface_init(GtkAccessibleRange *accessible_range)
+ags_indicator_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range)
 {
-  accessible_range->set_current_value = NULL;
+  accessible_range->set_current_value = ags_indicator_set_current_value;
 }
 
 void
@@ -545,6 +548,13 @@ ags_indicator_size_allocate(GtkWidget *widget,
 							      width,
 							      height,
 							      baseline);
+}
+
+gboolean
+ags_indicator_set_current_value(GtkAccessibleRange *accessible_range,
+				gdouble current_value)
+{
+  return(FALSE);
 }
 
 void

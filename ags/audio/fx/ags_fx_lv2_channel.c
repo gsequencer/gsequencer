@@ -345,6 +345,8 @@ ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
 	input_data->output_size = buffer_size;
       }
     }else{
+      g_free(input_data->output);
+      
       input_data->output = NULL;
 
       input_data->output_size = 0;
@@ -363,6 +365,8 @@ ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
 	input_data->input_size = buffer_size;
       }
     }else{
+      g_free(input_data->input);
+      
       input_data->input = NULL;
 
       input_data->input_size = 0;
@@ -985,6 +989,8 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	     buffer_size > 0){
 	    input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
 	  }else{
+	    g_free(input_data->output);
+      
 	    input_data->output = NULL;
 	    
 	    input_data->output_size = 0;
@@ -995,6 +1001,8 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	     buffer_size > 0){
 	    input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
 	  }else{
+	    g_free(input_data->input);
+	    
 	    input_data->input = NULL;
 	    
 	    input_data->input_size = 0;
@@ -1229,6 +1237,8 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 
 	input_data->output_size = buffer_size;
       }else{
+	g_free(input_data->output);
+	
 	input_data->output = NULL;
 
 	input_data->output_size = 0;
@@ -1241,6 +1251,8 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 
 	input_data->input_size = buffer_size;
       }else{
+	g_free(input_data->input);
+	
 	input_data->input = NULL;
 
 	input_data->input_size = 0;

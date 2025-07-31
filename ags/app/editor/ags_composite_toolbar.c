@@ -391,8 +391,8 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   composite_toolbar->block_selected_tool = FALSE;
   composite_toolbar->selected_tool = NULL;
 
-  composit_toolbar->button_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-							AGS_UI_PROVIDER_DEFAULT_SPACING);
+  composite_toolbar->button_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+							 AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) composite_toolbar,
 		 (GtkWidget *) composite_toolbar->button_box); 
   
@@ -409,8 +409,8 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   composite_toolbar->paste = NULL;
   composite_toolbar->paste_popup = NULL;
 
-  composit_toolbar->tool_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  composite_toolbar->tool_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+						       AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append((GtkBox *) composite_toolbar,
 		 (GtkWidget *) composite_toolbar->tool_box); 
   
@@ -480,7 +480,7 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
 
   composite_toolbar->wave_time_stretch_buffer = (GtkPopover *) ags_time_stretch_buffer_popover_new();
   gtk_box_append(composite_toolbar->tool_box,
-		 (GtkWidget *) composite_toolbar->wave_time_strech_buffer); 
+		 (GtkWidget *) composite_toolbar->wave_time_stretch_buffer); 
 
   composite_toolbar->program_ramp_marker = (GtkPopover *) ags_ramp_marker_popover_new();
   gtk_box_append(composite_toolbar->tool_box,

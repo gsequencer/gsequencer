@@ -31,7 +31,7 @@
 #include <math.h>
 
 void ags_dial_class_init(AgsDialClass *dial);
-void ags_dial_accessible_range_interface_init(GtkAccessibleRange *accessible_range);
+void ags_dial_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
 void ags_dial_init(AgsDial *dial);
 void ags_dial_set_property(GObject *gobject,
 			   guint prop_id,
@@ -58,8 +58,8 @@ void ags_dial_size_allocate(GtkWidget *widget,
 			    int height,
 			    int baseline);
 
-void ags_dial_set_current_value(GtkAccessibleRange *accessible_range,
-				gdouble current_value);
+gboolean ags_dial_set_current_value(GtkAccessibleRange *accessible_range,
+				    gdouble current_value);
 
 void ags_dial_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					  AgsDial *dial);
@@ -197,7 +197,7 @@ ags_dial_get_type(void)
 }
 
 void
-ags_dial_accessible_range_interface_init(GtkAccessibleRange *accessible_range)
+ags_dial_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range)
 {
   accessible_range->set_current_value = ags_dial_set_current_value;
 }
@@ -811,12 +811,14 @@ ags_dial_size_allocate(GtkWidget *widget,
 							 baseline);
 }
 
-void
+gboolean
 ags_dial_set_current_value(GtkAccessibleRange *accessible_range,
 			   gdouble current_value)
 {
   ags_dial_set_value(AGS_DIAL(accessible_range),
 		     current_value);
+
+  return(TRUE);
 }
 
 void
