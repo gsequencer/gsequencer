@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -83,8 +83,11 @@ struct _AgsFxLv2ChannelInputData
   gpointer parent;
 
   float *output;
+  guint output_size;
+  
   float *input;
-
+  guint input_size;
+  
   LV2_Handle *lv2_handle;
 };
 

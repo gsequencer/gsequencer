@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -336,20 +336,36 @@ ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
        buffer_size > 0){
       if(input_data->output == NULL){
 	input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+
+	input_data->output_size = buffer_size;
       }else{
 	input_data->output = (float *) g_realloc(input_data->output,
 						 output_port_count * buffer_size * sizeof(float));	    
+
+	input_data->output_size = buffer_size;
       }
+    }else{
+      input_data->output = NULL;
+
+      input_data->output_size = 0;
     }
 
     if(input_port_count > 0 &&
        buffer_size > 0){
       if(input_data->input == NULL){
 	input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+
+	input_data->input_size = buffer_size;
       }else{
 	input_data->input = (float *) g_realloc(input_data->input,
 						input_port_count * buffer_size * sizeof(float));
+
+	input_data->input_size = buffer_size;
       }
+    }else{
+      input_data->input = NULL;
+
+      input_data->input_size = 0;
     }
   }
   
@@ -472,7 +488,10 @@ ags_fx_lv2_channel_input_data_alloc()
   input_data->parent = NULL;
 
   input_data->output = NULL;
+  input_data->output_size = 0;
+
   input_data->input = NULL;
+  input_data->input_size = 0;
 
   input_data->lv2_handle = NULL;
 
@@ -965,12 +984,20 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	     output_port_count > 0 &&
 	     buffer_size > 0){
 	    input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+	  }else{
+	    input_data->output = NULL;
+	    
+	    input_data->output_size = 0;
 	  }
 	  
 	  if(input_data->input == NULL &&
 	     input_port_count > 0 &&
 	     buffer_size > 0){
 	    input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+	  }else{
+	    input_data->input = NULL;
+	    
+	    input_data->input_size = 0;
 	  }
 
 	  for(nth = 0; nth < output_port_count; nth++){
@@ -1199,12 +1226,24 @@ ags_fx_lv2_channel_load_port(AgsFxLv2Channel *fx_lv2_channel)
 	 output_port_count > 0 &&
 	 buffer_size > 0){
 	input_data->output = (float *) g_malloc(output_port_count * buffer_size * sizeof(float));
+
+	input_data->output_size = buffer_size;
+      }else{
+	input_data->output = NULL;
+
+	input_data->output_size = 0;
       }
 	  
       if(input_data->input == NULL &&
 	 input_port_count > 0 &&
 	 buffer_size > 0){
 	input_data->input = (float *) g_malloc(input_port_count * buffer_size * sizeof(float));
+
+	input_data->input_size = buffer_size;
+      }else{
+	input_data->input = NULL;
+
+	input_data->input_size = 0;
       }
 
       for(nth = 0; nth < output_port_count; nth++){
