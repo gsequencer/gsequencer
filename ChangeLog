@@ -2,10 +2,11 @@ ags (8.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented automation port restore from XML
+	* fixed potential SIGSEGV with composite toolbar popovers
 	* improved AgsAudioLoop
 	* improved AgsDial accessibility
 	* improved AgsIndicator accessibility
-	* TODO:JK: improved ags-fx-lv2 output and input size
+	* improved ags-fx-lv2 output and input size
 	* reverted some changes related to clipping in ags_notation_edit_draw_note()
 
 ags (8.0.14)
