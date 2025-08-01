@@ -3247,8 +3247,8 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     (xmlChar *) "ags-sf-automation-port",
-		     23)){
+		     (xmlChar *) "ags-sf-automation-port-list",
+		     28)){
 	ags_simple_file_read_automation_port_list(simple_file, child, &(gobject->enabled_automation_port));
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-automation-list",
