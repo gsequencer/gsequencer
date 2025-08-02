@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -112,6 +112,8 @@ void ags_window_load_add_menu_lv2(AgsWindow *window,
 				  GMenu *menu);
 void ags_window_load_add_menu_vst3(AgsWindow *window,
 				   GMenu *menu);
+void ags_window_load_add_menu_audio_unit(AgsWindow *window,
+					 GMenu *menu);
 
 void ags_window_load_add_menu_live_dssi(AgsWindow *window,
 					GMenu *menu);
@@ -119,6 +121,8 @@ void ags_window_load_add_menu_live_lv2(AgsWindow *window,
 				       GMenu *menu);
 void ags_window_load_add_menu_live_vst3(AgsWindow *window,
 					GMenu *menu);
+void ags_window_load_add_menu_live_audio_unit(AgsWindow *window,
+					      GMenu *menu);
 
 void ags_window_show_error(AgsWindow *window,
 			   gchar *message);

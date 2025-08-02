@@ -1111,6 +1111,102 @@ ags_window_load_add_menu_vst3(AgsWindow *window,
 #endif
 }
 
+/**
+ * ags_window_load_add_menu_audio_unit:
+ * @window: the #AgsWindow
+ * @menu: the #GMenu
+ * 
+ * Load add menu Audio Unit.
+ * 
+ * Since: 8.1.2
+ */
+void
+ags_window_load_add_menu_audio_unit(AgsWindow *window,
+			      GMenu *menu)
+{
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  GMenu *audio_unit_menu;
+  GMenuItem *audio_unit_item;
+  GMenuItem *item;
+
+  AgsAudio_UnitManager *audio_unit_manager;
+
+  GList *start_list, *list;
+
+  GRecMutex *audio_unit_manager_mutex;
+
+  audio_unit_manager = ags_audio_unit_manager_get_instance();
+
+  /* get audio_unit manager mutex */
+  audio_unit_manager_mutex = AGS_AUDIO_UNIT_MANAGER_GET_OBJ_MUTEX(audio_unit_manager);
+
+  /* audio_unit sub-menu */
+  audio_unit_item = g_menu_item_new("Audio Unit",
+				    NULL);
+  
+  audio_unit_menu = g_menu_new();
+
+  /* get plugin */
+  g_rec_mutex_lock(audio_unit_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(audio_unit_manager->audio_unit_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(audio_unit_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    GVariantBuilder *builder;
+
+    gchar *filename, *effect;
+
+    filename = NULL;
+    effect = NULL;
+    
+    /* get filename and effect */
+    g_object_get(list->data,
+		 "filename", &filename,
+		 "effect", &effect,
+		 NULL);
+
+    item = g_menu_item_new(effect,
+			   "app.add_audio_unit_bridge");
+
+    builder = g_variant_builder_new(g_variant_type_new("as"));
+    
+    g_variant_builder_add(builder, "s", filename);
+    g_variant_builder_add(builder, "s", effect);
+
+    g_menu_item_set_attribute_value(item,
+				    "target",
+				    g_variant_new("as", builder));
+    
+    g_menu_append_item(audio_unit_menu,
+		       item);
+
+    g_variant_builder_unref(builder);
+    
+    /* iterate */
+    list = list->next;
+  }
+  
+  g_menu_item_set_submenu(audio_unit_item,
+			  G_MENU_MODEL(audio_unit_menu));  
+
+  g_menu_append_item(menu,
+		     audio_unit_item);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+#endif
+}
+
 void
 ags_window_load_add_menu_live_dssi(AgsWindow *window,
 				   GMenu *menu)
@@ -1352,6 +1448,95 @@ ags_window_load_add_menu_live_vst3(AgsWindow *window,
 
   g_menu_append_item(menu,
 		     vst3_item);
+
+  g_list_free_full(start_list,
+		   (GDestroyNotify) g_object_unref);
+#endif
+}
+
+void
+ags_window_load_add_menu_live_audio_unit(AgsWindow *window,
+					 GMenu *menu)
+{
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  GMenu *audio_unit_menu;
+  GMenuItem *audio_unit_item;
+  GMenuItem *item;
+
+  AgsAudio_UnitManager *audio_unit_manager;
+
+  GList *start_list, *list;
+
+  GRecMutex *audio_unit_manager_mutex;
+
+  audio_unit_manager = ags_audio_unit_manager_get_instance();
+
+  /* get audio_unit manager mutex */
+  audio_unit_manager_mutex = AGS_AUDIO_UNIT_MANAGER_GET_OBJ_MUTEX(audio_unit_manager);
+
+  /* audio_unit sub-menu */
+  audio_unit_item = g_menu_item_new("live Audio Unit",
+			      NULL);
+  
+  audio_unit_menu = g_menu_new();
+
+  /* get plugin */
+  g_rec_mutex_lock(audio_unit_manager_mutex);
+  
+  list =
+    start_list = g_list_copy_deep(audio_unit_manager->audio_unit_plugin,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
+
+  g_rec_mutex_unlock(audio_unit_manager_mutex);
+  
+  start_list = ags_base_plugin_sort(start_list);
+  g_list_free(list);
+ 
+  list = start_list;
+
+  while(list != NULL){
+    GVariantBuilder *builder;
+
+    gchar *filename, *effect;
+
+    filename = NULL;
+    effect = NULL;
+    
+    if(ags_base_plugin_test_flags(list->data, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      /* get filename and effect */
+      g_object_get(list->data,
+		   "filename", &filename,
+		   "effect", &effect,
+		   NULL);
+
+      item = g_menu_item_new(effect,
+			     "app.add_live_audio_unit_bridge");
+
+      builder = g_variant_builder_new(g_variant_type_new("as"));
+    
+      g_variant_builder_add(builder, "s", filename);
+      g_variant_builder_add(builder, "s", effect);
+
+      g_menu_item_set_attribute_value(item,
+				      "target",
+				      g_variant_new("as", builder));
+    
+      g_menu_append_item(audio_unit_menu,
+			 item);
+
+      g_variant_builder_unref(builder);
+    }
+    
+    /* iterate */
+    list = list->next;
+  }
+
+  g_menu_item_set_submenu(audio_unit_item,
+			  G_MENU_MODEL(audio_unit_menu));  
+
+  g_menu_append_item(menu,
+		     audio_unit_item);
 
   g_list_free_full(start_list,
 		   (GDestroyNotify) g_object_unref);
