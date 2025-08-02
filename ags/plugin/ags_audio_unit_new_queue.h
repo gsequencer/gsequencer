@@ -52,8 +52,28 @@ struct _AgsAudioUnitNewQueue
 
 GType ags_audio_unit_new_queue_get_type(void);
 
+/* boxed alloc, copy and free */
 AgsAudioUnitNewQueue* ags_audio_unit_new_queue_alloc();
-void ags_audio_unit_new_queue_alloc(AgsAudioUnitNewQueue *new_queue);
+gpointer ags_audio_unit_new_queue_copy(AgsAudioUnitNewQueue *ptr);
+
+void ags_audio_unit_new_queue_free(AgsAudioUnitNewQueue *new_queue);
+
+/* getter/setter */
+gboolean ags_audio_unit_new_queue_get_in_use(AgsAudioUnitNewQueue *new_queue);
+void ags_audio_unit_new_queue_set_in_use(AgsAudioUnitNewQueue *new_queue,
+					 gboolean in_use);
+
+gint64 ags_audio_unit_new_queue_get_creation_timestamp(AgsAudioUnitNewQueue *new_queue);
+void ags_audio_unit_new_queue_set_creation_timestamp(AgsAudioUnitNewQueue *new_queue,
+						     gint64 creation_timestamp);
+
+gchar* ags_audio_unit_new_queue_get_plugin_name(AgsAudioUnitNewQueue *new_queue);
+void ags_audio_unit_new_queue_set_plugin_name(AgsAudioUnitNewQueue *new_queue,
+					      gchar *plugin_name);
+
+gpointer ags_audio_unit_new_queue_get_audio_unit(AgsAudioUnitNewQueue *new_queue);
+void ags_audio_unit_new_queue_set_audio_unit(AgsAudioUnitNewQueue *new_queue,
+					     gpointer audio_unit);
 
 G_END_DECLS
 

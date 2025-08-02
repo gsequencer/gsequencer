@@ -18,6 +18,7 @@
  */
 
 #include <ags/plugin/ags_audio_unit_new_queue_manager.h>
+#include <ags/plugin/ags_audio_unit_new_queue.h>
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <AVFoundation/AVFoundation.h>
@@ -31,12 +32,12 @@ void ags_audio_unit_new_queue_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_audio_unit_new_queue_manager
- * @short_description: Singleton pattern to organize AUDIO_UNIT_NEW_QUEUE
+ * @short_description: Singleton pattern to organize Audio Unit new queue
  * @title: AgsAudioUnitNewQueueManager
  * @section_id:
  * @include: ags/plugin/ags_audio_unit_new_queue_manager.h
  *
- * The #AgsAudioUnitNewQueueManager loads/unloads AUDIO_UNIT_NEW_QUEUE plugins.
+ * The #AgsAudioUnitNewQueueManager provides Audio Unit new queue.
  */
 
 static gpointer ags_audio_unit_new_queue_manager_parent_class = NULL;
@@ -122,15 +123,11 @@ ags_audio_unit_new_queue_manager_finalize(GObject *gobject)
 {
   AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager;
 
-  GList *audio_unit_new_queue_plugin;
-
   audio_unit_new_queue_manager = AGS_AUDIO_UNIT_NEW_QUEUE_MANAGER(gobject);
 
-  new_queue = audio_unit_new_queue_manager->new_queue;
-
-  g_list_free_full(audio_unit_new_queue_plugin,
-		   (GDestroyNotify) ags_audio_unit_queue_free);
-
+  g_list_free_full(audio_unit_new_queue_manager->new_queue,
+		   (GDestroyNotify) ags_audio_unit_new_queue_free);
+  
   if(audio_unit_new_queue_manager == ags_audio_unit_new_queue_manager){
     ags_audio_unit_new_queue_manager = NULL;
   }

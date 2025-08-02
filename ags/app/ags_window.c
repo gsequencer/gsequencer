@@ -1122,14 +1122,14 @@ ags_window_load_add_menu_vst3(AgsWindow *window,
  */
 void
 ags_window_load_add_menu_audio_unit(AgsWindow *window,
-			      GMenu *menu)
+				    GMenu *menu)
 {
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
   GMenu *audio_unit_menu;
   GMenuItem *audio_unit_item;
   GMenuItem *item;
 
-  AgsAudio_UnitManager *audio_unit_manager;
+  AgsAudioUnitManager *audio_unit_manager;
 
   GList *start_list, *list;
 
@@ -1463,7 +1463,7 @@ ags_window_load_add_menu_live_audio_unit(AgsWindow *window,
   GMenuItem *audio_unit_item;
   GMenuItem *item;
 
-  AgsAudio_UnitManager *audio_unit_manager;
+  AgsAudioUnitManager *audio_unit_manager;
 
   GList *start_list, *list;
 
@@ -1476,7 +1476,7 @@ ags_window_load_add_menu_live_audio_unit(AgsWindow *window,
 
   /* audio_unit sub-menu */
   audio_unit_item = g_menu_item_new("live Audio Unit",
-			      NULL);
+				    NULL);
   
   audio_unit_menu = g_menu_new();
 

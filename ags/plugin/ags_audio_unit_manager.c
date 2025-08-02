@@ -21,14 +21,8 @@
 
 #include <ags/plugin/ags_base_plugin.h>
 
-#include <dlfcn.h>
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <string.h>
 #include <strings.h>
 
@@ -44,12 +38,12 @@ void ags_audio_unit_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_audio_unit_manager
- * @short_description: Singleton pattern to organize AUDIO_UNIT
+ * @short_description: Singleton pattern to organize Audio Unit plugins
  * @title: AgsAudioUnitManager
  * @section_id:
  * @include: ags/plugin/ags_audio_unit_manager.h
  *
- * The #AgsAudioUnitManager loads/unloads AUDIO_UNIT plugins.
+ * The #AgsAudioUnitManager loads/unloads Audio Unit plugins.
  */
 
 static gpointer ags_audio_unit_manager_parent_class = NULL;
@@ -517,7 +511,7 @@ ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
   /* load */
   g_rec_mutex_lock(audio_unit_manager_mutex);
 
-  str = [((AVAudioUnitComponent *) component)->name UTF8String];
+  str = [[((AVAudioUnitComponent *) component) name] UTF8String];
   
   plugin_name = g_strdup(str);
   
@@ -546,7 +540,7 @@ ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
 {
   AgsAudioUnitPlugin *audio_unit_plugin;
 
-  NSObject *audio_unit_component_manager;
+  AVAudioUnitComponentManager *audio_unit_component_manager;
 
   NSArray<AVAudioUnitComponent *> *component_arr;
 
@@ -558,15 +552,15 @@ ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
     return;
   }
 
-  audio_unit_component_manager = [(AVAudioUnitComponentManager) sharedAudioUnitComponentManager];
+  audio_unit_component_manager = [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
 
   description = (AudioComponentDescription) {0,};
 
   description.componentType = kAudioUnitType_Effect;
 
-  component_arr = [componentsMatchingDescription:(AudioComponentDescription) description];
+  component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
 
-  i_stop = [component_arr:count];
+  i_stop = [component_arr count];
   
   for(i = 0; i < i_stop; i++){
     ags_audio_unit_manager_load_component(audio_unit_manager,

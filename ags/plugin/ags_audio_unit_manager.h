@@ -41,8 +41,6 @@ G_BEGIN_DECLS
 typedef struct _AgsAudioUnitManager AgsAudioUnitManager;
 typedef struct _AgsAudioUnitManagerClass AgsAudioUnitManagerClass;
 
-typedef struct _AgsAudioUnitNewQueue AgsAudioUnitNewQueue;
-
 struct _AgsAudioUnitManager
 {
   GObject gobject;
@@ -58,17 +56,6 @@ struct _AgsAudioUnitManager
 struct _AgsAudioUnitManagerClass
 {
   GObjectClass gobject;
-};
-
-struct _AgsAudioUnitNewQueue
-{
-  gboolean in_use;
-  
-  gint64 creation_timestamp;
-
-  gchar *plugin_name;
-  
-  gpointer audio_unit;
 };
   
 GType ags_audio_unit_manager_get_type(void);

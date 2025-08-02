@@ -18,6 +18,8 @@
  */
 
 #include <ags/plugin/ags_audio_unit_plugin.h>
+#include <ags/plugin/ags_audio_unit_new_queue_manager.h>
+#include <ags/plugin/ags_audio_unit_new_queue.h>
 
 #include <ags/plugin/ags_plugin_port.h>
 
@@ -39,9 +41,7 @@ void ags_audio_unit_plugin_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_audio_unit_plugin_finalize(GObject *gobject);
 
-gpointer ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
-					   guint samplerate,
-					   guint buffer_size);
+void ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin);
 
 void ags_audio_unit_plugin_connect_port(AgsBasePlugin *base_plugin,
 					gpointer plugin_handle,
@@ -134,7 +134,7 @@ ags_audio_unit_plugin_class_init(AgsAudioUnitPluginClass *audio_unit_plugin)
   /* AgsBasePluginClass */
   base_plugin = (AgsBasePluginClass *) audio_unit_plugin;
 
-  base_plugin->instantiate = ags_audio_unit_plugin_instantiate;
+  base_plugin->async_instantiate = ags_audio_unit_plugin_async_instantiate;
 
   base_plugin->connect_port = ags_audio_unit_plugin_connect_port;
 
@@ -213,13 +213,7 @@ ags_audio_unit_plugin_finalize(GObject *gobject)
 void
 ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 {
-  gchar *str;
-
-  str = [((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component)->name UTF8String];
-  
-  retval = g_strdup(str);
-  
-  [AVAudioUnit instantiateWithComponentDescription:(((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component)->audioComponentDescription), options:0 completionHandler:^(AVAudioUnit * _Nullable audio_unit, NSError * _Nullable error){
+  [AVAudioUnit instantiateWithComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription] options:0 completionHandler:^(AVAudioUnit * _Nullable audio_unit, NSError * _Nullable error){
       AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager;
       
       AgsAudioUnitNewQueue *audio_unit_new_queue;
@@ -230,13 +224,13 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 
       GRecMutex *audio_unit_new_queue_manager_mutex;
       
-      if(error->code != noErr){
-	g_warning("failed to instantiate Audio Unit %d", error->code);
+      if([error code] != noErr){
+	g_warning("failed to instantiate Audio Unit %d", [error code]);
 
 	return;
       }
 
-      plugin_name = [audio_unit->name UTF8String];
+      plugin_name = [[audio_unit name] UTF8String];
 
       creation_timestamp = g_get_monotonic_time();
 
@@ -258,8 +252,8 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 
       g_rec_mutex_lock(audio_unit_new_queue_manager_mutex);
 
-      audio_unit_new_queue_manager->audio_unit_new_queue = g_list_prepend(audio_unit_new_queue_manager->audio_unit_new_queue,
-									  audio_unit_new_queue);
+      audio_unit_new_queue_manager->new_queue = g_list_prepend(audio_unit_new_queue_manager->new_queue,
+							       audio_unit_new_queue);
 
       g_rec_mutex_unlock(audio_unit_new_queue_manager_mutex);
     }];
@@ -293,6 +287,12 @@ ags_audio_unit_plugin_run(AgsBasePlugin *base_plugin,
 			  gpointer plugin_handle,
 			  snd_seq_event_t *seq_event,
 			  guint frame_count)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_audio_unit_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
   //TODO:JK: implement me
 }
