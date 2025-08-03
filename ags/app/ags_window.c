@@ -1180,7 +1180,7 @@ ags_window_load_add_menu_audio_unit(AgsWindow *window,
 
     builder = g_variant_builder_new(g_variant_type_new("as"));
     
-    g_variant_builder_add(builder, "s", filename);
+    //    g_variant_builder_add(builder, "s", filename);
     g_variant_builder_add(builder, "s", effect);
 
     g_menu_item_set_attribute_value(item,
@@ -1515,7 +1515,7 @@ ags_window_load_add_menu_live_audio_unit(AgsWindow *window,
 
       builder = g_variant_builder_new(g_variant_type_new("as"));
     
-      g_variant_builder_add(builder, "s", filename);
+      //      g_variant_builder_add(builder, "s", filename);
       g_variant_builder_add(builder, "s", effect);
 
       g_menu_item_set_attribute_value(item,

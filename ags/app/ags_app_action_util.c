@@ -1894,7 +1894,7 @@ ags_app_action_util_add_vst3_bridge(gchar *filename, gchar *effect)
 void
 ags_app_action_util_add_audio_unit_bridge(gchar *filename, gchar *effect)
 {
-#if 0 //defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
   AgsAudioUnitBridge *audio_unit_bridge;
 
   AgsAddAudio *add_audio;
@@ -1908,8 +1908,8 @@ ags_app_action_util_add_audio_unit_bridge(gchar *filename, gchar *effect)
   
   add_audio = ags_add_audio_new(AGS_MACHINE(audio_unit_bridge)->audio);
 
-  g_signal_connect_after(add_audio, "launch",
-			 G_CALLBACK(ags_app_action_util_add_audio_unit_bridge_add_audio_callback), audio_unit_bridge);
+  //  g_signal_connect_after(add_audio, "launch",
+  //			 G_CALLBACK(ags_app_action_util_add_audio_unit_bridge_add_audio_callback), audio_unit_bridge);
 
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);
@@ -2114,7 +2114,7 @@ ags_app_action_util_add_live_vst3_bridge(gchar *filename, gchar *effect)
 void
 ags_app_action_util_add_live_audio_unit_bridge(gchar *filename, gchar *effect)
 {
-#if 0 // defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
   AgsLiveAudioUnitBridge *live_audio_unit_bridge;
 
   AgsAddAudio *add_audio;
@@ -2128,8 +2128,8 @@ ags_app_action_util_add_live_audio_unit_bridge(gchar *filename, gchar *effect)
   
   add_audio = ags_add_audio_new(AGS_MACHINE(live_audio_unit_bridge)->audio);
 
-  g_signal_connect_after(add_audio, "launch",
-			 G_CALLBACK(ags_app_action_util_add_live_audio_unit_bridge_add_audio_callback), live_audio_unit_bridge);
+  //  g_signal_connect_after(add_audio, "launch",
+  //			 G_CALLBACK(ags_app_action_util_add_live_audio_unit_bridge_add_audio_callback), live_audio_unit_bridge);
   
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);

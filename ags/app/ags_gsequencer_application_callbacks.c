@@ -446,7 +446,7 @@ ags_gsequencer_add_audio_unit_bridge_callback(GAction *action, GVariant *paramet
   
   g_variant_get(parameter, "as", &iter);
 
-  g_variant_iter_loop(iter, "s", &filename);
+  //  g_variant_iter_loop(iter, "s", &filename);
   g_variant_iter_loop(iter, "s", &effect);
   
   ags_app_action_util_add_audio_unit_bridge(filename, effect);
@@ -534,7 +534,7 @@ ags_gsequencer_add_live_audio_unit_bridge_callback(GAction *action, GVariant *pa
   
   g_variant_get(parameter, "as", &iter);
 
-  g_variant_iter_loop(iter, "s", &filename);
+  //  g_variant_iter_loop(iter, "s", &filename);
   g_variant_iter_loop(iter, "s", &effect);
   
   ags_app_action_util_add_live_audio_unit_bridge(filename, effect);
