@@ -60,6 +60,10 @@ GType ags_audio_unit_new_queue_manager_get_type(void);
 GList* ags_audio_unit_new_queue_manager_get_new_queue(AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager);
 
 /*  */
+gpointer ags_audio_unit_new_queue_manager_fetch_audio_unit(AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager,
+							   gchar *plugin_name);
+
+/*  */
 AgsAudioUnitNewQueueManager* ags_audio_unit_new_queue_manager_get_instance();
 
 AgsAudioUnitNewQueueManager* ags_audio_unit_new_queue_manager_new();

@@ -18,9 +18,11 @@
  */
 
 #include <ags/plugin/ags_audio_unit_plugin.h>
+
+#include <ags/plugin/ags_audio_unit_manager.h>
 #include <ags/plugin/ags_audio_unit_new_queue_manager.h>
 #include <ags/plugin/ags_audio_unit_new_queue.h>
-
+#include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <string.h>
@@ -214,7 +216,9 @@ void
 ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 {
   [AVAudioUnit instantiateWithComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription] options:0 completionHandler:^(AVAudioUnit * _Nullable audio_unit, NSError * _Nullable error){
+      AgsAudioUnitManager *audio_unit_manager;
       AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager;
+      AgsAudioUnitPlugin *audio_unit_plugin;
       
       AgsAudioUnitNewQueue *audio_unit_new_queue;
 
@@ -256,6 +260,28 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 							       audio_unit_new_queue);
 
       g_rec_mutex_unlock(audio_unit_new_queue_manager_mutex);
+
+      /* audio unit manager */
+      audio_unit_manager = ags_audio_unit_manager_get_instance();
+
+      audio_unit_plugin = ags_audio_unit_manager_find_audio_unit_plugin(audio_unit_manager,
+									NULL, plugin_name);
+
+      if(audio_unit_plugin != NULL &&
+	 audio_unit_plugin->audio_unit == NULL){
+	AudioComponentDescription component_description;
+	
+	audio_unit_plugin->audio_unit = audio_unit;
+
+	component_description = [audio_unit componentDescription];
+	
+	if(component_description.componentType == kAudioUnitType_MusicDevice){
+	  ags_base_plugin_set_flags((AgsBasePlugin *) audio_unit_plugin,
+				    AGS_BASE_PLUGIN_IS_INSTRUMENT);
+	}
+	
+	ags_base_plugin_load_plugin((AgsBasePlugin *) audio_unit_plugin);
+      }
     }];
 }
 
@@ -294,7 +320,150 @@ ags_audio_unit_plugin_run(AgsBasePlugin *base_plugin,
 void
 ags_audio_unit_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  //TODO:JK: implement me
+  AgsPluginPort *current_plugin_port;
+
+  AVAudioUnit *av_audio_unit;
+  AUAudioUnit *au_audio_unit;
+  AUAudioUnitBusArray *output_bus_arr, *input_bus_arr;
+  AUAudioUnitBus *output_bus, *input_bus;
+  AUParameterTree *parameter_tree;
+  NSArray<AUParameter *> *parameter_arr;
+
+  GList *start_plugin_port;
+  
+  gchar *str;
+
+  guint output_count, input_count;
+  guint i, i_stop;
+  
+  GRecMutex *base_plugin_mutex;
+
+  /* get base plugin mutex */
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
+
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  start_plugin_port = base_plugin->plugin_port;
+  
+  av_audio_unit = (AVAudioUnit *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->audio_unit;
+
+  g_rec_mutex_unlock(base_plugin_mutex);
+
+  if(start_plugin_port != NULL ||
+     av_audio_unit == NULL){
+    return;
+  }
+
+  au_audio_unit = [av_audio_unit AUAudioUnit];
+
+  /* output */
+  output_bus_arr = [au_audio_unit outputBusses];
+
+  output_count = 
+    i_stop = [output_bus_arr count];
+
+  for(i = 0; i < i_stop; i++){
+    output_bus = [output_bus_arr objectAtIndexedSubscript:i];
+    
+    current_plugin_port = ags_plugin_port_new();
+    g_object_ref(current_plugin_port);
+	
+    start_plugin_port = g_list_prepend(start_plugin_port,
+				       current_plugin_port);
+
+    current_plugin_port->port_index = i;
+
+    ags_plugin_port_set_flags(current_plugin_port,
+			      (AGS_PLUGIN_PORT_AUDIO |
+			       AGS_PLUGIN_PORT_OUTPUT));
+  }
+  
+  /* input */
+  input_bus_arr = [au_audio_unit inputBusses];
+
+  input_count = 
+    i_stop = [input_bus_arr count];
+
+  for(i = 0; i < i_stop; i++){
+    input_bus = [input_bus_arr objectAtIndexedSubscript:i];
+    
+    current_plugin_port = ags_plugin_port_new();
+    g_object_ref(current_plugin_port);
+	
+    start_plugin_port = g_list_prepend(start_plugin_port,
+				       current_plugin_port);
+
+    current_plugin_port->port_index = output_count + i;
+
+    ags_plugin_port_set_flags(current_plugin_port,
+			      (AGS_PLUGIN_PORT_AUDIO |
+			       AGS_PLUGIN_PORT_INPUT));
+  }
+
+  /* parameter */
+  parameter_tree = [au_audio_unit parameterTree];
+
+  parameter_arr = [parameter_tree allParameters];
+
+  start_plugin_port = NULL;
+  
+  i_stop = [parameter_arr count];
+  
+  for(i = 0; i < i_stop; i++){
+    UInt32 flags;
+    
+    current_plugin_port = ags_plugin_port_new();
+    g_object_ref(current_plugin_port);
+	
+    start_plugin_port = g_list_prepend(start_plugin_port,
+				       current_plugin_port);
+
+    current_plugin_port->port_index = output_count + input_count + i;
+
+    str = [[parameter_arr[i] identifier] UTF8String];
+    
+    current_plugin_port->port_name = g_strdup(str);
+
+    flags = [parameter_arr[i] flags];
+
+    if((kAudioUnitParameterFlag_IsReadable & flags) != 0 &&
+       (kAudioUnitParameterFlag_IsWritable & flags) != 0){
+      ags_plugin_port_set_flags(current_plugin_port,
+				(AGS_PLUGIN_PORT_CONTROL |
+				 AGS_PLUGIN_PORT_INPUT));
+    }
+    
+    if((kAudioUnitParameterFlag_IsReadable & flags) != 0 &&
+       (kAudioUnitParameterFlag_MeterReadOnly & flags) != 0){
+      ags_plugin_port_set_flags(current_plugin_port,
+				(AGS_PLUGIN_PORT_CONTROL |
+				 AGS_PLUGIN_PORT_OUTPUT));
+    }
+    
+    /* default, lower and upper value */
+    g_value_init(current_plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(current_plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(current_plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+	
+    g_value_set_float(current_plugin_port->default_value,
+		      0.0);
+    
+    g_value_set_float(current_plugin_port->default_value,
+		      (float) [parameter_arr[i] value]);
+    g_value_set_float(current_plugin_port->lower_value,
+		      (float) [parameter_arr[i] minValue]);
+    g_value_set_float(current_plugin_port->upper_value,
+		      (float) [parameter_arr[i] maxValue]);
+  }
+  
+  g_rec_mutex_lock(base_plugin_mutex);
+
+  base_plugin->plugin_port = g_list_reverse(start_plugin_port);
+
+  g_rec_mutex_unlock(base_plugin_mutex);
 }
 
 /**

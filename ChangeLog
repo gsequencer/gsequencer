@@ -9,6 +9,7 @@ ags (8.1.2)
 	* implemented AgsAudioUnitConversion
 	* TODO:JK: implemented AgsAudioUnitBridge
 	* TODO:JK: implemented AgsLiveAudioUnitBridge
+	* TODO:JK: implemented ags-fx-audio-unit
 	* added Audio Unit menu to application window
 	* added live Audio Unit menu to application window
 

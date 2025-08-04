@@ -67,6 +67,8 @@ ags_audio_unit_new_queue_alloc()
   ptr = (AgsAudioUnitNewQueue *) g_new0(AgsAudioUnitNewQueue,
 					1);
 
+  ptr->in_use = FALSE;
+
   return(ptr);
 }
 

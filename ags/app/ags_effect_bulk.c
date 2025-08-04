@@ -102,6 +102,19 @@ void ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 				     guint create_flags, guint recall_flags);
 #endif
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+void ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
+					   GList *control_type_name,
+					   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					   gchar *plugin_name,
+					   gchar *filename,
+					   gchar *effect,
+					   guint start_audio_channel, guint stop_audio_channel,
+					   guint start_pad, guint stop_pad,
+					   gint position,
+					   guint create_flags, guint recall_flags);
+#endif
+
 void ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 				     GList *control_type_name,
 				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -2784,6 +2797,428 @@ ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
 }
 #endif
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+void
+ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
+				      GList *control_type_name,
+				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				      gchar *plugin_name,
+				      gchar *filename,
+				      gchar *effect,
+				      guint start_audio_channel, guint stop_audio_channel,
+				      guint start_pad, guint stop_pad,
+				      gint position,
+				      guint create_flags, guint recall_flags)
+{
+  AgsBulkMember *bulk_member;
+  
+  AgsEffectBulkPlugin *effect_bulk_plugin;
+
+  AgsAudioUnitManager *audio_unit_manager;
+  AgsAudioUnitPlugin *audio_unit_plugin;
+  
+  GList *start_recall, *recall;
+  GList *start_list, *list;
+  GList *start_plugin_port, *plugin_port;
+
+  gchar *port_name;
+  
+  gdouble page, step;
+  guint pads, audio_channels;
+  guint port_count;
+  guint control_count;
+  
+  guint x, y;
+  guint i;
+  guint k;
+  
+  GRecMutex *audio_unit_manager_mutex;
+  GRecMutex *base_plugin_mutex;
+
+  audio_unit_manager = ags_audio_unit_manager_get_instance();
+    
+  audio_unit_manager_mutex = AGS_AUDIO_UNIT_MANAGER_GET_OBJ_MUTEX(audio_unit_manager);
+
+  pads = 0;
+  audio_channels = 0;
+  
+  /* alloc effect bulk plugin */
+  effect_bulk_plugin = ags_effect_bulk_plugin_alloc(play_container, recall_container,
+						    plugin_name,
+						    filename,
+						    effect);
+  effect_bulk_plugin->control_type_name = control_type_name;
+  
+  effect_bulk->plugin = g_list_append(effect_bulk->plugin,
+				      effect_bulk_plugin);  
+
+  /* get audio properties */
+  g_object_get(effect_bulk->audio,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    g_object_get(effect_bulk->audio,
+		 "output-pads", &pads,
+		 NULL);
+  }else{
+    g_object_get(effect_bulk->audio,
+		 "input-pads", &pads,
+		 NULL);
+  }
+  
+  /* load plugin */
+  audio_unit_plugin = ags_audio_unit_manager_find_audio_unit_plugin(ags_audio_unit_manager_get_instance(),
+								    filename, effect);
+
+  /* get base plugin mutex */
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(audio_unit_plugin);
+
+  /* ags-fx-audio_unit */
+  start_recall = ags_fx_factory_create(effect_bulk->audio,
+				       effect_bulk_plugin->play_container, effect_bulk_plugin->recall_container,
+				       plugin_name,
+				       filename,
+				       effect,
+				       0, audio_channels,
+				       0, pads,
+				       position,
+				       create_flags | (g_type_is_a(effect_bulk->channel_type, AGS_TYPE_OUTPUT) ? AGS_FX_FACTORY_OUTPUT: AGS_FX_FACTORY_INPUT), recall_flags);
+
+  recall = start_recall;
+
+  while(recall != NULL){
+    if(AGS_IS_RECALL_AUDIO(recall->data) ||
+       AGS_IS_RECALL_CHANNEL(recall->data)){
+#if defined(AGS_OSXAPI)
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI2 | AGS_RECALL_MIDI2_CONTROL_CHANGE));
+#else
+      ags_recall_set_flags(recall->data,
+			   (AGS_RECALL_MIDI1 | AGS_RECALL_MIDI1_CONTROL_CHANGE));
+#endif
+    }
+    
+    ags_recall_set_behaviour_flags(recall->data,
+				   AGS_SOUND_BEHAVIOUR_BULK_MODE);
+
+    recall = recall->next;
+  }
+  
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+
+  /* retrieve position within table  */
+  x = 0;
+  y = 0;
+  
+  list =
+    start_list = ags_effect_bulk_get_bulk_member(effect_bulk);
+
+  i = 0;
+
+  while(list != NULL){
+    GtkWidget *child;
+
+    child = gtk_grid_get_child_at(effect_bulk->bulk_member_grid,
+				  i, y);
+    
+    if(child == NULL){
+      i = 0;
+      y++;
+
+      continue;
+    }
+
+    i++;
+
+    if(i == AGS_EFFECT_BULK_COLUMNS_COUNT){
+      i = 0;
+      y++;
+    }
+
+    if(child != list->data){
+      g_critical("unexpected child");
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+
+  /* load ports */
+  start_plugin_port = NULL;
+  
+  g_object_get(audio_unit_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
+
+  plugin_port = start_plugin_port;
+
+  port_count = g_list_length(plugin_port);
+
+  control_count = 0;
+  
+  k = 0;
+
+  while(plugin_port != NULL){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL) &&
+       !ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_HIDDEN)){
+      GtkWidget *child_widget;
+
+      AgsAudioUnitConversion *audio_unit_conversion;
+      
+      GType widget_type;
+
+      gchar *plugin_name;
+      gchar *control_port;
+
+      GtkOrientation widget_orientation;
+      
+      guint port_index;
+      guint scale_precision;
+      gdouble step_count;
+      gboolean disable_seemless;
+      gboolean do_step_conversion;
+
+      GRecMutex *plugin_port_mutex;
+
+      control_count++;
+      
+      disable_seemless = FALSE;
+      do_step_conversion = FALSE;
+            
+      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	x = 0;
+	y++;
+      }
+
+      widget_orientation = GTK_ORIENTATION_VERTICAL;	
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	disable_seemless = TRUE;
+	
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
+      }else{
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_orientation = GTK_ORIENTATION_HORIZONTAL;
+	
+	  widget_type = AGS_TYPE_INDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
+      }
+
+      scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+      step_count = AGS_AUDIO_UNIT_CONVERSION_DEFAULT_STEP_COUNT;
+
+      if((AGS_PLUGIN_PORT_INTEGER & (AGS_PLUGIN_PORT(plugin_port->data)->flags)) != 0){
+	guint scale_steps;
+	
+	g_object_get(plugin_port->data,
+		     "scale-steps", &scale_steps,
+		     NULL);
+
+	step_count =
+	  scale_precision = (gdouble) scale_steps;
+
+	disable_seemless = TRUE;	
+      }
+
+      /* get plugin port mutex */
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
+
+      /* get port name */
+      g_rec_mutex_lock(plugin_port_mutex);
+
+      port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+      port_index = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
+      
+      g_rec_mutex_unlock(plugin_port_mutex);
+
+      /* add bulk member */
+      plugin_name = g_strdup_printf("audio_unit-<%s>",
+				    effect);
+
+      control_port = g_strdup_printf("%u/%u",
+				     k + 1,
+				     port_count);
+
+      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-orientation", widget_orientation,
+						   "widget-type", widget_type,
+						   "widget-label", port_name,
+						   "margin-end", AGS_UI_PROVIDER_DEFAULT_MARGIN_END,
+						   "play-container", play_container,
+						   "recall-container", recall_container,
+						   "plugin-name", plugin_name,
+						   "filename", filename,
+						   "effect", effect,
+						   "specifier", port_name,
+						   "port-index", port_index,
+						   "control-port", control_port,
+						   "scale-precision", scale_precision,
+						   "step-count", step_count,
+						   NULL);
+      child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
+      g_free(port_name);
+
+      /* audio unit conversion */
+      audio_unit_conversion = NULL;
+
+      g_object_set(bulk_member,
+		   "conversion", audio_unit_conversion,
+		   NULL);
+
+      /* child widget */
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
+
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
+
+	float lower_bound, upper_bound;
+	gdouble lower, upper;
+	float default_value;
+	gdouble control_value;
+	
+	dial = (AgsDial *) child_widget;
+
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+
+	/* add controls of ports and apply range  */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	lower_bound = g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	if(do_step_conversion){
+	  g_object_set(audio_unit_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_AUDIO_UNIT_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+	  
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(audio_unit_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
+	
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
+
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
+	}else{
+	  step = (upper - lower) / step_count;
+	}	
+
+	if(step_count > 8){
+	  if(upper >= 0.0 && lower >= 0.0){
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else if(upper < 0.0 && lower < 0.0){
+	    page = -1.0 * (lower - upper) / AGS_DIAL_DEFAULT_PRECISION;
+	  }else{
+	    page = (upper - lower) / AGS_DIAL_DEFAULT_PRECISION;
+	  }
+	}else{
+	  page = step;
+	}
+	
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_page_increment(adjustment,
+					  page);
+	gtk_adjustment_set_lower(adjustment,
+				 lower);
+	gtk_adjustment_set_upper(adjustment,
+				 upper);
+
+	/* get/set default value */
+	g_rec_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	g_rec_mutex_unlock(plugin_port_mutex);
+
+	control_value = default_value;
+	
+	if(audio_unit_conversion != NULL){
+	  control_value = ags_conversion_convert((AgsConversion *) audio_unit_conversion,
+						 default_value,
+						 TRUE);
+	}
+
+	gtk_adjustment_set_value(adjustment,
+				 control_value);
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	effect_bulk->queued_refresh = g_list_prepend(effect_bulk->queued_refresh,
+						     child_widget);
+      }
+
+#ifdef AGS_DEBUG
+      g_message("audio unit bounds: %f %f", lower, upper);
+#endif
+
+      gtk_widget_set_halign((GtkWidget *) bulk_member,
+			    GTK_ALIGN_FILL);
+      gtk_widget_set_valign((GtkWidget *) bulk_member,
+			    GTK_ALIGN_FILL);
+      
+      ags_effect_bulk_add_bulk_member(effect_bulk,
+				      bulk_member,
+				      x, y,
+				      1, 1);
+      ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
+      gtk_widget_show((GtkWidget *) bulk_member);
+
+      /* iterate */
+      x++;
+    }
+
+    /* iterate */
+    plugin_port = plugin_port->next;    
+    k++;
+  }
+
+  effect_bulk_plugin->control_count = control_count;
+
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
+}
+#endif
+
 void
 ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 				GList *control_type_name,
@@ -2821,10 +3256,17 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 										  filename, effect);
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-vst3",
-				11)){
+				12)){
 #if defined(AGS_WITH_VST3)
     base_plugin = (AgsBasePlugin *) ags_vst3_manager_find_vst3_plugin_with_fallback(ags_vst3_manager_get_instance(),
 										    filename, effect);
+#endif
+  }else if(!g_ascii_strncasecmp(plugin_name,
+				"ags-fx-audio-unit",
+				18)){
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+    base_plugin = (AgsBasePlugin *) ags_audio_unit_manager_find_audio_unit_plugin_with_fallback(ags_audio_unit_manager_get_instance(),
+												filename, effect);
 #endif
   }
 
@@ -2890,6 +3332,21 @@ ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
 				      start_pad, stop_pad,
 				      position,
 				      create_flags, recall_flags);
+#endif
+    }else if(!g_ascii_strncasecmp(plugin_name,
+				  "ags-fx-audio-unit",
+				  18)){
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+      ags_effect_bulk_add_audio_unit_plugin(effect_bulk,
+					    control_type_name,
+					    play_container, recall_container,
+					    plugin_name,
+					    fallback_filename,
+					    effect,
+					    start_audio_channel, stop_audio_channel,
+					    start_pad, stop_pad,
+					    position,
+					    create_flags, recall_flags);
 #endif
     }
   }else if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){

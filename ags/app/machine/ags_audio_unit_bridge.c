@@ -668,6 +668,7 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
   AgsAudioUnitBridge *audio_unit_bridge;
   
   AgsAudio *audio;
+  AgsAudioUnitPlugin *audio_unit_plugin;      
 
   AgsApplicationContext *application_context;
 
@@ -702,7 +703,7 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
 			     0, 0,
 			     position,
 			     (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
-
+  
   start_play = ags_audio_get_play(audio);
   start_recall = ags_audio_get_recall(audio);
 

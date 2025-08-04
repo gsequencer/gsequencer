@@ -1356,9 +1356,16 @@ ags_machine_util_new_audio_unit_bridge(gchar *filename, gchar *effect)
   audio_unit_bridge = ags_audio_unit_bridge_new(G_OBJECT(default_soundcard),
 						filename,
 						effect);
+
+  audio_unit_bridge->audio_unit_plugin = audio_unit_plugin;
   
-  if(audio_unit_plugin != NULL &&
-     ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+  ags_window_add_machine(window,
+			 AGS_MACHINE(audio_unit_bridge));
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(audio_unit_bridge));
+
+  if(ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
     ags_audio_set_flags(AGS_MACHINE(audio_unit_bridge)->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 								AGS_AUDIO_INPUT_HAS_RECYCLING |
 								AGS_AUDIO_SYNC |
@@ -1378,13 +1385,7 @@ ags_machine_util_new_audio_unit_bridge(gchar *filename, gchar *effect)
     AGS_MACHINE(audio_unit_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 					      AGS_MACHINE_REVERSE_NOTATION);
   }
-  
-  ags_window_add_machine(window,
-			 AGS_MACHINE(audio_unit_bridge));
-
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(audio_unit_bridge));
-  
+    
   /*  */
   ags_audio_set_audio_channels(AGS_MACHINE(audio_unit_bridge)->audio,
 			       2, 0);
@@ -1912,16 +1913,14 @@ ags_machine_util_new_live_audio_unit_bridge(gchar *filename, gchar *effect)
 			       2, 0);
 
   /*  */
-  if(audio_unit_plugin != NULL){
-    if(!ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
-      ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,
-			 AGS_TYPE_INPUT,
-			 1, 0);
-    }else{
-      ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,
-			 AGS_TYPE_INPUT,
-			 128, 0);
-    }
+  if(!ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,
+		       AGS_TYPE_INPUT,
+		       1, 0);
+  }else{
+    ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,
+		       AGS_TYPE_INPUT,
+		       128, 0);
   }
 
   ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,

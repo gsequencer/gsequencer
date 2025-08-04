@@ -170,6 +170,70 @@ ags_audio_unit_new_queue_manager_get_new_queue(AgsAudioUnitNewQueueManager *audi
 }
 
 /**
+ * ags_audio_unit_new_queue_manager_fetch_audio_unit:
+ * @audio_unit_new_queue_manager: the #AgsAudioUnitNewQueueManager
+ * @plugin_name: the plugin name
+ *
+ * Fetch Audio Unit by @plugin_name.
+ *
+ * Returns: (transfer full): the AVAudioUnit
+ *
+ * Since: 8.1.2
+ */
+gpointer
+ags_audio_unit_new_queue_manager_fetch_audio_unit(AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager,
+						  gchar *plugin_name)
+{
+  GList *new_queue;
+  
+  gpointer audio_unit;
+  
+  GRecMutex *audio_unit_new_queue_manager_mutex;
+
+  if(!AGS_IS_AUDIO_UNIT_NEW_QUEUE_MANAGER(audio_unit_new_queue_manager) ||
+     plugin_name == NULL){
+    return(NULL);
+  }
+  
+  /* get audio_unit_new_queue manager mutex */
+  audio_unit_new_queue_manager_mutex = AGS_AUDIO_UNIT_NEW_QUEUE_MANAGER_GET_OBJ_MUTEX(audio_unit_new_queue_manager);
+  
+  audio_unit = NULL;
+
+  g_rec_mutex_lock(audio_unit_new_queue_manager_mutex);
+
+  new_queue = audio_unit_new_queue_manager->new_queue;
+
+  while(new_queue != NULL){
+    AgsAudioUnitNewQueue *current;
+
+    current = (AgsAudioUnitNewQueue *) new_queue->data;
+    
+    if(current != NULL &&
+       !(current->in_use) &&
+       current->plugin_name != NULL &&
+       !g_strcmp0(current->plugin_name,
+		  plugin_name)){
+      current->in_use = TRUE;
+      
+      audio_unit = current->audio_unit;
+
+      audio_unit_new_queue_manager->new_queue = g_list_remove(audio_unit_new_queue_manager->new_queue,
+							      current);
+      ags_audio_unit_new_queue_free(current);
+      
+      break;
+    }
+
+    new_queue = new_queue->next;
+  }
+  
+  g_rec_mutex_unlock(audio_unit_new_queue_manager_mutex);
+
+  return(audio_unit);
+}
+
+/**
  * ags_audio_unit_new_queue_manager_get_instance:
  *
  * Get instance.

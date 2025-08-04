@@ -488,7 +488,7 @@ AS_IF([test "x$enable_audio_unit_plugins" != xno],
       [AC_DEFINE([AGS_WITH_AUDIO_UNIT_PLUGINS], [1], [audio-unit-plugins enabled])
 
       AUDIO_UNIT_PLUGINS_CFLAGS= 
-      AUDIO_UNIT_PLUGINS_LIBS="-framework AudioUnit -framework AudioToolbox"
+      AUDIO_UNIT_PLUGINS_LIBS="-framework CoreFoundation -framework AVFoundation -framework AudioUnit -framework AudioToolbox"
       AC_SUBST(AUDIO_UNIT_PLUGINS_CFLAGS)
       AC_SUBST(AUDIO_UNIT_PLUGINS_LIBS)
 
@@ -736,7 +736,7 @@ if test "${LIBAGS_AUDIO_UNIT_PLUGINS_LIBS+set}" = set; then
 echo "variable \$LIBAGS_AUDIO_UNIT_PLUGINS_LIBS is set to: $LIBAGS_AUDIO_UNIT_PLUGINS_LIBS"
 else
 # -lvstgui_standalone
-LIBAGS_AUDIO_UNIT_PLUGINS_LIBS="-lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting"
+LIBAGS_AUDIO_UNIT_PLUGINS_LIBS="-framework CoreFoundation -framework AVFoundation -framework AudioToolbox"
 echo "variable \$LIBAGS_AUDIO_UNIT_PLUGINS_LIBS is set to: $LIBAGS_AUDIO_UNIT_PLUGINS_LIBS"
 fi
 
@@ -748,6 +748,8 @@ LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE="    <chapter id=\"plugin-audio_unit\">\
       <xi:include href=\"xml/ags_audio_unit_conversion.xml\"/>\\
       <xi:include href=\"xml/ags_audio_unit_plugin.xml\"/>\\
       <xi:include href=\"xml/ags_audio_unit_manager.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_new_queue.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_new_queue_manager.xml\"/>\\
     </chapter>"
 
 LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE="      <xi:include href=\"xml/ags_fx_audio_unit_audio.xml\"/>\\
