@@ -13275,7 +13275,7 @@ ags_fx_factory_create(AgsAudio *audio,
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-audio-unit",
 				18)){
-#if defined(AGS_WITH_AUDIO_UNIT)
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
     start_recall = ags_fx_factory_create_audio_unit(audio,
 						    play_container, recall_container,
 						    plugin_name,

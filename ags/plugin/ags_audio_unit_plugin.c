@@ -254,13 +254,6 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 
       audio_unit_new_queue_manager_mutex = AGS_AUDIO_UNIT_NEW_QUEUE_MANAGER_GET_OBJ_MUTEX(audio_unit_new_queue_manager);
 
-      g_rec_mutex_lock(audio_unit_new_queue_manager_mutex);
-
-      audio_unit_new_queue_manager->new_queue = g_list_prepend(audio_unit_new_queue_manager->new_queue,
-							       audio_unit_new_queue);
-
-      g_rec_mutex_unlock(audio_unit_new_queue_manager_mutex);
-
       /* audio unit manager */
       audio_unit_manager = ags_audio_unit_manager_get_instance();
 
@@ -273,7 +266,7 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 	
 	audio_unit_plugin->audio_unit = audio_unit;
 
-	component_description = [audio_unit componentDescription];
+	component_description = [[audio_unit AUAudioUnit] componentDescription];
 	
 	if(component_description.componentType == kAudioUnitType_MusicDevice){
 	  ags_base_plugin_set_flags((AgsBasePlugin *) audio_unit_plugin,
@@ -282,6 +275,14 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 	
 	ags_base_plugin_load_plugin((AgsBasePlugin *) audio_unit_plugin);
       }
+
+      /* add to newe queue */
+      g_rec_mutex_lock(audio_unit_new_queue_manager_mutex);
+
+      audio_unit_new_queue_manager->new_queue = g_list_prepend(audio_unit_new_queue_manager->new_queue,
+							       audio_unit_new_queue);
+
+      g_rec_mutex_unlock(audio_unit_new_queue_manager_mutex);
     }];
 }
 
@@ -420,7 +421,7 @@ ags_audio_unit_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     current_plugin_port->port_index = output_count + input_count + i;
 
-    str = [[parameter_arr[i] identifier] UTF8String];
+    str = [[parameter_arr[i] displayName] UTF8String];
     
     current_plugin_port->port_name = g_strdup(str);
 

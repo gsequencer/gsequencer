@@ -3041,7 +3041,7 @@ ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
       g_rec_mutex_unlock(plugin_port_mutex);
 
       /* add bulk member */
-      plugin_name = g_strdup_printf("audio_unit-<%s>",
+      plugin_name = g_strdup_printf("audio-unit-<%s>",
 				    effect);
 
       control_port = g_strdup_printf("%u/%u",
@@ -3104,8 +3104,8 @@ ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
 	/* add controls of ports and apply range  */
 	g_rec_mutex_lock(plugin_port_mutex);
 	
-	lower_bound = g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
-	upper_bound = g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+	lower_bound = (gdouble) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = (gdouble) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
 	g_rec_mutex_unlock(plugin_port_mutex);
 
@@ -3167,7 +3167,7 @@ ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
 	/* get/set default value */
 	g_rec_mutex_lock(plugin_port_mutex);
 	
-	default_value = (float) g_value_get_double(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+	default_value = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
 	g_rec_mutex_unlock(plugin_port_mutex);
 

@@ -144,11 +144,11 @@ ags_audio_unit_port_flags_get_type()
 
   if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
-      { AGS_AUDIO_UNIT_PORT_REGISTERED, "AGS_AUDIO_UNIT_PORT_REGISTERED", "audio_unit-port-registered" },
-      { AGS_AUDIO_UNIT_PORT_IS_AUDIO, "AGS_AUDIO_UNIT_PORT_IS_AUDIO", "audio_unit-port-is-audio" },
-      { AGS_AUDIO_UNIT_PORT_IS_MIDI, "AGS_AUDIO_UNIT_PORT_IS_MIDI", "audio_unit-port-is-midi" },
-      { AGS_AUDIO_UNIT_PORT_IS_OUTPUT, "AGS_AUDIO_UNIT_PORT_IS_OUTPUT", "audio_unit-port-is-output" },
-      { AGS_AUDIO_UNIT_PORT_IS_INPUT, "AGS_AUDIO_UNIT_PORT_IS_INPUT", "audio_unit-port-is-input" },
+      { AGS_AUDIO_UNIT_PORT_REGISTERED, "AGS_AUDIO_UNIT_PORT_REGISTERED", "audio-unit-port-registered" },
+      { AGS_AUDIO_UNIT_PORT_IS_AUDIO, "AGS_AUDIO_UNIT_PORT_IS_AUDIO", "audio-unit-port-is-audio" },
+      { AGS_AUDIO_UNIT_PORT_IS_MIDI, "AGS_AUDIO_UNIT_PORT_IS_MIDI", "audio-unit-port-is-midi" },
+      { AGS_AUDIO_UNIT_PORT_IS_OUTPUT, "AGS_AUDIO_UNIT_PORT_IS_OUTPUT", "audio-unit-port-is-output" },
+      { AGS_AUDIO_UNIT_PORT_IS_INPUT, "AGS_AUDIO_UNIT_PORT_IS_INPUT", "audio-unit-port-is-input" },
       { 0, NULL, NULL }
     };
 

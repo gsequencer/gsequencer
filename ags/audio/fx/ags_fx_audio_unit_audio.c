@@ -180,6 +180,8 @@ ags_fx_audio_unit_audio_init(AgsFxAudioUnitAudio *fx_audio_unit_audio)
     
   fx_audio_unit_audio->audio_unit_plugin = NULL;
 
+  fx_audio_unit_audio->audio_unit = NULL;
+
   /* scope data */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     if(i == AGS_SOUND_SCOPE_PLAYBACK ||
@@ -731,51 +733,7 @@ void
 ags_fx_audio_unit_audio_scope_data_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio,
 					       AgsFxAudioUnitAudioScopeData *scope_data)
 {
-  AgsAudioUnitPlugin *audio_unit_plugin;
-
-  gchar *filename, *effect;
-  
-  /* get filename and effect */
-  filename = NULL;
-  effect = NULL;
-
-  g_object_get(fx_audio_unit_audio,
-	       "filename", &filename,
-	       "effect", &effect,
-	       NULL);
-  
-  /*  */
-  audio_unit_plugin = fx_audio_unit_audio->audio_unit_plugin;
-  
-  if(audio_unit_plugin != NULL){
-    gpointer audio_unit;
-
-    gint64 start_time, current_time;
-    
-    start_time = g_get_monotonic_time();
-	
-    ags_base_plugin_async_instantiate((AgsBasePlugin *) audio_unit_plugin);
-
-    audio_unit = NULL;
-	
-    while((audio_unit = ags_audio_unit_new_queue_manager_fetch_audio_unit(ags_audio_unit_new_queue_manager_get_instance(),
-									  effect)) == NULL){
-      g_usleep(4);
-      
-      current_time = g_get_monotonic_time();
-      
-      if(current_time > start_time + (20 * G_TIME_SPAN_SECOND)){
-	//NOTE:JK: give up after 20 seconds
-	
-	break;
-      }
-    }
-
-    scope_data->audio_unit = audio_unit;
-  }
-  
-  g_free(filename);
-  g_free(effect);
+  //TODO:JK: implement me
 }
 
 /**
@@ -792,8 +750,11 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   AgsAudioUnitManager *audio_unit_manager;
   AgsAudioUnitPlugin *audio_unit_plugin;
 
+  gpointer audio_unit;
+
   gchar *filename, *effect;
-  
+
+  gint64 start_time, current_time;    
   guint i;
 
   GRecMutex *recall_mutex;
@@ -829,6 +790,27 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   }
 
   fx_audio_unit_audio->audio_unit_plugin = audio_unit_plugin;
+
+  start_time = g_get_monotonic_time();
+	
+  ags_base_plugin_async_instantiate((AgsBasePlugin *) audio_unit_plugin);
+
+  audio_unit = NULL;
+	
+  while((audio_unit = ags_audio_unit_new_queue_manager_fetch_audio_unit(ags_audio_unit_new_queue_manager_get_instance(),
+									effect)) == NULL){
+    g_usleep(4);
+      
+    current_time = g_get_monotonic_time();
+      
+    if(current_time > start_time + (20 * G_TIME_SPAN_SECOND)){
+      //NOTE:JK: give up after 20 seconds
+	
+      break;
+    }
+  }
+
+  fx_audio_unit_audio->audio_unit = audio_unit;
   
   /* set audio_unit plugin */    
   g_rec_mutex_lock(recall_mutex);
@@ -967,7 +949,7 @@ ags_fx_audio_unit_audio_load_port(AgsFxAudioUnitAudio *fx_audio_unit_audio)
       plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       /* plugin name, specifier and control port */
-      plugin_name = g_strdup_printf("audio_unit-<%s>",
+      plugin_name = g_strdup_printf("audio-unit-<%s>",
 				    AGS_BASE_PLUGIN(audio_unit_plugin)->effect);
 
       specifier = NULL;

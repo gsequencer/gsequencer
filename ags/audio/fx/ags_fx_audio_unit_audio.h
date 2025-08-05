@@ -61,6 +61,8 @@ struct _AgsFxAudioUnitAudio
     
   AgsAudioUnitPlugin *audio_unit_plugin;
 
+  gpointer audio_unit;
+
   AgsFxAudioUnitAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
@@ -82,8 +84,6 @@ struct _AgsFxAudioUnitAudioScopeData
   
   float *input;
   guint input_buffer_size;
-
-  gpointer audio_unit;
 };
 
 GType ags_fx_audio_unit_audio_get_type();
