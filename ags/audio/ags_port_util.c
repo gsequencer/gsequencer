@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,10 @@
 
 #if defined(AGS_WITH_VST3)
 #include <ags/plugin/ags_vst3_conversion.h>
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/plugin/ags_audio_unit_conversion.h>
 #endif
 
 gpointer ags_port_util_copy(gpointer ptr);
@@ -179,7 +183,6 @@ ags_port_util_load_lv2_conversion(AgsPort *port,
   }
 }
 
-#if defined(AGS_WITH_VST3)
 /**
  * ags_port_util_load_vst3_conversion:
  * @port: the #AgsPort
@@ -193,6 +196,7 @@ void
 ags_port_util_load_vst3_conversion(AgsPort *port,
 				   AgsPluginPort *plugin_port)
 {
+#if defined(AGS_WITH_VST3)
   AgsVst3Conversion *vst3_conversion;
 
   if(!AGS_IS_PORT(port) ||
@@ -207,5 +211,36 @@ ags_port_util_load_vst3_conversion(AgsPort *port,
 		 "conversion", vst3_conversion,
 		 NULL);
   }
-}
 #endif
+}
+
+/**
+ * ags_port_util_load_audio_unit_conversion:
+ * @port: the #AgsPort
+ * @plugin_port: the #AgsPluginPort
+ * 
+ * Loads conversion object by using @plugin_port and sets in on @port.
+ * 
+ * Since: 8.1.2
+ */
+void
+ags_port_util_load_audio_unit_conversion(AgsPort *port,
+					 AgsPluginPort *plugin_port)
+{
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsAudioUnitConversion *audio_unit_conversion;
+
+  if(!AGS_IS_PORT(port) ||
+     !AGS_IS_PLUGIN_PORT(plugin_port)){
+    return;
+  }
+
+  audio_unit_conversion = NULL;
+
+  if(audio_unit_conversion != NULL){
+    g_object_set(port,
+		 "conversion", audio_unit_conversion,
+		 NULL);
+  }
+#endif
+}

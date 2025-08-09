@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,6 +55,11 @@
 #if defined(AGS_WITH_VST3)
 #include <ags/app/machine/ags_vst3_bridge.h>
 #include <ags/app/machine/ags_live_vst3_bridge.h>
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/app/machine/ags_audio_unit_bridge.h>
+#include <ags/app/machine/ags_live_audio_unit_bridge.h>
 #endif
 
 #include <ags/i18n.h>
@@ -266,6 +271,12 @@ ags_machine_counter_manager_load(AgsMachineCounterManager *machine_counter_manag
 								 NULL, NULL));
 #endif
   
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  start_machine_counter = g_list_prepend(start_machine_counter,
+					 ags_machine_counter_new(AGS_TYPE_AUDIO_UNIT_BRIDGE,
+								 NULL, NULL));
+#endif
+  
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_LIVE_DSSI_BRIDGE,
 								 NULL, NULL));
@@ -277,6 +288,12 @@ ags_machine_counter_manager_load(AgsMachineCounterManager *machine_counter_manag
 #if defined(AGS_WITH_VST3)
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_LIVE_VST3_BRIDGE,
+								 NULL, NULL));
+#endif
+  
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  start_machine_counter = g_list_prepend(start_machine_counter,
+					 ags_machine_counter_new(AGS_TYPE_LIVE_AUDIO_UNIT_BRIDGE,
 								 NULL, NULL));
 #endif
   

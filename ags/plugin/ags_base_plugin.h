@@ -90,7 +90,9 @@ struct _AgsBasePluginClass
   GObjectClass gobject;
 
   gpointer (*instantiate)(AgsBasePlugin *base_plugin,
-			  guint samplerate, guint buffer_size);
+			  guint samplerate,
+			  guint buffer_size);
+  void (*async_instantiate)(AgsBasePlugin *base_plugin);
 
   gpointer (*instantiate_with_params)(AgsBasePlugin *base_plugin,
 				      guint *n_params,
@@ -171,7 +173,9 @@ GList* ags_base_plugin_sort(GList *base_plugin);
 void ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin);
 
 gpointer ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
-				     guint samplerate, guint buffer_size);
+				     guint samplerate,
+				     guint buffer_size);
+void ags_base_plugin_async_instantiate(AgsBasePlugin *base_plugin);
 gpointer ags_base_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 						 guint *n_params,
 						 gchar ***parameter_name,

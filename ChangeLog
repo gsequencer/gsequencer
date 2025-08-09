@@ -1,3 +1,18 @@
+ags (8.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: implemented ags-fx-audio-unit
+	* implemented AgsAudioUnitManager
+	* implemented AgsAudioUnitNewQueueManager
+	* TODO:JK: implemented AgsAudioUnitPlugin
+	* implemented AgsAudioUnitNewQueue
+	* implemented AgsAudioUnitConversion
+	* TODO:JK: implemented AgsAudioUnitBridge
+	* TODO:JK: implemented AgsLiveAudioUnitBridge
+	* TODO:JK: implemented ags-fx-audio-unit
+	* added Audio Unit menu to application window
+	* added live Audio Unit menu to application window
+
 ags (8.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

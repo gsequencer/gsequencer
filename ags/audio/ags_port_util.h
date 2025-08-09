@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,6 +50,9 @@ void ags_port_util_load_lv2_conversion(AgsPort *port,
 
 void ags_port_util_load_vst3_conversion(AgsPort *port,
 					AgsPluginPort *plugin_port);
+
+void ags_port_util_load_audio_unit_conversion(AgsPort *port,
+					      AgsPluginPort *plugin_port);
 
 G_END_DECLS
 

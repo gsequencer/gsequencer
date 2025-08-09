@@ -127,8 +127,8 @@ ags_audio_unit_client_flags_get_type()
 
   if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
-      { AGS_AUDIO_UNIT_CLIENT_ACTIVATED, "AGS_AUDIO_UNIT_CLIENT_ACTIVATED", "audio_unit-client-activated" },
-      { AGS_AUDIO_UNIT_CLIENT_READY, "AGS_AUDIO_UNIT_CLIENT_READY", "audio_unit-client-ready" },
+      { AGS_AUDIO_UNIT_CLIENT_ACTIVATED, "AGS_AUDIO_UNIT_CLIENT_ACTIVATED", "audio-unit-client-activated" },
+      { AGS_AUDIO_UNIT_CLIENT_READY, "AGS_AUDIO_UNIT_CLIENT_READY", "audio-unit-client-ready" },
       { 0, NULL, NULL }
     };
 

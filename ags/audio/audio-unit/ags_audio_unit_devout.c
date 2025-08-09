@@ -1694,7 +1694,7 @@ ags_audio_unit_devout_list_cards(AgsSoundcard *soundcard,
 
       if(card_name != NULL){
 	g_object_get(list->data,
-		     "audio_unit-client", &audio_unit_client,
+		     "audio-unit-client", &audio_unit_client,
 		     NULL);
 	
 	if(audio_unit_client != NULL){

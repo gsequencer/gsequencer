@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -85,6 +85,9 @@
 #if defined(AGS_OSX_DMG_ENV)
 #include <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
+
+#import <CoreFoundation/CoreFoundation.h>
+#import <AVFoundation/AVFoundation.h>
 #endif
 
 #include <sys/types.h>
@@ -712,11 +715,13 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   gsequencer_application_context->dssi_loading = FALSE;
   gsequencer_application_context->lv2_loading = FALSE;
   gsequencer_application_context->vst3_loading = FALSE;
+  gsequencer_application_context->audio_unit_loading = FALSE;
   
   gsequencer_application_context->ladspa_loader = NULL;
   gsequencer_application_context->dssi_loader = NULL;
   gsequencer_application_context->lv2_loader = NULL;
   gsequencer_application_context->vst3_loader = NULL;
+  gsequencer_application_context->audio_unit_loader = NULL;
 
   gsequencer_application_context->lv2_turtle_scanner = NULL;
 
@@ -3435,6 +3440,9 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 #if defined(AGS_WITH_VST3)
   AgsVst3Manager *vst3_manager;
 #endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsAudioUnitManager *audio_unit_manager;
+#endif
   
   AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
@@ -3728,7 +3736,19 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   ags_vst3_manager_load_blacklist(vst3_manager,
 				  blacklist_filename);
 #endif
-    
+
+  /* load audio unit manager */
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  audio_unit_manager = ags_audio_unit_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "audio_unit_plugin.blacklist");
+  ags_audio_unit_manager_load_blacklist(audio_unit_manager,
+					blacklist_filename);
+#endif
+  
   gsequencer_application_context->start_loader = TRUE;
   
   /* sound server */
@@ -4826,6 +4846,9 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
 #if defined(AGS_WITH_VST3)
   AgsVst3Manager *vst3_manager;
 #endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsAudioUnitManager *audio_unit_manager;
+#endif
 
   AgsCoreAudioServer *core_audio_server;
 
@@ -4872,6 +4895,11 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
   }
   
   g_object_unref(vst3_manager);
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  audio_unit_manager = ags_audio_unit_manager_get_instance();  
+  g_object_unref(audio_unit_manager);
 #endif
   
   /* retrieve core audio server */
@@ -5176,6 +5204,9 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 #if defined(AGS_WITH_VST3)
   AgsVst3Manager *vst3_manager;
 #endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsAudioUnitManager *audio_unit_manager;
+#endif
   
   AgsLog *log;
 
@@ -5194,6 +5225,8 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
   gint64 current_time;
   gboolean initial_load;
 
+  guint i, i_stop;  
+
   GError *error;
 
   if(!gsequencer_application_context->start_loader){
@@ -5206,7 +5239,8 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
      gsequencer_application_context->ladspa_loader == NULL &&
      gsequencer_application_context->dssi_loader == NULL &&
      gsequencer_application_context->lv2_loader == NULL &&
-     gsequencer_application_context->vst3_loader == NULL){
+     gsequencer_application_context->vst3_loader == NULL &&
+     gsequencer_application_context->audio_unit_loader == NULL){
     ags_log_add_message(log,
 			"* Launch user interface");
 
@@ -5245,6 +5279,10 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
   
 #if defined(AGS_WITH_VST3)
   vst3_manager = ags_vst3_manager_get_instance();
+#endif
+  
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  audio_unit_manager = ags_audio_unit_manager_get_instance();
 #endif
   
   ladspa_path = ags_ladspa_manager_get_default_path();
@@ -5468,6 +5506,31 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
     }
 
     gsequencer_application_context->vst3_loader = g_list_reverse(gsequencer_application_context->vst3_loader);
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+    AVAudioUnitComponentManager *audio_unit_component_manager;
+
+    NSArray<AVAudioUnitComponent *> *component_arr;
+
+    AudioComponentDescription description;
+
+    audio_unit_component_manager = [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
+
+    description = (AudioComponentDescription) {0,};
+
+    description.componentType = kAudioUnitType_Effect;
+
+    component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
+
+    i_stop = [component_arr count];
+  
+    for(i = 0; i < i_stop; i++){
+      gsequencer_application_context->audio_unit_loader = g_list_prepend(gsequencer_application_context->audio_unit_loader,
+									 component_arr[i]);
+    }
+    
+    gsequencer_application_context->audio_unit_loader = g_list_reverse(gsequencer_application_context->audio_unit_loader);
 #endif
     
     gsequencer_application_context->loader_ready = TRUE;
@@ -5889,6 +5952,48 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
   }
 #endif
 
+  /* load audio_unit */
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  current_time = g_get_monotonic_time();
+  
+  if(current_time < start_time + AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL &&
+     !gsequencer_application_context->audio_unit_loading){
+    ags_log_add_message(log,
+			"* Loading Audio Unit plugins");
+
+    gsequencer_application_context->audio_unit_loading = TRUE;
+  }
+  
+  while(gsequencer_application_context->audio_unit_loader != NULL){
+    gpointer component;
+
+    gchar *loader_effect;
+    
+    current_time = g_get_monotonic_time();
+    
+    if(!initial_load &&
+       current_time > start_time + AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL){
+      break;
+    }
+
+    component = gsequencer_application_context->audio_unit_loader->data;
+
+    loader_effect = [[((AVAudioUnitComponent *) component) name] UTF8String];
+    
+    if(!g_list_find_custom(audio_unit_manager->audio_unit_plugin_blacklist,
+			   loader_effect,
+			   (GCompareFunc) g_strcmp0)){
+      ags_audio_unit_manager_load_component(audio_unit_manager,
+					    component);
+    }
+
+    gsequencer_application_context->audio_unit_loader = g_list_remove(gsequencer_application_context->audio_unit_loader,
+								      component);
+    
+    initial_load = FALSE;
+  }
+#endif
+  
   return(TRUE);
 }
 

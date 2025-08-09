@@ -168,6 +168,9 @@ void ags_gsequencer_add_lv2_bridge_callback(GAction *action, GVariant *parameter
 void ags_gsequencer_add_vst3_bridge_callback(GAction *action, GVariant *parameter,
 					     AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_add_audio_unit_bridge_callback(GAction *action, GVariant *parameter,
+						   AgsGSequencerApplication *gsequencer_app);
+
 void ags_gsequencer_add_live_dssi_bridge_callback(GAction *action, GVariant *parameter,
 						  AgsGSequencerApplication *gsequencer_app);
 
@@ -176,6 +179,9 @@ void ags_gsequencer_add_live_lv2_bridge_callback(GAction *action, GVariant *para
 
 void ags_gsequencer_add_live_vst3_bridge_callback(GAction *action, GVariant *parameter,
 						  AgsGSequencerApplication *gsequencer_app);
+
+void ags_gsequencer_add_live_audio_unit_bridge_callback(GAction *action, GVariant *parameter,
+							AgsGSequencerApplication *gsequencer_app);
 
 void ags_gsequencer_edit_notation_callback(GAction *action, GVariant *parameter,
 					   AgsGSequencerApplication *gsequencer_app);

@@ -242,12 +242,12 @@ ags_audio_unit_devin_flags_get_type()
 
   if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
-      { AGS_AUDIO_UNIT_DEVIN_INITIALIZED, "AGS_AUDIO_UNIT_DEVIN_INITIALIZED", "audio_unit-devin-initialized" },
-      { AGS_AUDIO_UNIT_DEVIN_START_RECORD, "AGS_AUDIO_UNIT_DEVIN_START_RECORD", "audio_unit-devin-start-record" },
-      { AGS_AUDIO_UNIT_DEVIN_RECORD, "AGS_AUDIO_UNIT_DEVIN_RECORD", "audio_unit-devin-record" },
-      { AGS_AUDIO_UNIT_DEVIN_SHUTDOWN, "AGS_AUDIO_UNIT_DEVIN_SHUTDOWN", "audio_unit-devin-shutdown" },
-      { AGS_AUDIO_UNIT_DEVIN_NONBLOCKING, "AGS_AUDIO_UNIT_DEVIN_NONBLOCKING", "audio_unit-devin-nonblocking" },
-      { AGS_AUDIO_UNIT_DEVIN_ATTACK_FIRST, "AGS_AUDIO_UNIT_DEVIN_ATTACK_FIRST", "audio_unit-devin-attack-first" },
+      { AGS_AUDIO_UNIT_DEVIN_INITIALIZED, "AGS_AUDIO_UNIT_DEVIN_INITIALIZED", "audio-unit-devin-initialized" },
+      { AGS_AUDIO_UNIT_DEVIN_START_RECORD, "AGS_AUDIO_UNIT_DEVIN_START_RECORD", "audio-unit-devin-start-record" },
+      { AGS_AUDIO_UNIT_DEVIN_RECORD, "AGS_AUDIO_UNIT_DEVIN_RECORD", "audio-unit-devin-record" },
+      { AGS_AUDIO_UNIT_DEVIN_SHUTDOWN, "AGS_AUDIO_UNIT_DEVIN_SHUTDOWN", "audio-unit-devin-shutdown" },
+      { AGS_AUDIO_UNIT_DEVIN_NONBLOCKING, "AGS_AUDIO_UNIT_DEVIN_NONBLOCKING", "audio-unit-devin-nonblocking" },
+      { AGS_AUDIO_UNIT_DEVIN_ATTACK_FIRST, "AGS_AUDIO_UNIT_DEVIN_ATTACK_FIRST", "audio-unit-devin-attack-first" },
       { 0, NULL, NULL }
     };
 
@@ -1650,7 +1650,7 @@ ags_audio_unit_devin_list_cards(AgsSoundcard *soundcard,
 
       if(card_name != NULL){
 	g_object_get(list->data,
-		     "audio_unit-client", &audio_unit_client,
+		     "audio-unit-client", &audio_unit_client,
 		     NULL);
 	
 	if(audio_unit_client != NULL){

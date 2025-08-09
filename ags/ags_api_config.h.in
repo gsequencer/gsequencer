@@ -56,6 +56,8 @@
 
 #undef AGS_WITH_VST3
 
+#undef AGS_WITH_AUDIO_UNIT_PLUGINS
+
 #undef AGS_WITH_MIDI2
 
 #endif /*__AGS_API_CONFIG_H__*/
