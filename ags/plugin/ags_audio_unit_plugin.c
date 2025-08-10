@@ -214,8 +214,10 @@ ags_audio_unit_plugin_finalize(GObject *gobject)
 
 void
 ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
-{
-  [AVAudioUnit instantiateWithComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription] options:0 completionHandler:^(AVAudioUnit * _Nullable audio_unit, NSError * _Nullable error){
+{  
+  [AVAudioUnit instantiateWithComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]
+   options:0
+   completionHandler:^(AVAudioUnit *audio_unit, NSError *ns_error){
       AgsAudioUnitManager *audio_unit_manager;
       AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager;
       AgsAudioUnitPlugin *audio_unit_plugin;
@@ -228,8 +230,9 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 
       GRecMutex *audio_unit_new_queue_manager_mutex;
       
-      if([error code] != noErr){
-	g_warning("failed to instantiate Audio Unit %d", [error code]);
+      if(ns_error != NULL &&
+	 [ns_error code] != noErr){
+	g_warning("failed to instantiate Audio Unit %d", [ns_error code]);
 
 	return;
       }
@@ -246,7 +249,7 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
       audio_unit_new_queue->creation_timestamp = creation_timestamp;
 
       audio_unit_new_queue->plugin_name = g_strdup(plugin_name);
-      
+    
       audio_unit_new_queue->audio_unit = audio_unit;
 
       /* audio unit new queue manager */
@@ -276,6 +279,15 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 	ags_base_plugin_load_plugin((AgsBasePlugin *) audio_unit_plugin);
       }
 
+      ns_error = NULL;
+      
+      [audio_unit allocateRenderResourcesAndReturnError:&ns_error];
+
+      if(ns_error != NULL &&
+	 [ns_error code] != noErr){
+	g_warning("Audio Unit allocate render resources returned error - ErrorCode %d", [ns_error code]);
+      }
+      
       /* add to newe queue */
       g_rec_mutex_lock(audio_unit_new_queue_manager_mutex);
 

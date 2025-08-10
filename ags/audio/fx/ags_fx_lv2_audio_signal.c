@@ -185,6 +185,8 @@ ags_fx_lv2_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *base_plugin_mutex;
 
   fx_lv2_audio_signal = (AgsFxLv2AudioSignal *) recall;
+
+  fx_lv2_audio = NULL;
   
   fx_lv2_channel = NULL;
   fx_lv2_channel_processor = NULL;

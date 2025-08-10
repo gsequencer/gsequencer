@@ -31,6 +31,8 @@ void ags_fx_audio_unit_channel_processor_init(AgsFxAudioUnitChannelProcessor *fx
 void ags_fx_audio_unit_channel_processor_dispose(GObject *gobject);
 void ags_fx_audio_unit_channel_processor_finalize(GObject *gobject);
 
+void ags_fx_audio_unit_channel_processor_run_inter(AgsRecall *recall);
+
 /**
  * SECTION:ags_fx_audio_unit_channel_processor
  * @short_description: fx Audio Unit channel processor
@@ -79,6 +81,7 @@ ags_fx_audio_unit_channel_processor_get_type()
 void
 ags_fx_audio_unit_channel_processor_class_init(AgsFxAudioUnitChannelProcessorClass *fx_audio_unit_channel_processor)
 {
+  AgsRecallClass *recall;
   GObjectClass *gobject;
 
   ags_fx_audio_unit_channel_processor_parent_class = g_type_class_peek_parent(fx_audio_unit_channel_processor);
@@ -88,6 +91,11 @@ ags_fx_audio_unit_channel_processor_class_init(AgsFxAudioUnitChannelProcessorCla
 
   gobject->dispose = ags_fx_audio_unit_channel_processor_dispose;
   gobject->finalize = ags_fx_audio_unit_channel_processor_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) fx_audio_unit_channel_processor;
+
+  recall->run_inter = ags_fx_audio_unit_channel_processor_run_inter;
 }
 
 void
@@ -121,6 +129,54 @@ ags_fx_audio_unit_channel_processor_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_audio_unit_channel_processor_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_audio_unit_channel_processor_run_inter(AgsRecall *recall)
+{
+  AgsFxAudioUnitAudio *fx_audio_unit_audio;
+  AgsFxAudioUnitChannelProcessor *fx_audio_unit_channel_processor;
+
+  AgsFxAudioUnitAudioScopeData *scope_data;
+  
+  gint sound_scope;
+
+  fx_audio_unit_channel_processor = AGS_FX_AUDIO_UNIT_CHANNEL_PROCESSOR(recall);
+
+  fx_audio_unit_audio = NULL;
+  
+  g_object_get(fx_audio_unit_channel_processor,
+	       "recall-audio", &fx_audio_unit_audio,
+	       NULL);
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+  
+  scope_data = fx_audio_unit_audio->scope_data[sound_scope];
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_audio_unit_channel_processor_parent_class)->run_inter(recall);
+
+  /* post sync */
+  if(scope_data != NULL){    
+    /* wait until render thread completed */
+    g_mutex_lock(&(scope_data->render_mutex));
+
+    ags_atomic_boolean_set(&(scope_data->render_wait),
+			   TRUE);
+
+    while(ags_atomic_boolean_get(&(scope_data->render_wait)) &&
+	  !ags_atomic_boolean_get(&(scope_data->render_done))){
+      g_cond_wait(&(scope_data->render_cond),
+		  &(scope_data->render_mutex));
+    }
+	
+    ags_atomic_boolean_set(&(scope_data->render_wait),
+			   FALSE);
+    ags_atomic_boolean_set(&(scope_data->render_done),
+			   FALSE);
+
+    g_mutex_unlock(&(scope_data->render_mutex));
+  }
 }
 
 /**

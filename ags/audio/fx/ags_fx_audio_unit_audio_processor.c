@@ -149,7 +149,27 @@ void
 ags_fx_audio_unit_audio_processor_run_init_pre(AgsRecall *recall)
 {
   AgsFxAudioUnitAudio *fx_audio_unit_audio;
+  AgsFxAudioUnitAudioProcessor *fx_audio_unit_audio_processor;
+
+  AgsFxAudioUnitAudioScopeData *scope_data;
   
+  gint sound_scope;
+
+  fx_audio_unit_audio_processor = AGS_FX_AUDIO_UNIT_AUDIO_PROCESSOR(recall);
+
+  fx_audio_unit_audio = NULL;
+  
+  g_object_get(fx_audio_unit_audio_processor,
+	       "recall-audio", &fx_audio_unit_audio,
+	       NULL);
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+  
+  scope_data = fx_audio_unit_audio->scope_data[sound_scope];
+
+  if(scope_data != NULL){    
+    ags_fx_audio_unit_audio_start_render_thread(fx_audio_unit_audio);
+  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_audio_unit_audio_processor_parent_class)->run_init_pre(recall);

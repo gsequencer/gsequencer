@@ -61,8 +61,16 @@ struct _AgsFxAudioUnitAudio
     
   AgsAudioUnitPlugin *audio_unit_plugin;
 
+  gpointer av_format;
+  
+  gpointer audio_engine;
+
   gpointer audio_unit;
 
+  gboolean render_thread_running;
+  
+  GThread *render_thread;
+  
   AgsFxAudioUnitAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
@@ -84,6 +92,25 @@ struct _AgsFxAudioUnitAudioScopeData
   
   float *input;
   guint input_buffer_size;
+
+  gpointer av_buffer;
+
+  _Atomic gboolean completed_wait;
+  _Atomic gint active_audio_signal_count;
+  _Atomic gint completed_audio_signal_count;
+
+  GMutex completed_mutex;
+  GCond completed_cond;
+
+  GHashTable *active_audio_signal;
+  
+  GHashTable *written_audio_signal;
+
+  _Atomic gboolean render_wait;
+  _Atomic gboolean render_done;
+
+  GMutex render_mutex;
+  GCond render_cond;
 };
 
 GType ags_fx_audio_unit_audio_get_type();
@@ -100,6 +127,10 @@ void ags_fx_audio_unit_audio_unset_flags(AgsFxAudioUnitAudio *fx_audio_unit_audi
 /* load/unload */
 void ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio);
 void ags_fx_audio_unit_audio_load_port(AgsFxAudioUnitAudio *fx_audio_unit_audio);
+
+/* render thread */
+void ags_fx_audio_unit_audio_start_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio);
+void ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio);
 
 /* instantiate */
 AgsFxAudioUnitAudio* ags_fx_audio_unit_audio_new(AgsAudio *audio);
