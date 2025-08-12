@@ -66,7 +66,8 @@ struct _AgsFxAudioUnitAudio
   gpointer audio_engine;
 
   gpointer audio_unit;
-
+  gpointer av_audio_sequencer;
+  
   gboolean render_thread_running;
   
   GThread *render_thread;
@@ -111,6 +112,32 @@ struct _AgsFxAudioUnitAudioScopeData
 
   GMutex render_mutex;
   GCond render_cond;
+  
+  AgsFxAudioUnitAudioChannelData* channel_data[1];
+};
+
+struct _AgsFxAudioUnitAudioChannelData
+{
+  GRecMutex strct_mutex;
+  
+  gpointer parent;
+
+  guint event_count;
+
+  AgsFxAudioUnitAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
+};
+
+struct _AgsFxAudioUnitAudioInputData
+{
+  GRecMutex strct_mutex;
+  
+  gpointer parent;
+
+  gpointer av_music_track;
+
+  GList *note;
+  
+  guint key_on;
 };
 
 GType ags_fx_audio_unit_audio_get_type();
@@ -118,6 +145,12 @@ GType ags_fx_audio_unit_audio_get_type();
 /* runtime */
 AgsFxAudioUnitAudioScopeData* ags_fx_audio_unit_audio_scope_data_alloc();
 void ags_fx_audio_unit_audio_scope_data_free(AgsFxAudioUnitAudioScopeData *scope_data);
+
+AgsFxAudioUnitAudioChannelData* ags_fx_audio_unit_audio_channel_data_alloc();
+void ags_fx_audio_unit_audio_channel_data_free(AgsFxAudioUnitAudioChannelData *channel_data);
+
+AgsFxAudioUnitAudioInputData* ags_fx_audio_unit_audio_input_data_alloc();
+void ags_fx_audio_unit_audio_input_data_free(AgsFxAudioUnitAudioInputData *input_data);
 
 /* flags */
 gboolean ags_fx_audio_unit_audio_test_flags(AgsFxAudioUnitAudio *fx_audio_unit_audio, guint flags);

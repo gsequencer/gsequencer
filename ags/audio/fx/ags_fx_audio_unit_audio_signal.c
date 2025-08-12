@@ -410,6 +410,8 @@ ags_fx_audio_unit_audio_signal_done(AgsRecall *recall)
 	       "recall-audio", &fx_audio_unit_audio,
 	       NULL);
 
+  pad = ags_channel_get_pad(channel);
+  
   /* unset active audio signal */
   fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
@@ -471,7 +473,88 @@ ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notati
 					     guint x0, guint x1,
 					     guint y)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  AgsChannel *channel;
+  AgsFxAudioUnitAudio *fx_audio_unit_audio;
+  AgsFxAudioUnitChannel *fx_audio_unit_channel;
+  AgsFxAudioUnitChannelProcessor *fx_audio_unit_channel_processor;
+  AgsFxAudioUnitRecycling *fx_audio_unit_recycling;
+  AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal;
+  
+  GList *active_audio_signal;
+
+  gint sound_scope;
+  guint pad;
+  guint audio_start_mapping;
+  guint midi_start_mapping;
+  guint midi_note;
+
+  GRecMutex *fx_audio_unit_audio_mutex;
+
+  fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) fx_notation_audio_signal;
+
+  audio = NULL;
+  channel = NULL;
+  
+  fx_audio_unit_audio = NULL;
+  
+  fx_audio_unit_channel = NULL;
+  fx_audio_unit_channel_processor = NULL;
+
+  fx_audio_unit_recycling = NULL;
+  
+  sound_scope = ags_recall_get_sound_scope((AgsRecall *) fx_notation_audio_signal);
+
+  g_object_get(fx_notation_audio_signal,
+	       "parent", &fx_audio_unit_recycling,
+	       NULL);
+
+  g_object_get(fx_audio_unit_recycling,
+	       "parent", &fx_audio_unit_channel_processor,
+	       NULL);
+
+  g_object_get(fx_audio_unit_channel_processor,
+	       "source", &channel,
+	       "recall-audio", &fx_audio_unit_audio,
+	       NULL);
+
+  g_object_get(fx_audio_unit_audio,
+	       "audio", &audio,
+	       NULL);
+
+  g_object_get(audio,
+	       "audio-start-mapping", &audio_start_mapping,
+	       "midi-start-mapping", &midi_start_mapping,
+	       NULL);
+
+  pad = ags_channel_get_pad(channel);
+  
+  midi_note = (y - audio_start_mapping + midi_start_mapping);
+
+  /* unset active audio signal */
+  fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
+
+  if(note != NULL){
+    AgsFxAudioUnitAudioScopeData *scope_data;
+    AgsFxAudioUnitAudioChannelData *channel_data;
+    AgsFxAudioUnitAudioInputData *input_data;
+    
+    g_rec_mutex_lock(fx_audio_unit_audio_mutex);
+
+    scope_data = fx_audio_unit_audio->scope_data[sound_scope];
+
+    channel_data = scope_data->channel_data[0];
+    
+    channel_data->event_count -= 1;
+
+    input_data = channel_data->input_data[midi_note];
+
+    input_data->note = g_list_remove(input_data->note,
+				     note);
+    g_object_unref(note);
+    
+    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
+  }
 }
 
 /**
