@@ -278,10 +278,10 @@ ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
 	
 	ags_base_plugin_load_plugin((AgsBasePlugin *) audio_unit_plugin);
       }
-
+      
       ns_error = NULL;
       
-      [audio_unit allocateRenderResourcesAndReturnError:&ns_error];
+      [[audio_unit AUAudioUnit] allocateRenderResourcesAndReturnError:&ns_error];
 
       if(ns_error != NULL &&
 	 [ns_error code] != noErr){

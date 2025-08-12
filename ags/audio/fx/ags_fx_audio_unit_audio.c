@@ -972,8 +972,8 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 
   AVAudioEngine *audio_engine;
   
-  gpointer audio_unit;
-  gpointer av_audio_sequencer;
+  AVAudioUnit *audio_unit;
+  AVAudioSequencer *av_audio_sequencer;
   gpointer output_unit;
   gpointer input_unit;
 
@@ -1094,22 +1094,23 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 #endif
 
   /* audio engine */
-  audio_engine =
-    fx_audio_unit_audio->audio_engine = [[AVAudioEngine alloc] init];
+  audio_engine = [[AVAudioEngine alloc] init];
+  
+  fx_audio_unit_audio->audio_engine = (gpointer) audio_engine;
 
   output_unit = audio_engine.outputNode.audioUnit;
 
   input_unit = audio_engine.inputNode.audioUnit;
 
   /* audio sequencer */
-  av_audio_sequencer = 
-    fx_audio_unit_audio->av_audio_sequencer = [AVAudioSequencer initWithAudioEngine:((AVAudioEngine *) audio_engine)];
-
-  [audio_engine connect:audio_unit to:[((AVAudioSequencer *) av_audio_sequencer) AVMusicTrack] format:nil];
+  av_audio_sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:audio_engine];
   
+  fx_audio_unit_audio->av_audio_sequencer = (gpointer) av_audio_sequencer;
+
   /* audio unit */
   [audio_engine attachNode:audio_unit];
 
+  //NOTE:JK: need to connect to output and input node?
   [audio_engine connect:audio_unit to:audio_engine.outputNode format:nil];
   [audio_engine connect:audio_engine.inputNode to:audio_unit format:nil];
 
@@ -1437,9 +1438,15 @@ void*
 ags_fx_audio_unit_audio_render_thread_loop(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 {
   AgsAudio *audio;
+
+  GObject *output_soundcard;
   
   AVAudioEngine *audio_engine;
 
+  gdouble bpm;
+  guint note_offset;
+  gdouble delay_counter;
+  gdouble absolute_delay;
   guint copy_mode;
   guint audio_channels;
   guint input_pads;
@@ -1494,12 +1501,33 @@ ags_fx_audio_unit_audio_render_thread_loop(AgsFxAudioUnitAudio *fx_audio_unit_au
     audio_channels = ags_audio_get_audio_channels(audio);
     
     input_pads = ags_audio_get_input_pads(audio);
+
+    output_soundcard = NULL;
     
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     
     g_object_get(fx_audio_unit_audio,
+		 "output-soundcard", &output_soundcard,
 		 "buffer-size", &buffer_size,
 		 NULL);
+
+    bpm = 120.0;
+    
+    note_offset = 0;
+
+    absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+    delay_counter = 0.0;
+    
+    if(output_soundcard != NULL){
+      bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+
+      absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+      
+      delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+      
+      note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    }
     
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       AgsFxAudioUnitAudioScopeData *scope_data;
@@ -1539,6 +1567,20 @@ ags_fx_audio_unit_audio_render_thread_loop(AgsFxAudioUnitAudio *fx_audio_unit_au
 	g_hash_table_remove_all(scope_data->written_audio_signal);
 	
 	for(active_pad = 0; active_pad < input_pads; active_pad++){
+	  /* set position */
+	  [((AVAudioSequencer *) fx_audio_unit_audio->av_audio_sequencer) currentPositionInBeats:((note_offset / 4.0) + (delay_counter / absolute_delay / 4.0))];
+
+	  /* set bpm */
+	  AVMusicTrack *tempo_track = [((AVAudioSequencer *) fx_audio_unit_audio->av_audio_sequencer) tempoTrack];
+
+	  [tempo_track AVMusicEventEnumerationBlock:^(AVMusicEvent *event, double *time_stamp, _Bool *remove_event){
+	      remove_event[0] = TRUE;
+	    }];
+
+	  AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
+	  
+	  [tempo_track addEvent:tempo_event atBeat:(note_offset / 4.0)];
+	  
 	  /* fill midi */
 	  if(scope_data->channel_data[0]->input_data[active_pad]->av_music_track != NULL){
 	    [((AVAudioSequencer *) fx_audio_unit_audio->av_audio_sequencer) removeTrack:((AVMusicTrack *) scope_data->channel_data[0]->input_data[active_pad]->av_music_track)];
@@ -1574,7 +1616,7 @@ ags_fx_audio_unit_audio_render_thread_loop(AgsFxAudioUnitAudio *fx_audio_unit_au
 	      }
 	    }
 	  }
-	  
+
 	  /* render */
 	  ns_error = NULL;
 	  
