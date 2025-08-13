@@ -465,15 +465,19 @@ ags_fx_audio_unit_audio_notify_buffer_size_callback(GObject *gobject,
     
     scope_data = fx_audio_unit_audio->scope_data[i];
     	
-    av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-			frameCapacity:buffer_size];
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			  frameCapacity:buffer_size];
     
-    scope_data->av_output_buffer = (gpointer) av_output_buffer;    
+      scope_data->av_output_buffer = (gpointer) av_output_buffer;    
 
-    av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		       frameCapacity:buffer_size];
+      av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			 frameCapacity:buffer_size];
     
-    scope_data->av_input_buffer = (gpointer) av_input_buffer;    
+      scope_data->av_input_buffer = (gpointer) av_input_buffer;
+    }
   }
   
   g_rec_mutex_unlock(recall_mutex);
@@ -547,15 +551,19 @@ ags_fx_audio_unit_audio_notify_samplerate_callback(GObject *gobject,
  
     scope_data = fx_audio_unit_audio->scope_data[i];
 	
-    av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		 frameCapacity:buffer_size];
+    if(i == AGS_SOUND_SCOPE_PLAYBACK ||
+       i == AGS_SOUND_SCOPE_NOTATION ||
+       i == AGS_SOUND_SCOPE_MIDI){
+      av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			  frameCapacity:buffer_size];
     
-    scope_data->av_output_buffer = (gpointer) av_output_buffer;    
+      scope_data->av_output_buffer = (gpointer) av_output_buffer;    
 
-    av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		       frameCapacity:buffer_size];
+      av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			 frameCapacity:buffer_size];
     
-    scope_data->av_input_buffer = (gpointer) av_input_buffer;    
+      scope_data->av_input_buffer = (gpointer) av_input_buffer;
+    }
   }
   
   g_rec_mutex_unlock(recall_mutex);
@@ -609,20 +617,20 @@ ags_fx_audio_unit_audio_set_audio_channels_callback(AgsAudio *audio,
     AVAudioPCMBuffer *av_output_buffer, *av_input_buffer;
  
     scope_data = fx_audio_unit_audio->scope_data[i];
-	
-    av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		 frameCapacity:buffer_size];
-    
-    scope_data->av_output_buffer = (gpointer) av_output_buffer;
-
-    av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		       frameCapacity:buffer_size];
-    
-    scope_data->av_input_buffer = (gpointer) av_input_buffer;    
     
     if(i == AGS_SOUND_SCOPE_PLAYBACK ||
        i == AGS_SOUND_SCOPE_NOTATION ||
        i == AGS_SOUND_SCOPE_MIDI){
+      av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			  frameCapacity:buffer_size];
+    
+      scope_data->av_output_buffer = (gpointer) av_output_buffer;
+
+      av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			 frameCapacity:buffer_size];
+    
+      scope_data->av_input_buffer = (gpointer) av_input_buffer;    
+    
       scope_data->channel_data[0] = ags_fx_audio_unit_audio_channel_data_alloc();
     }    
   }
@@ -1057,6 +1065,7 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   [audio_engine attachNode:av_audio_unit];
 
   [audio_engine connect:av_audio_player_node to:av_audio_unit format:av_format];
+  [audio_engine connect:av_audio_unit to:[audio_engine outputNode] format:av_format];
 
   ns_error = NULL;
   
@@ -1434,7 +1443,9 @@ ags_fx_audio_unit_audio_render_thread_loop(AgsFxAudioUnitAudio *fx_audio_unit_au
   if(ns_error != NULL &&
      [ns_error code] != noErr){
     g_warning("error during audio sequencer start - %d", [ns_error code]);
-  }  
+  }
+
+  [((AVAudioSequencer *) fx_audio_unit_audio->av_audio_player_node) play];
   
   while(is_running){
     audio_engine = (AVAudioEngine *) fx_audio_unit_audio->audio_engine;
