@@ -225,7 +225,7 @@ ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
   fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
   if(audio_signal != NULL){
-    g_message("check - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
+    //    g_message("check - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
     
     g_rec_mutex_lock(fx_audio_unit_audio_mutex);
 

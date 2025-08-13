@@ -138,7 +138,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   AgsAudio *audio;
   AgsChannel *destination_channel;
   AgsChannel *input;
-  AgsChannel *output;
+  AgsChannel *start_output, *output;
   AgsRecycling *source_recycling;
   AgsAudioSignal *source;
 
@@ -149,6 +149,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxBufferRecycling *fx_buffer_recycling;
   AgsFxBufferAudioSignal *fx_buffer_audio_signal;
 
+  AgsFxBufferAudioScopeData *scope_data;
   AgsFxBufferChannelInputData *input_data;
 
   AgsSetBacklog *set_backlog;
@@ -184,6 +185,7 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *backlog_mutex;
   
   GRecMutex *fx_buffer_channel_mutex;
+  GRecMutex *scope_data_mutex;
   GRecMutex *input_data_mutex;
 
   audio = NULL;
@@ -266,7 +268,6 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   if(fx_buffer_channel_processor != NULL){
     g_object_get(fx_buffer_channel_processor,
 		 "source", &input,
-		 "destination", &output,
 		 "recall-audio", &fx_buffer_audio,
 		 "recall-audio-run", &fx_buffer_audio_processor,
 		 "recall-channel", &fx_buffer_channel,
@@ -279,11 +280,15 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 		 NULL);
   }
 
+  start_output = ags_audio_get_output(audio);
+  
   if(fx_buffer_audio_processor != NULL){
     g_object_get(fx_buffer_audio_processor,
 		 "audio-channel", &audio_channel,
 		 NULL);
   }
+
+  scope_data = fx_buffer_audio->scope_data[sound_scope];
 
   input_data = ags_fx_buffer_channel_get_input_data(fx_buffer_channel,
 						    sound_scope);
@@ -298,19 +303,19 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
   if(sound_scope >= 0 &&
      sound_scope < AGS_SOUND_SCOPE_LAST &&
      fx_buffer_channel != NULL &&
+     scope_data != NULL &&
      input_data != NULL){
     /* instantiate destination */
     fx_buffer_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_channel);
 
-    output_line = ags_channel_get_line(output);
+    output = ags_channel_nth(start_output,
+			     audio_channel);
     
-    input_data_mutex = NULL;
+    scope_data_mutex = AGS_FX_BUFFER_AUDIO_SCOPE_DATA_GET_STRCT_MUTEX(scope_data);
+    input_data_mutex = AGS_FX_BUFFER_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
     
-    if(input_data != NULL){
-      input_data_mutex = AGS_FX_BUFFER_CHANNEL_INPUT_DATA_GET_STRCT_MUTEX(input_data);
-    }
-    
-    if(output != NULL){
+    while(output != NULL){
+      AgsChannel *next_pad;
       AgsRecycling *recycling;
       AgsAudioSignal *destination;
       
@@ -327,12 +332,12 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 		   "format", &destination_format,
 		   NULL);
 
-      g_rec_mutex_lock(input_data_mutex);
+      g_rec_mutex_lock(scope_data_mutex);
       
-      destination = g_hash_table_lookup(input_data->destination,
+      destination = g_hash_table_lookup(scope_data->destination,
 					recycling);
       
-      g_rec_mutex_unlock(input_data_mutex);
+      g_rec_mutex_unlock(scope_data_mutex);
       
       if(destination == NULL){
 	AgsRecallID *parent_recall_id;
@@ -361,6 +366,10 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 	g_list_free_full(start_list,
 			 g_object_unref);
 
+	if(ags_recycling_context_find_child(parent_recall_id->recycling_context, source_recycling) < 0){
+	  goto ags_fx_buffer_audio_signal_run_inter_NEXT_OUTPUT;
+	}
+	
 	/* create new audio signal */
 	destination = ags_audio_signal_new((GObject *) output_soundcard,
 					   (GObject *) recycling,
@@ -386,14 +395,18 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 #if 0 // AGS_DEBUG
 	g_message("ags-fx-buffer - create destination audio signal: 0x%x", destination);
 #endif
-	g_rec_mutex_lock(input_data_mutex);
+	g_rec_mutex_lock(scope_data_mutex);
 
 	g_object_ref(recycling);
 	g_object_ref(destination);
-	g_hash_table_insert(input_data->destination,
+	g_hash_table_insert(scope_data->destination,
 			    recycling,
 			    destination);
 
+	g_rec_mutex_unlock(scope_data_mutex);
+
+	g_rec_mutex_lock(input_data_mutex);
+	
 	if(destination_samplerate != source_samplerate){
 	  void *data;
 
@@ -422,6 +435,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
 				       destination);
 
 	/* unref */
+      ags_fx_buffer_audio_signal_run_inter_NEXT_OUTPUT:
+	
 	if(output_soundcard != NULL){
 	  g_object_unref(output_soundcard);
 	}
@@ -634,11 +649,11 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
       }
       
       /* iterate */
-      //      next_output = ags_channel_next_pad(output);
+      next_pad = ags_channel_next_pad(output);
 
-      //      g_object_unref(output);
+      g_object_unref(output);
 
-      //      output = next_output;
+      output = next_pad;
     }
   }
   
@@ -672,8 +687,8 @@ ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall)
     g_object_unref(input);
   }
   
-  if(output != NULL){
-    g_object_unref(output);
+  if(start_output != NULL){
+    g_object_unref(start_output);
   }
   
   if(source_recycling != NULL){
