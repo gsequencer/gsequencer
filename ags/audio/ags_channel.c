@@ -9378,7 +9378,7 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
 
   GList *list_start, *list;
 
-  guint sound_scope;
+  gint sound_scope;
   AgsSoundStagingFlags current_staging_flags;
   gboolean play_context;
   
@@ -9778,7 +9778,7 @@ ags_channel_real_init_recall(AgsChannel *channel,
   
   GList *list_start, *list;
 
-  guint sound_scope;
+  gint sound_scope;
   AgsSoundStagingFlags current_staging_flags;
   static const guint staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
 				     AGS_SOUND_STAGING_RUN_INIT_PRE |

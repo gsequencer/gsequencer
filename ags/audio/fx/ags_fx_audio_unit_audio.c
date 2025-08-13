@@ -25,6 +25,7 @@
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_input.h>
@@ -728,6 +729,14 @@ ags_fx_audio_unit_audio_scope_data_alloc()
 
   scope_data->parent = NULL;
   
+  scope_data->running = FALSE;
+
+  ags_atomic_uint_set(&(scope_data->active_audio_channels),
+		      0);
+
+  ags_atomic_uint_set(&(scope_data->completed_audio_channels),
+		      0);
+
   scope_data->audio_channels = 0;
 
   scope_data->output = NULL;
@@ -1471,6 +1480,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
   gint i;
   guint j;
   guint k;
+  gboolean success;
   gboolean is_running;
 
   NSError *ns_error;
@@ -1556,6 +1566,8 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
       
       note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
     }
+
+    success = FALSE;
     
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       AgsFxAudioUnitAudioScopeData *scope_data;
@@ -1570,7 +1582,10 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	
       scope_data = fx_audio_unit_audio->scope_data[i];
 
-      if(scope_data != NULL){
+      if(scope_data != NULL &&
+	 scope_data->running){
+	success = TRUE;
+    
 	/* pre sync completed */
 	g_mutex_lock(&(scope_data->completed_pre_sync_mutex));
 
@@ -1578,7 +1593,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 			       TRUE);
 
 	while(ags_atomic_boolean_get(&(scope_data->completed_pre_sync)) &&
-	      ags_atomic_int_get(&(scope_data->completed_pre_sync_count)) != ags_atomic_int_get(&(scope_data->active_pre_sync_count))){
+	      ags_atomic_int_get(&(scope_data->completed_pre_sync_count)) < ags_atomic_int_get(&(scope_data->active_pre_sync_count))){
 	  g_cond_wait(&(scope_data->completed_pre_sync_cond),
 		      &(scope_data->completed_pre_sync_mutex));
 	}
@@ -1596,6 +1611,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
     
 	ags_atomic_boolean_set(&(scope_data->render_wait),
 			       FALSE);
+
 	ags_atomic_boolean_set(&(scope_data->render_done),
 			       FALSE);
 
@@ -1608,7 +1624,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 			       TRUE);
 
 	while(ags_atomic_boolean_get(&(scope_data->completed_audio_signal)) &&
-	      ags_atomic_int_get(&(scope_data->completed_audio_signal_count)) != ags_atomic_int_get(&(scope_data->active_audio_signal_count))){
+	      ags_atomic_int_get(&(scope_data->completed_audio_signal_count)) < ags_atomic_int_get(&(scope_data->active_audio_signal_count))){
 	  g_cond_wait(&(scope_data->completed_audio_signal_cond),
 		      &(scope_data->completed_audio_signal_mutex));
 	}
@@ -1779,15 +1795,20 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	/* signal post sync */
 	g_mutex_lock(&(scope_data->render_mutex));
     
+	ags_atomic_boolean_set(&(scope_data->render_wait),
+			       FALSE);
+	
 	ags_atomic_boolean_set(&(scope_data->render_done),
 			       TRUE);
 
+	g_cond_broadcast(&(scope_data->render_cond));
+	
 	g_mutex_unlock(&(scope_data->render_mutex));
-
-	if(ags_atomic_boolean_get(&(scope_data->render_wait))){
-	  g_cond_signal(&(scope_data->render_cond));
-	}
       }
+    }
+
+    if(!success){
+      g_usleep(400);
     }
     
     /*  */

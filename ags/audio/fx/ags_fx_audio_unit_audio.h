@@ -85,6 +85,11 @@ struct _AgsFxAudioUnitAudioScopeData
   GRecMutex strct_mutex;
   
   gpointer parent;
+
+  gboolean running;
+
+  _Atomic guint active_audio_channels;
+  _Atomic guint completed_audio_channels;
   
   guint audio_channels;
 
@@ -115,8 +120,8 @@ struct _AgsFxAudioUnitAudioScopeData
   
   GHashTable *written_audio_signal;
 
-  _Atomic gboolean render_wait;
   _Atomic gboolean render_done;
+  _Atomic gboolean render_wait;
 
   GMutex render_mutex;
   GCond render_cond;

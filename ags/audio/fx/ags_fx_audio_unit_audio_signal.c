@@ -197,8 +197,6 @@ ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
   fx_audio_unit_channel_processor = NULL;
 
   fx_audio_unit_recycling = NULL;
-  
-  sound_scope = ags_recall_get_sound_scope(recall);
 
   g_object_get(recall,
 	       "parent", &fx_audio_unit_recycling,
@@ -214,6 +212,8 @@ ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
 	       "recall-audio", &fx_audio_unit_audio,
 	       NULL);
 
+  sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
+  
   /* set active audio signal */
   fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
@@ -233,6 +233,26 @@ ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
 			active_audio_signal);
   
     g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
+  }
+  
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+  
+  if(audio_signal != NULL){
+    g_object_unref(audio_signal);
+  }
+
+  if(fx_audio_unit_audio != NULL){
+    g_object_unref(fx_audio_unit_audio);
+  }
+
+  if(fx_audio_unit_channel_processor != NULL){
+    g_object_unref(fx_audio_unit_channel_processor);
+  }
+
+  if(fx_audio_unit_recycling != NULL){
+    g_object_unref(fx_audio_unit_recycling);
   }
   
   /* call parent */
@@ -276,8 +296,6 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   fx_audio_unit_channel_processor = NULL;
 
   fx_audio_unit_recycling = NULL;
-  
-  sound_scope = ags_recall_get_sound_scope(recall);
 
   g_object_get(recall,
 	       "parent", &fx_audio_unit_recycling,
@@ -298,6 +316,8 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   g_object_get(fx_audio_unit_audio,
 	       "audio", &audio,
 	       NULL);
+  
+  sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
   
   audio_channels = ags_audio_get_audio_channels(audio);
 
@@ -348,11 +368,35 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     
     ags_atomic_int_increment(&(scope_data->completed_audio_signal_count));
     
-    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
-
     if(ags_atomic_boolean_get(&(scope_data->completed_audio_signal))){
       g_cond_signal(&(scope_data->completed_audio_signal_cond));
     }
+    
+    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
+  }
+
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+  
+  if(audio_signal != NULL){
+    g_object_unref(audio_signal);
+  }
+
+  if(fx_audio_unit_audio != NULL){
+    g_object_unref(fx_audio_unit_audio);
+  }
+
+  if(fx_audio_unit_channel_processor != NULL){
+    g_object_unref(fx_audio_unit_channel_processor);
+  }
+
+  if(fx_audio_unit_recycling != NULL){
+    g_object_unref(fx_audio_unit_recycling);
   }
   
   /* call parent */
@@ -390,8 +434,6 @@ ags_fx_audio_unit_audio_signal_done(AgsRecall *recall)
 
   fx_audio_unit_recycling = NULL;
   
-  sound_scope = ags_recall_get_sound_scope(recall);
-
   g_object_get(recall,
 	       "parent", &fx_audio_unit_recycling,
 	       "source", &audio_signal,
@@ -405,6 +447,8 @@ ags_fx_audio_unit_audio_signal_done(AgsRecall *recall)
 	       "source", &channel,
 	       "recall-audio", &fx_audio_unit_audio,
 	       NULL);
+
+  sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
 
   pad = ags_channel_get_pad(channel);
   
@@ -436,12 +480,32 @@ ags_fx_audio_unit_audio_signal_done(AgsRecall *recall)
     g_mutex_lock(&(scope_data->completed_audio_signal_mutex));
     
     ags_atomic_int_increment(&(scope_data->completed_audio_signal_count));
-    
-    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
 
     if(ags_atomic_boolean_get(&(scope_data->completed_audio_signal))){
       g_cond_signal(&(scope_data->completed_audio_signal_cond));
     }
+    
+    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
+  }
+  
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+  
+  if(audio_signal != NULL){
+    g_object_unref(audio_signal);
+  }
+
+  if(fx_audio_unit_audio != NULL){
+    g_object_unref(fx_audio_unit_audio);
+  }
+
+  if(fx_audio_unit_channel_processor != NULL){
+    g_object_unref(fx_audio_unit_channel_processor);
+  }
+
+  if(fx_audio_unit_recycling != NULL){
+    g_object_unref(fx_audio_unit_recycling);
   }
   
   /* call parent */

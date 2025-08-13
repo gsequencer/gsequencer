@@ -14582,7 +14582,6 @@ ags_audio_real_start(AgsAudio *audio,
       /* play init */
       ags_audio_recursive_run_stage(audio,
 				    sound_scope, staging_flags);
-
       
       output_playback = start_output_playback;
 
