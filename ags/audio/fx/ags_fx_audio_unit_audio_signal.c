@@ -319,7 +319,7 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   if(audio_signal != NULL){
     AgsFxAudioUnitAudioScopeData *scope_data;
     
-    AVAudioPCMBuffer *av_buffer;
+    AVAudioPCMBuffer *av_input_buffer;
     
     guint audio_channel;
 
@@ -330,13 +330,13 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     
     scope_data = fx_audio_unit_audio->scope_data[sound_scope];
     
-    av_buffer = (AVAudioPCMBuffer *) scope_data->av_buffer;
+    av_input_buffer = (AVAudioPCMBuffer *) scope_data->av_input_buffer;
     
     g_rec_mutex_lock(stream_mutex);
 
     /* fill input buffer */
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						[av_buffer floatChannelData], audio_channels, audio_channel,
+						[av_input_buffer floatChannelData], audio_channels, audio_channel,
 						audio_signal->stream->data, 1, 0,
 						buffer_size, copy_mode);
 

@@ -12500,10 +12500,11 @@ ags_fx_factory_create_audio_unit(AgsAudio *audio,
     ags_connectable_connect(AGS_CONNECTABLE(fx_audio_unit_audio_processor));
 
     /* load */
-    if((AGS_FX_FACTORY_LIVE & (create_flags)) == 0){
-      ags_fx_audio_unit_audio_unset_flags(fx_audio_unit_audio,
-					  AGS_FX_AUDIO_UNIT_AUDIO_LIVE_INSTRUMENT);
-    }
+    //NOTE:JK: remove me
+    //    if((AGS_FX_FACTORY_LIVE & (create_flags)) == 0){
+    //      ags_fx_audio_unit_audio_unset_flags(fx_audio_unit_audio,
+    //					  AGS_FX_AUDIO_UNIT_AUDIO_LIVE_INSTRUMENT);
+    //    }
     
     ags_fx_audio_unit_audio_load_plugin(fx_audio_unit_audio);
     ags_fx_audio_unit_audio_load_port(fx_audio_unit_audio);
@@ -12741,10 +12742,11 @@ ags_fx_factory_create_audio_unit(AgsAudio *audio,
     ags_connectable_connect(AGS_CONNECTABLE(fx_audio_unit_audio_processor));
 
     /* load */
-    if((AGS_FX_FACTORY_LIVE & (create_flags)) == 0){
-      ags_fx_audio_unit_audio_unset_flags(fx_audio_unit_audio,
-					  AGS_FX_AUDIO_UNIT_AUDIO_LIVE_INSTRUMENT);
-    }
+    //NOTE:JK: remove me
+    //    if((AGS_FX_FACTORY_LIVE & (create_flags)) == 0){
+    //      ags_fx_audio_unit_audio_unset_flags(fx_audio_unit_audio,
+    //					  AGS_FX_AUDIO_UNIT_AUDIO_LIVE_INSTRUMENT);
+    //    }
     
     ags_fx_audio_unit_audio_load_plugin(fx_audio_unit_audio);
     ags_fx_audio_unit_audio_load_port(fx_audio_unit_audio);

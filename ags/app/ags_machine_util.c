@@ -1859,87 +1859,6 @@ ags_machine_util_new_live_vst3_bridge(gchar *filename, gchar *effect)
 }
 
 /**
- * ags_machine_util_new_live_audio_unit_bridge:
- * @filename: the filename
- * @effect: the effect
- * 
- * Create #AgsLiveAudioUnitBridge.
- * 
- * returns: the newly instantiated #AgsLiveAudioUnitBridge
- * 
- * Since: 8.1.2
- */
-GtkWidget*
-ags_machine_util_new_live_audio_unit_bridge(gchar *filename, gchar *effect)
-{
-#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-  AgsWindow *window;
-  AgsLiveAudioUnitBridge *live_audio_unit_bridge;
-
-  AgsApplicationContext *application_context;
-
-  AgsAudioUnitPlugin *audio_unit_plugin;
-
-  GObject *default_soundcard;
-
-  application_context = ags_application_context_get_instance();
-
-  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
-
-  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  /* create live audio unit bridge */  
-  audio_unit_plugin = ags_audio_unit_manager_find_audio_unit_plugin(ags_audio_unit_manager_get_instance(),
-								    filename, effect);
-
-  if(audio_unit_plugin == NULL){
-    return(NULL);
-  }
-
-  live_audio_unit_bridge = ags_live_audio_unit_bridge_new(G_OBJECT(default_soundcard),
-							  filename,
-							  effect);
-  
-  live_audio_unit_bridge->audio_unit_plugin = audio_unit_plugin;
-  
-  ags_window_add_machine(window,
-			 AGS_MACHINE(live_audio_unit_bridge));
-  
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(live_audio_unit_bridge));
-
-  /* */
-  ags_audio_set_audio_channels(AGS_MACHINE(live_audio_unit_bridge)->audio,
-			       2, 0);
-
-  /*  */
-  if(!ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
-    ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,
-		       AGS_TYPE_INPUT,
-		       1, 0);
-  }else{
-    ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,
-		       AGS_TYPE_INPUT,
-		       128, 0);
-  }
-
-  ags_audio_set_pads(AGS_MACHINE(live_audio_unit_bridge)->audio,
-		     AGS_TYPE_OUTPUT,
-		     1, 0);
-
-  /*  */
-  ags_live_audio_unit_bridge_load(live_audio_unit_bridge);
-
-  /* */
-  gtk_widget_show(GTK_WIDGET(live_audio_unit_bridge));
-
-  return((GtkWidget *) live_audio_unit_bridge);
-#else
-  return(NULL);
-#endif
-}
-
-/**
  * ags_machine_util_new_by_type_name:
  * @machine_type_name: the machine type name
  * @filename: the filename
@@ -2083,11 +2002,6 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				18)){
     machine = ags_machine_util_new_live_vst3_bridge(filename,
 						    effect);
-  }else if(!g_ascii_strncasecmp(machine_type_name,
-				"AgsLiveAudioUnitBridge",
-				23)){
-    machine = ags_machine_util_new_live_audio_unit_bridge(filename,
-							  effect);
   }
 
   return(machine);

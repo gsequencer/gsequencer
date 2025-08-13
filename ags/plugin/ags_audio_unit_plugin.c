@@ -43,7 +43,9 @@ void ags_audio_unit_plugin_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_audio_unit_plugin_finalize(GObject *gobject);
 
-void ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin);
+gpointer ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
+					   guint samplerate,
+					   guint buffer_size);
 
 void ags_audio_unit_plugin_connect_port(AgsBasePlugin *base_plugin,
 					gpointer plugin_handle,
@@ -136,7 +138,7 @@ ags_audio_unit_plugin_class_init(AgsAudioUnitPluginClass *audio_unit_plugin)
   /* AgsBasePluginClass */
   base_plugin = (AgsBasePluginClass *) audio_unit_plugin;
 
-  base_plugin->async_instantiate = ags_audio_unit_plugin_async_instantiate;
+  base_plugin->instantiate = ags_audio_unit_plugin_instantiate;
 
   base_plugin->connect_port = ags_audio_unit_plugin_connect_port;
 
@@ -154,7 +156,7 @@ void
 ags_audio_unit_plugin_init(AgsAudioUnitPlugin *audio_unit_plugin)
 {
   audio_unit_plugin->component = NULL;
-  audio_unit_plugin->audio_unit = NULL;
+  audio_unit_plugin->av_audio_unit = NULL;
 }
 
 void
@@ -212,90 +214,54 @@ ags_audio_unit_plugin_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_audio_unit_plugin_parent_class)->finalize(gobject);
 }
 
-void
-ags_audio_unit_plugin_async_instantiate(AgsBasePlugin *base_plugin)
-{  
-  [AVAudioUnit instantiateWithComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]
-   options:0
-   completionHandler:^(AVAudioUnit *audio_unit, NSError *ns_error){
-      AgsAudioUnitManager *audio_unit_manager;
-      AgsAudioUnitNewQueueManager *audio_unit_new_queue_manager;
-      AgsAudioUnitPlugin *audio_unit_plugin;
-      
-      AgsAudioUnitNewQueue *audio_unit_new_queue;
+gpointer
+ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
+				  guint samplerate,
+				  guint buffer_size)
+{
+  AVAudioUnitEffect *av_audio_unit_effect;
+  AVAudioUnitMIDIInstrument *av_audio_unit_midi_instrument;
+  AVAudioUnit *av_audio_unit;
 
-      gchar *plugin_name;
+  gchar *plugin_name;
 
-      gint64 creation_timestamp;
+  NSError *ns_error;
+  
+  av_audio_unit = NULL;
 
-      GRecMutex *audio_unit_new_queue_manager_mutex;
-      
-      if(ns_error != NULL &&
-	 [ns_error code] != noErr){
-	g_warning("failed to instantiate Audio Unit %d", [ns_error code]);
+  if(!ags_base_plugin_test_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    av_audio_unit_effect = [[AVAudioUnitEffect alloc] initWithAudioComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]];
 
-	return;
-      }
+    av_audio_unit = (AVAudioUnit *) av_audio_unit_effect;
+  }else{
+    av_audio_unit_midi_instrument = [[AVAudioUnitMIDIInstrument alloc] initWithAudioComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]];
 
-      plugin_name = [[audio_unit name] UTF8String];
+    av_audio_unit = (AVAudioUnit *) av_audio_unit_midi_instrument;
+  }
 
-      creation_timestamp = g_get_monotonic_time();
+  plugin_name = [[av_audio_unit name] UTF8String];
 
-      /* new queue */
-      audio_unit_new_queue = ags_audio_unit_new_queue_alloc();
+  /* audio unit */
+  if(AGS_AUDIO_UNIT_PLUGIN(base_plugin)->av_audio_unit == NULL){
+    AudioComponentDescription component_description;
+	
+    AGS_AUDIO_UNIT_PLUGIN(base_plugin)->av_audio_unit = (gpointer) av_audio_unit;
 
-      audio_unit_new_queue->in_use = FALSE;
-
-      audio_unit_new_queue->creation_timestamp = creation_timestamp;
-
-      audio_unit_new_queue->plugin_name = g_strdup(plugin_name);
+    component_description = [[av_audio_unit AUAudioUnit] componentDescription];
     
-      audio_unit_new_queue->audio_unit = audio_unit;
-
-      /* audio unit new queue manager */
-      audio_unit_new_queue_manager = ags_audio_unit_new_queue_manager_get_instance();
-
-      audio_unit_new_queue_manager_mutex = AGS_AUDIO_UNIT_NEW_QUEUE_MANAGER_GET_OBJ_MUTEX(audio_unit_new_queue_manager);
-
-      /* audio unit manager */
-      audio_unit_manager = ags_audio_unit_manager_get_instance();
-
-      audio_unit_plugin = ags_audio_unit_manager_find_audio_unit_plugin(audio_unit_manager,
-									NULL, plugin_name);
-
-      if(audio_unit_plugin != NULL &&
-	 audio_unit_plugin->audio_unit == NULL){
-	AudioComponentDescription component_description;
-	
-	audio_unit_plugin->audio_unit = audio_unit;
-
-	component_description = [[audio_unit AUAudioUnit] componentDescription];
-	
-	if(component_description.componentType == kAudioUnitType_MusicDevice){
-	  ags_base_plugin_set_flags((AgsBasePlugin *) audio_unit_plugin,
-				    AGS_BASE_PLUGIN_IS_INSTRUMENT);
-	}
-	
-	ags_base_plugin_load_plugin((AgsBasePlugin *) audio_unit_plugin);
-      }
+    ags_base_plugin_load_plugin(base_plugin);
+  }
       
-      ns_error = NULL;
+  ns_error = NULL;
       
-      [[audio_unit AUAudioUnit] allocateRenderResourcesAndReturnError:&ns_error];
+  [[av_audio_unit AUAudioUnit] allocateRenderResourcesAndReturnError:&ns_error];
 
-      if(ns_error != NULL &&
-	 [ns_error code] != noErr){
-	g_warning("Audio Unit allocate render resources returned error - ErrorCode %d", [ns_error code]);
-      }
-      
-      /* add to newe queue */
-      g_rec_mutex_lock(audio_unit_new_queue_manager_mutex);
-
-      audio_unit_new_queue_manager->new_queue = g_list_prepend(audio_unit_new_queue_manager->new_queue,
-							       audio_unit_new_queue);
-
-      g_rec_mutex_unlock(audio_unit_new_queue_manager_mutex);
-    }];
+  if(ns_error != NULL &&
+     [ns_error code] != noErr){
+    g_warning("Audio Unit allocate render resources returned error - ErrorCode %d", [ns_error code]);
+  }
+ 
+  return(av_audio_unit);
 }
 
 void
@@ -358,7 +324,7 @@ ags_audio_unit_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
   start_plugin_port = base_plugin->plugin_port;
   
-  av_audio_unit = (AVAudioUnit *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->audio_unit;
+  av_audio_unit = (AVAudioUnit *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->av_audio_unit;
 
   g_rec_mutex_unlock(base_plugin_mutex);
 

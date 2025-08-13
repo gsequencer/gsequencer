@@ -94,11 +94,6 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
 				     menu);
   ags_window_load_add_menu_live_vst3(window,
 				     gsequencer_app->add_menu);
-
-  ags_window_load_add_menu_live_audio_unit(window,
-					   menu);
-  ags_window_load_add_menu_live_audio_unit(window,
-					   gsequencer_app->add_menu);
   
   /* connect and show window */
   gtk_widget_show((GtkWidget *) window);

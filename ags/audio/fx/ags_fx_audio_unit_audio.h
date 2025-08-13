@@ -49,15 +49,11 @@ typedef struct _AgsFxAudioUnitAudioChannelData AgsFxAudioUnitAudioChannelData;
 typedef struct _AgsFxAudioUnitAudioInputData AgsFxAudioUnitAudioInputData;
 typedef struct _AgsFxAudioUnitAudioClass AgsFxAudioUnitAudioClass;
 
-typedef enum{
-  AGS_FX_AUDIO_UNIT_AUDIO_LIVE_INSTRUMENT     = 1,
-}AgsFxAudioUnitAudioFlags;
-
 struct _AgsFxAudioUnitAudio
 {
   AgsFxNotationAudio fx_notation_audio;
 
-  AgsFxAudioUnitAudioFlags flags;
+  guint flags;
     
   AgsAudioUnitPlugin *audio_unit_plugin;
 
@@ -65,7 +61,8 @@ struct _AgsFxAudioUnitAudio
   
   gpointer audio_engine;
 
-  gpointer audio_unit;
+  gpointer av_audio_player_node;
+  gpointer av_audio_unit;
   gpointer av_audio_sequencer;
   
   gboolean render_thread_running;
@@ -94,7 +91,8 @@ struct _AgsFxAudioUnitAudioScopeData
   float *input;
   guint input_buffer_size;
 
-  gpointer av_buffer;
+  gpointer av_output_buffer;
+  gpointer av_input_buffer;
 
   _Atomic gboolean completed_wait;
   _Atomic gint active_audio_signal_count;

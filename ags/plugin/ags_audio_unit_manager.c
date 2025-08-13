@@ -519,6 +519,11 @@ ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
 
   audio_unit_plugin = ags_audio_unit_plugin_new(NULL, plugin_name, 0);
 
+  if([((AVAudioUnitComponent *)  component) audioComponentDescription].componentType == kAudioUnitType_MusicDevice){
+    ags_base_plugin_set_flags((AgsBasePlugin *) audio_unit_plugin,
+			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
+  }
+
   audio_unit_plugin->component = component;
   
   audio_unit_manager->audio_unit_plugin = g_list_prepend(audio_unit_manager->audio_unit_plugin,
