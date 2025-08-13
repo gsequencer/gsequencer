@@ -263,10 +263,6 @@ ags_fx_audio_unit_channel_processor_run_inter(AgsRecall *recall)
   if(channel != NULL){
     g_object_unref(channel);
   }
-
-  if(fx_audio_unit_audio != NULL){
-    g_object_unref(fx_audio_unit_audio);
-  }
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_audio_unit_channel_processor_parent_class)->run_inter(recall);
@@ -294,6 +290,10 @@ ags_fx_audio_unit_channel_processor_run_inter(AgsRecall *recall)
       ags_atomic_uint_set(&(scope_data->completed_audio_channels),
 			  0);      
     }
+  }
+
+  if(fx_audio_unit_audio != NULL){
+    g_object_unref(fx_audio_unit_audio);
   }
 }
 

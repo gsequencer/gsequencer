@@ -9373,6 +9373,8 @@ void
 ags_channel_real_duplicate_recall(AgsChannel *channel,
 				  AgsRecallID *recall_id)
 {
+  AgsAudio *audio;
+  AgsChannel *output;
   AgsRecall *recall, *copy_recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
@@ -9408,6 +9410,10 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     return;
   }
 
+  audio = ags_channel_get_audio(channel);
+
+  output = NULL;
+  
   recycling_context = NULL;
 
   g_object_get(recall_id,
@@ -9568,6 +9574,47 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
 			   play_context);
     g_signal_connect(copy_recall, "done",
 		     G_CALLBACK(ags_channel_recall_done_callback), channel);
+
+    if(AGS_IS_INPUT(channel)){
+      if(ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
+	if(parent_recycling_context != NULL){
+	  GRecMutex *mutex = AGS_RECYCLING_CONTEXT_GET_OBJ_MUTEX(parent_recycling_context);
+
+	  g_rec_mutex_lock(mutex);
+	
+	  if(parent_recycling_context->length > 0 &&
+	     parent_recycling_context->recycling != NULL &&
+	     parent_recycling_context->recycling[0] != NULL){
+	    output = parent_recycling_context->recycling[0]->channel;
+	    
+	    if(output != NULL){
+	      g_object_ref(output);
+	    }
+	  }
+	  
+	  g_rec_mutex_unlock(mutex);
+	}
+      }else{
+	AgsChannel *start_output;
+
+	start_output = ags_audio_get_output(audio);
+
+	if(ags_audio_test_flags(audio, AGS_AUDIO_ASYNC)){
+	  output = ags_channel_nth(start_output,
+				   ags_channel_get_audio_channel(channel));
+	}else{
+	  output = ags_channel_nth(start_output,
+				   ags_channel_get_line(channel));
+	}
+      }
+    }
+
+    if(output != NULL &&
+       AGS_IS_OUTPUT(output)){
+      g_object_set(copy_recall,
+		   "destination", output,
+		   NULL);
+    }
     
     /* connect */
     ags_connectable_connect(AGS_CONNECTABLE(copy_recall));
@@ -9582,6 +9629,14 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
   g_list_free_full(list_start,
 		   g_object_unref);
 
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(output != NULL){
+    g_object_unref(output);
+  }
+  
   if(parent_recycling_context != NULL){
     g_object_unref(parent_recycling_context);
   }

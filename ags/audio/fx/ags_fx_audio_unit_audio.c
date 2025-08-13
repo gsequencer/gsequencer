@@ -1740,7 +1740,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	    [av_audio_player_node scheduleBuffer:av_input_buffer atTime:av_audio_time options:0 completionHandler:nil];
 	  
 	    /* render */
-	    g_message("render audio unit");
+	    //	    g_message("render audio unit");
 	    
 	    ns_error = NULL;
 	  

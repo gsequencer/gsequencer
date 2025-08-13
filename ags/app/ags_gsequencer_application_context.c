@@ -4092,101 +4092,103 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 
     g_free(backend);
 
-    gsequencer_application_context->soundcard = g_list_append(gsequencer_application_context->soundcard,
-							      soundcard);
-    g_object_ref(soundcard);
+    if(soundcard != NULL){
+      gsequencer_application_context->soundcard = g_list_append(gsequencer_application_context->soundcard,
+								soundcard);
+      g_object_ref(soundcard);
 
-    /* device */
-    if(device != NULL){
-      ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			       device);
+      /* device */
+      if(device != NULL){
+	ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+				 device);
       
-      g_free(device);
-    }
-
-    /* presets */
-    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-			      pcm_channels,
-			      samplerate,
-			      buffer_size,
-			      format);
-
-    /* cache */
-    use_cache = TRUE;
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "use-cache");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "false",
-			    5)){
-      use_cache = FALSE;
-    }
-
-    cache_buffer_size = 4096;
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "cache-buffer-size");
-
-    if(str != NULL){
-      cache_buffer_size = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-    }
-
-    if(AGS_IS_PULSE_DEVOUT(soundcard)){
-      GList *start_port, *port;
-
-      g_object_get(soundcard,
-		   "pulse-port", &start_port,
-		   NULL);
-
-      port = start_port;
-
-      while(port != NULL){
-	ags_pulse_port_set_samplerate(port->data,
-				      samplerate);
-	ags_pulse_port_set_pcm_channels(port->data,
-					pcm_channels);
-	ags_pulse_port_set_buffer_size(port->data,
-				       buffer_size);
-	ags_pulse_port_set_format(port->data,
-				  format);
-	ags_pulse_port_set_cache_buffer_size(port->data,
-					     buffer_size * ceil(cache_buffer_size / buffer_size));
-	
-	port = port->next;
+	g_free(device);
       }
 
-      g_list_free_full(start_port,
-		       g_object_unref);
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-      GList *start_port, *port;
+      /* presets */
+      ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				pcm_channels,
+				samplerate,
+				buffer_size,
+				format);
 
-      g_object_get(soundcard,
-		   "core-audio-port", &start_port,
-		   NULL);
+      /* cache */
+      use_cache = TRUE;
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "use-cache");
 
-      port = start_port;
-
-      while(port != NULL){
-	ags_core_audio_port_set_samplerate(port->data,
-					   samplerate);
-	ags_core_audio_port_set_pcm_channels(port->data,
-					     pcm_channels);
-	ags_core_audio_port_set_buffer_size(port->data,
-					    buffer_size);
-	ags_core_audio_port_set_format(port->data,
-				       format);
-	ags_core_audio_port_set_cache_buffer_size(port->data,
-						  buffer_size * ceil(cache_buffer_size / buffer_size));
-	
-	port = port->next;
+      if(str != NULL &&
+	 !g_ascii_strncasecmp(str,
+			      "false",
+			      5)){
+	use_cache = FALSE;
       }
 
-      g_list_free_full(start_port,
-		       g_object_unref);
+      cache_buffer_size = 4096;
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "cache-buffer-size");
+
+      if(str != NULL){
+	cache_buffer_size = g_ascii_strtoull(str,
+					     NULL,
+					     10);
+      }
+
+      if(AGS_IS_PULSE_DEVOUT(soundcard)){
+	GList *start_port, *port;
+
+	g_object_get(soundcard,
+		     "pulse-port", &start_port,
+		     NULL);
+
+	port = start_port;
+
+	while(port != NULL){
+	  ags_pulse_port_set_samplerate(port->data,
+					samplerate);
+	  ags_pulse_port_set_pcm_channels(port->data,
+					  pcm_channels);
+	  ags_pulse_port_set_buffer_size(port->data,
+					 buffer_size);
+	  ags_pulse_port_set_format(port->data,
+				    format);
+	  ags_pulse_port_set_cache_buffer_size(port->data,
+					       buffer_size * ceil(cache_buffer_size / buffer_size));
+	
+	  port = port->next;
+	}
+
+	g_list_free_full(start_port,
+			 g_object_unref);
+      }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+	GList *start_port, *port;
+
+	g_object_get(soundcard,
+		     "core-audio-port", &start_port,
+		     NULL);
+
+	port = start_port;
+
+	while(port != NULL){
+	  ags_core_audio_port_set_samplerate(port->data,
+					     samplerate);
+	  ags_core_audio_port_set_pcm_channels(port->data,
+					       pcm_channels);
+	  ags_core_audio_port_set_buffer_size(port->data,
+					      buffer_size);
+	  ags_core_audio_port_set_format(port->data,
+					 format);
+	  ags_core_audio_port_set_cache_buffer_size(port->data,
+						    buffer_size * ceil(cache_buffer_size / buffer_size));
+	
+	  port = port->next;
+	}
+
+	g_list_free_full(start_port,
+			 g_object_unref);
+      }
     }
     
     g_free(soundcard_group);    
@@ -4293,22 +4295,24 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
           
       continue;
     }
-    
-    gsequencer_application_context->sequencer = g_list_append(gsequencer_application_context->sequencer,
-							      sequencer);
-    g_object_ref(sequencer);
 
-    /* device */
-    str = ags_config_get_value(config,
-			       sequencer_group,
-			       "device");
+    if(sequencer != NULL){
+      gsequencer_application_context->sequencer = g_list_append(gsequencer_application_context->sequencer,
+								sequencer);
+      g_object_ref(sequencer);
+
+      /* device */
+      str = ags_config_get_value(config,
+				 sequencer_group,
+				 "device");
     
-    if(str != NULL){
-      ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
-			       str);
-      g_free(str);
+      if(str != NULL){
+	ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+				 str);
+	g_free(str);
+      }
     }
-
+    
     g_free(sequencer_group);    
     sequencer_group = g_strdup_printf("%s-%d",
 				      AGS_CONFIG_SEQUENCER,

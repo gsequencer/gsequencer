@@ -907,7 +907,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     AGS_RECALL(recall_audio_signal)->sound_scope = sound_scope;
     
 #if 0 // AGS_DEBUG
-    g_message(" + recall recycling %s 0x%x", G_OBJECT_TYPE_NAME(recall_audio_signal), audio_signal);
+    g_message(" + recall recycling %s audio signal: 0x%x", G_OBJECT_TYPE_NAME(recall_audio_signal), audio_signal);
 #endif
     
     ags_recall_add_child((AgsRecall *) recall_recycling, (AgsRecall *) recall_audio_signal);
