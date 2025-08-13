@@ -733,6 +733,22 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
 
   gsequencer_application_context->visible_window = NULL;
 
+#if 0 // defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AVAudioSession *audio_session = [AVAudioSession sharedInstance];
+
+  NSError *ns_error = NULL;
+  
+  [audio_session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeDefault policy:AVAudioSessionRouteSharingPolicyDefault options:AVAudioSessionCategoryOptionMixWithOthers error:&ns_error];
+
+  if(ns_error != NULL &&
+     [ns_error code] != noErr){
+    g_warning("audio session set category error code: %d", [ns_error code]);
+  }
+
+  [audio_session renderingMode:AVAudioSessionRenderingModeNotApplicable];
+#endif
+  
+  /* poll */
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
 		(GSourceFunc) ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);

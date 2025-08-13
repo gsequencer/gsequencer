@@ -319,8 +319,6 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   if(audio_signal != NULL){
     AgsFxAudioUnitAudioScopeData *scope_data;
     
-    AVAudioPCMBuffer *av_input_buffer;
-    
     guint audio_channel;
 
     audio_channel = ags_channel_get_audio_channel(channel);
@@ -329,14 +327,12 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(fx_audio_unit_audio_mutex);
     
     scope_data = fx_audio_unit_audio->scope_data[sound_scope];
-    
-    av_input_buffer = (AVAudioPCMBuffer *) scope_data->av_input_buffer;
-    
+        
     g_rec_mutex_lock(stream_mutex);
 
     /* fill input buffer */
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						[av_input_buffer floatChannelData], audio_channels, audio_channel,
+						scope_data->input, audio_channels, audio_channel,
 						audio_signal->stream->data, 1, 0,
 						buffer_size, copy_mode);
 
@@ -348,15 +344,15 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
 
     /* signal render thread */
-    g_mutex_lock(&(scope_data->completed_mutex));
+    g_mutex_lock(&(scope_data->completed_audio_signal_mutex));
     
     ags_atomic_int_increment(&(scope_data->completed_audio_signal_count));
-
-    if(ags_atomic_boolean_get(&(scope_data->completed_wait))){
-      g_cond_signal(&(scope_data->completed_cond));
-    }
     
-    g_mutex_unlock(&(scope_data->completed_mutex));
+    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
+
+    if(ags_atomic_boolean_get(&(scope_data->completed_audio_signal))){
+      g_cond_signal(&(scope_data->completed_audio_signal_cond));
+    }
   }
   
   /* call parent */
@@ -437,15 +433,15 @@ ags_fx_audio_unit_audio_signal_done(AgsRecall *recall)
     g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
 
     /* signal render thread */
-    g_mutex_lock(&(scope_data->completed_mutex));
+    g_mutex_lock(&(scope_data->completed_audio_signal_mutex));
     
     ags_atomic_int_increment(&(scope_data->completed_audio_signal_count));
-
-    if(ags_atomic_boolean_get(&(scope_data->completed_wait))){
-      g_cond_signal(&(scope_data->completed_cond));
-    }
     
-    g_mutex_unlock(&(scope_data->completed_mutex));
+    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
+
+    if(ags_atomic_boolean_get(&(scope_data->completed_audio_signal))){
+      g_cond_signal(&(scope_data->completed_audio_signal_cond));
+    }
   }
   
   /* call parent */

@@ -43,6 +43,8 @@ G_BEGIN_DECLS
 #define AGS_FX_AUDIO_UNIT_AUDIO_SCOPE_DATA(ptr) ((AgsFxAudioUnitAudioScopeData *) (ptr))
 #define AGS_FX_AUDIO_UNIT_AUDIO_SCOPE_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxAudioUnitAudioScopeData *)(ptr))->strct_mutex))
 
+#define AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE (512)
+
 typedef struct _AgsFxAudioUnitAudio AgsFxAudioUnitAudio;
 typedef struct _AgsFxAudioUnitAudioScopeData AgsFxAudioUnitAudioScopeData;
 typedef struct _AgsFxAudioUnitAudioChannelData AgsFxAudioUnitAudioChannelData;
@@ -66,6 +68,7 @@ struct _AgsFxAudioUnitAudio
   gpointer av_audio_sequencer;
   
   gboolean render_thread_running;
+  _Atomic gint render_ref_count;
   
   GThread *render_thread;
   
@@ -85,21 +88,28 @@ struct _AgsFxAudioUnitAudioScopeData
   
   guint audio_channels;
 
-  float *output;
+  gfloat *output;
   guint output_buffer_size;
   
-  float *input;
+  gfloat *input;
   guint input_buffer_size;
 
   gpointer av_output_buffer;
   gpointer av_input_buffer;
 
-  _Atomic gboolean completed_wait;
+  _Atomic gboolean completed_pre_sync;
+  _Atomic gint active_pre_sync_count;
+  _Atomic gint completed_pre_sync_count;
+
+  GMutex completed_pre_sync_mutex;
+  GCond completed_pre_sync_cond;
+
+  _Atomic gboolean completed_audio_signal;
   _Atomic gint active_audio_signal_count;
   _Atomic gint completed_audio_signal_count;
 
-  GMutex completed_mutex;
-  GCond completed_cond;
+  GMutex completed_audio_signal_mutex;
+  GCond completed_audio_signal_cond;
 
   GHashTable *active_audio_signal;
   
