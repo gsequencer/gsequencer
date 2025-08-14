@@ -329,19 +329,7 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
   
   audio_channels = ags_audio_get_audio_channels(audio);
-
-  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-    
-  g_object_get(fx_audio_unit_audio,
-	       "buffer-size", &buffer_size,
-	       "format", &format,
-	       NULL);
   
-  copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-							      AGS_AUDIO_BUFFER_UTIL_FLOAT,
-							      ags_audio_buffer_util_format_from_soundcard(NULL, format));
-
   /* mix active audio signal */
   fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
@@ -351,7 +339,18 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     guint audio_channel;
 
     // g_message("run inter - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
-
+    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+    
+    g_object_get(audio_signal,
+		 "buffer-size", &buffer_size,
+		 "format", &format,
+		 NULL);
+  
+    copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+								AGS_AUDIO_BUFFER_UTIL_FLOAT,
+								ags_audio_buffer_util_format_from_soundcard(NULL, format));
+    
     audio_channel = ags_channel_get_audio_channel(channel);
 
     //NOTE:JK: nested mutex lock
@@ -369,7 +368,7 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
 
     ags_audio_buffer_util_clear_buffer(NULL,
 				       audio_signal->stream->data, 1,
-				       buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
      
     g_rec_mutex_unlock(stream_mutex);
     g_rec_mutex_unlock(fx_audio_unit_audio_mutex);

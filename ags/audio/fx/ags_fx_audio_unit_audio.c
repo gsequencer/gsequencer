@@ -483,13 +483,17 @@ ags_fx_audio_unit_audio_notify_buffer_size_callback(GObject *gobject,
 
       /* av audio buffer */
       av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-			  frameCapacity:AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE];
-    
+			  frameCapacity:(audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+
+      av_output_buffer.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
+      
       scope_data->av_output_buffer = (gpointer) av_output_buffer;    
 
       av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-			 frameCapacity:AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE];
+			 frameCapacity:(audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
     
+      av_input_buffer.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
+      
       scope_data->av_input_buffer = (gpointer) av_input_buffer;
     }
   }
@@ -579,12 +583,16 @@ ags_fx_audio_unit_audio_notify_samplerate_callback(GObject *gobject,
 
       /* av audio buffer */
       av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-			  frameCapacity:AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE];
+			  frameCapacity:(audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+
+      av_output_buffer.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
     
       scope_data->av_output_buffer = (gpointer) av_output_buffer;    
 
       av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-			 frameCapacity:AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE];
+			 frameCapacity:(audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+    
+      av_input_buffer.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
     
       scope_data->av_input_buffer = (gpointer) av_input_buffer;
     }
@@ -666,12 +674,16 @@ ags_fx_audio_unit_audio_set_audio_channels_callback(AgsAudio *audio,
 
       /* av audio buffer */
       av_output_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-			  frameCapacity:AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE];
+			  frameCapacity:(audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+
+      av_output_buffer.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
     
       scope_data->av_output_buffer = (gpointer) av_output_buffer;
 
       av_input_buffer = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-			 frameCapacity:AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE];
+			 frameCapacity:(audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+    
+      av_input_buffer.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
     
       scope_data->av_input_buffer = (gpointer) av_input_buffer;    
     
@@ -791,7 +803,18 @@ ags_fx_audio_unit_audio_scope_data_alloc()
 							   g_direct_equal,
 							   NULL,
 							   NULL);
-  
+
+  /* render */
+  ags_atomic_boolean_set(&(scope_data->render_wait),
+			 FALSE);
+
+  ags_atomic_boolean_set(&(scope_data->render_done),
+			 FALSE);
+    
+  g_mutex_init(&(scope_data->render_mutex));
+
+  g_cond_init(&(scope_data->render_cond));
+
   return(scope_data);
 }
 
@@ -1476,6 +1499,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
   guint input_pads;
   guint samplerate;
   guint buffer_size;
+  AgsSoundcardFormat format;
   gint status;
   gint i;
   guint j;
@@ -1533,8 +1557,6 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
   
   while(is_running){
     audio_engine = (AVAudioEngine *) fx_audio_unit_audio->audio_engine;
-
-    copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
     
     audio_channels = ags_audio_get_audio_channels(audio);
     
@@ -1719,11 +1741,25 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 
 	  for(sub_block = 0; sub_block < sub_block_count; sub_block++){
 	    guint audio_channel;
+
+	    /* clear av IO buffer */
+	    for(audio_channel = 0; audio_channel < audio_channels; audio_channel++){
+	      ags_audio_buffer_util_clear_buffer(NULL,
+						 [av_input_buffer floatChannelData][audio_channel], 1,
+						 AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+	      
+	      ags_audio_buffer_util_clear_buffer(NULL,
+						 [av_output_buffer floatChannelData][audio_channel], 1,
+						 AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+	    }
+	    
+	    /* fill input */
+	    copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
 	    
 	    for(audio_channel = 0; audio_channel < audio_channels; audio_channel++){
 	      /* fill av input buffer */
 	      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-							  [av_input_buffer floatChannelData], audio_channels, audio_channel,
+							  [av_input_buffer floatChannelData][audio_channel], 1, 0,
 							  scope_data->input + (sub_block * audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), audio_channels, audio_channel,
 							  AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, copy_mode);
 	    }
@@ -1740,7 +1776,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	    [av_audio_player_node scheduleBuffer:av_input_buffer atTime:av_audio_time options:0 completionHandler:nil];
 	  
 	    /* render */
-	    //	    g_message("render audio unit");
+	    //g_message("render audio unit");
 	    
 	    ns_error = NULL;
 	  
@@ -1751,15 +1787,16 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	      g_warning("render offline error - %d", [ns_error code]);
 	    }
 
+	    /* fill output */
 	    for(audio_channel = 0; audio_channel < audio_channels; audio_channel++){
 	      /* fill output buffer */
 	      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 							  scope_data->output + (sub_block * audio_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), audio_channels, audio_channel,
-							  [av_output_buffer floatChannelData], audio_channels, audio_channel,
+							  [av_output_buffer floatChannelData][audio_channel], 1, 0,
 							  AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, copy_mode);
 	    }
 	  }
-	  
+
 	  /* output */
 	  active_audio_signal = g_hash_table_lookup(scope_data->active_audio_signal,
 						    GUINT_TO_POINTER(active_pad));
@@ -1772,9 +1809,21 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	  
 	    current_audio_signal = active_audio_signal->data;
 
+	    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+	    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+	    
+	    g_object_get(current_audio_signal,
+			 "buffer-size", &buffer_size,
+			 "format", &format,
+			 NULL);
+	    
 	    audio_channel = AGS_CHANNEL(AGS_RECYCLING(current_audio_signal->recycling)->channel)->audio_channel;
 	    line = AGS_CHANNEL(AGS_RECYCLING(current_audio_signal->recycling)->channel)->line;
 
+	    copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+									ags_audio_buffer_util_format_from_soundcard(NULL, format),
+									AGS_AUDIO_BUFFER_UTIL_FLOAT);
+		
 	    if(g_hash_table_lookup(scope_data->written_audio_signal, GUINT_TO_POINTER(line)) == NULL){
 	      /* fill output buffer */
 	      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
@@ -1790,6 +1839,12 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	    /* iterate */
 	    active_audio_signal = active_audio_signal->next;
 	  }
+
+	  /* clear output */
+	  ags_audio_buffer_util_clear_buffer(NULL,
+					     scope_data->output, 1,
+					     audio_channels * buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+	  
 	}
 
 	/* signal post sync */
