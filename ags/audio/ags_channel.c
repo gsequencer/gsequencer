@@ -11133,11 +11133,6 @@ ags_channel_real_stop(AgsChannel *channel,
 	       NULL);
 
   if(sound_scope >= 0){
-    /* stop thread */
-    ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioLoop *) audio_loop)->audio_tree_dispatcher,
-						     (GObject *) channel,
-						     sound_scope);
-    
     /* cancel */
     ags_channel_recursive_run_stage(channel,
 				    sound_scope, staging_flags);
@@ -11149,14 +11144,12 @@ ags_channel_real_stop(AgsChannel *channel,
     ags_playback_set_recall_id(playback,
 			       NULL,
 			       sound_scope);
+    
+    /* stop thread */
+    ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioLoop *) audio_loop)->audio_tree_dispatcher,
+						     (GObject *) channel,
+						     sound_scope);
   }else{
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      /* stop thread */
-      ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioLoop *) audio_loop)->audio_tree_dispatcher,
-						       (GObject *) channel,
-						       sound_scope);
-    }
-        
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       /* cancel */
       ags_channel_recursive_run_stage(channel,
@@ -11165,7 +11158,16 @@ ags_channel_real_stop(AgsChannel *channel,
       /* clean - fini */
       ags_channel_recursive_run_stage(channel,
 				      i, AGS_SOUND_STAGING_FINI);
-
+    }
+    
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      /* stop thread */
+      ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioLoop *) audio_loop)->audio_tree_dispatcher,
+						       (GObject *) channel,
+						       sound_scope);
+    }
+        
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       ags_playback_set_recall_id(playback,
 				 NULL,
 				 i);

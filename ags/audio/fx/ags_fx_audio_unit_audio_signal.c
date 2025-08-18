@@ -225,7 +225,7 @@ ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
   fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
   if(audio_signal != NULL){
-    //    g_message("check - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
+    g_message("check - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
     
     g_rec_mutex_lock(fx_audio_unit_audio_mutex);
 
@@ -338,7 +338,7 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     
     guint audio_channel;
 
-    // g_message("run inter - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
+    g_message("run inter - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     format = AGS_SOUNDCARD_DEFAULT_FORMAT;
     
@@ -378,7 +378,7 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     
     ags_atomic_int_increment(&(scope_data->completed_audio_signal_count));
     
-    if(ags_atomic_boolean_get(&(scope_data->completed_audio_signal))){
+    if(ags_atomic_boolean_get(&(scope_data->audio_signal_wait))){
       g_cond_signal(&(scope_data->completed_audio_signal_cond));
     }
     
@@ -489,7 +489,7 @@ ags_fx_audio_unit_audio_signal_done(AgsRecall *recall)
 
     ags_atomic_int_decrement(&(scope_data->active_audio_signal_count));
     
-    if(ags_atomic_boolean_get(&(scope_data->completed_audio_signal))){
+    if(ags_atomic_boolean_get(&(scope_data->audio_signal_wait))){
       g_cond_signal(&(scope_data->completed_audio_signal_cond));
     }
     

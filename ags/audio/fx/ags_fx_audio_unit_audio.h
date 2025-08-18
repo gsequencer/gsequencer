@@ -67,6 +67,8 @@ struct _AgsFxAudioUnitAudio
   gpointer av_audio_unit;
   gpointer av_audio_sequencer;
   
+  gpointer av_music_track;
+  
   gboolean render_thread_running;
   _Atomic gint render_ref_count;
   
@@ -102,14 +104,14 @@ struct _AgsFxAudioUnitAudioScopeData
   gpointer av_output_buffer;
   gpointer av_input_buffer;
 
-  _Atomic gboolean completed_pre_sync;
+  _Atomic gboolean pre_sync_wait;
   _Atomic gint active_pre_sync_count;
   _Atomic gint completed_pre_sync_count;
 
   GMutex completed_pre_sync_mutex;
   GCond completed_pre_sync_cond;
 
-  _Atomic gboolean completed_audio_signal;
+  _Atomic gboolean audio_signal_wait;
   _Atomic gint active_audio_signal_count;
   _Atomic gint completed_audio_signal_count;
 
@@ -145,8 +147,6 @@ struct _AgsFxAudioUnitAudioInputData
   GRecMutex strct_mutex;
   
   gpointer parent;
-
-  gpointer av_music_track;
 
   GList *note;
   

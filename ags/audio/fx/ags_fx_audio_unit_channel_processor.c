@@ -249,7 +249,7 @@ ags_fx_audio_unit_channel_processor_run_inter(AgsRecall *recall)
     
     ags_atomic_int_increment(&(scope_data->completed_pre_sync_count));
     
-    if(ags_atomic_boolean_get(&(scope_data->completed_pre_sync))){
+    if(ags_atomic_boolean_get(&(scope_data->pre_sync_wait))){
       g_cond_signal(&(scope_data->completed_pre_sync_cond));
     }
     
@@ -322,16 +322,19 @@ ags_fx_audio_unit_channel_processor_done(AgsRecall *recall)
   if(scope_data != NULL){
     ags_atomic_uint_decrement(&(scope_data->active_audio_channels));
 
+    //NOTE:JK: check ags-fx-audio-unit audio processor
+#if 0   
     /* reset pre sync completed */
     g_mutex_lock(&(scope_data->completed_pre_sync_mutex));
     
-    ags_atomic_int_decrement(&(scope_data->completed_pre_sync_count));
+    ags_atomic_int_decrement(&(scope_data->active_pre_sync_count));
 
-    if(ags_atomic_boolean_get(&(scope_data->completed_pre_sync))){
+    if(ags_atomic_boolean_get(&(scope_data->pre_sync_wait))){
       g_cond_signal(&(scope_data->completed_pre_sync_cond));
     }    
 
     g_mutex_unlock(&(scope_data->completed_pre_sync_mutex));
+#endif
   }
 
   if(fx_audio_unit_audio != NULL){

@@ -38,6 +38,7 @@ void ags_fx_audio_unit_audio_processor_finalize(GObject *gobject);
 
 void ags_fx_audio_unit_audio_processor_run_init_pre(AgsRecall *recall);
 void ags_fx_audio_unit_audio_processor_run_inter(AgsRecall *recall);
+void ags_fx_audio_unit_audio_processor_cancel(AgsRecall *recall);
 void ags_fx_audio_unit_audio_processor_done(AgsRecall *recall);
 
 void ags_fx_audio_unit_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
@@ -108,6 +109,7 @@ ags_fx_audio_unit_audio_processor_class_init(AgsFxAudioUnitAudioProcessorClass *
 
   recall->run_init_pre = ags_fx_audio_unit_audio_processor_run_init_pre;
   recall->run_inter = ags_fx_audio_unit_audio_processor_run_inter;
+  recall->cancel = ags_fx_audio_unit_audio_processor_cancel;
   recall->done = ags_fx_audio_unit_audio_processor_done;
   
   /* AgsFxNotationAudioProcessorClass */
@@ -212,7 +214,7 @@ ags_fx_audio_unit_audio_processor_run_inter(AgsRecall *recall)
 }
 
 void
-ags_fx_audio_unit_audio_processor_done(AgsRecall *recall)
+ags_fx_audio_unit_audio_processor_cancel(AgsRecall *recall)
 {
   AgsFxAudioUnitAudio *fx_audio_unit_audio;
   AgsFxAudioUnitAudioProcessor *fx_audio_unit_audio_processor;
@@ -222,7 +224,7 @@ ags_fx_audio_unit_audio_processor_done(AgsRecall *recall)
   gint sound_scope;
 
   fx_audio_unit_audio_processor = AGS_FX_AUDIO_UNIT_AUDIO_PROCESSOR(recall);
-
+  
   fx_audio_unit_audio = NULL;
   
   g_object_get(fx_audio_unit_audio_processor,
@@ -233,7 +235,129 @@ ags_fx_audio_unit_audio_processor_done(AgsRecall *recall)
   
   scope_data = fx_audio_unit_audio->scope_data[sound_scope];
 
-  if(scope_data != NULL){    
+  if(scope_data != NULL){
+    scope_data->running = FALSE;
+  
+    /* reset pre sync completed */
+    g_mutex_lock(&(scope_data->completed_pre_sync_mutex));
+
+    ags_atomic_int_set(&(scope_data->active_pre_sync_count),
+		       0);
+        
+    if(ags_atomic_boolean_get(&(scope_data->pre_sync_wait))){
+      g_cond_signal(&(scope_data->completed_pre_sync_cond));
+    }
+    
+    g_mutex_unlock(&(scope_data->completed_pre_sync_mutex));
+
+    /* active audio channels */
+    ags_atomic_uint_set(&(scope_data->active_audio_channels),
+			0);
+    
+    /* reset sync audio signals */
+    g_mutex_lock(&(scope_data->completed_audio_signal_mutex));
+ 
+    ags_atomic_int_set(&(scope_data->active_audio_signal_count),
+		       0);
+        
+    if(ags_atomic_boolean_get(&(scope_data->audio_signal_wait))){
+      g_cond_signal(&(scope_data->completed_audio_signal_cond));
+    }
+    
+    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
+    
+    /* signal post sync */
+    g_mutex_lock(&(scope_data->render_mutex));
+    
+    ags_atomic_boolean_set(&(scope_data->render_wait),
+			   FALSE);
+	
+    ags_atomic_boolean_set(&(scope_data->render_done),
+			   TRUE);
+
+    g_cond_broadcast(&(scope_data->render_cond));
+	
+    g_mutex_unlock(&(scope_data->render_mutex));
+
+    /* stop render thread */
+    ags_fx_audio_unit_audio_stop_render_thread(fx_audio_unit_audio);
+  }
+  
+  if(fx_audio_unit_audio != NULL){
+    g_object_unref(fx_audio_unit_audio);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_audio_unit_audio_processor_parent_class)->cancel(recall);
+}
+
+void
+ags_fx_audio_unit_audio_processor_done(AgsRecall *recall)
+{
+  AgsFxAudioUnitAudio *fx_audio_unit_audio;
+  AgsFxAudioUnitAudioProcessor *fx_audio_unit_audio_processor;
+
+  AgsFxAudioUnitAudioScopeData *scope_data;
+  
+  gint sound_scope;
+
+  fx_audio_unit_audio_processor = AGS_FX_AUDIO_UNIT_AUDIO_PROCESSOR(recall);
+  
+  fx_audio_unit_audio = NULL;
+  
+  g_object_get(fx_audio_unit_audio_processor,
+	       "recall-audio", &fx_audio_unit_audio,
+	       NULL);
+
+  sound_scope = ags_recall_get_sound_scope(recall);
+  
+  scope_data = fx_audio_unit_audio->scope_data[sound_scope];
+
+  if(scope_data != NULL){
+    scope_data->running = FALSE;
+  
+    /* reset pre sync completed */
+    g_mutex_lock(&(scope_data->completed_pre_sync_mutex));
+
+    ags_atomic_int_set(&(scope_data->active_pre_sync_count),
+		       0);
+        
+    if(ags_atomic_boolean_get(&(scope_data->pre_sync_wait))){
+      g_cond_signal(&(scope_data->completed_pre_sync_cond));
+    }
+    
+    g_mutex_unlock(&(scope_data->completed_pre_sync_mutex));
+
+    /* active audio channels */
+    ags_atomic_uint_set(&(scope_data->active_audio_channels),
+			0);
+    
+    /* reset sync audio signals */
+    g_mutex_lock(&(scope_data->completed_audio_signal_mutex));
+ 
+    ags_atomic_int_set(&(scope_data->active_audio_signal_count),
+		       0);
+        
+    if(ags_atomic_boolean_get(&(scope_data->audio_signal_wait))){
+      g_cond_signal(&(scope_data->completed_audio_signal_cond));
+    }
+    
+    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
+    
+    /* signal post sync */
+    g_mutex_lock(&(scope_data->render_mutex));
+    
+    ags_atomic_boolean_set(&(scope_data->render_wait),
+			   FALSE);
+	
+    ags_atomic_boolean_set(&(scope_data->render_done),
+			   TRUE);
+
+    g_cond_broadcast(&(scope_data->render_cond));
+	
+    g_mutex_unlock(&(scope_data->render_mutex));
+
+    /* stop render thread */
     ags_fx_audio_unit_audio_stop_render_thread(fx_audio_unit_audio);
   }
   

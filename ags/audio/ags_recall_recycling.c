@@ -713,9 +713,11 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   GType child_type;
 
   GList *list_start;
+  GList *children, *child;
   
   gint sound_scope;
   guint audio_channel;
+  gboolean found_child;
   gboolean success;
   
   GRecMutex *recall_mutex;
@@ -728,6 +730,28 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_recycling);
 
+  child =
+    children = ags_recall_get_children((AgsRecall *) recall_recycling);
+
+  found_child = FALSE;
+  
+  while(child != NULL){
+    if(AGS_RECALL_AUDIO_SIGNAL(child->data)->source == audio_signal){
+      found_child = TRUE;
+
+      break;
+    }
+
+    child = child->next;
+  }
+  
+  g_list_free_full(children,
+		   (GDestroyNotify) g_object_unref);
+
+  if(found_child){
+    return;
+  }
+  
   /* get some fields */
   g_object_get(recall_recycling,
 	       "output-soundcard", &output_soundcard,
@@ -740,7 +764,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   child_type = AGS_RECALL(recall_recycling)->child_type;
 
   audio_channel = recall_recycling->audio_channel;
-  
+
   g_rec_mutex_unlock(recall_mutex);
 
   g_object_get(recall_recycling,

@@ -251,15 +251,6 @@ ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
     
     ags_base_plugin_load_plugin(base_plugin);
   }
-      
-  ns_error = NULL;
-      
-  [[av_audio_unit AUAudioUnit] allocateRenderResourcesAndReturnError:&ns_error];
-
-  if(ns_error != NULL &&
-     [ns_error code] != noErr){
-    g_warning("Audio Unit allocate render resources returned error - ErrorCode %d", [ns_error code]);
-  }
  
   return(av_audio_unit);
 }

@@ -1166,6 +1166,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
   GObject *output_soundcard, *input_soundcard;
 
   GList *list_start, *list;
+  GList *children, *child;
   
   GType child_type;
 
@@ -1240,7 +1241,6 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 
 	  ags_connectable_disconnect(AGS_CONNECTABLE(current_recall));
 	  g_object_run_dispose((GObject *) current_recall);
-	  g_object_unref((GObject *) current_recall);
 	}
 
 	list = list->next;
@@ -1306,27 +1306,48 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     source_recycling = new_start_changed_region;
     g_object_ref(source_recycling);
     
+    child =
+      children = ags_recall_get_children((AgsRecall *) recall_channel_run);
+    
     while(source_recycling != source_end_recycling){
       AgsRecallRecycling *recall_recycling;
-
-      //      g_message("%s[%d]", G_OBJECT_TYPE_NAME(recall_channel_run), recall_channel_run->source->line);
       
-      recall_recycling = g_object_new(child_type,
-				      "recall-id", recall_id,
-				      "output-soundcard", output_soundcard,
-				      "output-soundcard-channel", output_soundcard_channel,
-				      "input-soundcard", input_soundcard,
-				      "input-soundcard-channel", input_soundcard_channel,
-				      "samplerate", samplerate,
-				      "buffer-size", buffer_size,
-				      "format", format,
-				      "source", source_recycling,
-				      "destination", destination_first_recycling,
-				      NULL);
+      gboolean found_child;
+      
+      //      g_message("%s[%d]", G_OBJECT_TYPE_NAME(recall_channel_run), recall_channel_run->source->line);
+
+      child = children;
+      
+      found_child = FALSE;
+
+      while(child != NULL){
+	if(AGS_RECALL_RECYCLING(child->data)->source == source_recycling){
+	  found_child = TRUE;
+	  
+	  break;
+	}
 	
-      ags_recall_add_child((AgsRecall *) recall_channel_run,
-			   (AgsRecall *) recall_recycling);
-      ags_connectable_connect(AGS_CONNECTABLE(recall_recycling));
+	child = child->next;
+      }
+      
+      if(!found_child){
+	recall_recycling = g_object_new(child_type,
+					"recall-id", recall_id,
+					"output-soundcard", output_soundcard,
+					"output-soundcard-channel", output_soundcard_channel,
+					"input-soundcard", input_soundcard,
+					"input-soundcard-channel", input_soundcard_channel,
+					"samplerate", samplerate,
+					"buffer-size", buffer_size,
+					"format", format,
+					"source", source_recycling,
+					"destination", destination_first_recycling,
+					NULL);
+	
+	ags_recall_add_child((AgsRecall *) recall_channel_run,
+			     (AgsRecall *) recall_recycling);
+	ags_connectable_connect(AGS_CONNECTABLE(recall_recycling));
+      }
       
       /* iterate */
       source_next_recycling = ags_recycling_next(source_recycling);
@@ -1335,6 +1356,9 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 
       source_recycling = source_next_recycling;
     }
+
+    g_list_free_full(children,
+		     (GDestroyNotify) g_object_unref);
     
     /* unref */
     if(recall_id != NULL){
@@ -1452,7 +1476,6 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 
 	  ags_connectable_disconnect(AGS_CONNECTABLE(current_recall));
 	  g_object_run_dispose((GObject *) current_recall);
-	  g_object_unref((GObject *) current_recall);
 	}
 
 	list = list->next;
@@ -1608,6 +1631,8 @@ ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
       g_object_unref(first_recycling);
       g_object_unref(last_recycling);
     }
+
+    g_object_unref(destination);
   }else{
     ags_recall_channel_run_remap_child_source(recall_channel_run,
 					      old_start_changed_region, old_end_changed_region,

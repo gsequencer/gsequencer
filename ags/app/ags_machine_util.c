@@ -1362,9 +1362,6 @@ ags_machine_util_new_audio_unit_bridge(gchar *filename, gchar *effect)
   ags_window_add_machine(window,
 			 AGS_MACHINE(audio_unit_bridge));
 
-  /* connect everything */
-  ags_connectable_connect(AGS_CONNECTABLE(audio_unit_bridge));
-
   if(ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
     ags_audio_set_flags(AGS_MACHINE(audio_unit_bridge)->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 								AGS_AUDIO_INPUT_HAS_RECYCLING |
@@ -1405,6 +1402,9 @@ ags_machine_util_new_audio_unit_bridge(gchar *filename, gchar *effect)
   ags_audio_set_pads(AGS_MACHINE(audio_unit_bridge)->audio,
 		     AGS_TYPE_OUTPUT,
 		     1, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(audio_unit_bridge));
 
   /*  */
   ags_audio_unit_bridge_load(audio_unit_bridge);
