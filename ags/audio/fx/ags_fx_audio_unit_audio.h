@@ -27,7 +27,9 @@
 
 #include <ags/plugin/ags_audio_unit_plugin.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_port.h>
+#include <ags/audio/ags_volume_util.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio.h>
 
@@ -51,19 +53,27 @@ typedef struct _AgsFxAudioUnitAudioChannelData AgsFxAudioUnitAudioChannelData;
 typedef struct _AgsFxAudioUnitAudioInputData AgsFxAudioUnitAudioInputData;
 typedef struct _AgsFxAudioUnitAudioClass AgsFxAudioUnitAudioClass;
 
+typedef enum{
+  AGS_FX_AUDIO_UNIT_AUDIO_MONO            = 1,
+  //NOTE:JK: stereo and more channels require super-threaded channel, because of the dispatcher
+  AGS_FX_AUDIO_UNIT_AUDIO_STEREO          = 1 <<  1,
+  AGS_FX_AUDIO_UNIT_AUDIO_SURROUND_2_1    = 1 <<  3,
+  AGS_FX_AUDIO_UNIT_AUDIO_SURROUND_5_1    = 1 <<  4,
+  AGS_FX_AUDIO_UNIT_AUDIO_SURROUND_7_1    = 1 <<  5,
+}AgsFxAudioUnitAudioFlags;
+
 struct _AgsFxAudioUnitAudio
 {
   AgsFxNotationAudio fx_notation_audio;
 
-  guint flags;
+  AgsFxAudioUnitAudioFlags flags;
     
   AgsAudioUnitPlugin *audio_unit_plugin;
 
   gpointer av_format;
   
   gpointer audio_engine;
-
-  gpointer av_audio_player_node;
+  
   gpointer av_audio_unit;
   gpointer av_audio_sequencer;
   
@@ -73,6 +83,26 @@ struct _AgsFxAudioUnitAudio
   _Atomic gint render_ref_count;
   
   GThread *render_thread;
+  
+  _Atomic gboolean pre_sync_wait;
+  _Atomic gint active_iteration_count;
+  
+  GMutex pre_sync_mutex;
+  GCond pre_sync_cond;
+  
+  _Atomic gboolean prepare_iteration_wait;
+
+  _Atomic GList *iterate_data;
+  _Atomic gpointer active_iterate_data;
+  
+  GMutex prepare_iteration_mutex;
+  GCond prepare_iteration_cond;
+
+  _Atomic gboolean completed_iteration_wait;
+  _Atomic gboolean completed_iteration_done;
+  
+  GMutex completed_iteration_mutex;
+  GCond completed_iteration_cond;
   
   AgsFxAudioUnitAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
@@ -101,8 +131,11 @@ struct _AgsFxAudioUnitAudioScopeData
   gfloat *input;
   guint input_buffer_size;
 
-  gpointer av_output_buffer;
-  gpointer av_input_buffer;
+  gpointer av_output;
+
+  gpointer av_input;
+
+  AgsVolumeUtil *volume_util;
 
   _Atomic gboolean pre_sync_wait;
   _Atomic gint active_pre_sync_count;
@@ -128,7 +161,7 @@ struct _AgsFxAudioUnitAudioScopeData
   GMutex render_mutex;
   GCond render_cond;
   
-  AgsFxAudioUnitAudioChannelData* channel_data[1];
+  AgsFxAudioUnitAudioChannelData **channel_data;
 };
 
 struct _AgsFxAudioUnitAudioChannelData
@@ -136,6 +169,20 @@ struct _AgsFxAudioUnitAudioChannelData
   GRecMutex strct_mutex;
   
   gpointer parent;
+
+  gfloat *output;
+  guint output_buffer_size;
+  
+  gfloat *input;
+  guint input_buffer_size;
+
+  gpointer av_output;
+
+  gpointer av_input;
+
+  gpointer audio_buffer_list;
+  
+  AgsVolumeUtil *volume_util;
 
   guint event_count;
 
@@ -166,9 +213,9 @@ AgsFxAudioUnitAudioInputData* ags_fx_audio_unit_audio_input_data_alloc();
 void ags_fx_audio_unit_audio_input_data_free(AgsFxAudioUnitAudioInputData *input_data);
 
 /* flags */
-gboolean ags_fx_audio_unit_audio_test_flags(AgsFxAudioUnitAudio *fx_audio_unit_audio, guint flags);
-void ags_fx_audio_unit_audio_set_flags(AgsFxAudioUnitAudio *fx_audio_unit_audio, guint flags);
-void ags_fx_audio_unit_audio_unset_flags(AgsFxAudioUnitAudio *fx_audio_unit_audio, guint flags);
+gboolean ags_fx_audio_unit_audio_test_flags(AgsFxAudioUnitAudio *fx_audio_unit_audio, AgsFxAudioUnitAudioFlags flags);
+void ags_fx_audio_unit_audio_set_flags(AgsFxAudioUnitAudio *fx_audio_unit_audio, AgsFxAudioUnitAudioFlags flags);
+void ags_fx_audio_unit_audio_unset_flags(AgsFxAudioUnitAudio *fx_audio_unit_audio, AgsFxAudioUnitAudioFlags flags);
 
 /* load/unload */
 void ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio);
@@ -177,6 +224,12 @@ void ags_fx_audio_unit_audio_load_port(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 /* render thread */
 void ags_fx_audio_unit_audio_start_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio);
 void ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio);
+
+void ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_unit_audio,
+						     AgsFxAudioUnitAudioChannelData *channel_data,
+						     AgsAudioSignal *audio_signal,
+						     guint pad,
+						     guint audio_channel);
 
 /* instantiate */
 AgsFxAudioUnitAudio* ags_fx_audio_unit_audio_new(AgsAudio *audio);

@@ -170,20 +170,7 @@ ags_fx_audio_unit_audio_signal_finalize(GObject *gobject)
 void
 ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
 {
-  AgsFxAudioUnitAudio *fx_audio_unit_audio;
-  AgsFxAudioUnitChannel *fx_audio_unit_channel;
-  AgsFxAudioUnitChannelProcessor *fx_audio_unit_channel_processor;
-  AgsFxAudioUnitRecycling *fx_audio_unit_recycling;
   AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal;
-  AgsChannel *channel;
-  AgsAudioSignal *audio_signal;
-  
-  GList *active_audio_signal;
-
-  guint pad;
-  gint sound_scope;
-
-  GRecMutex *fx_audio_unit_audio_mutex;
 
   if(ags_recall_test_flags(recall, AGS_RECALL_TEMPLATE) ||
      ags_recall_test_flags(recall, AGS_RECALL_DEFAULT_TEMPLATE)){
@@ -193,76 +180,8 @@ ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
   }
   
   fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) recall;
-
-  channel = NULL;
-
-  audio_signal = NULL;
   
-  fx_audio_unit_audio = NULL;
-  
-  fx_audio_unit_channel = NULL;
-  fx_audio_unit_channel_processor = NULL;
-
-  fx_audio_unit_recycling = NULL;
-
-  g_object_get(recall,
-	       "parent", &fx_audio_unit_recycling,
-	       "source", &audio_signal,
-	       NULL);
-
-  g_object_get(fx_audio_unit_recycling,
-	       "parent", &fx_audio_unit_channel_processor,
-	       NULL);
-
-  g_object_get(fx_audio_unit_channel_processor,
-	       "source", &channel,
-	       "recall-audio", &fx_audio_unit_audio,
-	       NULL);
-
-  sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
-  
-  /* set active audio signal */
-  fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
-
-  if(audio_signal != NULL){
-    g_message("check - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
-    
-    g_rec_mutex_lock(fx_audio_unit_audio_mutex);
-
-    ags_atomic_int_increment(&(fx_audio_unit_audio->scope_data[sound_scope]->active_audio_signal_count));
-
-    active_audio_signal = g_hash_table_lookup(fx_audio_unit_audio->scope_data[sound_scope]->active_audio_signal,
-					      GUINT_TO_POINTER(pad));
-
-    active_audio_signal = g_list_prepend(active_audio_signal,
-					 audio_signal);
-
-    g_hash_table_insert(fx_audio_unit_audio->scope_data[sound_scope]->active_audio_signal,
-			GUINT_TO_POINTER(pad),
-			active_audio_signal);
-  
-    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
-  }
-  
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
-  
-  if(audio_signal != NULL){
-    g_object_unref(audio_signal);
-  }
-
-  if(fx_audio_unit_audio != NULL){
-    g_object_unref(fx_audio_unit_audio);
-  }
-
-  if(fx_audio_unit_channel_processor != NULL){
-    g_object_unref(fx_audio_unit_channel_processor);
-  }
-
-  if(fx_audio_unit_recycling != NULL){
-    g_object_unref(fx_audio_unit_recycling);
-  }
+  //TODO:JK: implement me
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_audio_unit_audio_signal_recall_audio_signal_class)->run_init_pre(recall);
@@ -270,29 +189,31 @@ ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall)
 
 void
 ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
-{
+{ 
   AgsAudio *audio;
+  AgsChannel *channel;
+  AgsAudioSignal *audio_signal;
   AgsFxAudioUnitAudio *fx_audio_unit_audio;
   AgsFxAudioUnitChannel *fx_audio_unit_channel;
   AgsFxAudioUnitChannelProcessor *fx_audio_unit_channel_processor;
   AgsFxAudioUnitRecycling *fx_audio_unit_recycling;
   AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal;
-  AgsChannel *channel;
-  AgsAudioSignal *audio_signal;
   
   GList *active_audio_signal;
 
   gint sound_scope;
   guint audio_channels;
+  guint pad;
+  guint audio_channel;
   guint buffer_size;
   AgsSoundcardFormat format;
   guint copy_mode;
 
   GRecMutex *fx_audio_unit_audio_mutex;
   GRecMutex *stream_mutex;
-
-  fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) recall;
   
+  fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) recall;
+
   audio = NULL;
   
   channel = NULL;
@@ -310,8 +231,6 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
 	       "parent", &fx_audio_unit_recycling,
 	       "source", &audio_signal,
 	       NULL);
-
-  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
   
   g_object_get(fx_audio_unit_recycling,
 	       "parent", &fx_audio_unit_channel_processor,
@@ -326,65 +245,43 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
 	       "audio", &audio,
 	       NULL);
   
-  sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
-  
   audio_channels = ags_audio_get_audio_channels(audio);
   
-  /* mix active audio signal */
+  pad = ags_channel_get_pad(channel);
+  audio_channel = ags_channel_get_audio_channel(channel);
+  
+  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
+  
   fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
+  
+  sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
 
   if(audio_signal != NULL){
     AgsFxAudioUnitAudioScopeData *scope_data;
     
-    guint audio_channel;
-
-    g_message("run inter - sound_scope: %d recall: 0x%x audio_signal: 0x%x -> sound_scope: %d AND 0x%x == 0x%x", sound_scope, recall, audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->sound_scope, recall->recall_id, audio_signal->recall_id);
-    buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-    
-    g_object_get(audio_signal,
-		 "buffer-size", &buffer_size,
-		 "format", &format,
-		 NULL);
-  
-    copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-								AGS_AUDIO_BUFFER_UTIL_FLOAT,
-								ags_audio_buffer_util_format_from_soundcard(NULL, format));
-    
-    audio_channel = ags_channel_get_audio_channel(channel);
-
-    //NOTE:JK: nested mutex lock
     g_rec_mutex_lock(fx_audio_unit_audio_mutex);
     
     scope_data = fx_audio_unit_audio->scope_data[sound_scope];
-        
-    g_rec_mutex_lock(stream_mutex);
 
-    /* fill input buffer */
-    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						scope_data->input, audio_channels, audio_channel,
-						audio_signal->stream->data, 1, 0,
-						buffer_size, copy_mode);
+    if(scope_data != NULL){
+      AgsFxAudioUnitAudioChannelData *channel_data;
+	  
+      channel_data = scope_data->channel_data[audio_channel];
 
-    ags_audio_buffer_util_clear_buffer(NULL,
-				       audio_signal->stream->data, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
-     
-    g_rec_mutex_unlock(stream_mutex);
-    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
+      if(channel_data != NULL &&
+	 ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio, AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
+	ags_fx_audio_unit_audio_render_thread_iteration(fx_audio_unit_audio,
+							channel_data,
+							audio_signal,
+							pad,
+							audio_channel);
 
-    /* signal render thread */
-    g_mutex_lock(&(scope_data->completed_audio_signal_mutex));
-    
-    ags_atomic_int_increment(&(scope_data->completed_audio_signal_count));
-    
-    if(ags_atomic_boolean_get(&(scope_data->audio_signal_wait))){
-      g_cond_signal(&(scope_data->completed_audio_signal_cond));
+      }
     }
     
-    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
+    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);    
   }
-
+  
   if(audio != NULL){
     g_object_unref(audio);
   }
@@ -416,105 +313,11 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
 void
 ags_fx_audio_unit_audio_signal_done(AgsRecall *recall)
 {
-  AgsFxAudioUnitAudio *fx_audio_unit_audio;
-  AgsFxAudioUnitChannel *fx_audio_unit_channel;
-  AgsFxAudioUnitChannelProcessor *fx_audio_unit_channel_processor;
-  AgsFxAudioUnitRecycling *fx_audio_unit_recycling;
   AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal;
-  AgsChannel *channel;
-  AgsAudioSignal *audio_signal;
-  
-  GList *active_audio_signal;
-
-  guint pad;
-  gint sound_scope;
-
-  GRecMutex *fx_audio_unit_audio_mutex;
 
   fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) recall;
 
-  channel = NULL;
-
-  audio_signal = NULL;
-  
-  fx_audio_unit_audio = NULL;
-  
-  fx_audio_unit_channel = NULL;
-  fx_audio_unit_channel_processor = NULL;
-
-  fx_audio_unit_recycling = NULL;
-  
-  g_object_get(recall,
-	       "parent", &fx_audio_unit_recycling,
-	       "source", &audio_signal,
-	       NULL);
-
-  g_object_get(fx_audio_unit_recycling,
-	       "parent", &fx_audio_unit_channel_processor,
-	       NULL);
-
-  g_object_get(fx_audio_unit_channel_processor,
-	       "source", &channel,
-	       "recall-audio", &fx_audio_unit_audio,
-	       NULL);
-
-  sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
-
-  pad = ags_channel_get_pad(channel);
-  
-  /* unset active audio signal */
-  fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
-
-  if(audio_signal != NULL){
-    AgsFxAudioUnitAudioScopeData *scope_data;
-
-    scope_data = fx_audio_unit_audio->scope_data[sound_scope];
-    
-    g_rec_mutex_lock(fx_audio_unit_audio_mutex);
-
-    active_audio_signal = g_hash_table_lookup(scope_data->active_audio_signal,
-					      GUINT_TO_POINTER(pad));
-
-    active_audio_signal = g_list_remove(active_audio_signal,
-					audio_signal);
-
-    g_hash_table_insert(scope_data->active_audio_signal,
-			GUINT_TO_POINTER(pad),
-			active_audio_signal);
-  
-    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
-
-    /* signal render thread */
-    g_mutex_lock(&(scope_data->completed_audio_signal_mutex));
-
-    ags_atomic_int_decrement(&(scope_data->active_audio_signal_count));
-    
-    if(ags_atomic_boolean_get(&(scope_data->audio_signal_wait))){
-      g_cond_signal(&(scope_data->completed_audio_signal_cond));
-    }
-    
-    g_mutex_unlock(&(scope_data->completed_audio_signal_mutex));
-  }
-  
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
-  
-  if(audio_signal != NULL){
-    g_object_unref(audio_signal);
-  }
-
-  if(fx_audio_unit_audio != NULL){
-    g_object_unref(fx_audio_unit_audio);
-  }
-
-  if(fx_audio_unit_channel_processor != NULL){
-    g_object_unref(fx_audio_unit_channel_processor);
-  }
-
-  if(fx_audio_unit_recycling != NULL){
-    g_object_unref(fx_audio_unit_recycling);
-  }
+  //TODO:JK: implement me
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_audio_unit_audio_signal_recall_audio_signal_class)->done(recall);
@@ -541,88 +344,7 @@ ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notati
 					     guint x0, guint x1,
 					     guint y)
 {
-  AgsAudio *audio;
-  AgsChannel *channel;
-  AgsFxAudioUnitAudio *fx_audio_unit_audio;
-  AgsFxAudioUnitChannel *fx_audio_unit_channel;
-  AgsFxAudioUnitChannelProcessor *fx_audio_unit_channel_processor;
-  AgsFxAudioUnitRecycling *fx_audio_unit_recycling;
-  AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal;
-  
-  GList *active_audio_signal;
-
-  gint sound_scope;
-  guint pad;
-  guint audio_start_mapping;
-  guint midi_start_mapping;
-  guint midi_note;
-
-  GRecMutex *fx_audio_unit_audio_mutex;
-
-  fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) fx_notation_audio_signal;
-
-  audio = NULL;
-  channel = NULL;
-  
-  fx_audio_unit_audio = NULL;
-  
-  fx_audio_unit_channel = NULL;
-  fx_audio_unit_channel_processor = NULL;
-
-  fx_audio_unit_recycling = NULL;
-  
-  sound_scope = ags_recall_get_sound_scope((AgsRecall *) fx_notation_audio_signal);
-
-  g_object_get(fx_notation_audio_signal,
-	       "parent", &fx_audio_unit_recycling,
-	       NULL);
-
-  g_object_get(fx_audio_unit_recycling,
-	       "parent", &fx_audio_unit_channel_processor,
-	       NULL);
-
-  g_object_get(fx_audio_unit_channel_processor,
-	       "source", &channel,
-	       "recall-audio", &fx_audio_unit_audio,
-	       NULL);
-
-  g_object_get(fx_audio_unit_audio,
-	       "audio", &audio,
-	       NULL);
-
-  g_object_get(audio,
-	       "audio-start-mapping", &audio_start_mapping,
-	       "midi-start-mapping", &midi_start_mapping,
-	       NULL);
-
-  pad = ags_channel_get_pad(channel);
-  
-  midi_note = (y - audio_start_mapping + midi_start_mapping);
-
-  /* unset active audio signal */
-  fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
-
-  if(note != NULL){
-    AgsFxAudioUnitAudioScopeData *scope_data;
-    AgsFxAudioUnitAudioChannelData *channel_data;
-    AgsFxAudioUnitAudioInputData *input_data;
-    
-    g_rec_mutex_lock(fx_audio_unit_audio_mutex);
-
-    scope_data = fx_audio_unit_audio->scope_data[sound_scope];
-
-    channel_data = scope_data->channel_data[0];
-    
-    channel_data->event_count -= 1;
-
-    input_data = channel_data->input_data[midi_note];
-
-    input_data->note = g_list_remove(input_data->note,
-				     note);
-    g_object_unref(note);
-    
-    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
-  }
+  //TODO:JK: implement me
 }
 
 /**
