@@ -254,7 +254,7 @@ ags_fx_audio_unit_audio_init(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   /* plugin channels */
   plugin_channels = pcm_channels;
   
-  if(!super_threaded_chanel){
+  if(!super_threaded_channel){
     fx_audio_unit_audio->flags = AGS_FX_AUDIO_UNIT_AUDIO_MONO;
 
     plugin_channels = 1;
@@ -714,7 +714,7 @@ ags_fx_audio_unit_audio_notify_samplerate_callback(GObject *gobject,
   guint plugin_channels;
   guint buffer_size;
   guint samplerate;
-  guint i;
+  guint i, j;
   
   GRecMutex *recall_mutex;
   
@@ -938,7 +938,8 @@ ags_fx_audio_unit_audio_set_audio_channels_callback(AgsAudio *audio,
     AgsFxAudioUnitAudioScopeData *scope_data;
 
     AVAudioPCMBuffer *av_output, *av_input;
- 
+    AudioBufferList *audio_buffer_list;
+
     scope_data = fx_audio_unit_audio->scope_data[i];
     
     if(i == AGS_SOUND_SCOPE_PLAYBACK ||
@@ -1898,7 +1899,8 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
   
   AVAudioFormat *av_format;
   AVAudioFormat *av_input_format;
-
+  AVAudioPCMBuffer *av_output, *av_input;
+  
   GList *iterate_data;
 
   BOOL input_success;
@@ -2033,8 +2035,6 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
     
     audio_channels = ags_audio_get_audio_channels(audio);
     
-    input_pads = ags_audio_get_input_pads(audio);
-
     output_soundcard = NULL;
     
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -2071,8 +2071,8 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
       
       while(ags_atomic_boolean_get(&(fx_audio_unit_audio->pre_sync_wait)) &&
 	    ags_atomic_int_get(&(fx_audio_unit_audio->active_iteration_count)) <= 0){	
-	  g_cond_wait(&(scope_data->completed_pre_sync_cond),
-		      &(scope_data->completed_pre_sync_mutex));
+	  g_cond_wait(&(fx_audio_unit_audio->pre_sync_cond),
+		      &(fx_audio_unit_audio->pre_sync_mutex));
       }
 
       ags_atomic_int_decrement(&(fx_audio_unit_audio->active_iteration_count));
@@ -2084,12 +2084,12 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
     active_iterate_data =
       fx_audio_unit_audio->active_iterate_data = NULL;
     
-    if((iteration_channel_data = ags_atomic_pointer_get(&(fx_audio_unit_audio->iteration_channel_data))) != NULL){
-      active_iterate_data = iteration_channel_data->data;
+    if((iterate_data = ags_atomic_pointer_get(&(fx_audio_unit_audio->iterate_data))) != NULL){
+      active_iterate_data = iterate_data->data;
 
       /* remove from iteration audio signal */
-      ags_atomic_pointer_set(&(fx_audio_unit_audio->iteration_channel_data),
-			     g_list_remove(iteration_channel_data,
+      ags_atomic_pointer_set(&(fx_audio_unit_audio->iterate_data),
+			     g_list_remove(iterate_data,
 					   active_iterate_data));
 
       /* set active audio signal */
@@ -2100,7 +2100,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
     /* prepare iteration */
     if(active_iterate_data != NULL){
       if(ags_atomic_boolean_get(&(fx_audio_unit_audio->prepare_iteration_wait))){
-	g_cond_broadcast(&(scope_data->prepare_iteration_cond));
+	g_cond_broadcast(&(fx_audio_unit_audio->prepare_iteration_cond));
       }  
     }
 
@@ -2116,8 +2116,8 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 
       av_audio_sequencer = (AVAudioSequencer *) fx_audio_unit_audio->av_audio_sequencer;
 
-      av_output = (AVAudioPCMBuffer *) active_channel_data->av_output;
-      av_input = (AVAudioPCMBuffer *) active_channel_data->av_input;
+      av_output = (AVAudioPCMBuffer *) channel_data->av_output;
+      av_input = (AVAudioPCMBuffer *) channel_data->av_input;
 
       samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
@@ -2161,17 +2161,17 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	  }];
       }
 	    
-      if(scope_data->channel_data[0]->input_data[pad]->key_on > 0){
+      if(channel_data->input_data[pad]->key_on > 0){
 	AVMIDINoteEvent *av_midi_note_event;
 
 	GList *note;
 
-	note = scope_data->channel_data[0]->input_data[pad]->note;
+	note = channel_data->input_data[pad]->note;
 
 	if(note != NULL){	      
 	  while(note != NULL){
 	    guint x0_256th, x1_256th;
-
+	    
 	    x0_256th = ags_note_get_x0_256th(note->data);
 	    x1_256th = ags_note_get_x1_256th(note->data);
 		
@@ -2271,6 +2271,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  audio_signal->stream->data, 1, 0,
 						  channel_data->output, audio_channels, audio_channel,
+						  buffer_size, copy_mode);
     }
     
     /* iteration completed */
@@ -2278,7 +2279,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 			   TRUE);
     
     if(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait))){
-      g_cond_signal(&(scope_data->completed_iteration_cond));
+      g_cond_signal(&(fx_audio_unit_audio->completed_iteration_cond));
     }
     
     /*  */
@@ -2287,27 +2288,6 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
     is_running = fx_audio_unit_audio->render_thread_running;
 
     g_rec_mutex_unlock(recall_mutex);
-  }
-  
-  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-    AgsFxAudioUnitAudioScopeData *scope_data;
-    	
-    scope_data = fx_audio_unit_audio->scope_data[i];
-
-    if(scope_data != NULL){
-      /* signal post sync */
-      g_mutex_lock(&(scope_data->render_mutex));
-      
-      ags_atomic_boolean_set(&(scope_data->render_wait),
-			     FALSE);
-	
-      ags_atomic_boolean_set(&(scope_data->render_done),
-			     TRUE);
-      
-      g_cond_broadcast(&(scope_data->render_cond));
-      
-      g_mutex_unlock(&(scope_data->render_mutex));
-    }
   }
   
   g_thread_exit(NULL);
@@ -2425,24 +2405,24 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
   iterate_data.pad = pad;
   iterate_data.audio_channel = audio_channel;
   
-  g_rec_mutex_lock(&(channel_data->iteration_mutex));
+  g_rec_mutex_lock(&(fx_audio_unit_audio->prepare_iteration_mutex));
 
   ags_atomic_pointer_set(&(fx_audio_unit_audio->iterate_data),
-			 g_list_append(ags_atomic_pointer_get(&(fx_audio_unit_audio->iterate_data),
-							      &iterate_data)));
+			 g_list_append(ags_atomic_pointer_get(&(fx_audio_unit_audio->iterate_data)),
+				       &iterate_data));
   
-  g_rec_mutex_unlock(&(channel_data->iteration_mutex));
+  g_rec_mutex_unlock(&(fx_audio_unit_audio->prepare_iteration_mutex));
   
   /* render thread pre sync */
-  g_rec_mutex_lock(&(channel_data->pre_sync_mutex));
+  g_rec_mutex_lock(&(fx_audio_unit_audio->pre_sync_mutex));
 
   ags_atomic_int_increment(&(fx_audio_unit_audio->active_iteration_count));
   
   if(ags_atomic_boolean_get(&(fx_audio_unit_audio->pre_sync_wait))){
-    g_cond_signal(&(scope_data->completed_pre_sync_cond));
+    g_cond_signal(&(fx_audio_unit_audio->pre_sync_cond));
   }
   
-  g_rec_mutex_unlock(&(channel_data->pre_sync_mutex));
+  g_rec_mutex_unlock(&(fx_audio_unit_audio->pre_sync_mutex));
 
   /* prepare iteration */
   g_mutex_lock(&(fx_audio_unit_audio->prepare_iteration_mutex));
@@ -2453,8 +2433,8 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
       
     while(ags_atomic_boolean_get(&(fx_audio_unit_audio->prepare_iteration_wait)) &&
 	  ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)) != &iterate_data){	
-      g_cond_wait(&(scope_data->prepare_iteration_cond),
-		  &(scope_data->prepare_iteration_mutex));
+      g_cond_wait(&(fx_audio_unit_audio->prepare_iteration_cond),
+		  &(fx_audio_unit_audio->prepare_iteration_mutex));
     }
 
     if(ags_atomic_pointer_get(&(fx_audio_unit_audio->iterate_data)) == NULL){
@@ -2474,8 +2454,8 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
       
     while(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait)) &&
 	  ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_done))){	
-      g_cond_wait(&(scope_data->completed_iteration_cond),
-		  &(scope_data->completed_iteration_mutex));
+      g_cond_wait(&(fx_audio_unit_audio->completed_iteration_cond),
+		  &(fx_audio_unit_audio->completed_iteration_mutex));
     }
     
     ags_atomic_boolean_set(&(fx_audio_unit_audio->completed_iteration_wait),
