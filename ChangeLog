@@ -8,8 +8,10 @@ ags (8.1.2)
 	* implemented AgsAudioUnitConversion
 	* TODO:JK: implemented AgsAudioUnitBridge
 	* implemented ags-fx-audio-unit
+	* implemented AgsSimpleFile audio unit bridge persistence
 	* added Audio Unit menu to application window
 	* added live Audio Unit menu to application window
+	* fixed bug in ags_recycling_position()
 
 ags (8.1.1)
 

@@ -92,6 +92,7 @@ struct _AgsFxAudioUnitAudio
   
   _Atomic gboolean prepare_iteration_wait;
 
+  //NOTE:JK: FIFO iterate_data
   _Atomic GList *iterate_data;
   _Atomic gpointer active_iterate_data;
   

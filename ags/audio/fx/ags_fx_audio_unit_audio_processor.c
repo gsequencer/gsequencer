@@ -178,7 +178,7 @@ ags_fx_audio_unit_audio_processor_run_init_pre(AgsRecall *recall)
   if(scope_data != NULL){
     scope_data->running = TRUE;
     
-    //TODO:JK: implement me
+    ags_fx_audio_unit_audio_start_render_thread(fx_audio_unit_audio);
   }
 
   if(audio != NULL){

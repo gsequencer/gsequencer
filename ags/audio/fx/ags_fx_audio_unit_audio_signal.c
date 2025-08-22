@@ -262,6 +262,8 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(fx_audio_unit_audio_mutex);
     
     scope_data = fx_audio_unit_audio->scope_data[sound_scope];
+    
+    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);    
 
     if(scope_data != NULL){
       AgsFxAudioUnitAudioChannelData *channel_data;
@@ -278,8 +280,6 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
 
       }
     }
-    
-    g_rec_mutex_unlock(fx_audio_unit_audio_mutex);    
   }
   
   if(audio != NULL){
