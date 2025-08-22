@@ -2242,6 +2242,17 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
     
     g_mutex_unlock(&(fx_audio_unit_audio->pre_sync_mutex));
 
+    /*  */
+    g_rec_mutex_lock(recall_mutex);
+
+    is_running = fx_audio_unit_audio->render_thread_running;
+
+    g_rec_mutex_unlock(recall_mutex);
+
+    if(!is_running){
+      break;
+    }
+    
     /* active audio signal */
     active_iterate_data = NULL;
     
@@ -2450,7 +2461,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
     
     g_free(active_iterate_data);
     
-    /*  */
+    /* check is running */
     g_rec_mutex_lock(recall_mutex);
 
     is_running = fx_audio_unit_audio->render_thread_running;
@@ -2513,6 +2524,17 @@ ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_au
 
   if(ags_atomic_int_get(&(fx_audio_unit_audio->render_ref_count)) <= 0){
     fx_audio_unit_audio->render_thread_running = FALSE;
+
+    g_mutex_lock(&(fx_audio_unit_audio->pre_sync_mutex));
+    
+    if(ags_atomic_boolean_get(&(fx_audio_unit_audio->pre_sync_wait))){
+      ags_atomic_boolean_set(&(fx_audio_unit_audio->pre_sync_wait),
+			     FALSE);
+      
+      g_cond_signal(&(fx_audio_unit_audio->pre_sync_cond));
+    }
+
+    g_mutex_unlock(&(fx_audio_unit_audio->pre_sync_mutex));
   }
 }
 

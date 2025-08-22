@@ -87,7 +87,6 @@
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
 #include <ags/app/machine/ags_audio_unit_bridge.h>
-#include <ags/app/machine/ags_live_audio_unit_bridge.h>
 #endif
 
 #include <ags/app/file/ags_simple_file.h>

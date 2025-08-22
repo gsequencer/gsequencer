@@ -227,7 +227,7 @@ ags_fx_audio_unit_audio_processor_cancel(AgsRecall *recall)
   if(scope_data != NULL){
     scope_data->running = FALSE;
 
-    //TODO:JK: implement me
+    ags_fx_audio_unit_audio_stop_render_thread(fx_audio_unit_audio);
   }
   
   if(fx_audio_unit_audio != NULL){
