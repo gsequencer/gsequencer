@@ -2589,12 +2589,12 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
   /* prepare iteration */
   g_mutex_lock(&(fx_audio_unit_audio->prepare_iteration_mutex));
 
-  if(ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)) != &iterate_data){
+  if(ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)) != iterate_data){
     ags_atomic_boolean_set(&(fx_audio_unit_audio->prepare_iteration_wait),
 			   TRUE);
       
     while(ags_atomic_boolean_get(&(fx_audio_unit_audio->prepare_iteration_wait)) &&
-	  ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)) != &iterate_data){	
+	  ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)) != iterate_data){	
       g_cond_wait(&(fx_audio_unit_audio->prepare_iteration_cond),
 		  &(fx_audio_unit_audio->prepare_iteration_mutex));
     }
