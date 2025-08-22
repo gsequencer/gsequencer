@@ -1051,7 +1051,7 @@ ags_fx_audio_unit_audio_set_audio_channels_callback(AgsAudio *audio,
        i == AGS_SOUND_SCOPE_NOTATION ||
        i == AGS_SOUND_SCOPE_MIDI){
       if(audio_channels < audio_channels_old){
-	for(j = audio_channels_old; j < audio_channels; j++){
+	for(j = audio_channels; j < audio_channels_old; j++){
 	  AgsFxAudioUnitAudioChannelData *channel_data;
 
 	  channel_data = scope_data->channel_data[j];
@@ -2351,8 +2351,12 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	    note = note->next;
 	  }
 	}
-      }
-	  
+      }	  
+
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 channel_data->input, 1,
+					 buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
       /* fill midi */
       sub_block_count = floor(buffer_size / AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE);
 
@@ -2366,7 +2370,7 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 					   [av_output floatChannelData][0], 1,
 					   AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
-	g_message("schedule buffer and render audio unit");
+	//	g_message("schedule buffer and render audio unit");
 	
 	ags_fx_audio_unit_iterate_sub_block = sub_block;
 	    
@@ -2383,7 +2387,8 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 	switch(status){
 	case AVAudioEngineManualRenderingStatusSuccess:
 	  {
-	    g_message("OK");
+	    //NOTE:JK: this is fine
+	    //	    g_message("OK");
 	  }
 	  break;
 	case AVAudioEngineManualRenderingStatusInsufficientDataFromInputNode:
@@ -2429,6 +2434,10 @@ ags_fx_audio_unit_audio_render_thread_loop(gpointer data)
 						  audio_signal->stream->data, 1, 0,
 						  channel_data->output, 1, 0,
 						  buffer_size, copy_mode);
+
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 channel_data->output, 1,
+					 buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
     }
     
     /* iteration completed */
