@@ -548,8 +548,6 @@ ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
   AVAudioUnitComponentManager *audio_unit_component_manager;
 
   NSArray<AVAudioUnitComponent *> *av_component_arr;
-  AVAudioUnitComponent *av_component;
-  AudioComponent component;
   
   AudioComponentDescription description;
 
@@ -575,7 +573,21 @@ ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
 					  (gpointer) av_component_arr[i]);
   }
   
-  /* instruments */
+  /* music effects */
+  description = (AudioComponentDescription) {0,};
+  
+  description.componentType = kAudioUnitType_MusicEffect;
+
+  av_component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
+
+  i_stop = [av_component_arr count];
+  
+  for(i = 0; i < i_stop; i++){
+    ags_audio_unit_manager_load_component(audio_unit_manager,
+					  (gpointer) av_component_arr[i]);
+  }
+  
+  /* music device */
   description = (AudioComponentDescription) {0,};
   
   description.componentType = kAudioUnitType_MusicDevice;
