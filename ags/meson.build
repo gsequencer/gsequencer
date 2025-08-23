@@ -739,6 +739,20 @@ libags_audio_sources += files(
   )
 endif
 
+if get_option('audio-unit-plugins')
+libags_audio_sources += files(
+    'plugin/ags_audio_unit_conversion.c',
+    'plugin/ags_audio_unit_manager.c',
+    'plugin/ags_audio_unit_plugin.c',
+    'audio/fx/ags_fx_audio_unit_audio.c',
+    'audio/fx/ags_fx_audio_unit_audio_processor.c',
+    'audio/fx/ags_fx_audio_unit_audio_signal.c',
+    'audio/fx/ags_fx_audio_unit_channel.c',
+    'audio/fx/ags_fx_audio_unit_channel_processor.c',
+    'audio/fx/ags_fx_audio_unit_recycling.c',
+  )
+endif
+
 if get_option('gstreamer')
 libags_audio_sources += files(
     'audio/gstreamer/ags_gstreamer_client.c',
@@ -1235,6 +1249,13 @@ if get_option('vst3')
   )
 endif
 
+if get_option('audio-unit-plugins')
+  libgsequencer_sources += files(
+    'app/machine/ags_audio_unit_bridge.c',
+    'app/machine/ags_audio_unit_bridge_callbacks.c',
+  )
+endif
+
 libgsequencer_dependencies = [
   common_dependencies,
   gtk_dependency,
@@ -1529,6 +1550,14 @@ libags_audio_plugin_headers += [
     'plugin/ags_vst3_conversion.h',
     'plugin/ags_vst3_manager.h',
     'plugin/ags_vst3_plugin.h',
+  ]
+endif
+
+if get_option('audio-unit-plugins')
+libags_audio_plugin_headers += [
+    'plugin/ags_audio_unit_conversion.h',
+    'plugin/ags_audio_unit_manager.h',
+    'plugin/ags_audio_unit_plugin.h',
   ]
 endif
 
@@ -1829,6 +1858,17 @@ libags_audio_audio_fx_headers += [
     'audio/fx/ags_fx_vst3_channel.h',
     'audio/fx/ags_fx_vst3_channel_processor.h',
     'audio/fx/ags_fx_vst3_recycling.h',
+  ]
+endif
+
+if get_option('audio-unit-plugins')
+libags_audio_audio_fx_headers += [
+    'audio/fx/ags_fx_audio_unit_audio.h',
+    'audio/fx/ags_fx_audio_unit_audio_processor.h',
+    'audio/fx/ags_fx_audio_unit_audio_signal.h',
+    'audio/fx/ags_fx_audio_unit_channel.h',
+    'audio/fx/ags_fx_audio_unit_channel_processor.h',
+    'audio/fx/ags_fx_audio_unit_recycling.h',
   ]
 endif
 
@@ -2183,7 +2223,11 @@ install_headers(libags_audio_audio_thread_headers, install_dir: gsequencer_inclu
 install_headers(libags_audio_audio_wasapi_headers, install_dir: gsequencer_includedir / 'ags/audio/wasapi')
 
 if get_option('vst3')
-  install_headers(libags_audio_audio_gstreamer_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+  install_headers(libags_audio_audio_vst3_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+endif
+
+if get_option('audio-unit-plugins')
+  install_headers(libags_audio_audio_audio_unit_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
 endif
 
 install_headers(libags_gui_widget_headers, install_dir: gsequencer_includedir / 'ags/widget')

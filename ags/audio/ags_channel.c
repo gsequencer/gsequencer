@@ -9410,7 +9410,7 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     return;
   }
 
-  audio = ags_channel_get_audio(channel);
+  audio = (AgsAudio *) ags_channel_get_audio(channel);
 
   output = NULL;
   

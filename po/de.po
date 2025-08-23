@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-08-01 07:44+0200\n"
+"POT-Creation-Date: 2025-08-23 06:42+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -238,21 +238,21 @@ msgstr "Eingang"
 msgid "bulk input"
 msgstr "Eingabe verknüpfen"
 
-#: ags/app/ags_gsequencer_application_context.c:4035
+#: ags/app/ags_gsequencer_application_context.c:4071
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr "unbekannte Soundkarten Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:4046
+#: ags/app/ags_gsequencer_application_context.c:4082
 msgid "unknown soundcard backend - NULL"
 msgstr "unbekannte Soundkarten Schnittstelle - NULL"
 
-#: ags/app/ags_gsequencer_application_context.c:4241
+#: ags/app/ags_gsequencer_application_context.c:4279
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr "unbekannte Sequenzer Schnittstelle - %s"
 
-#: ags/app/ags_gsequencer_application_context.c:4251
+#: ags/app/ags_gsequencer_application_context.c:4289
 msgid "unknown sequencer backend - NULL"
 msgstr "unbekannte Sequenzer Schnittstelle - NULL"
 
@@ -637,7 +637,7 @@ msgid "position tool"
 msgstr "positioniere x"
 
 #: ags/app/editor/ags_composite_toolbar.c:974
-#: ags/app/ags_gsequencer_application.c:858
+#: ags/app/ags_gsequencer_application.c:867
 #, fuzzy
 msgid "Edit"
 msgstr "_Bearbeiten"
@@ -1161,125 +1161,125 @@ msgstr ""
 msgid "exclude sequencers"
 msgstr "ausschliessen der Sequenzern"
 
-#: ags/app/ags_gsequencer_application.c:766
+#: ags/app/ags_gsequencer_application.c:775
 #, fuzzy
 msgid "Open"
 msgstr "_Öffnen"
 
-#: ags/app/ags_gsequencer_application.c:771
+#: ags/app/ags_gsequencer_application.c:780
 #, fuzzy
 msgid "Save"
 msgstr "_Speichern"
 
-#: ags/app/ags_gsequencer_application.c:776
+#: ags/app/ags_gsequencer_application.c:785
 msgid "Save as"
 msgstr "Speichern unter"
 
-#: ags/app/ags_gsequencer_application.c:781
+#: ags/app/ags_gsequencer_application.c:790
 #, fuzzy
 msgid "Export"
 msgstr "exportieren"
 
-#: ags/app/ags_gsequencer_application.c:786
+#: ags/app/ags_gsequencer_application.c:795
 #, fuzzy
 msgid "Quit"
 msgstr "Beenden"
 
-#: ags/app/ags_gsequencer_application.c:793
+#: ags/app/ags_gsequencer_application.c:802
 #, fuzzy
 msgid "File"
 msgstr "_Datei"
 
-#: ags/app/ags_gsequencer_application.c:807
+#: ags/app/ags_gsequencer_application.c:816
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: ags/app/ags_gsequencer_application.c:811
+#: ags/app/ags_gsequencer_application.c:820
 #, fuzzy
 msgid "Notation"
 msgstr "Notation"
 
-#: ags/app/ags_gsequencer_application.c:816
+#: ags/app/ags_gsequencer_application.c:825
 msgid "Automation"
 msgstr "Automation"
 
-#: ags/app/ags_gsequencer_application.c:821
+#: ags/app/ags_gsequencer_application.c:830
 msgid "Wave"
 msgstr "Wellenform"
 
-#: ags/app/ags_gsequencer_application.c:828
+#: ags/app/ags_gsequencer_application.c:837
 msgid "Sheet"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:834
+#: ags/app/ags_gsequencer_application.c:843
 msgid "Tempo"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:839
+#: ags/app/ags_gsequencer_application.c:848
 msgid "Meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:844
+#: ags/app/ags_gsequencer_application.c:853
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: ags/app/ags_gsequencer_application.c:850
+#: ags/app/ags_gsequencer_application.c:859
 msgid "Downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:864
-#: ags/app/ags_gsequencer_application.c:1133
+#: ags/app/ags_gsequencer_application.c:873
+#: ags/app/ags_gsequencer_application.c:1142
 #, fuzzy
 msgid "SMF import"
 msgstr "MIDI importieren"
 
-#: ags/app/ags_gsequencer_application.c:869
-#: ags/app/ags_gsequencer_application.c:1142
+#: ags/app/ags_gsequencer_application.c:878
+#: ags/app/ags_gsequencer_application.c:1151
 #, fuzzy
 msgid "SMF export"
 msgstr "MIDI exportieren"
 
-#: ags/app/ags_gsequencer_application.c:876
+#: ags/app/ags_gsequencer_application.c:885
 #, fuzzy
 msgid "MIDI"
 msgstr "MIDI Karte"
 
-#: ags/app/ags_gsequencer_application.c:887
+#: ags/app/ags_gsequencer_application.c:896
 msgid "Window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:894
-#: ags/app/ags_gsequencer_application.c:906
+#: ags/app/ags_gsequencer_application.c:903
+#: ags/app/ags_gsequencer_application.c:915
 #, fuzzy
 msgid "Help"
 msgstr "_Hilfe"
 
-#: ags/app/ags_gsequencer_application.c:899
+#: ags/app/ags_gsequencer_application.c:908
 msgid "About"
 msgstr "Über"
 
-#: ags/app/ags_gsequencer_application.c:1087
+#: ags/app/ags_gsequencer_application.c:1096
 msgid "application window"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1095 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1104 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr "Einstellungen"
 
-#: ags/app/ags_gsequencer_application.c:1105
+#: ags/app/ags_gsequencer_application.c:1114
 msgid "sample downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1115
+#: ags/app/ags_gsequencer_application.c:1124
 msgid "meta-data"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1124
+#: ags/app/ags_gsequencer_application.c:1133
 #, fuzzy
 msgid "audio export"
 msgstr "Audio exportieren"
 
-#: ags/app/ags_gsequencer_application.c:1151
+#: ags/app/ags_gsequencer_application.c:1160
 msgid "help"
 msgstr ""
 
@@ -1308,12 +1308,12 @@ msgstr "Eingabe verknüpfen"
 msgid "resize channels"
 msgstr "Kanal grösse anpassen"
 
-#: ags/app/ags_app_action_util.c:159
+#: ags/app/ags_app_action_util.c:171
 #, fuzzy
 msgid "open file"
 msgstr "Öffne Datei"
 
-#: ags/app/ags_app_action_util.c:671
+#: ags/app/ags_app_action_util.c:683
 #, fuzzy
 msgid "save file as"
 msgstr "Speichern unter"
