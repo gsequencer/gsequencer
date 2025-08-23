@@ -1658,15 +1658,11 @@ if WITH_AUDIO_UNIT_PLUGINS
 libags_plugin_h_sources += \
 	ags/plugin/ags_audio_unit_conversion.h \
 	ags/plugin/ags_audio_unit_manager.h \
-	ags/plugin/ags_audio_unit_new_queue_manager.h \
-	ags/plugin/ags_audio_unit_new_queue.h \
 	ags/plugin/ags_audio_unit_plugin.h
 else
 EXTRA_DIST +=  \
 	ags/plugin/ags_audio_unit_conversion.h \
 	ags/plugin/ags_audio_unit_manager.h \
-	ags/plugin/ags_audio_unit_new_queue_manager.h \
-	ags/plugin/ags_audio_unit_new_queue.h \
 	ags/plugin/ags_audio_unit_plugin.h
 endif
 
@@ -1714,15 +1710,11 @@ if WITH_AUDIO_UNIT_PLUGINS
 libags_plugin_c_sources += \
 	ags/plugin/ags_audio_unit_conversion.c \
 	ags/plugin/ags_audio_unit_manager.c \
-	ags/plugin/ags_audio_unit_new_queue_manager.c \
-	ags/plugin/ags_audio_unit_new_queue.c \
 	ags/plugin/ags_audio_unit_plugin.c
 else
 EXTRA_DIST +=  \
 	ags/plugin/ags_audio_unit_conversion.c \
 	ags/plugin/ags_audio_unit_manager.c \
-	ags/plugin/ags_audio_unit_new_queue_manager.c \
-	ags/plugin/ags_audio_unit_new_queue.c \
 	ags/plugin/ags_audio_unit_plugin.c
 endif
 
@@ -2550,16 +2542,6 @@ EXTRA_DIST += \
 	ags/audio/task/ags_write_vst3_port.h
 endif
 
-if WITH_AUDIO_UNIT_PLUGINS
-libags_audio_task_h_sources += \
-	ags/audio/task/ags_instantiate_audio_unit_plugin.h \
-	ags/audio/task/ags_write_audio_unit_port.h
-else
-EXTRA_DIST += \
-	ags/audio/task/ags_instantiate_audio_unit_plugin.h \
-	ags/audio/task/ags_write_audio_unit_port.h
-endif
-
 deprecated_libags_audio_task_c_sources =
 
 libags_audio_task_c_sources = \
@@ -2640,16 +2622,6 @@ else
 EXTRA_DIST += \
 	ags/audio/task/ags_instantiate_vst3_plugin.c \
 	ags/audio/task/ags_write_vst3_port.c
-endif
-
-if WITH_AUDIO_UNIT_PLUGINS
-libags_audio_task_c_sources += \
-	ags/audio/task/ags_instantiate_audio_unit_plugin.c \
-	ags/audio/task/ags_write_audio_unit_port.c
-else
-EXTRA_DIST += \
-	ags/audio/task/ags_instantiate_audio_unit_plugin.c \
-	ags/audio/task/ags_write_audio_unit_port.c
 endif
 
 # libags-gui all files
@@ -2847,16 +2819,6 @@ EXTRA_DIST += \
 	ags/app/ags_vst3_browser.h
 endif
 
-if WITH_AUDIO_UNIT_PLUGINS
-libgsequencer_h_sources += \
-	ags/app/ags_audio_unit_browser_callbacks.h \
-	ags/app/ags_audio_unit_browser.h
-else
-EXTRA_DIST += \
-	ags/app/ags_audio_unit_browser_callbacks.h \
-	ags/app/ags_audio_unit_browser.h
-endif
-
 deprecated_libgsequencer_c_sources =
 
 libgsequencer_c_sources = \
@@ -2989,16 +2951,6 @@ else
 EXTRA_DIST += \
 	ags/app/ags_vst3_browser_callbacks.c \
 	ags/app/ags_vst3_browser.c
-endif
-
-if WITH_AUDIO_UNIT_PLUGINS
-libgsequencer_c_sources += \
-	ags/app/ags_audio_unit_browser_callbacks.c \
-	ags/app/ags_audio_unit_browser.c
-else
-EXTRA_DIST += \
-	ags/app/ags_audio_unit_browser_callbacks.c \
-	ags/app/ags_audio_unit_browser.c
 endif
 
 # libgsequencer - OSC conotroller
@@ -3228,14 +3180,10 @@ endif
 
 if WITH_AUDIO_UNIT_PLUGINS
 libgsequencer_machine_h_sources += \
-	ags/app/machine/ags_live_audio_unit_bridge_callbacks.h \
-	ags/app/machine/ags_live_audio_unit_bridge.h \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.h \
 	ags/app/machine/ags_audio_unit_bridge.h
 else
 EXTRA_DIST += \
-	ags/app/machine/ags_live_audio_unit_bridge_callbacks.h \
-	ags/app/machine/ags_live_audio_unit_bridge.h \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.h \
 	ags/app/machine/ags_audio_unit_bridge.h
 endif
@@ -3375,14 +3323,10 @@ endif
 
 if WITH_AUDIO_UNIT_PLUGINS
 libgsequencer_machine_c_sources += \
-	ags/app/machine/ags_live_audio_unit_bridge.c \
-	ags/app/machine/ags_live_audio_unit_bridge_callbacks.c \
 	ags/app/machine/ags_audio_unit_bridge.c \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.c
 else
 EXTRA_DIST += \
-	ags/app/machine/ags_live_audio_unit_bridge.c \
-	ags/app/machine/ags_live_audio_unit_bridge_callbacks.c \
 	ags/app/machine/ags_audio_unit_bridge.c \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.c
 endif

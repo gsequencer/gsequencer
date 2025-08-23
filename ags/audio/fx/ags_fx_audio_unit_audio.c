@@ -20,7 +20,6 @@
 #include <ags/audio/fx/ags_fx_audio_unit_audio.h>
 
 #include <ags/plugin/ags_audio_unit_manager.h>
-#include <ags/plugin/ags_audio_unit_new_queue_manager.h>
 #include <ags/plugin/ags_audio_unit_plugin.h>
 #include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>

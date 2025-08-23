@@ -6,7 +6,7 @@ ags (8.1.2)
 	* implemented AgsAudioUnitPlugin
 	* implemented AgsAudioUnitNewQueue
 	* implemented AgsAudioUnitConversion
-	* TODO:JK: implemented AgsAudioUnitBridge
+	* implemented AgsAudioUnitBridge
 	* implemented ags-fx-audio-unit
 	* implemented AgsSimpleFile audio unit bridge persistence
 	* added Audio Unit menu to application window

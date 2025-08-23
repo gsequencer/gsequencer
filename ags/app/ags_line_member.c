@@ -523,7 +523,7 @@ ags_line_member_init(AgsLineMember *line_member)
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   g_object_set(dial,
-	       "radius", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_RADIUS),
+	       "radius", (guint) (gui_scale_factor * 12.0),
 	       "font-size", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_FONT_SIZE),
 	       "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
 	       "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
