@@ -81,7 +81,6 @@ void ags_app_action_util_add_audio_unit_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_live_dssi_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_live_lv2_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_live_vst3_bridge(gchar *filename, gchar *effect);
-void ags_app_action_util_add_live_audio_unit_bridge(gchar *filename, gchar *effect);
 
 void ags_app_action_util_edit_notation();
 void ags_app_action_util_edit_automation();

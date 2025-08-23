@@ -675,7 +675,9 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
   GList *start_play, *start_recall;
   GList *start_list, *list;
   
-  gint position;  
+  gint position;
+  guint audio_channels;
+  guint input_pads, output_pads;
 
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
@@ -689,8 +691,19 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
   audio_unit_bridge = (AgsAudioUnitBridge *) machine;
   
   audio = machine->audio;
-
+  
   position = 0;
+
+  audio_channels = 2;
+
+  input_pads = 1;
+  output_pads = 1;
+
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "input-pads", &input_pads,
+	       "output-pads", &output_pads,
+	       NULL);
 
   /* add to effect bridge */
   ags_effect_bulk_add_plugin((AgsEffectBulk *) AGS_EFFECT_BRIDGE(machine->bridge)->bulk_input,
@@ -699,8 +712,8 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
 			     "ags-fx-audio-unit",
 			     audio_unit_bridge->filename,
 			     audio_unit_bridge->effect,
-			     0, 0,
-			     0, 0,
+			     0, audio_channels,
+			     0, input_pads,
 			     position,
 			     (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
   
@@ -797,8 +810,8 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
 				       "ags-fx-envelope",
 				       NULL,
 				       NULL,
-				       0, 0,
-				       0, 0,
+				       0, audio_channels,
+				       0, input_pads,
 				       position,
 				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
 
@@ -811,8 +824,8 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
 				       "ags-fx-buffer",
 				       NULL,
 				       NULL,
-				       0, 0,
-				       0, 0,
+				       0, audio_channels,
+				       0, input_pads,
 				       position,
 				       (AGS_FX_FACTORY_ADD | AGS_FX_FACTORY_INPUT), 0);
 
@@ -820,14 +833,17 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
 		   (GDestroyNotify) g_object_unref);
 
   /* depending on destination */
-  ags_audio_unit_bridge_input_map_recall(audio_unit_bridge,
-					 0,
-					 0);
+  //  ags_audio_unit_bridge_input_map_recall(audio_unit_bridge,
+  //					 0,
+  //					 0);
 
   /* depending on destination */
-  ags_audio_unit_bridge_output_map_recall(audio_unit_bridge,
-					  0,
-					  0);
+  //  ags_audio_unit_bridge_output_map_recall(audio_unit_bridge,
+  //					  0,
+  //					  0);
+
+  audio_unit_bridge->mapped_input_pad = input_pads;
+  audio_unit_bridge->mapped_output_pad = output_pads;
   
   /* call parent */
   AGS_MACHINE_CLASS(ags_audio_unit_bridge_parent_class)->map_recall(machine);
@@ -862,6 +878,11 @@ ags_audio_unit_bridge_input_map_recall(AgsAudioUnitBridge *audio_unit_bridge,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  if(audio_channel_start == audio_channels &&
+     input_pad_start == input_pads){
+    return;
+  }
   
   /* add to effect bridge */
   ags_effect_bulk_add_plugin((AgsEffectBulk *) AGS_EFFECT_BRIDGE(AGS_MACHINE(audio_unit_bridge)->bridge)->bulk_input,

@@ -53,7 +53,6 @@ void ags_base_plugin_finalize(GObject *gobject);
 
 enum{
   INSTANTIATE,
-  ASYNC_INSTANTIATE,
   INSTANTIATE_WITH_PARAMS,
   CONNECT_PORT,
   ACTIVATE,
@@ -328,7 +327,6 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 
   /* AgsBasePluginClass */
   base_plugin->instantiate = NULL;
-  base_plugin->async_instantiate = NULL;
   base_plugin->instantiate_with_params = NULL;
 
   base_plugin->connect_port = NULL;
@@ -363,25 +361,6 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_TYPE_POINTER, 2,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
-
-  /**
-   * AgsBasePlugin::async-instantiate:
-   * @base_plugin: the plugin to instantiate
-   *
-   * The ::instantiate signal creates a new instance of plugin.
-   * 
-   * Returns: the new plugin instance
-   * 
-   * Since: 8.1.2
-   */
-  base_plugin_signals[ASYNC_INSTANTIATE] =
-    g_signal_new("async-instantiate",
-		 G_TYPE_FROM_CLASS (base_plugin),
-		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET (AgsBasePluginClass, async_instantiate),
-		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
 
   /**
    * AgsBasePlugin::instantiate-with-params:
@@ -1775,27 +1754,6 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
   g_object_unref(G_OBJECT(base_plugin));
 
   return(retval);
-}
-
-/**
- * ags_base_plugin_async_instantiate:
- * @base_plugin: the #AgsBasePlugin
- *
- * Instantiate the plugin
- *
- * Returns: the new plugin instance handle
- *
- * Since: 8.1.2
- */
-void
-ags_base_plugin_async_instantiate(AgsBasePlugin *base_plugin)
-{
-  g_return_if_fail(AGS_IS_BASE_PLUGIN(base_plugin));
-
-  g_object_ref(G_OBJECT(base_plugin));
-  g_signal_emit(G_OBJECT(base_plugin),
-		base_plugin_signals[ASYNC_INSTANTIATE], 0);
-  g_object_unref(G_OBJECT(base_plugin));
 }
 
 /**

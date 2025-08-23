@@ -1,17 +1,17 @@
 ags (8.1.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented ags-fx-audio-unit
 	* implemented AgsAudioUnitManager
 	* implemented AgsAudioUnitNewQueueManager
-	* TODO:JK: implemented AgsAudioUnitPlugin
+	* implemented AgsAudioUnitPlugin
 	* implemented AgsAudioUnitNewQueue
 	* implemented AgsAudioUnitConversion
-	* TODO:JK: implemented AgsAudioUnitBridge
-	* TODO:JK: implemented AgsLiveAudioUnitBridge
-	* TODO:JK: implemented ags-fx-audio-unit
+	* implemented AgsAudioUnitBridge
+	* implemented ags-fx-audio-unit
+	* implemented AgsSimpleFile audio unit bridge persistence
 	* added Audio Unit menu to application window
 	* added live Audio Unit menu to application window
+	* fixed bug in ags_recycling_position()
 
 ags (8.1.1)
 

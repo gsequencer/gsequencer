@@ -121,8 +121,6 @@ void ags_window_load_add_menu_live_lv2(AgsWindow *window,
 				       GMenu *menu);
 void ags_window_load_add_menu_live_vst3(AgsWindow *window,
 					GMenu *menu);
-void ags_window_load_add_menu_live_audio_unit(AgsWindow *window,
-					      GMenu *menu);
 
 void ags_window_show_error(AgsWindow *window,
 			   gchar *message);

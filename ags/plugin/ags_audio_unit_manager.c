@@ -519,6 +519,11 @@ ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
 
   audio_unit_plugin = ags_audio_unit_plugin_new(NULL, plugin_name, 0);
 
+  if([((AVAudioUnitComponent *)  component) audioComponentDescription].componentType == kAudioUnitType_MusicDevice){
+    ags_base_plugin_set_flags((AgsBasePlugin *) audio_unit_plugin,
+			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
+  }
+
   audio_unit_plugin->component = component;
   
   audio_unit_manager->audio_unit_plugin = g_list_prepend(audio_unit_manager->audio_unit_plugin,
@@ -542,8 +547,10 @@ ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
 
   AVAudioUnitComponentManager *audio_unit_component_manager;
 
-  NSArray<AVAudioUnitComponent *> *component_arr;
-
+  NSArray<AVAudioUnitComponent *> *av_component_arr;
+  AVAudioUnitComponent *av_component;
+  AudioComponent component;
+  
   AudioComponentDescription description;
 
   guint i, i_stop;
@@ -554,30 +561,32 @@ ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
 
   audio_unit_component_manager = [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
 
-  description = (AudioComponentDescription) {0,};
-
   /* effects */
+  description = (AudioComponentDescription) {0,};
+  
   description.componentType = kAudioUnitType_Effect;
 
-  component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
+  av_component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
 
-  i_stop = [component_arr count];
+  i_stop = [av_component_arr count];
   
   for(i = 0; i < i_stop; i++){
     ags_audio_unit_manager_load_component(audio_unit_manager,
-					  (gpointer) component_arr[i]);
+					  (gpointer) av_component_arr[i]);
   }
-
+  
   /* instruments */
+  description = (AudioComponentDescription) {0,};
+  
   description.componentType = kAudioUnitType_MusicDevice;
 
-  component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
+  av_component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
 
-  i_stop = [component_arr count];
+  i_stop = [av_component_arr count];
   
   for(i = 0; i < i_stop; i++){
     ags_audio_unit_manager_load_component(audio_unit_manager,
-					  (gpointer) component_arr[i]);
+					  (gpointer) av_component_arr[i]);
   }
 }
 

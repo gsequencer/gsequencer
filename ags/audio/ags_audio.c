@@ -14582,7 +14582,6 @@ ags_audio_real_start(AgsAudio *audio,
       /* play init */
       ags_audio_recursive_run_stage(audio,
 				    sound_scope, staging_flags);
-
       
       output_playback = start_output_playback;
 
@@ -14977,6 +14976,14 @@ ags_audio_real_stop(AgsAudio *audio,
 	       NULL);
 
   if(sound_scope >= 0){
+    /* cancel */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, staging_flags);
+
+    /* clean - fini */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, AGS_SOUND_STAGING_FINI);
+    
     /* stop thread */
     audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							sound_scope);
@@ -15024,14 +15031,6 @@ ags_audio_real_stop(AgsAudio *audio,
       /* iterate */
       output_playback = output_playback->next;
     }
-
-    /* cancel */
-    ags_audio_recursive_run_stage(audio,
-				  sound_scope, staging_flags);
-
-    /* clean - fini */
-    ags_audio_recursive_run_stage(audio,
-				  sound_scope, AGS_SOUND_STAGING_FINI);
     
     output_playback = start_output_playback;
     
@@ -15046,6 +15045,16 @@ ags_audio_real_stop(AgsAudio *audio,
       output_playback = output_playback->next;
     }
   }else{
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      /* cancel */
+      ags_audio_recursive_run_stage(audio,
+				    i, staging_flags);
+
+      /* clean - fini */
+      ags_audio_recursive_run_stage(audio,
+				    i, AGS_SOUND_STAGING_FINI);
+    }
+	
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       /* stop thread */
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
@@ -15096,14 +15105,6 @@ ags_audio_real_stop(AgsAudio *audio,
     }
     
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      /* cancel */
-      ags_audio_recursive_run_stage(audio,
-				    i, staging_flags);
-
-      /* clean - fini */
-      ags_audio_recursive_run_stage(audio,
-				    i, AGS_SOUND_STAGING_FINI);
-
       output_playback = start_output_playback;
     
       while(output_playback != NULL){

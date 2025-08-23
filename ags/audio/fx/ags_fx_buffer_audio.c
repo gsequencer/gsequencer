@@ -92,10 +92,19 @@ ags_fx_buffer_audio_class_init(AgsFxBufferAudioClass *fx_buffer_audio)
 void
 ags_fx_buffer_audio_init(AgsFxBufferAudio *fx_buffer_audio)
 {
+  guint i;
+
   AGS_RECALL(fx_buffer_audio)->name = "ags-fx-buffer";
   AGS_RECALL(fx_buffer_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_buffer_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_buffer_audio)->xml_type = "ags-fx-buffer-audio";
+
+  /* scope data */
+  for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+    fx_buffer_audio->scope_data[i] = ags_fx_buffer_audio_scope_data_alloc();
+      
+    fx_buffer_audio->scope_data[i]->parent = fx_buffer_audio;
+  }
 }
 
 void
@@ -118,6 +127,53 @@ ags_fx_buffer_audio_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_audio_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_fx_buffer_audio_scope_data_alloc:
+ * 
+ * Allocate #AgsFxBufferAudioScopeData-struct
+ * 
+ * Returns: (type gpointer) (transfer full): the new #AgsFxBufferAudioScopeData-struct
+ * 
+ * Since: 8.1.2
+ */
+AgsFxBufferAudioScopeData*
+ags_fx_buffer_audio_scope_data_alloc()
+{
+  AgsFxBufferAudioScopeData *scope_data;
+
+  scope_data = (AgsFxBufferAudioScopeData *) g_malloc(sizeof(AgsFxBufferAudioScopeData));
+
+  g_rec_mutex_init(&(scope_data->strct_mutex));
+
+  scope_data->parent = NULL;
+  
+  scope_data->destination = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						  g_object_unref,
+						  g_object_unref);
+
+  return(scope_data);
+}
+
+/**
+ * ags_fx_buffer_audio_scope_data_free:
+ * @scope_data: (type gpointer) (transfer full): the #AgsFxBufferAudioScopeData-struct
+ * 
+ * Free @scope_data.
+ * 
+ * Since: 8.1.2
+ */
+void
+ags_fx_buffer_audio_scope_data_free(AgsFxBufferAudioScopeData *scope_data)
+{
+  if(scope_data == NULL){
+    return;
+  }
+
+  g_hash_table_destroy(scope_data->destination);
+
+  g_free(scope_data);
 }
 
 /**

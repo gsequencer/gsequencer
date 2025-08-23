@@ -87,7 +87,6 @@
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
 #include <ags/app/machine/ags_audio_unit_bridge.h>
-#include <ags/app/machine/ags_live_audio_unit_bridge.h>
 #endif
 
 #include <ags/app/file/ags_simple_file.h>
@@ -2105,31 +2104,6 @@ ags_app_action_util_add_live_vst3_bridge(gchar *filename, gchar *effect)
 
   g_signal_connect_after(add_audio, "launch",
 			 G_CALLBACK(ags_app_action_util_add_live_vst3_bridge_add_audio_callback), live_vst3_bridge);
-  
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) add_audio);
-#endif
-}
-
-void
-ags_app_action_util_add_live_audio_unit_bridge(gchar *filename, gchar *effect)
-{
-#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-  AgsLiveAudioUnitBridge *live_audio_unit_bridge;
-
-  AgsAddAudio *add_audio;
-
-  AgsApplicationContext *application_context;
-    
-  application_context = ags_application_context_get_instance();
-  
-  /* create live audio unit bridge */
-  live_audio_unit_bridge = (AgsLiveAudioUnitBridge *) ags_machine_util_new_live_audio_unit_bridge(filename, effect);
-  
-  add_audio = ags_add_audio_new(AGS_MACHINE(live_audio_unit_bridge)->audio);
-
-  //  g_signal_connect_after(add_audio, "launch",
-  //			 G_CALLBACK(ags_app_action_util_add_live_audio_unit_bridge_add_audio_callback), live_audio_unit_bridge);
   
   ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
 				(AgsTask *) add_audio);

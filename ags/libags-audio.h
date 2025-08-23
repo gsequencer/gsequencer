@@ -61,8 +61,6 @@
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
 #include <ags/plugin/ags_audio_unit_conversion.h>
 #include <ags/plugin/ags_audio_unit_manager.h>
-#include <ags/plugin/ags_audio_unit_new_queue_manager.h>
-#include <ags/plugin/ags_audio_unit_new_queue.h>
 #include <ags/plugin/ags_audio_unit_plugin.h>
 #endif
 
@@ -506,11 +504,6 @@
 #if defined(AGS_WITH_VST3)
 #include <ags/audio/task/ags_write_vst3_port.h>
 #include <ags/audio/task/ags_instantiate_vst3_plugin.h>
-#endif
-
-#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-#include <ags/audio/task/ags_write_audio_unit_port.h>
-#include <ags/audio/task/ags_instantiate_audio_unit_plugin.h>
 #endif
 
 /* audio recall task */

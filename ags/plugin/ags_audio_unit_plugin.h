@@ -45,7 +45,7 @@ struct _AgsAudioUnitPlugin
   AgsBasePlugin base_plugin;
 
   gpointer component;
-  gpointer audio_unit;
+  gpointer av_audio_unit;
 };
 
 struct _AgsAudioUnitPluginClass

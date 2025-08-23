@@ -1175,10 +1175,15 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
   parent = NULL;
   
   /* retrieve new length */
-  new_length = ags_recycling_position(new_first_recycling, old_last_recycling,
-				      old_last_recycling);
-  new_length++;
+  new_length = ags_recycling_position(new_first_recycling, new_last_recycling,
+				      new_last_recycling);
 
+  if(new_length >= 0){
+    new_length++;
+  }else{
+    return(NULL);
+  }
+  
   /* instantiate */
   new_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
 				       "length", (guint64) new_length,

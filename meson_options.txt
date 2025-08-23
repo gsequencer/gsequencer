@@ -34,6 +34,9 @@ option('gtk_unix_print', type: 'boolean', value: false,
 option('vst3', type: 'boolean', value: false,
        description: 'Enable VST3')
 
+option('audio-unit-plugins', type: 'boolean', value: false,
+       description: 'Enable AUDIO UNIT plugins')
+
 option('gtk_doc', type: 'boolean', value: 'false',
        description : 'Build API reference and tools documentation')
 

@@ -153,7 +153,6 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *add_live_dssi_bridge_action;
   GSimpleAction *add_live_lv2_bridge_action;
   GSimpleAction *add_live_vst3_bridge_action;
-  GSimpleAction *add_live_audio_unit_bridge_action;
 
   GSimpleAction *edit_notation_action;
   GSimpleAction *edit_automation_action;
@@ -689,14 +688,6 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_add_live_vst3_bridge_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_live_vst3_bridge_action));
-
-  /* live AUDIO UNIT */
-  add_live_audio_unit_bridge_action = g_simple_action_new("add_live_audio_unit_bridge",
-							  g_variant_type_new("as"));
-  g_signal_connect(add_live_audio_unit_bridge_action, "activate",
-		   G_CALLBACK(ags_gsequencer_add_live_audio_unit_bridge_callback), gsequencer_app);
-  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
-			  G_ACTION(add_live_audio_unit_bridge_action));
 
   /* edit notation */
   edit_notation_action = g_simple_action_new("edit_notation",
