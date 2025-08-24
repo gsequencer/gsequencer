@@ -1723,7 +1723,7 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   [audio_engine connect:av_input_node to:av_audio_unit format:av_format];
   //  [audio_engine connect:av_audio_unit to:av_audio_mixer_node format:av_format];
   //  [audio_engine connect:av_audio_mixer_node to:av_output_node format:av_format];
-  [audio_engine connect:av_audio_unit to:av_audio_output_node format:av_format];
+  [audio_engine connect:av_audio_unit to:av_output_node format:av_format];
   
   /* audio sequencer */
   av_audio_sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:audio_engine];
