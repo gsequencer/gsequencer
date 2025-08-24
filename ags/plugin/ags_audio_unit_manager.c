@@ -495,8 +495,16 @@ ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
 {
   AgsAudioUnitPlugin *audio_unit_plugin;
 
+  AudioComponent comp;
+  AudioComponentDescription description;
+  
+  CFStringRef out_name;
+  NSString *ns_string;
+  
   gchar *str;
   gchar *plugin_name;
+
+  OSStatus result;
   
   GRecMutex *audio_unit_manager_mutex;
 
@@ -509,23 +517,42 @@ ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
   audio_unit_manager_mutex = AGS_AUDIO_UNIT_MANAGER_GET_OBJ_MUTEX(audio_unit_manager);
 
   /* load */
-  g_rec_mutex_lock(audio_unit_manager_mutex);
+  //  str = [[((AVAudioUnitComponent *) component) name] UTF8String];
 
-  str = [[((AVAudioUnitComponent *) component) name] UTF8String];
+  comp = (AudioComponent) component;
+  out_name = NULL;
+
+  result = noErr;
   
-  plugin_name = g_strdup(str);
+  result = AudioComponentCopyName(comp, &out_name);
+
+  NSLog(@"%@", out_name);
+
+  if(out_name == NULL){
+    return;
+  }
+  
+  ns_string = (__bridge_transfer NSString *) out_name;
+  
+  str = [ns_string UTF8String];
+  
+  plugin_name = str;
   
   g_message("ags_audio_unit_manager.c loading - %s", plugin_name);
 
   audio_unit_plugin = ags_audio_unit_plugin_new(NULL, plugin_name, 0);
 
-  if([((AVAudioUnitComponent *)  component) audioComponentDescription].componentType == kAudioUnitType_MusicDevice){
+  AudioComponentGetDescription((AudioComponent) component, &description);
+  
+  if(description.componentType == kAudioUnitType_MusicDevice){
     ags_base_plugin_set_flags((AgsBasePlugin *) audio_unit_plugin,
 			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
   }
 
   audio_unit_plugin->component = component;
   
+  g_rec_mutex_lock(audio_unit_manager_mutex);
+
   audio_unit_manager->audio_unit_plugin = g_list_prepend(audio_unit_manager->audio_unit_plugin,
 							 audio_unit_plugin);
   
@@ -543,11 +570,10 @@ ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
 void
 ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
 {
-  AgsAudioUnitPlugin *audio_unit_plugin;
+  //  AVAudioUnitComponentManager *audio_unit_component_manager;
 
-  AVAudioUnitComponentManager *audio_unit_component_manager;
-
-  NSArray<AVAudioUnitComponent *> *av_component_arr;
+  //  NSArray<AVAudioUnitComponent *> *av_component_arr;
+  AudioComponent component;
   
   AudioComponentDescription description;
 
@@ -557,18 +583,53 @@ ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
     return;
   }
 
-  audio_unit_component_manager = [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
+  //  audio_unit_component_manager = [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
 
   /* all audio units */
-  description = (AudioComponentDescription) {0,};
   
-  av_component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
+  //  av_component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
 
-  i_stop = [av_component_arr count];
+  //  i_stop = [av_component_arr count];
   
-  for(i = 0; i < i_stop; i++){
+  //  for(i = 0; i < i_stop; i++){
+  //    ags_audio_unit_manager_load_component(audio_unit_manager,
+  //					  (gpointer) av_component_arr[i]);
+  //  }
+
+  /* effect */
+  description = (AudioComponentDescription) {0,};
+
+  description.componentType = kAudioUnitType_Effect;
+  
+  component = NULL;
+  
+  while((component = AudioComponentFindNext(component, &description)) != NULL){
     ags_audio_unit_manager_load_component(audio_unit_manager,
-					  (gpointer) av_component_arr[i]);
+					  (gpointer) component);
+  }
+
+  /* music effect */
+  description = (AudioComponentDescription) {0,};
+
+  description.componentType = kAudioUnitType_MusicEffect;
+  
+  component = NULL;
+  
+  while((component = AudioComponentFindNext(component, &description)) != NULL){
+    ags_audio_unit_manager_load_component(audio_unit_manager,
+					  (gpointer) component);
+  }
+
+  /* music device */
+  description = (AudioComponentDescription) {0,};
+
+  description.componentType = kAudioUnitType_MusicDevice;
+
+  component = NULL;
+  
+  while((component = AudioComponentFindNext(component, &description)) != nil){
+    ags_audio_unit_manager_load_component(audio_unit_manager,
+					  (gpointer) component);
   }
 }
 

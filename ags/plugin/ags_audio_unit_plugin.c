@@ -221,18 +221,22 @@ ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
   AVAudioUnitMIDIInstrument *av_audio_unit_midi_instrument;
   AVAudioUnit *av_audio_unit;
 
+  AudioComponentDescription description;
+  
   gchar *plugin_name;
 
   NSError *ns_error;
   
   av_audio_unit = NULL;
 
+  AudioComponentGetDescription((AudioComponent) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component, &description);
+  
   if(!ags_base_plugin_test_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
-    av_audio_unit_effect = [[AVAudioUnitEffect alloc] initWithAudioComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]];
+    av_audio_unit_effect = [[AVAudioUnitEffect alloc] initWithAudioComponentDescription:description];
 
     av_audio_unit = (AVAudioUnit *) av_audio_unit_effect;
   }else{
-    av_audio_unit_midi_instrument = [[AVAudioUnitMIDIInstrument alloc] initWithAudioComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]];
+    av_audio_unit_midi_instrument = [[AVAudioUnitMIDIInstrument alloc] initWithAudioComponentDescription:description];
 
     av_audio_unit = (AVAudioUnit *) av_audio_unit_midi_instrument;
   }
@@ -240,13 +244,9 @@ ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
   plugin_name = [[av_audio_unit name] UTF8String];
 
   /* audio unit */
-  if(AGS_AUDIO_UNIT_PLUGIN(base_plugin)->av_audio_unit == NULL){
-    AudioComponentDescription component_description;
-	
+  if(AGS_AUDIO_UNIT_PLUGIN(base_plugin)->av_audio_unit == NULL){	
     AGS_AUDIO_UNIT_PLUGIN(base_plugin)->av_audio_unit = (gpointer) av_audio_unit;
 
-    component_description = [[av_audio_unit AUAudioUnit] componentDescription];
-    
     ags_base_plugin_load_plugin(base_plugin);
   }
  
