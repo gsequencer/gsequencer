@@ -24,6 +24,7 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_navigation.h>
+#include <ags/app/ags_machine_callbacks.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
 #include <ags/app/ags_bulk_member.h>
@@ -483,9 +484,25 @@ ags_audio_unit_bridge_connect(AgsConnectable *connectable)
     return;
   }
 
-  ags_audio_unit_bridge_parent_connectable_interface->connect(connectable);
-
+  //  ags_audio_unit_bridge_parent_connectable_interface->connect(connectable);
   audio_unit_bridge = AGS_AUDIO_UNIT_BRIDGE(connectable);
+
+  AGS_MACHINE(audio_unit_bridge)->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_signal_connect_after(G_OBJECT(audio_unit_bridge), "map-recall",
+			 G_CALLBACK(ags_machine_map_recall_callback), NULL);
+
+  ags_machine_map_recall(audio_unit_bridge);
+
+#ifdef AGS_DEBUG
+  g_message("find port");
+#endif
+      
+  ags_machine_find_port((AgsMachine *) audio_unit_bridge);
+
+  if(AGS_MACHINE(audio_unit_bridge)->bridge != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(AGS_MACHINE(audio_unit_bridge)->bridge));
+  }
 
   /* bulk member */
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(audio_unit_bridge)->bridge);
@@ -734,6 +751,8 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
     AgsPort *port;
 
     GValue value = G_VALUE_INIT;
+
+    ags_fx_audio_unit_audio_load_port((AgsFxAudioUnitAudio *) list->data);
     
     /* loop */
     port = NULL;

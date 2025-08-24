@@ -1795,10 +1795,14 @@ ags_fx_audio_unit_audio_port_safe_write_callback(AgsPort *port,
 
   plugin_port = NULL;
   
-  g_object_set(port,
+  g_object_get(port,
 	       "plugin-port", &plugin_port,
 	       NULL);
 
+  if(plugin_port == NULL){
+    return;
+  }
+  
   au_audio_unit = [av_audio_unit AUAudioUnit];
 
   /* parameter */
@@ -1824,9 +1828,13 @@ ags_fx_audio_unit_audio_port_safe_write_callback(AgsPort *port,
 
 	val = g_value_get_float(value);
 	
-	[parameter_arr[i] value:val];
+	[parameter_arr[i] setValue:val originator:fx_audio_unit_audio];
       }
     }
+  }
+  
+  if(plugin_port != NULL){
+    g_object_unref(plugin_port);
   }
 }
 
@@ -1911,6 +1919,8 @@ ags_fx_audio_unit_audio_load_port(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 
   audio_unit_port = g_malloc(control_port_count * sizeof(AgsPort *));
   
+  plugin_port = start_plugin_port;
+  
   nth = 0;
 
   while(plugin_port != NULL){
@@ -1985,7 +1995,7 @@ ags_fx_audio_unit_audio_load_port(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 	  ags_port_set_flags(audio_unit_port[nth], AGS_PORT_INFINITE_RANGE);
 	}
       }
-
+      
       ags_recall_add_port((AgsRecall *) fx_audio_unit_audio,
 			  audio_unit_port[nth]);
 	
