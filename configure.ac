@@ -959,7 +959,7 @@ AS_IF([test "x$enable_upstream_gtk_doc" != xno],
 AS_IF([test "x$GTK_API_DOC" != x],
       [AC_SUBST(GTK_API_DOC, $GTK_API_DOC)
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])],
-      [AC_SUBST(GTK_API_DOC, '/usr/share/doc/libgtk-3-doc/gtk3')
+      [AC_SUBST(GTK_API_DOC, '/usr/share/doc/libgtk-4-doc/gtk4')
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])])
 
 AS_IF([test "x$LIBAGS_API_DOC" != x],
