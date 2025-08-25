@@ -6008,7 +6008,7 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
     
     if(g_list_find_custom(audio_unit_manager->audio_unit_plugin_blacklist,
 			  loader_effect,
-			  (GCompareFunc) g_strcmp0) != NULL){
+			  (GCompareFunc) g_strcmp0) == NULL){
       ags_audio_unit_manager_load_component(audio_unit_manager,
 					    theComponent);
     }
