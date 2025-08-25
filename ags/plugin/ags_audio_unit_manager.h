@@ -73,7 +73,7 @@ void ags_audio_unit_manager_load_blacklist(AgsAudioUnitManager *audio_unit_manag
 					   gchar *blacklist_filename);
 
 void ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
-					   gpointer component);
+					   gpointer theComponent);
 void ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager);
 
 GList* ags_audio_unit_manager_get_audio_unit_plugin(AgsAudioUnitManager *audio_unit_manager);
