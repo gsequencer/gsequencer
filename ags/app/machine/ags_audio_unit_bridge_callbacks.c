@@ -66,14 +66,21 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
       NSWindow *window;
       NSView *auView;
 
+      gchar *window_title;
+
       NSColor *bg = [NSColor colorWithCalibratedRed:0.3f green:0.3f blue:0.3f alpha:1.0f];
 
-      NSRect frame = NSMakeRect(128, 128, 1024, 768);
+      NSSize auSize = ((NSViewController *) viewController).view.frame.size;
+      
+      NSRect frame = NSMakeRect(0, 0, auSize.width, auSize.height);
       NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable;
       NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:windowStyle];
-
+      
       window = [[[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO] autorelease];
 
+      window_title = g_strdup_printf("Audio Unit: %s",
+				     AGS_MACHINE(audio_unit_bridge)->machine_name);
+      
       auView = ((NSViewController *) viewController).view;
       auView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -81,11 +88,11 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
       
       [window makeKeyAndOrderFront: window];
       [window setBackgroundColor: bg];
-      [window setTitle:[NSString stringWithUTF8String:"Audio Unit"]];
-      [window orderFrontRegardless];
-
-      [(AUViewController *) viewController loadView];
-      [(AUViewController *) viewController viewDidLoad];
+      [window setTitle:[NSString stringWithUTF8String:window_title]];
+      [window orderFront:audio_unit_bridge];
+      
+      //      [(AUViewController *) viewController loadView];
+      //      [(AUViewController *) viewController viewDidLoad];
     }];
 #endif
 }
