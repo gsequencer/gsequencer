@@ -64,6 +64,7 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
 
   [au_audio_unit requestViewControllerWithCompletionHandler:^(AUViewControllerBase *viewController){
       [(AUViewController *) viewController loadView];
+      [(AUViewController *) viewController viewDidLoad];
     }];
 #endif
 }
