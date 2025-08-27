@@ -199,6 +199,8 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   AgsFxAudioUnitRecycling *fx_audio_unit_recycling;
   AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal;
   
+  AgsAudioUnitPlugin *audio_unit_plugin;
+  
   GList *active_audio_signal;
 
   gint sound_scope;
@@ -210,7 +212,7 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   guint copy_mode;
 
   GRecMutex *fx_audio_unit_audio_mutex;
-  GRecMutex *stream_mutex;
+  GRecMutex *recall_mutex;
   
   fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) recall;
 
@@ -244,15 +246,26 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   g_object_get(fx_audio_unit_audio,
 	       "audio", &audio,
 	       NULL);
+
+  /* get mutex */
+  fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
+
+  /* get some fields */
+  g_rec_mutex_lock(recall_mutex);
+
+  audio_unit_plugin = fx_audio_unit_audio->audio_unit_plugin;
   
+  g_rec_mutex_unlock(recall_mutex);
+
+  if(ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
+				AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    goto ags_fx_audio_unit_audio_signal_run_inter_END;
+  }
+
   audio_channels = ags_audio_get_audio_channels(audio);
   
   pad = ags_channel_get_pad(channel);
   audio_channel = ags_channel_get_audio_channel(channel);
-  
-  stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(audio_signal);
-  
-  fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
   
   sound_scope = ags_recall_get_sound_scope(fx_audio_unit_channel_processor);
 
@@ -270,17 +283,19 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
 	  
       channel_data = scope_data->channel_data[audio_channel];
 
-      if(channel_data != NULL &&
-	 ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio, AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
+      if(channel_data != NULL){
 	ags_fx_audio_unit_audio_render_thread_iteration(fx_audio_unit_audio,
 							channel_data,
 							audio_signal,
 							pad,
-							audio_channel);
+							audio_channel,
+							sound_scope);
 
       }
     }
   }
+
+ ags_fx_audio_unit_audio_signal_run_inter_END:
   
   if(audio != NULL){
     g_object_unref(audio);

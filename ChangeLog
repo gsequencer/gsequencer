@@ -1,8 +1,7 @@
 ags (8.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed ags_effect_bulk_find_port()
-	* fixed ags_fx_audio_unit_audio_load_port()
+	* fixed AgsAudioUnitBridge load port
 	* fixed ags_fx_audio_unit_audio_port_safe_write_callback()
 
 ags (8.1.4)
