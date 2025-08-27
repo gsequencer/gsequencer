@@ -91,7 +91,7 @@ struct _AgsAudioUnitBridge
 
   AgsAudioUnitPlugin *audio_unit_plugin;
 
-  gpointer audio_unit;
+  gpointer av_audio_unit;
   
   GtkBox *vbox;
     

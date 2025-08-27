@@ -3260,6 +3260,17 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
       iterate_data = iterate_data->next;
     }
     
+    /* iteration completed */
+    ags_atomic_boolean_set(&(fx_audio_unit_audio->completed_iteration_done),
+			   TRUE);
+    
+    if(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait))){
+      g_cond_signal(&(fx_audio_unit_audio->completed_iteration_cond));
+    }
+    
+    g_list_free_full(start_iterate_data,
+		     (GDestroyNotify) g_free);
+
     /* check is running */
     g_rec_mutex_lock(recall_mutex);
 

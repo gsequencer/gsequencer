@@ -19,21 +19,53 @@
 
 #include <ags/app/machine/ags_audio_unit_bridge_callbacks.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
 #include <ags/app/ags_bulk_member.h>
 
-#if defined(AGS_WITH_QUARTZ)
-#import <CoreFoundation/CoreFoundation.h>
-#import <Cocoa/Cocoa.h>
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <CoreFoundation/CoreFoundation.h>
+#include <AVFoundation/AVFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#include <AudioToolbox/AUComponent.h>
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <CoreAudio/CoreAudio.h>
+#include <AppKit/AppKit.h>
+#include <CoreAudioKit/CoreAudioKit.h>
 #endif
 
 void
 ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *parameter,
 						  AgsAudioUnitBridge *audio_unit_bridge)
-{ 
-  //TODO:JK: implement me
+{
+  AgsAudioUnitPlugin *audio_unit_plugin;
+
+  AUAudioUnit *au_audio_unit;
+  
+  if(!AGS_IS_AUDIO_UNIT_BRIDGE(audio_unit_bridge)){
+    return;
+  }
+  
+  /* load plugin */
+  audio_unit_plugin = ags_audio_unit_manager_find_audio_unit_plugin(ags_audio_unit_manager_get_instance(),
+								    audio_unit_bridge->filename,
+								    audio_unit_bridge->effect);
+
+  if(audio_unit_plugin == NULL){
+    return;
+  }
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)  
+  au_audio_unit = [(AVAudioNode *) audio_unit_bridge->av_audio_unit AUAudioUnit];
+
+  [au_audio_unit requestViewControllerWithCompletionHandler:^(AUViewControllerBase *viewController){
+      [(AUViewController *) viewController loadView];
+    }];
+#endif
 }
 
 void
