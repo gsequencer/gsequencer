@@ -216,6 +216,8 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
   
   fx_audio_unit_audio_signal = (AgsFxAudioUnitAudioSignal *) recall;
 
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+  
   audio = NULL;
   
   channel = NULL;
@@ -382,6 +384,8 @@ ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notati
 
   GRecMutex *fx_audio_unit_audio_mutex;
   GRecMutex *recall_mutex;
+
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_signal);
   
   audio = NULL;
   
