@@ -63,6 +63,27 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
   au_audio_unit = [(AVAudioNode *) audio_unit_bridge->av_audio_unit AUAudioUnit];
 
   [au_audio_unit requestViewControllerWithCompletionHandler:^(AUViewControllerBase *viewController){
+      NSWindow *window;
+      NSView *auView;
+
+      NSColor *bg = [NSColor colorWithCalibratedRed:0.3f green:0.3f blue:0.3f alpha:1.0f];
+
+      NSRect frame = NSMakeRect(128, 128, 1024, 768);
+      NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable;
+      NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:windowStyle];
+
+      window = [[[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO] autorelease];
+
+      auView = ((NSViewController *) viewController).view;
+      auView.translatesAutoresizingMaskIntoConstraints = NO;
+
+      [window.contentView addSubview:auView];
+      
+      [window makeKeyAndOrderFront: window];
+      [window setBackgroundColor: bg];
+      [window setTitle:[NSString stringWithUTF8String:"Audio Unit"]];
+      [window orderFrontRegardless];
+
       [(AUViewController *) viewController loadView];
       [(AUViewController *) viewController viewDidLoad];
     }];
