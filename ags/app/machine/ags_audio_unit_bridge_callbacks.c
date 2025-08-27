@@ -76,7 +76,7 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
       NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable;
       NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:windowStyle];
       
-      window = [[[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO] autorelease];
+      window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
 
       window_title = g_strdup_printf("Audio Unit: %s",
 				     AGS_MACHINE(audio_unit_bridge)->machine_name);
@@ -86,10 +86,12 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
 
       [window.contentView addSubview:auView];
       
-      [window makeKeyAndOrderFront: window];
-      [window setBackgroundColor: bg];
+      [window makeKeyAndOrderFront:window];
+      [window setBackgroundColor:bg];
       [window setTitle:[NSString stringWithUTF8String:window_title]];
       [window orderFront:audio_unit_bridge];
+
+      [window center];
       
       //      [(AUViewController *) viewController loadView];
       //      [(AUViewController *) viewController viewDidLoad];
