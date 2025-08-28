@@ -20,6 +20,8 @@
 #include <ags/app/ags_performance_preferences.h>
 #include <ags/app/ags_performance_preferences_callbacks.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_preferences.h>
@@ -163,10 +165,26 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_append(GTK_BOX(performance_preferences),
 		 GTK_WIDGET(performance_preferences->super_threaded_audio));
 
+#if defined(AGS_OSX_DMG_ENV)
+  gtk_check_button_set_active(performance_preferences->super_threaded_audio,
+			      TRUE);
+
+  gtk_widget_set_sensitive(performance_preferences->super_threaded_audio,
+			   FALSE);
+#endif
+  
   /* super threaded - channel */
   performance_preferences->super_threaded_channel = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("Super threaded - channel"));
   gtk_box_append(GTK_BOX(performance_preferences),
 		 GTK_WIDGET(performance_preferences->super_threaded_channel));
+
+#if defined(AGS_OSX_DMG_ENV)
+  gtk_check_button_set_active(performance_preferences->super_threaded_channel,
+			      TRUE);
+
+  gtk_widget_set_sensitive(performance_preferences->super_threaded_channel,
+			   FALSE);
+#endif
 
   /* thread-pool - max unused threads */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
