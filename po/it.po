@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-08-24 08:19+0200\n"
+"POT-Creation-Date: 2025-08-28 12:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -317,7 +317,7 @@ msgstr ""
 msgid "Plugin file not present"
 msgstr ""
 
-#: ags/app/ags_composite_editor.c:375
+#: ags/app/ags_composite_editor.c:379
 msgid "selector"
 msgstr ""
 
