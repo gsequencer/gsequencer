@@ -29,6 +29,7 @@ void ags_fx_buffer_audio_processor_dispose(GObject *gobject);
 void ags_fx_buffer_audio_processor_finalize(GObject *gobject);
 
 void ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall);
+void ags_fx_buffer_audio_processor_cancel(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_audio_processor
@@ -91,6 +92,7 @@ ags_fx_buffer_audio_processor_class_init(AgsFxBufferAudioProcessorClass *fx_buff
   recall = (AgsRecallClass *) fx_buffer_audio_processor;
   
   recall->run_init_pre = ags_fx_buffer_audio_processor_run_init_pre;
+  recall->cancel = ags_fx_buffer_audio_processor_cancel;
 }
 
 void
@@ -133,6 +135,8 @@ ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall)
 
   gint sound_scope;
 
+  GRecMutex *fx_buffer_audio_mutex;
+  
   fx_buffer_audio = NULL;
 
   g_object_get(recall,
@@ -140,16 +144,65 @@ ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall)
 	       NULL);
   
   sound_scope = ags_recall_get_sound_scope(recall);
+
+  fx_buffer_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
+
+  g_rec_mutex_lock(fx_buffer_audio_mutex);
   
   scope_data = fx_buffer_audio->scope_data[sound_scope];
 
   if(sound_scope >= 0 &&
      scope_data != NULL){
-    g_hash_table_remove_all(scope_data->destination);
+    if(!fx_buffer_audio->scope_data_ready){
+      fx_buffer_audio->scope_data_ready = TRUE;
+      
+      g_hash_table_remove_all(scope_data->destination);
+    }
+    
   }
+  
+  g_rec_mutex_unlock(fx_buffer_audio_mutex);
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_buffer_audio_processor_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_fx_buffer_audio_processor_cancel(AgsRecall *recall)
+{
+  AgsFxBufferAudio *fx_buffer_audio;
+
+  AgsFxBufferAudioScopeData *scope_data;
+
+  gint sound_scope;
+
+  GRecMutex *fx_buffer_audio_mutex;
+  
+  fx_buffer_audio = NULL;
+
+  g_object_get(recall,
+	       "recall-audio", &fx_buffer_audio,
+	       NULL);
+  
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  fx_buffer_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
+
+  g_rec_mutex_lock(fx_buffer_audio_mutex);
+  
+  scope_data = fx_buffer_audio->scope_data[sound_scope];
+
+  if(sound_scope >= 0 &&
+     scope_data != NULL){
+    if(!fx_buffer_audio->scope_data_ready){
+      fx_buffer_audio->scope_data_ready = FALSE;
+    }
+  }
+  
+  g_rec_mutex_unlock(fx_buffer_audio_mutex);
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_buffer_audio_processor_parent_class)->cancel(recall);
 }
 
 /**

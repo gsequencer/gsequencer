@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -99,6 +99,8 @@ ags_fx_buffer_audio_init(AgsFxBufferAudio *fx_buffer_audio)
   AGS_RECALL(fx_buffer_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_buffer_audio)->xml_type = "ags-fx-buffer-audio";
 
+  fx_buffer_audio->scope_data_ready = FALSE;
+  
   /* scope data */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     fx_buffer_audio->scope_data[i] = ags_fx_buffer_audio_scope_data_alloc();
