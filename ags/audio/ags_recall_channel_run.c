@@ -918,6 +918,9 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   }else if(source != NULL){
     AgsRecycling *first_recycling, *last_recycling;
 
+    first_recycling = NULL;
+    last_recycling = NULL;
+    
     /* get some fields */
     g_object_get(source,
 		 "first-recycling", &first_recycling,
@@ -1181,6 +1184,9 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel_run);
 
   /* get some fields */
+  destination = NULL;
+  source = NULL;
+  
   g_object_get(recall_channel_run,
 	       "destination", &destination,
 	       "source", &source,

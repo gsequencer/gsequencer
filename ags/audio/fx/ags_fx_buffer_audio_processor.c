@@ -28,7 +28,7 @@ void ags_fx_buffer_audio_processor_init(AgsFxBufferAudioProcessor *fx_buffer_aud
 void ags_fx_buffer_audio_processor_dispose(GObject *gobject);
 void ags_fx_buffer_audio_processor_finalize(GObject *gobject);
 
-void ags_fx_buffer_audio_processor_done(AgsRecall *recall);
+void ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_audio_processor
@@ -90,7 +90,7 @@ ags_fx_buffer_audio_processor_class_init(AgsFxBufferAudioProcessorClass *fx_buff
   /* AgsRecallClass */
   recall = (AgsRecallClass *) fx_buffer_audio_processor;
   
-  recall->done = ags_fx_buffer_audio_processor_done;
+  recall->run_init_pre = ags_fx_buffer_audio_processor_run_init_pre;
 }
 
 void
@@ -125,7 +125,7 @@ ags_fx_buffer_audio_processor_finalize(GObject *gobject)
 }
 
 void
-ags_fx_buffer_audio_processor_done(AgsRecall *recall)
+ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall)
 {
   AgsFxBufferAudio *fx_buffer_audio;
 
@@ -149,7 +149,7 @@ ags_fx_buffer_audio_processor_done(AgsRecall *recall)
   }
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_fx_buffer_audio_processor_parent_class)->done(recall);
+  AGS_RECALL_CLASS(ags_fx_buffer_audio_processor_parent_class)->run_init_pre(recall);
 }
 
 /**

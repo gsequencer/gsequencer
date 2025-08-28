@@ -153,6 +153,11 @@ ags_fx_buffer_audio_scope_data_alloc()
 						  g_object_unref,
 						  g_object_unref);
 
+
+  scope_data->resample_cache = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+						     g_object_unref,
+						     ags_stream_free);
+  
   return(scope_data);
 }
 
@@ -172,6 +177,7 @@ ags_fx_buffer_audio_scope_data_free(AgsFxBufferAudioScopeData *scope_data)
   }
 
   g_hash_table_destroy(scope_data->destination);
+  g_hash_table_destroy(scope_data->resample_cache);
 
   g_free(scope_data);
 }
