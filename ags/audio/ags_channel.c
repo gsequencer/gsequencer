@@ -14677,7 +14677,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	g_object_unref(start_output);
       }
     }else{
-      while(!ags_channel_test_staging_completed(channel, sound_scope));
+      while(!ags_channel_test_staging_completed(channel, sound_scope)){
+	g_thread_yield();
+      }
 
       ags_channel_recursive_do_run_stage_up(channel,
 					    recycling_context,
