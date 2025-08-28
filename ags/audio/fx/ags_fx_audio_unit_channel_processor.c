@@ -158,7 +158,7 @@ ags_fx_audio_unit_channel_processor_run_init_pre(AgsRecall *recall)
   scope_data = fx_audio_unit_audio->scope_data[sound_scope];
   
   if(scope_data != NULL){
-    ags_atomic_uint_increment(&(scope_data->active_audio_channels));
+    //NOTE:JK: nothing
   }
   
   if(fx_audio_unit_audio != NULL){
@@ -227,7 +227,7 @@ ags_fx_audio_unit_channel_processor_done(AgsRecall *recall)
   scope_data = fx_audio_unit_audio->scope_data[sound_scope];
   
   if(scope_data != NULL){
-    ags_atomic_uint_decrement(&(scope_data->active_audio_channels));
+    //NOTE:JK: nothing
   }
 
   if(fx_audio_unit_audio != NULL){

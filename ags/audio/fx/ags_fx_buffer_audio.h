@@ -48,6 +48,8 @@ struct _AgsFxBufferAudio
 {
   AgsRecallAudio recall_audio;
 
+  gboolean scope_data_ready;
+  
   AgsFxBufferAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];  
 };
 
@@ -63,6 +65,7 @@ struct _AgsFxBufferAudioScopeData
   gpointer parent;
 
   GHashTable *destination;
+  GHashTable *resample_cache;
 };
 
 GType ags_fx_buffer_audio_get_type();

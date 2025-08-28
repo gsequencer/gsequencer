@@ -279,10 +279,16 @@ ags_fx_audio_unit_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notatio
 					 guint key_mode)
 {
   AgsAudio *audio;
+  AgsChannel *start_input;
+  AgsChannel *input, *selected_input;
   AgsFxAudioUnitAudio *fx_audio_unit_audio;
+
+  AgsFxAudioUnitAudioScopeData *scope_data;
+  AgsFxAudioUnitAudioChannelData *channel_data;
 
   guint sound_scope;
   guint audio_channels;
+  guint input_pads;
   guint audio_channel;
   guint audio_start_mapping;
   guint midi_start_mapping;
@@ -311,30 +317,94 @@ ags_fx_audio_unit_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notatio
 	       NULL);
 
   fx_audio_unit_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
-
+  
   g_object_get(audio,
+	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       "audio-start-mapping", &audio_start_mapping,
 	       "midi-start-mapping", &midi_start_mapping,
 	       NULL);
 
-  g_object_get(note,
-	       "y", &y,
-	       NULL);
+  input_pads = ags_audio_get_input_pads(audio);
+  
+  y = ags_note_get_y(note);
+  
+  input = ags_channel_nth(start_input,
+			  audio_channel);
+
+  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+    selected_input = ags_channel_pad_nth(input,
+					 input_pads - y - 1);
+  }else{
+    selected_input = ags_channel_pad_nth(input,
+					 y);
+  }
   
   midi_note = (y - audio_start_mapping + midi_start_mapping);
 
+  /* ags-fx-audio-unit scope and channel data */
+  g_rec_mutex_lock(fx_audio_unit_audio_mutex);
+  
+  scope_data = fx_audio_unit_audio->scope_data[sound_scope];
+  
+  channel_data = scope_data->channel_data[audio_channel];
+
+  g_rec_mutex_unlock(fx_audio_unit_audio_mutex);
+  
+  if(selected_input != NULL){
+    AgsRecycling *first_recycling, *last_recycling;
+    AgsRecycling *recycling, *next_recycling;
+    AgsRecycling *end_recycling;
+
+    first_recycling = NULL;
+    last_recycling = NULL;
+    
+    g_object_get(selected_input,
+		 "first-recycling", &first_recycling,
+		 "last-recycling", &last_recycling,
+		 NULL);
+
+    end_recycling = ags_recycling_next(last_recycling);
+
+    recycling = first_recycling;
+
+    if(recycling != NULL){
+      g_object_ref(recycling);
+    }
+    
+    while(recycling != end_recycling){
+      ags_atomic_int_increment(&(channel_data->queued_audio_signal));
+      
+      /* iterate */
+      next_recycling = ags_recycling_next(recycling);
+
+      g_object_unref(recycling);
+
+      recycling = next_recycling;
+    }
+
+    if(first_recycling != NULL){
+      g_object_unref(first_recycling);
+    }
+
+    if(last_recycling != NULL){
+      g_object_unref(last_recycling);
+    }
+
+    if(recycling != NULL){
+      g_object_unref(recycling);
+    }
+    
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
+  }
+
   if(midi_note >= 0 &&
      midi_note < 128){
-    AgsFxAudioUnitAudioScopeData *scope_data;
-    AgsFxAudioUnitAudioChannelData *channel_data;
     AgsFxAudioUnitAudioInputData *input_data;
     
     g_rec_mutex_lock(fx_audio_unit_audio_mutex);
-
-    scope_data = fx_audio_unit_audio->scope_data[sound_scope];
-
-    channel_data = scope_data->channel_data[0];
 
     channel_data->event_count += 1;
     

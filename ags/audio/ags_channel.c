@@ -10736,11 +10736,14 @@ ags_channel_real_start(AgsChannel *channel,
   AgsMessageDelivery *message_delivery;
 
   AgsApplicationContext *application_context;  
+  AgsConfig *config;
 
   GList *start_message_queue;
   GList *start_recall_id;
   GList *start_tree_list, *current_tree_list;
 
+  gchar *thread_model, *super_threaded_scope;
+  
   gint i;
   guint success_counter, current_success_counter;
   gboolean super_threaded_channel;  
@@ -10775,11 +10778,41 @@ ags_channel_real_start(AgsChannel *channel,
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
+  /* config */
+  config = ags_config_get_instance();
+
   /* add channel to AgsAudioLoop */
   ags_audio_loop_add_channel(AGS_AUDIO_LOOP(audio_loop),
 			     (GObject *) channel);
   
   ags_audio_loop_set_flags((AgsAudioLoop *) audio_loop, AGS_AUDIO_LOOP_PLAY_CHANNEL);
+
+  /* thread model */
+  super_threaded_channel = FALSE;
+  
+  thread_model = ags_config_get_value(config,
+				      AGS_CONFIG_THREAD,
+				      "model");
+  super_threaded_scope = NULL;
+  
+  if(thread_model != NULL &&
+     !g_ascii_strncasecmp(thread_model,
+			  "super-threaded",
+			  15)){
+    super_threaded_scope = ags_config_get_value(config,
+						AGS_CONFIG_THREAD,
+						"super-threaded-scope");
+    if(super_threaded_scope != NULL &&
+       (!g_ascii_strncasecmp(super_threaded_scope,
+			     "channel",
+			     8))){
+      super_threaded_channel = TRUE;
+    }
+  }
+
+  g_free(thread_model);
+  
+  g_free(super_threaded_scope);
 
   /* get playback domain */
   g_object_get(audio,
@@ -10796,12 +10829,6 @@ ags_channel_real_start(AgsChannel *channel,
   start_recall_id = NULL;
 
   success_counter = 0;
-
-  super_threaded_channel = FALSE;
-
-  if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-    super_threaded_channel = TRUE;
-  }
 
   if(sound_scope >= 0){
     current_recall_id = ags_playback_get_recall_id(playback,

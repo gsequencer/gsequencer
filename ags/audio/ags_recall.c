@@ -9407,14 +9407,15 @@ ags_recall_child_done(AgsRecall *child,
   ags_recall_remove_child(parent,
 			  child);
 
+  //NOTE:JK: only unref
   if(TRUE){
     AgsDestroyWorker *destroy_worker;
     
     destroy_worker = ags_destroy_worker_get_instance();
     ags_destroy_worker_add(destroy_worker,
-			   child, (AgsDestroyFunc) ags_destroy_util_dispose_and_unref);
+			   child, (AgsDestroyFunc) g_object_unref); // ags_destroy_util_dispose_and_unref
   }else{
-    g_object_run_dispose((GObject *) child);
+    //    g_object_run_dispose((GObject *) child);
     g_object_unref((GObject *) child);
   }
   

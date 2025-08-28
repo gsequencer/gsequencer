@@ -20,13 +20,28 @@
 #include <ags/app/machine/ags_audio_unit_bridge.h>
 #include <ags/app/machine/ags_audio_unit_bridge_callbacks.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 #include <ags/app/ags_navigation.h>
+#include <ags/app/ags_machine_callbacks.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
 #include <ags/app/ags_bulk_member.h>
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <CoreFoundation/CoreFoundation.h>
+#include <AVFoundation/AVFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#include <AudioToolbox/AUComponent.h>
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <CoreAudio/CoreAudio.h>
+#include <AppKit/AppKit.h>
+#include <CoreAudioKit/CoreAudioKit.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -339,7 +354,7 @@ ags_audio_unit_bridge_init(AgsAudioUnitBridge *audio_unit_bridge)
 
   /* Audio Unit */
   audio_unit_bridge->audio_unit_plugin = NULL;
-  audio_unit_bridge->audio_unit = NULL;
+  audio_unit_bridge->av_audio_unit = NULL;
 
   /* audio unit menu */
   audio_unit_bridge->audio_unit_menu = (GMenu *) g_menu_new();
@@ -483,9 +498,25 @@ ags_audio_unit_bridge_connect(AgsConnectable *connectable)
     return;
   }
 
-  ags_audio_unit_bridge_parent_connectable_interface->connect(connectable);
-
+  //  ags_audio_unit_bridge_parent_connectable_interface->connect(connectable);
   audio_unit_bridge = AGS_AUDIO_UNIT_BRIDGE(connectable);
+
+  AGS_MACHINE(audio_unit_bridge)->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+
+  g_signal_connect_after(G_OBJECT(audio_unit_bridge), "map-recall",
+			 G_CALLBACK(ags_machine_map_recall_callback), NULL);
+
+  ags_machine_map_recall(audio_unit_bridge);
+
+#ifdef AGS_DEBUG
+  g_message("find port");
+#endif
+      
+  ags_machine_find_port((AgsMachine *) audio_unit_bridge);
+
+  if(AGS_MACHINE(audio_unit_bridge)->bridge != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(AGS_MACHINE(audio_unit_bridge)->bridge));
+  }
 
   /* bulk member */
   effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(audio_unit_bridge)->bridge);
@@ -668,8 +699,9 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
   AgsAudioUnitBridge *audio_unit_bridge;
   
   AgsAudio *audio;
-  AgsAudioUnitPlugin *audio_unit_plugin;      
-
+  
+  AgsAudioUnitPlugin *audio_unit_plugin;
+  
   AgsApplicationContext *application_context;
 
   GList *start_play, *start_recall;
@@ -705,6 +737,10 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
 	       "output-pads", &output_pads,
 	       NULL);
 
+  audio_unit_plugin = ags_audio_unit_manager_find_audio_unit_plugin(ags_audio_unit_manager_get_instance(),
+								    audio_unit_bridge->filename,
+								    audio_unit_bridge->effect);
+  
   /* add to effect bridge */
   ags_effect_bulk_add_plugin((AgsEffectBulk *) AGS_EFFECT_BRIDGE(machine->bridge)->bulk_input,
 			     NULL,
@@ -734,6 +770,15 @@ ags_audio_unit_bridge_map_recall(AgsMachine *machine)
     AgsPort *port;
 
     GValue value = G_VALUE_INIT;
+
+    ags_fx_audio_unit_audio_load_port((AgsFxAudioUnitAudio *) list->data);
+    
+    if((ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT) &&
+	g_list_find(start_recall, list->data) != NULL) ||
+       (!ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT) &&
+	g_list_find(start_play, list->data) != NULL)){
+      audio_unit_bridge->av_audio_unit = AGS_FX_AUDIO_UNIT_AUDIO(list->data)->av_audio_unit;
+    }
     
     /* loop */
     port = NULL;

@@ -5529,25 +5529,26 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 #endif
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-    AVAudioUnitComponentManager *audio_unit_component_manager;
+    AudioComponent theComponent;
+    AudioComponentDescription theDescription;
+    
+    memset(&theDescription, 0, sizeof(theDescription));
+ 
+    //	Use the flag to indicate that we want to find Sandbox Safe AudioComponents
+    theDescription.componentFlags = kAudioComponentFlag_SandboxSafe;
+    theDescription.componentFlagsMask = kAudioComponentFlag_SandboxSafe;
+ 
+    //	get the first AudioComponent
+    theComponent = AudioComponentFindNext(NULL,
+					  &theDescription);
 
-    NSArray<AVAudioUnitComponent *> *component_arr;
-
-    AudioComponentDescription description;
-
-    audio_unit_component_manager = [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
-
-    description = (AudioComponentDescription) {0,};
-
-    description.componentType = kAudioUnitType_Effect;
-
-    component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
-
-    i_stop = [component_arr count];
-  
-    for(i = 0; i < i_stop; i++){
+    while(theComponent != NULL){
       gsequencer_application_context->audio_unit_loader = g_list_prepend(gsequencer_application_context->audio_unit_loader,
-									 component_arr[i]);
+									 theComponent);
+    
+      //	get the next one in the list
+      theComponent = AudioComponentFindNext(theComponent,
+					    &theDescription);
     }
     
     gsequencer_application_context->audio_unit_loader = g_list_reverse(gsequencer_application_context->audio_unit_loader);
@@ -5985,8 +5986,10 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
   }
   
   while(gsequencer_application_context->audio_unit_loader != NULL){
-    gpointer component;
-
+    AudioComponent theComponent;
+    
+    struct __CFString *compName;
+    
     gchar *loader_effect;
     
     current_time = g_get_monotonic_time();
@@ -5996,19 +5999,22 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
       break;
     }
 
-    component = gsequencer_application_context->audio_unit_loader->data;
+    theComponent = gsequencer_application_context->audio_unit_loader->data;
 
-    loader_effect = [[((AVAudioUnitComponent *) component) name] UTF8String];
+    AudioComponentCopyName(theComponent,
+			   &compName);
+
+    loader_effect = [(__bridge NSString *) compName UTF8String];
     
-    if(!g_list_find_custom(audio_unit_manager->audio_unit_plugin_blacklist,
-			   loader_effect,
-			   (GCompareFunc) g_strcmp0)){
+    if(g_list_find_custom(audio_unit_manager->audio_unit_plugin_blacklist,
+			  loader_effect,
+			  (GCompareFunc) g_strcmp0) == NULL){
       ags_audio_unit_manager_load_component(audio_unit_manager,
-					    component);
+					    theComponent);
     }
 
     gsequencer_application_context->audio_unit_loader = g_list_remove(gsequencer_application_context->audio_unit_loader,
-								      component);
+								      theComponent);
     
     initial_load = FALSE;
   }

@@ -26,8 +26,13 @@
 #include <string.h>
 #include <strings.h>
 
-#import <CoreFoundation/CoreFoundation.h>
-#import <AVFoundation/AVFoundation.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <AVFoundation/AVFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#include <AudioToolbox/AUComponent.h>
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <CoreAudio/CoreAudio.h>
 
 #include <ags/config.h>
 
@@ -483,7 +488,7 @@ ags_audio_unit_manager_load_blacklist(AgsAudioUnitManager *audio_unit_manager,
 /**
  * ags_audio_unit_manager_load_component:
  * @audio_unit_manager: the #AgsAudioUnitManager
- * @component: the Audio Unit component
+ * @theComponent: the Audio Unit component
  *
  * Load @filename specified plugin.
  *
@@ -491,40 +496,61 @@ ags_audio_unit_manager_load_blacklist(AgsAudioUnitManager *audio_unit_manager,
  */
 void
 ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
-				      gpointer component)
+				      gpointer theComponent)
 {
   AgsAudioUnitPlugin *audio_unit_plugin;
 
-  gchar *str;
+  AudioComponent current_comp;
+  AudioComponentDescription theDescription;
+  
+  struct __CFString *compName;
+  NSString *str;
+  
+  char *tmp_str;
   gchar *plugin_name;
   
   GRecMutex *audio_unit_manager_mutex;
 
   if(!AGS_IS_AUDIO_UNIT_MANAGER(audio_unit_manager) ||
-     component == NULL){
+     theComponent == NULL){
     return;
   }
   
   /* get audio_unit manager mutex */
   audio_unit_manager_mutex = AGS_AUDIO_UNIT_MANAGER_GET_OBJ_MUTEX(audio_unit_manager);
 
+  current_comp = (AudioComponent) theComponent;
+
+  compName = NULL;
+  
+  AudioComponentCopyName(current_comp,
+			 &compName);
+  
+  if(compName == NULL){
+    return;
+  }
+  
   /* load */
   g_rec_mutex_lock(audio_unit_manager_mutex);
 
-  str = [[((AVAudioUnitComponent *) component) name] UTF8String];
+  tmp_str = [(__bridge NSString *) compName UTF8String];
   
-  plugin_name = g_strdup(str);
+  plugin_name = g_strdup(tmp_str);
   
   g_message("ags_audio_unit_manager.c loading - %s", plugin_name);
 
   audio_unit_plugin = ags_audio_unit_plugin_new(NULL, plugin_name, 0);
 
-  if([((AVAudioUnitComponent *)  component) audioComponentDescription].componentType == kAudioUnitType_MusicDevice){
+  memset(&theDescription, 0, sizeof(theDescription));
+
+  AudioComponentGetDescription(current_comp, &theDescription);
+  
+  if(theDescription.componentType == kAudioUnitType_MusicDevice){
     ags_base_plugin_set_flags((AgsBasePlugin *) audio_unit_plugin,
 			      AGS_BASE_PLUGIN_IS_INSTRUMENT);
   }
 
-  audio_unit_plugin->component = component;
+  audio_unit_plugin->component = theComponent;
   
   audio_unit_manager->audio_unit_plugin = g_list_prepend(audio_unit_manager->audio_unit_plugin,
 							 audio_unit_plugin);
@@ -543,32 +569,27 @@ ags_audio_unit_manager_load_component(AgsAudioUnitManager *audio_unit_manager,
 void
 ags_audio_unit_manager_load_shared(AgsAudioUnitManager *audio_unit_manager)
 {
-  AgsAudioUnitPlugin *audio_unit_plugin;
-
-  AVAudioUnitComponentManager *audio_unit_component_manager;
-
-  NSArray<AVAudioUnitComponent *> *av_component_arr;
-  
-  AudioComponentDescription description;
-
-  guint i, i_stop;
-  
-  if(!AGS_AUDIO_UNIT_MANAGER(audio_unit_manager)){
-    return;
-  }
-
-  audio_unit_component_manager = [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
-
-  /* all audio units */
-  description = (AudioComponentDescription) {0,};
-  
-  av_component_arr = [audio_unit_component_manager componentsMatchingDescription:description];
-
-  i_stop = [av_component_arr count];
-  
-  for(i = 0; i < i_stop; i++){
+  AudioComponent theComponent;
+  AudioComponentDescription theDescription;
+    
+  memset(&theDescription, 0, sizeof(theDescription));
+ 
+  //	Use the flag to indicate that we want to find Sandbox Safe AudioComponents
+  theDescription.componentFlags = kAudioComponentFlag_SandboxSafe;
+  theDescription.componentFlagsMask = kAudioComponentFlag_SandboxSafe;
+ 
+  //	get the first AudioComponent
+  theComponent = AudioComponentFindNext(NULL,
+					&theDescription);
+    
+  while(theComponent != NULL){
+    //	load the AudioComponent
     ags_audio_unit_manager_load_component(audio_unit_manager,
-					  (gpointer) av_component_arr[i]);
+					  theComponent);
+    
+    //	get the next one in the list
+    theComponent = AudioComponentFindNext(theComponent,
+					  &theDescription);
   }
 }
 

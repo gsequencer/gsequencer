@@ -220,6 +220,8 @@ ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
   AVAudioUnitEffect *av_audio_unit_effect;
   AVAudioUnitMIDIInstrument *av_audio_unit_midi_instrument;
   AVAudioUnit *av_audio_unit;
+  
+  AudioComponentDescription theDescription;
 
   gchar *plugin_name;
 
@@ -227,12 +229,16 @@ ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   av_audio_unit = NULL;
 
+  memset(&theDescription, 0, sizeof(theDescription));
+
+  AudioComponentGetDescription((AudioComponent) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component, &theDescription);
+
   if(!ags_base_plugin_test_flags(base_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
-    av_audio_unit_effect = [[AVAudioUnitEffect alloc] initWithAudioComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]];
+    av_audio_unit_effect = [[AVAudioUnitEffect alloc] initWithAudioComponentDescription:theDescription];
 
     av_audio_unit = (AVAudioUnit *) av_audio_unit_effect;
   }else{
-    av_audio_unit_midi_instrument = [[AVAudioUnitMIDIInstrument alloc] initWithAudioComponentDescription:[((AVAudioUnitComponent *) AGS_AUDIO_UNIT_PLUGIN(base_plugin)->component) audioComponentDescription]];
+    av_audio_unit_midi_instrument = [[AVAudioUnitMIDIInstrument alloc] initWithAudioComponentDescription:theDescription];
 
     av_audio_unit = (AVAudioUnit *) av_audio_unit_midi_instrument;
   }

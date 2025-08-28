@@ -75,6 +75,10 @@
 #include <ags/app/machine/ags_live_vst3_bridge.h>
 #endif
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/app/machine/ags_audio_unit_bridge.h>
+#endif
+
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -1193,6 +1197,9 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      || (AGS_IS_VST3_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0) ||
      AGS_IS_LIVE_VST3_BRIDGE(machine)
 #endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+     || (AGS_IS_AUDIO_UNIT_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0)
+#endif
      ){
     piano_shown = TRUE;
     
@@ -1363,6 +1370,9 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      (AGS_IS_LV2_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0)
 #if defined(AGS_WITH_VST3)
      || (AGS_IS_VST3_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0)
+#endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+     || (AGS_IS_AUDIO_UNIT_BRIDGE(machine) && (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) == 0)
 #endif
      || AGS_IS_DRUM(machine) ||
      AGS_IS_MATRIX(machine) ||
