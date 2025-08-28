@@ -1,6 +1,7 @@
 ags (8.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented stereo or more channel synchronization of ags-fx-audio-unit
 	* fixed AgsAudioUnitBridge load port
 	* fixed ags_fx_audio_unit_audio_port_safe_write_callback()
 

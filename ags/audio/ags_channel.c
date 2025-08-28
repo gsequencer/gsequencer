@@ -10742,6 +10742,8 @@ ags_channel_real_start(AgsChannel *channel,
   GList *start_recall_id;
   GList *start_tree_list, *current_tree_list;
 
+  gchar *thread_model, *super_threaded_scope;
+  
   gint i;
   guint success_counter, current_success_counter;
   gboolean super_threaded_channel;  
