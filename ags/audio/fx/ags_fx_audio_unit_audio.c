@@ -2550,11 +2550,13 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
       //	      g_message("out");
 		
       /* fill output buffer */
-      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  audio_signal->stream->data, 1, 0,
-						  channel_data->output, 1, 0,
-						  buffer_size, copy_mode);
-
+      if(audio_signal->stream_current != NULL){
+	ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						    audio_signal->stream_current->data, 1, 0,
+						    channel_data->output, 1, 0,
+						    buffer_size, copy_mode);
+      }
+      
       ags_audio_buffer_util_clear_buffer(NULL,
 					 channel_data->output, 1,
 					 buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
@@ -2667,6 +2669,10 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
       while(tmp_iterate_data != NULL){
 	struct _AgsFxAudioUnitIterateData *tmp_current_iterate_data;
 
+	GList *next;
+
+	next = tmp_iterate_data->next;
+	
 	tmp_current_iterate_data = tmp_iterate_data->data;
 	
 	if(tmp_current_iterate_data->pad == pad &&
@@ -2677,6 +2683,9 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
 	  start_iterate_data = g_list_remove(start_iterate_data,
 					     tmp_current_iterate_data);
 	}
+	
+	/* iterate */
+	tmp_iterate_data = next;
       }
 
       if(active_key_on_count >= key_on_count){
@@ -2828,6 +2837,10 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
       while(tmp_iterate_data != NULL){
 	struct _AgsFxAudioUnitIterateData *tmp_current_iterate_data;
 
+	GList *next;
+
+	next = tmp_iterate_data->next;
+
 	tmp_current_iterate_data = tmp_iterate_data->data;
 	
 	if(tmp_current_iterate_data->pad == pad &&
@@ -2838,6 +2851,9 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
 	  start_iterate_data = g_list_remove(start_iterate_data,
 					     tmp_current_iterate_data);
 	}
+
+	/* iterate */
+	tmp_iterate_data = next;
       }
 
       if(active_key_on_count >= key_on_count){
@@ -2960,6 +2976,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
   gboolean is_instrument;
   BOOL input_success;
+  guint input_pads;
   guint pad;
   guint audio_channel;
   guint sub_block, sub_block_count;
@@ -3001,6 +3018,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	       "buffer-size", &buffer_size,
 	       NULL);
 
+  input_pads = ags_audio_get_input_pads(audio);
+  
   /* get some fields */
   g_rec_mutex_lock(recall_mutex);
 
@@ -3299,31 +3318,35 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	      *removeEvent = YES;
 	    }];
 	}
+
+	for(k = 0; k < 128; k++){
+	  if(channel_data->input_data[k]->key_on > 0){
+	    AVMIDINoteEvent *av_midi_note_event;
+
+	    GList *note;
+
+	    note = channel_data->input_data[k]->note;
+
+	    if(note != NULL){	      
+	      while(note != NULL){
+		guint x0_256th, x1_256th;
 	    
-	if(channel_data->input_data[pad]->key_on > 0){
-	  AVMIDINoteEvent *av_midi_note_event;
-
-	  GList *note;
-
-	  note = channel_data->input_data[pad]->note;
-
-	  if(note != NULL){	      
-	    while(note != NULL){
-	      guint x0_256th, x1_256th;
-	    
-	      x0_256th = ags_note_get_x0_256th(note->data);
-	      x1_256th = ags_note_get_x1_256th(note->data);
+		x0_256th = ags_note_get_x0_256th(note->data);
+		x1_256th = ags_note_get_x1_256th(note->data);
+	      
+		double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
 		
-	      double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
-		
-	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:pad velocity:127 duration:note_event_duration];
+		av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
 
-	      double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
-		
-	      [av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
+		double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 
-	      /* iterate */
-	      note = note->next;
+		//		g_message("key [%d] -> x 256th %d - %d", k, x0_256th, x1_256th);
+	      
+		[av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
+
+		/* iterate */
+		note = note->next;
+	      }
 	    }
 	  }
 	}	  
@@ -3338,10 +3361,13 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 								    AGS_AUDIO_BUFFER_UTIL_FLOAT,
 								    ags_audio_buffer_util_format_from_soundcard(NULL, format));
 	
-	ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						    scope_data->input, audio_channels, audio_channel,
-						    audio_signal->stream->data, 1, 0,
-						    buffer_size, copy_mode);
+
+	if(audio_signal->stream_current != NULL){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						      scope_data->input, audio_channels, audio_channel,
+						      audio_signal->stream_current->data, 1, 0,
+						      buffer_size, copy_mode);
+	}
       }
 
       ags_audio_buffer_util_clear_buffer(NULL,
@@ -3486,31 +3512,32 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	list = list->next;
       }
 
+      if(audio_signal->stream_current != NULL){
+	ags_audio_buffer_util_clear_buffer(NULL,
+					   audio_signal->stream_current->data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       
-      ags_audio_buffer_util_clear_buffer(NULL,
-					 audio_signal->stream->data, 1,
-					 buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
+	ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						    audio_signal->stream_current->data, 1, 0,
+						    scope_data->output, audio_channels, audio_channel,
+						    buffer_size, copy_mode);
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  audio_signal->stream->data, 1, 0,
-						  scope_data->output, audio_channels, audio_channel,
-						  buffer_size, copy_mode);
+	scope_data->volume_util->destination = audio_signal->stream_current->data;
+      
+	scope_data->volume_util->source = audio_signal->stream_current->data;
 
-      scope_data->volume_util->destination = audio_signal->stream->data;
-      
-      scope_data->volume_util->source = audio_signal->stream->data;
-
-      scope_data->volume_util->buffer_length = buffer_size;
+	scope_data->volume_util->buffer_length = buffer_size;
             
-      scope_data->volume_util->format = format;
+	scope_data->volume_util->format = format;
 
-      if(audio_signal_count > 0){
-	scope_data->volume_util->volume = 1.0 / (double) audio_signal_count;
-      }else{
-	scope_data->volume_util->volume = 1.0;
-      }
+	if(audio_signal_count > 0){
+	  scope_data->volume_util->volume = 1.0 / (double) audio_signal_count;
+	}else{
+	  scope_data->volume_util->volume = 1.0;
+	}
       
-      ags_volume_util_compute(scope_data->volume_util);
+	ags_volume_util_compute(scope_data->volume_util);
+      }
       
       /* iterate */
       iterate_data = iterate_data->next;
@@ -3764,11 +3791,13 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
     /* fill audio unit input */
     g_rec_mutex_lock(recall_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						channel_data->input, 1, 0,
-						audio_signal->stream->data, 1, 0,
-						channel_data->input_buffer_size, copy_mode);
-  
+    if(audio_signal->stream_current != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  channel_data->input, 1, 0,
+						  audio_signal->stream_current->data, 1, 0,
+						  channel_data->input_buffer_size, copy_mode);
+    }
+    
     g_rec_mutex_unlock(recall_mutex);
   
     /* add iteration audio signal */
@@ -3855,11 +3884,13 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
     /* fill audio unit input */
     g_rec_mutex_lock(recall_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						scope_data->input, audio_channels, audio_channel,
-						audio_signal->stream->data, 1, 0,
-						scope_data->input_buffer_size, copy_mode);
-  
+    if(audio_signal->stream_current != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  scope_data->input, audio_channels, audio_channel,
+						  audio_signal->stream_current->data, 1, 0,
+						  scope_data->input_buffer_size, copy_mode);
+    }
+    
     g_rec_mutex_unlock(recall_mutex);
 
     /* add iteration audio signal */

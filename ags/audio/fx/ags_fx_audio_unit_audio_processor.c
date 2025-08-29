@@ -105,7 +105,7 @@ ags_fx_audio_unit_audio_processor_class_init(AgsFxAudioUnitAudioProcessorClass *
   recall = (AgsRecallClass *) fx_audio_unit_audio_processor;
 
   recall->run_init_pre = ags_fx_audio_unit_audio_processor_run_init_pre;
-  recall->run_inter = ags_fx_audio_unit_audio_processor_run_inter;
+  //  recall->run_inter = ags_fx_audio_unit_audio_processor_run_inter;
   recall->done = ags_fx_audio_unit_audio_processor_done;
   
   /* AgsFxNotationAudioProcessorClass */
@@ -194,6 +194,8 @@ ags_fx_audio_unit_audio_processor_run_init_pre(AgsRecall *recall)
 void
 ags_fx_audio_unit_audio_processor_run_inter(AgsRecall *recall)
 {
+  AgsFxAudioUnitAudio *fx_audio_unit_audio;
+  
   //TODO:JK: implement me
   
   /* call parent */
@@ -377,6 +379,8 @@ ags_fx_audio_unit_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notatio
     input_data = channel_data->input_data[midi_note];
 
     if(note != NULL){
+      //      g_message("key_on midi note %d", midi_note);
+      
       g_object_ref(note);
 
       input_data->note = g_list_prepend(input_data->note,
