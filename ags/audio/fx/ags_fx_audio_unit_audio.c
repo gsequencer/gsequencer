@@ -2605,6 +2605,7 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
   guint pad;
   guint audio_channel;
   guint line;
+  gboolean is_instrument;
   gboolean is_stereo_ready;
 
   GRecMutex *recall_mutex;
@@ -2626,10 +2627,14 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
   audio_channels = ags_audio_get_audio_channels(audio);
   input_pads = ags_audio_get_input_pads(audio);
 
+  is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
+					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
+  
   is_stereo_ready = FALSE;
 
-  if(ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
-				AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+  g_rec_mutex_lock(recall_mutex);
+
+  if(is_instrument){
     iterate_data = start_iterate_data;
 
     while(iterate_data != NULL){
@@ -2719,6 +2724,8 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
     }
   }
 
+  g_rec_mutex_unlock(recall_mutex);
+  
   g_list_free(start_iterate_data);
   
   return(is_stereo_ready);
