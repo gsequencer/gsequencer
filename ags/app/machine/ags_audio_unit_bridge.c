@@ -356,6 +356,8 @@ ags_audio_unit_bridge_init(AgsAudioUnitBridge *audio_unit_bridge)
   audio_unit_bridge->audio_unit_plugin = NULL;
   audio_unit_bridge->av_audio_unit = NULL;
 
+  audio_unit_bridge->window = NULL;
+
   /* audio unit menu */
   audio_unit_bridge->audio_unit_menu = (GMenu *) g_menu_new();
   g_menu_append_submenu(AGS_MACHINE(audio_unit_bridge)->context_menu,
@@ -1013,7 +1015,44 @@ ags_audio_unit_bridge_load(AgsAudioUnitBridge *audio_unit_bridge)
     return;
   }
 
-  //TODO:JK: implement me
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)  
+  AUAudioUnit *au_audio_unit;
+  
+  au_audio_unit = [(AVAudioNode *) audio_unit_bridge->av_audio_unit AUAudioUnit];
+
+  [au_audio_unit requestViewControllerWithCompletionHandler:^(AUViewControllerBase *viewController){
+      NSWindow *window;
+      NSView *auView;
+
+      gchar *window_title;
+
+      NSColor *bg = [NSColor colorWithCalibratedRed:0.3f green:0.3f blue:0.3f alpha:1.0f];
+
+      NSSize auSize = ((NSViewController *) viewController).view.frame.size;
+      
+      NSRect frame = NSMakeRect(0, 0, auSize.width, auSize.height);
+      NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable; // | NSWindowStyleMaskClosable
+      NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:windowStyle];
+      
+      window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
+
+      window_title = g_strdup_printf("Audio Unit: %s",
+				     AGS_MACHINE(audio_unit_bridge)->machine_name);
+      
+      auView = ((NSViewController *) viewController).view;
+      auView.translatesAutoresizingMaskIntoConstraints = NO;
+
+      [window.contentView addSubview:auView];
+      
+      [window makeKeyAndOrderFront:window];
+      [window setBackgroundColor:bg];
+      [window setTitle:[NSString stringWithUTF8String:window_title]];
+
+      audio_unit_bridge->window = window;
+      //      [(AUViewController *) viewController loadView];
+      //      [(AUViewController *) viewController viewDidLoad];
+    }];
+#endif
 }
 
 void
