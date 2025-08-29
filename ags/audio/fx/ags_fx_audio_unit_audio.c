@@ -3408,6 +3408,12 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
     g_rec_mutex_unlock(recall_mutex);
   }
 
+  g_message("AV audio engine stop");
+  
+  [av_audio_sequencer stop];
+
+  [audio_engine stop];
+  
   g_thread_exit(NULL);
   
   return(NULL);
@@ -3424,19 +3430,33 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 void
 ags_fx_audio_unit_audio_start_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 {
+  GRecMutex *recall_mutex;
+  
   if(fx_audio_unit_audio == NULL ||
      !AGS_IS_FX_AUDIO_UNIT_AUDIO(fx_audio_unit_audio)){
     return;
   }
 
-  ags_atomic_int_increment(&(fx_audio_unit_audio->render_ref_count));
-
   if(fx_audio_unit_audio->render_thread_running){
+    ags_atomic_int_increment(&(fx_audio_unit_audio->render_ref_count));
+    
     return;
   }
+
+  g_message("Audio Unit render thread start");
   
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
+
+  ags_atomic_int_set(&(fx_audio_unit_audio->render_ref_count),
+		     1);
+  
+  g_rec_mutex_lock(recall_mutex);
+
   fx_audio_unit_audio->render_thread_running = TRUE;
 
+  g_rec_mutex_unlock(recall_mutex);
+    
   if(ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio,
 					AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
     fx_audio_unit_audio->render_thread = g_thread_new("Advanced Gtk+ Sequencer - Audio Unit",
@@ -3460,22 +3480,40 @@ ags_fx_audio_unit_audio_start_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_a
 void
 ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 {
+  GRecMutex *recall_mutex;
+
+  gboolean is_waiting;
+  
   if(fx_audio_unit_audio == NULL ||
      !AGS_IS_FX_AUDIO_UNIT_AUDIO(fx_audio_unit_audio)){
     return;
   }
 
-  ags_atomic_int_decrement(&(fx_audio_unit_audio->render_ref_count));
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
+  if(ags_atomic_int_get(&(fx_audio_unit_audio->render_ref_count)) > 0){
+    ags_atomic_int_decrement(&(fx_audio_unit_audio->render_ref_count));
+  }
+  
   if(ags_atomic_int_get(&(fx_audio_unit_audio->render_ref_count)) <= 0){
+    g_message("Audio Unit render thread stop");
+    
+    g_rec_mutex_lock(recall_mutex);
+    
     fx_audio_unit_audio->render_thread_running = FALSE;
 
+    g_rec_mutex_unlock(recall_mutex);
+
+    /* signal */
     g_mutex_lock(&(fx_audio_unit_audio->pre_sync_mutex));
-    
-    if(ags_atomic_boolean_get(&(fx_audio_unit_audio->pre_sync_wait))){
-      ags_atomic_boolean_set(&(fx_audio_unit_audio->pre_sync_wait),
-			     FALSE);
-      
+
+    is_waiting = ags_atomic_boolean_get(&(fx_audio_unit_audio->pre_sync_wait));
+
+    ags_atomic_boolean_set(&(fx_audio_unit_audio->pre_sync_wait),
+			   FALSE);
+          
+    if(is_waiting){
       g_cond_signal(&(fx_audio_unit_audio->pre_sync_cond));
     }
 
