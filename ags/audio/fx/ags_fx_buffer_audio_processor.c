@@ -29,6 +29,9 @@ void ags_fx_buffer_audio_processor_dispose(GObject *gobject);
 void ags_fx_buffer_audio_processor_finalize(GObject *gobject);
 
 void ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall);
+
+void ags_fx_buffer_audio_scope_data_destination_remove(AgsRecycling *key, AgsAudioSignal *value, AgsFxBufferAudioScopeData *scope_data);
+
 void ags_fx_buffer_audio_processor_done(AgsRecall *recall);
 
 /**
@@ -151,13 +154,7 @@ ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall)
   
   scope_data = fx_buffer_audio->scope_data[sound_scope];
 
-  if(sound_scope >= 0 &&
-     scope_data != NULL){
-    if(!fx_buffer_audio->scope_data_ready){
-      fx_buffer_audio->scope_data_ready = TRUE;
-    }
-    
-  }
+  //nothing
   
   g_rec_mutex_unlock(fx_buffer_audio_mutex);
   
@@ -168,6 +165,8 @@ ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall)
 void
 ags_fx_buffer_audio_scope_data_destination_remove(AgsRecycling *key, AgsAudioSignal *value, AgsFxBufferAudioScopeData *scope_data)
 {
+  g_message("remove");
+  
   ags_recycling_remove_audio_signal(key,
 				    value);
 }
@@ -201,15 +200,11 @@ ags_fx_buffer_audio_processor_done(AgsRecall *recall)
 
   if(sound_scope >= 0 &&
      scope_data != NULL){
-    if(fx_buffer_audio->scope_data_ready){
-      g_hash_table_foreach(scope_data->destination,
-			   (GHFunc) ags_fx_buffer_audio_scope_data_destination_remove,
-			   (gpointer) scope_data);
+    g_hash_table_foreach(scope_data->destination,
+			 (GHFunc) ags_fx_buffer_audio_scope_data_destination_remove,
+			 (gpointer) scope_data);
       
-      g_hash_table_remove_all(scope_data->destination);
-      
-      fx_buffer_audio->scope_data_ready = FALSE;
-    }
+    g_hash_table_remove_all(scope_data->destination);
   }
   
   /* call parent */

@@ -48,8 +48,6 @@ struct _AgsFxBufferAudio
 {
   AgsRecallAudio recall_audio;
 
-  gboolean scope_data_ready;
-  
   AgsFxBufferAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];  
 };
 
