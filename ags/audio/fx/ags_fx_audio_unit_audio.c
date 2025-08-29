@@ -652,6 +652,8 @@ ags_fx_audio_unit_audio_notify_buffer_size_callback(GObject *gobject,
        i == AGS_SOUND_SCOPE_NOTATION ||
        i == AGS_SOUND_SCOPE_MIDI){
       if(!ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio, AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
+	AudioBufferList *audio_buffer_list;
+	
 	/* output buffer */
 	if(scope_data->output != NULL){
 	  ags_stream_free(scope_data->output);
@@ -693,6 +695,26 @@ ags_fx_audio_unit_audio_notify_buffer_size_callback(GObject *gobject,
 	av_input.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
       
 	scope_data->av_input = (gpointer) av_input;
+
+	/* audio buffer list */
+	if(scope_data->audio_buffer_list != NULL){
+	  free(scope_data->audio_buffer_list);
+	}
+	    
+	audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + (audio_channels * sizeof(AudioBuffer)));
+		
+	audio_buffer_list->mNumberBuffers = audio_channels;
+	
+	for(j = 0; j < audio_channels; j++){
+	  audio_buffer_list->mBuffers[j].mData = (float *) malloc(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	    
+	  memset(audio_buffer_list->mBuffers[j].mData, 0, AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+
+	  audio_buffer_list->mBuffers[j].mDataByteSize = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float);
+	  audio_buffer_list->mBuffers[j].mNumberChannels = 1;
+	}
+	    
+	scope_data->audio_buffer_list = (gpointer) audio_buffer_list;
       }else{
 	for(j = 0; j < audio_channels; j++){
 	  AgsFxAudioUnitAudioChannelData *channel_data;
@@ -862,6 +884,8 @@ ags_fx_audio_unit_audio_notify_samplerate_callback(GObject *gobject,
        i == AGS_SOUND_SCOPE_NOTATION ||
        i == AGS_SOUND_SCOPE_MIDI){
       if(!ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio, AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
+	AudioBufferList *audio_buffer_list;
+
 	/* output buffer */
 	if(scope_data->output != NULL){
 	  ags_stream_free(scope_data->output);
@@ -903,6 +927,26 @@ ags_fx_audio_unit_audio_notify_samplerate_callback(GObject *gobject,
 	av_input.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
       
 	scope_data->av_input = (gpointer) av_input;
+
+	/* audio buffer list */
+	if(scope_data->audio_buffer_list != NULL){
+	  free(scope_data->audio_buffer_list);
+	}
+
+	audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + (audio_channels * sizeof(AudioBuffer)));
+	
+	audio_buffer_list->mNumberBuffers = audio_channels;
+	
+	for(j = 0; j < audio_channels; j++){
+	  audio_buffer_list->mBuffers[j].mData = (float *) malloc(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	    
+	  memset(audio_buffer_list->mBuffers[j].mData, 0, AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+
+	  audio_buffer_list->mBuffers[j].mDataByteSize = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float);
+	  audio_buffer_list->mBuffers[j].mNumberChannels = 1;
+	}
+	
+	scope_data->audio_buffer_list = (gpointer) audio_buffer_list;	
       }else{
 	for(j = 0; j < audio_channels; j++){
 	  AgsFxAudioUnitAudioChannelData *channel_data;
@@ -1104,114 +1148,139 @@ ags_fx_audio_unit_audio_set_audio_channels_callback(AgsAudio *audio,
        i == AGS_SOUND_SCOPE_MIDI){
       scope_data->audio_channels = audio_channels;
     
-      /* output buffer */
-      if(scope_data->output != NULL){
-	ags_stream_free(scope_data->output);
-      }
+      if(!ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio, AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
+	AudioBufferList *audio_buffer_list;
+
+	/* output buffer */
+	if(scope_data->output != NULL){
+	  ags_stream_free(scope_data->output);
+	}
 		    
-      scope_data->output = ags_stream_alloc(plugin_channels * buffer_size,
-					    AGS_SOUNDCARD_FLOAT);
-      scope_data->output_buffer_size = buffer_size;
+	scope_data->output = ags_stream_alloc(plugin_channels * buffer_size,
+					      AGS_SOUNDCARD_FLOAT);
+	scope_data->output_buffer_size = buffer_size;
 
-      /* input buffer */
-      if(scope_data->input != NULL){
-	ags_stream_free(scope_data->input);
-      }
+	/* input buffer */
+	if(scope_data->input != NULL){
+	  ags_stream_free(scope_data->input);
+	}
 		    
-      scope_data->input = ags_stream_alloc(plugin_channels * buffer_size,
-					   AGS_SOUNDCARD_FLOAT);
-      scope_data->input_buffer_size = buffer_size;
+	scope_data->input = ags_stream_alloc(plugin_channels * buffer_size,
+					     AGS_SOUNDCARD_FLOAT);
+	scope_data->input_buffer_size = buffer_size;
 
-      /* av output buffer */
-      if(scope_data->av_output != NULL){
-	[(AVAudioPCMBuffer *) scope_data->av_output dealloc];
-      }
+	/* av output buffer */
+	if(scope_data->av_output != NULL){
+	  [(AVAudioPCMBuffer *) scope_data->av_output dealloc];
+	}
 
-      av_output = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		   frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+	av_output = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+		     frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
 
-      av_output.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
+	av_output.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
     
-      scope_data->av_output = (gpointer) av_output;
+	scope_data->av_output = (gpointer) av_output;
 
-      /* av input buffer */
-      if(scope_data->av_input != NULL){
-	[(AVAudioPCMBuffer *) scope_data->av_input dealloc];
-      }
+	/* av input buffer */
+	if(scope_data->av_input != NULL){
+	  [(AVAudioPCMBuffer *) scope_data->av_input dealloc];
+	}
 
-      av_input = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		  frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+	av_input = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+		    frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
     
-      av_input.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
+	av_input.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
     
-      scope_data->av_input = (gpointer) av_input;
+	scope_data->av_input = (gpointer) av_input;
 
+	/* audio buffer list */
+	if(scope_data->audio_buffer_list != NULL){
+	  free(scope_data->audio_buffer_list);
+	}
 
-      if(audio_channels_old < audio_channels){
-	for(j = audio_channels_old; j < audio_channels; j++){
-	  AgsFxAudioUnitAudioChannelData *channel_data;
-	  
-	  channel_data = scope_data->channel_data[j];
-	  
-	  if(channel_data->output != NULL){
-	    ags_stream_free(channel_data->output);
-	  }
-	
-	  /* output buffer */
-	  channel_data->output = ags_stream_alloc(plugin_channels * buffer_size,
-						  AGS_SOUNDCARD_FLOAT);
-	  channel_data->output_buffer_size = buffer_size;
-
-	  /* input buffer */
-	  if(channel_data->input != NULL){
-	    ags_stream_free(channel_data->input);
-	  }
-	    
-	  channel_data->input = ags_stream_alloc(plugin_channels * buffer_size,
-						 AGS_SOUNDCARD_FLOAT);
-	  channel_data->input_buffer_size = buffer_size;
-
-	  /* av output buffer */
-	  if(channel_data->av_output != NULL){
-	    [(AVAudioPCMBuffer *) channel_data->av_output dealloc];
-	  }
-	    
-	  av_output = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		       frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
-
-	  av_output.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
-    
-	  channel_data->av_output = (gpointer) av_output;
-
-	  /* av input buffer */
-	  if(channel_data->av_input != NULL){
-	    [(AVAudioPCMBuffer *) channel_data->av_input dealloc];
-	  }
-	    
-	  av_input = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-		      frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
-    
-	  av_input.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
-    
-	  channel_data->av_input = (gpointer) av_input;
-
-	  /* audio buffer list */
-	  if(channel_data->audio_buffer_list != NULL){
-	    free(channel_data->audio_buffer_list);
-	  }
-
-	  audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + sizeof(AudioBuffer));
+	audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + (plugin_channels * sizeof(AudioBuffer)));
 		
-	  audio_buffer_list->mNumberBuffers = 1;
+	audio_buffer_list->mNumberBuffers = plugin_channels;
 
-	  audio_buffer_list->mBuffers[0].mData = (float *) malloc(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	for(j = 0; j < plugin_channels; j++){
+	  audio_buffer_list->mBuffers[j].mData = (float *) malloc(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
 	    
-	  memset(audio_buffer_list->mBuffers[0].mData, 0, AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	  memset(audio_buffer_list->mBuffers[j].mData, 0, AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
 
-	  audio_buffer_list->mBuffers[0].mDataByteSize = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float);
-	  audio_buffer_list->mBuffers[0].mNumberChannels = 1;
+	  audio_buffer_list->mBuffers[j].mDataByteSize = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float);
+	  audio_buffer_list->mBuffers[j].mNumberChannels = 1;
+	}
 	    
-	  channel_data->audio_buffer_list = (gpointer) audio_buffer_list;
+	scope_data->audio_buffer_list = (gpointer) audio_buffer_list;
+      }
+      
+      if(ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio, AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
+	if(audio_channels_old < audio_channels){
+	  for(j = audio_channels_old; j < audio_channels; j++){
+	    AgsFxAudioUnitAudioChannelData *channel_data;
+	  
+	    channel_data = scope_data->channel_data[j];
+	  
+	    if(channel_data->output != NULL){
+	      ags_stream_free(channel_data->output);
+	    }
+	
+	    /* output buffer */
+	    channel_data->output = ags_stream_alloc(plugin_channels * buffer_size,
+						    AGS_SOUNDCARD_FLOAT);
+	    channel_data->output_buffer_size = buffer_size;
+
+	    /* input buffer */
+	    if(channel_data->input != NULL){
+	      ags_stream_free(channel_data->input);
+	    }
+	    
+	    channel_data->input = ags_stream_alloc(plugin_channels * buffer_size,
+						   AGS_SOUNDCARD_FLOAT);
+	    channel_data->input_buffer_size = buffer_size;
+
+	    /* av output buffer */
+	    if(channel_data->av_output != NULL){
+	      [(AVAudioPCMBuffer *) channel_data->av_output dealloc];
+	    }
+	    
+	    av_output = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			 frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+
+	    av_output.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
+    
+	    channel_data->av_output = (gpointer) av_output;
+
+	    /* av input buffer */
+	    if(channel_data->av_input != NULL){
+	      [(AVAudioPCMBuffer *) channel_data->av_input dealloc];
+	    }
+	    
+	    av_input = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+			frameCapacity:(plugin_channels * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE)];
+    
+	    av_input.frameLength = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE;
+    
+	    channel_data->av_input = (gpointer) av_input;
+
+	    /* audio buffer list */
+	    if(channel_data->audio_buffer_list != NULL){
+	      free(channel_data->audio_buffer_list);
+	    }
+
+	    audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + sizeof(AudioBuffer));
+		
+	    audio_buffer_list->mNumberBuffers = 1;
+
+	    audio_buffer_list->mBuffers[0].mData = (float *) malloc(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	    
+	    memset(audio_buffer_list->mBuffers[0].mData, 0, AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+
+	    audio_buffer_list->mBuffers[0].mDataByteSize = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float);
+	    audio_buffer_list->mBuffers[0].mNumberChannels = 1;
+	    
+	    channel_data->audio_buffer_list = (gpointer) audio_buffer_list;
+	  }
 	}
       }
     }    
@@ -1595,7 +1664,7 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 
   AVAudioOutputNode *av_output_node;
   AVAudioInputNode *av_input_node;
-  //  AVAudioMixerNode *av_audio_mixer_node;
+  AVAudioMixerNode *av_audio_mixer_node;
   AVAudioUnit *av_audio_unit;
   AVAudioSequencer *av_audio_sequencer;
 
@@ -1692,6 +1761,9 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   /* input node */
   av_input_node = [audio_engine inputNode];
 
+  /* mixer node */
+  av_audio_mixer_node = [audio_engine mainMixerNode];
+  
   /* audio unit */
   [audio_engine attachNode:av_audio_unit];
 
@@ -1699,7 +1771,8 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
     [audio_engine connect:av_input_node to:av_audio_unit format:av_format];
   }
   
-  [audio_engine connect:av_audio_unit to:av_output_node format:av_format];
+  [audio_engine connect:av_audio_unit to:av_audio_mixer_node format:av_format];
+  [audio_engine connect:av_audio_mixer_node to:av_output_node format:av_format];
   
   /* audio sequencer */
   av_audio_sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:audio_engine];
@@ -2082,11 +2155,14 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
   audio = NULL;
+  
+  output_soundcard = NULL;
 
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   g_object_get(fx_audio_unit_audio,
 	       "audio", &audio,
+	       "output-soundcard", &output_soundcard,
 	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       NULL);
@@ -2117,14 +2193,40 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
   
+  bpm = 120.0;
+
+  /* get note offset */
+  if(output_soundcard != NULL){
+    bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+      
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+      
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  }
+  
   /* sequencer */
-  av_audio_sequencer.currentPositionInBeats = 0.0;
+  av_audio_sequencer.currentPositionInBeats = (double) note_offset / 4.0; // a 16th
 
   //FIXME:JK: available since macOS 13.0
   av_music_track = [av_audio_sequencer createAndAppendTrack];
 
   av_music_track.destinationAudioUnit = av_audio_unit;
+  
+  av_music_track.offsetTime = 0.0; // 0
 
+  av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+
+  //NOTE:JK: read-only
+  //  av_music_track.timeResolution = 64;
+
+  av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+  
+  av_music_track.usesAutomatedParameters = NO;
+  
+  av_music_track.muted = NO;
+  
   scope_data = NULL;
 
   sub_block = 0;
@@ -2315,7 +2417,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 	/* set position */
 	double current_position_in_beats = ((double) note_offset / 4.0) + (delay_counter / absolute_delay / 4.0);
 	  
-	av_audio_sequencer.currentPositionInBeats = 0.0;// current_position_in_beats;
+	av_audio_sequencer.currentPositionInBeats = current_position_in_beats;
 
 	/* set bpm */
 	AVMusicTrack *tempo_track = [av_audio_sequencer tempoTrack];
@@ -2331,7 +2433,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 
 	AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
 
-	double current_beat = 0.0;// (double) note_offset / 4.0;
+	double current_beat = (double) note_offset / 4.0;
 	  
 	[tempo_track addEvent:tempo_event atBeat:current_beat];
       
@@ -2342,14 +2444,14 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 	    }];
 	}
 	    
-	if(channel_data->input_data[pad]->key_on > 0){
-	  AVMIDINoteEvent *av_midi_note_event;
+	for(k = 0; k < 128; k++){
+	  if(channel_data->input_data[k]->key_on > 0){
+	    AVMIDINoteEvent *av_midi_note_event;
 
-	  GList *note;
+	    GList *note;
+	    
+	    note = channel_data->input_data[k]->note;
 
-	  note = channel_data->input_data[pad]->note;
-
-	  if(note != NULL){	      
 	    while(note != NULL){
 	      guint x0_256th, x1_256th;
 	    
@@ -2358,9 +2460,9 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 		
 	      double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
 		
-	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:pad velocity:127 duration:note_event_duration];
+	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
 
-	      double note_event_current_beat = (((double) x0_256th / 16.0) - ((double) note_offset + (delay_counter / absolute_delay))) / 4.0;
+	      double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 		
 	      [av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
 
@@ -2448,11 +2550,13 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
       //	      g_message("out");
 		
       /* fill output buffer */
-      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  audio_signal->stream->data, 1, 0,
-						  channel_data->output, 1, 0,
-						  buffer_size, copy_mode);
-
+      if(audio_signal->stream_current != NULL){
+	ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						    audio_signal->stream_current->data, 1, 0,
+						    channel_data->output, 1, 0,
+						    buffer_size, copy_mode);
+      }
+      
       ags_audio_buffer_util_clear_buffer(NULL,
 					 channel_data->output, 1,
 					 buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
@@ -2467,7 +2571,11 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
     if(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait))){
       g_cond_signal(&(fx_audio_unit_audio->completed_iteration_cond));
     }
-    
+
+    if(active_iterate_data == NULL){
+      g_thread_yield();
+    }
+        
     g_free(active_iterate_data);
     
     /* check is running */
@@ -2499,6 +2607,7 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
   guint pad;
   guint audio_channel;
   guint line;
+  gboolean is_instrument;
   gboolean is_stereo_ready;
 
   GRecMutex *recall_mutex;
@@ -2520,10 +2629,14 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
   audio_channels = ags_audio_get_audio_channels(audio);
   input_pads = ags_audio_get_input_pads(audio);
 
+  is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
+					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
+  
   is_stereo_ready = FALSE;
 
-  if(ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
-				AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+  g_rec_mutex_lock(recall_mutex);
+
+  if(is_instrument){
     iterate_data = start_iterate_data;
 
     while(iterate_data != NULL){
@@ -2556,6 +2669,10 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
       while(tmp_iterate_data != NULL){
 	struct _AgsFxAudioUnitIterateData *tmp_current_iterate_data;
 
+	GList *next;
+
+	next = tmp_iterate_data->next;
+	
 	tmp_current_iterate_data = tmp_iterate_data->data;
 	
 	if(tmp_current_iterate_data->pad == pad &&
@@ -2566,6 +2683,9 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
 	  start_iterate_data = g_list_remove(start_iterate_data,
 					     tmp_current_iterate_data);
 	}
+	
+	/* iterate */
+	tmp_iterate_data = next;
       }
 
       if(active_key_on_count >= key_on_count){
@@ -2613,6 +2733,8 @@ ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio
     }
   }
 
+  g_rec_mutex_unlock(recall_mutex);
+  
   g_list_free(start_iterate_data);
   
   return(is_stereo_ready);
@@ -2651,6 +2773,12 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
 
   audio_unit_plugin = fx_audio_unit_audio->audio_unit_plugin;
 
+  matched_iterate_data = NULL;
+
+  check_iterate_data = NULL;
+  
+  current_iterate_data = NULL;
+  
   start_iterate_data = g_list_copy(fx_audio_unit_audio->iterate_data);
 
   g_rec_mutex_unlock(recall_mutex);
@@ -2665,6 +2793,8 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
+  g_rec_mutex_lock(recall_mutex);
+  
   if(is_instrument){
     iterate_data = start_iterate_data;
 
@@ -2707,6 +2837,10 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
       while(tmp_iterate_data != NULL){
 	struct _AgsFxAudioUnitIterateData *tmp_current_iterate_data;
 
+	GList *next;
+
+	next = tmp_iterate_data->next;
+
 	tmp_current_iterate_data = tmp_iterate_data->data;
 	
 	if(tmp_current_iterate_data->pad == pad &&
@@ -2717,6 +2851,9 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
 	  start_iterate_data = g_list_remove(start_iterate_data,
 					     tmp_current_iterate_data);
 	}
+
+	/* iterate */
+	tmp_iterate_data = next;
       }
 
       if(active_key_on_count >= key_on_count){
@@ -2801,6 +2938,8 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
     }
   }
   
+  g_rec_mutex_unlock(recall_mutex);
+  
   g_list_free(start_iterate_data);
   
   return(retval);
@@ -2837,6 +2976,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
   gboolean is_instrument;
   BOOL input_success;
+  guint input_pads;
   guint pad;
   guint audio_channel;
   guint sub_block, sub_block_count;
@@ -2867,14 +3007,19 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
   audio = NULL;
 
+  output_soundcard = NULL;
+
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   g_object_get(fx_audio_unit_audio,
 	       "audio", &audio,
+	       "output-soundcard", &output_soundcard,
 	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       NULL);
 
+  input_pads = ags_audio_get_input_pads(audio);
+  
   /* get some fields */
   g_rec_mutex_lock(recall_mutex);
 
@@ -2900,15 +3045,41 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
+
+  bpm = 120.0;
+
+  /* get note offset */
+  if(output_soundcard != NULL){
+    bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+      
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+      
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  }
   
   /* sequencer */
-  av_audio_sequencer.currentPositionInBeats = 0.0;
+  av_audio_sequencer.currentPositionInBeats = (double) note_offset / 4.0; // a 16th
 
   //FIXME:JK: available since macOS 13.0
   av_music_track = [av_audio_sequencer createAndAppendTrack];
 
   av_music_track.destinationAudioUnit = av_audio_unit;
 
+  av_music_track.offsetTime = 0.0; // 0
+
+  av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+
+  //NOTE:JK: read-only
+  //  av_music_track.timeResolution = 64;
+
+  av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+  
+  av_music_track.usesAutomatedParameters = NO;
+  
+  av_music_track.muted = NO;
+  
   channel_data =
     ags_fx_audio_unit_iterate_channel_data = NULL;
   
@@ -2931,7 +3102,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 				
 	/* fill av input buffer */
 	if(ags_fx_audio_unit_iterate_scope_data != NULL){
-	  audio_buffer_list = (AudioBufferList *) ags_fx_audio_unit_iterate_channel_data->audio_buffer_list;
+	  audio_buffer_list = (AudioBufferList *) ags_fx_audio_unit_iterate_scope_data->audio_buffer_list;
 
 	  for(i = 0; i < audio_channels; i++){
 	    if(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE <= inNumberOfFrames){
@@ -2941,7 +3112,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	  
 	      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 							  audio_buffer_list->mBuffers[i].mData, 1, 0,
-							  ags_fx_audio_unit_iterate_scope_data->input + (ags_fx_audio_unit_iterate_sub_block * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), 1, 0,
+							  ags_fx_audio_unit_iterate_scope_data->input + (audio_channels * ags_fx_audio_unit_iterate_sub_block * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), audio_channels, i,
 							  AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
 	    }else{
 	      ags_audio_buffer_util_clear_buffer(NULL,
@@ -2950,7 +3121,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	  
 	      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 							  audio_buffer_list->mBuffers[i].mData, 1, 0,
-							  ags_fx_audio_unit_iterate_scope_data->input + (ags_fx_audio_unit_iterate_sub_block * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), 1, 0,
+							  ags_fx_audio_unit_iterate_scope_data->input + (audio_channels * ags_fx_audio_unit_iterate_sub_block * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), audio_channels, i,
 							  inNumberOfFrames, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
 	    }
 	  }
@@ -3095,6 +3266,10 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
     iterate_data = start_iterate_data;
     
     while(iterate_data != NULL){
+      GList *list;
+      
+      gint audio_signal_count;
+      
       active_iterate_data = iterate_data->data;
 
       audio_signal = active_iterate_data->audio_signal;
@@ -3105,8 +3280,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
       scope_data =
 	ags_fx_audio_unit_iterate_scope_data = (AgsFxAudioUnitAudioScopeData *) channel_data->parent;
       
-      av_output = (AVAudioPCMBuffer *) channel_data->av_output;
-      av_input = (AVAudioPCMBuffer *) channel_data->av_input;    
+      av_output = (AVAudioPCMBuffer *) scope_data->av_output;
+      av_input = (AVAudioPCMBuffer *) scope_data->av_input;    
       
       av_audio_sequencer = (AVAudioSequencer *) fx_audio_unit_audio->av_audio_sequencer;
 
@@ -3117,7 +3292,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	/* set position */
 	double current_position_in_beats = ((double) note_offset / 4.0) + (delay_counter / absolute_delay / 4.0);
 	  
-	av_audio_sequencer.currentPositionInBeats = 0.0;// current_position_in_beats;
+	av_audio_sequencer.currentPositionInBeats = current_position_in_beats;
 
 	/* set bpm */
 	AVMusicTrack *tempo_track = [av_audio_sequencer tempoTrack];
@@ -3133,7 +3308,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
 	AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
 
-	double current_beat = 0.0;// (double) note_offset / 4.0;
+	double current_beat = (double) note_offset / 4.0;
 	  
 	[tempo_track addEvent:tempo_event atBeat:current_beat];
       
@@ -3143,53 +3318,95 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	      *removeEvent = YES;
 	    }];
 	}
+
+	for(k = 0; k < 128; k++){
+	  if(channel_data->input_data[k]->key_on > 0){
+	    AVMIDINoteEvent *av_midi_note_event;
+
+	    GList *note;
+
+	    note = channel_data->input_data[k]->note;
+
+	    if(note != NULL){	      
+	      while(note != NULL){
+		guint x0_256th, x1_256th;
 	    
-	if(channel_data->input_data[pad]->key_on > 0){
-	  AVMIDINoteEvent *av_midi_note_event;
-
-	  GList *note;
-
-	  note = channel_data->input_data[pad]->note;
-
-	  if(note != NULL){	      
-	    while(note != NULL){
-	      guint x0_256th, x1_256th;
-	    
-	      x0_256th = ags_note_get_x0_256th(note->data);
-	      x1_256th = ags_note_get_x1_256th(note->data);
+		x0_256th = ags_note_get_x0_256th(note->data);
+		x1_256th = ags_note_get_x1_256th(note->data);
+	      
+		double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
 		
-	      double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
-		
-	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:pad velocity:127 duration:note_event_duration];
+		av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
 
-	      double note_event_current_beat = (((double) x0_256th / 16.0) - ((double) note_offset + (delay_counter / absolute_delay))) / 4.0;
-		
-	      [av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
+		double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 
-	      /* iterate */
-	      note = note->next;
+		//		g_message("key [%d] -> x 256th %d - %d", k, x0_256th, x1_256th);
+	      
+		[av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
+
+		/* iterate */
+		note = note->next;
+	      }
 	    }
 	  }
 	}	  
       }
       
       ags_audio_buffer_util_clear_buffer(NULL,
-					 channel_data->input, 1,
-					 buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+					 scope_data->input, 1,
+					 audio_channels * buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
-      /* fill midi */
+      if(!is_instrument){
+	copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+								    AGS_AUDIO_BUFFER_UTIL_FLOAT,
+								    ags_audio_buffer_util_format_from_soundcard(NULL, format));
+	
+
+	if(audio_signal->stream_current != NULL){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						      scope_data->input, audio_channels, audio_channel,
+						      audio_signal->stream_current->data, 1, 0,
+						      buffer_size, copy_mode);
+	}
+      }
+
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 scope_data->output, 1,
+					 audio_channels * buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
+      /* iterate */
+      iterate_data = iterate_data->next;
+    }
+    
+    /* fill midi */
+    if(start_iterate_data != NULL){
+      active_iterate_data = start_iterate_data->data;
+
+      channel_data = 
+	ags_fx_audio_unit_iterate_channel_data = active_iterate_data->channel_data;
+      
+      scope_data =
+	ags_fx_audio_unit_iterate_scope_data = (AgsFxAudioUnitAudioScopeData *) channel_data->parent;
+      
+      av_output = (AVAudioPCMBuffer *) scope_data->av_output;
+      av_input = (AVAudioPCMBuffer *) scope_data->av_input;
+      
       sub_block_count = floor(buffer_size / AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE);
 
       for(sub_block = 0; sub_block < sub_block_count; sub_block++){
+	guint i;
+	
 	/* clear av IO buffer */
 	//	ags_audio_buffer_util_clear_buffer(NULL,
 	//				   [av_input floatChannelData][0], 1,
 	//				   AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_FLOAT);
 	
-	ags_audio_buffer_util_clear_buffer(NULL,
-					   [av_output floatChannelData][0], 1,
-					   AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_FLOAT);
-
+	for(i = 0; i < audio_channels; i++){
+	  ags_audio_buffer_util_clear_buffer(NULL,
+					     [av_output floatChannelData][i], 1,
+					     AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+	}
+	
 	//	g_message("schedule buffer and render audio unit");
 	
 	ags_fx_audio_unit_iterate_sub_block = sub_block;
@@ -3229,12 +3446,40 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	}
 	    
 	/* fill output buffer */
-	ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						    channel_data->output + (sub_block * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), 1, 0,
-						    [av_output floatChannelData][0], 1, 0,
-						    AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+	for(i = 0; i < audio_channels; i++){
+	  ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						      scope_data->output + (audio_channels * sub_block * AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE), audio_channels, i,
+						      [av_output floatChannelData][i], 1, 0,
+						      AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+	}
       }
+    }
+    
+    iterate_data = start_iterate_data;
+    
+    while(iterate_data != NULL){
+      GList *list;
+      
+      gint audio_signal_count;
+      
+      active_iterate_data = iterate_data->data;
 
+      audio_signal = active_iterate_data->audio_signal;
+      
+      channel_data = 
+	ags_fx_audio_unit_iterate_channel_data = active_iterate_data->channel_data;
+      
+      scope_data =
+	ags_fx_audio_unit_iterate_scope_data = (AgsFxAudioUnitAudioScopeData *) channel_data->parent;
+      
+      av_output = (AVAudioPCMBuffer *) scope_data->av_output;
+      av_input = (AVAudioPCMBuffer *) scope_data->av_input;    
+      
+      av_audio_sequencer = (AVAudioSequencer *) fx_audio_unit_audio->av_audio_sequencer;
+
+      pad = active_iterate_data->pad;
+      audio_channel = active_iterate_data->audio_channel;
+      
       buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
       format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 	    
@@ -3250,10 +3495,6 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
       //	      g_message("out");
 		
       /* fill output buffer */
-      GList *list;
-
-      gint audio_signal_count;
-      
       list = start_iterate_data;
 
       audio_signal_count = 0;
@@ -3270,37 +3511,39 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
 	list = list->next;
       }
-      
-      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						  audio_signal->stream->data, 1, 0,
-						  channel_data->output, 1, 0,
-						  buffer_size, copy_mode);
 
-      channel_data->volume_util->destination = audio_signal->stream->data;
+      if(audio_signal->stream_current != NULL){
+	ags_audio_buffer_util_clear_buffer(NULL,
+					   audio_signal->stream_current->data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       
-      channel_data->volume_util->source = audio_signal->stream->data;
+	ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						    audio_signal->stream_current->data, 1, 0,
+						    scope_data->output, audio_channels, audio_channel,
+						    buffer_size, copy_mode);
+      
+	scope_data->volume_util->destination = audio_signal->stream_current->data;
+      
+	scope_data->volume_util->source = audio_signal->stream_current->data;
 
-      channel_data->volume_util->buffer_length = buffer_size;
+	scope_data->volume_util->buffer_length = buffer_size;
             
-      channel_data->volume_util->format = format;
+	scope_data->volume_util->format = format;
 
-      if(audio_signal_count > 0){
-	channel_data->volume_util->volume = 1.0 / (double) audio_signal_count;
-      }else{
-	channel_data->volume_util->volume = 1.0;
+	if(audio_signal_count > 0){
+	  scope_data->volume_util->volume = 1.0 / (double) audio_signal_count;
+	}else{
+	  scope_data->volume_util->volume = 1.0;
+	}
+      
+	ags_volume_util_compute(scope_data->volume_util);
       }
       
-      ags_volume_util_compute(channel_data->volume_util);
-      
-      ags_audio_buffer_util_clear_buffer(NULL,
-					 channel_data->output, 1,
-					 buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
-
-      // [[av_audio_unit AUAudioUnit] reset];
-
       /* iterate */
       iterate_data = iterate_data->next;
     }
+    
+    // [[av_audio_unit AUAudioUnit] reset];
     
     /* iteration completed */
     ags_atomic_boolean_set(&(fx_audio_unit_audio->completed_iteration_done),
@@ -3308,6 +3551,10 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
     
     if(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait))){
       g_cond_signal(&(fx_audio_unit_audio->completed_iteration_cond));
+    }
+
+    if(start_iterate_data == NULL){
+      g_thread_yield();
     }
     
     g_list_free_full(start_iterate_data,
@@ -3321,6 +3568,61 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
     g_rec_mutex_unlock(recall_mutex);
   }
 
+  /* prepare iteration */
+  gboolean prepare_iteration_waiting;
+  
+  g_mutex_lock(&(fx_audio_unit_audio->prepare_iteration_mutex));
+
+  prepare_iteration_waiting = ags_atomic_boolean_get(&(fx_audio_unit_audio->prepare_iteration_wait));
+ 
+  ags_atomic_boolean_set(&(fx_audio_unit_audio->prepare_iteration_wait),
+			 FALSE);
+  
+  if(prepare_iteration_waiting){
+    g_cond_broadcast(&(fx_audio_unit_audio->prepare_iteration_cond));
+  }
+
+  g_mutex_unlock(&(fx_audio_unit_audio->prepare_iteration_mutex));
+    
+  /* iteration completed */
+  g_mutex_lock(&(fx_audio_unit_audio->completed_iteration_mutex));
+  
+  ags_atomic_boolean_set(&(fx_audio_unit_audio->completed_iteration_done),
+			 TRUE);
+
+  if(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait))){
+    g_cond_broadcast(&(fx_audio_unit_audio->completed_iteration_cond));
+  }
+
+  g_mutex_unlock(&(fx_audio_unit_audio->completed_iteration_mutex));
+
+  g_message("AV audio engine stop");
+  
+  [av_audio_sequencer stop];
+
+  [audio_engine stop];
+
+  ags_atomic_boolean_set(&(fx_audio_unit_audio->prepare_iteration_wait),
+			 FALSE);
+
+  ags_atomic_int_set(&(fx_audio_unit_audio->active_iteration_count),
+		     0);
+  
+  ags_atomic_boolean_set(&(fx_audio_unit_audio->prepare_iteration_wait),
+			 FALSE);
+
+  ags_atomic_pointer_set(&(fx_audio_unit_audio->iterate_data),
+			 NULL);
+
+  ags_atomic_pointer_set(&(fx_audio_unit_audio->active_iterate_data),
+			 NULL);
+
+  ags_atomic_boolean_set(&(fx_audio_unit_audio->completed_iteration_wait),
+			 FALSE);
+
+  ags_atomic_boolean_set(&(fx_audio_unit_audio->completed_iteration_done),
+			 FALSE);
+  
   g_thread_exit(NULL);
   
   return(NULL);
@@ -3337,19 +3639,33 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 void
 ags_fx_audio_unit_audio_start_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 {
+  GRecMutex *recall_mutex;
+  
   if(fx_audio_unit_audio == NULL ||
      !AGS_IS_FX_AUDIO_UNIT_AUDIO(fx_audio_unit_audio)){
     return;
   }
 
-  ags_atomic_int_increment(&(fx_audio_unit_audio->render_ref_count));
-
   if(fx_audio_unit_audio->render_thread_running){
+    ags_atomic_int_increment(&(fx_audio_unit_audio->render_ref_count));
+    
     return;
   }
+
+  g_message("Audio Unit render thread start");
   
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
+
+  ags_atomic_int_set(&(fx_audio_unit_audio->render_ref_count),
+		     1);
+  
+  g_rec_mutex_lock(recall_mutex);
+
   fx_audio_unit_audio->render_thread_running = TRUE;
 
+  g_rec_mutex_unlock(recall_mutex);
+    
   if(ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio,
 					AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
     fx_audio_unit_audio->render_thread = g_thread_new("Advanced Gtk+ Sequencer - Audio Unit",
@@ -3373,22 +3689,40 @@ ags_fx_audio_unit_audio_start_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_a
 void
 ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_audio)
 {
+  GRecMutex *recall_mutex;
+
+  gboolean is_waiting;
+  
   if(fx_audio_unit_audio == NULL ||
      !AGS_IS_FX_AUDIO_UNIT_AUDIO(fx_audio_unit_audio)){
     return;
   }
 
-  ags_atomic_int_decrement(&(fx_audio_unit_audio->render_ref_count));
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
+  if(ags_atomic_int_get(&(fx_audio_unit_audio->render_ref_count)) > 0){
+    ags_atomic_int_decrement(&(fx_audio_unit_audio->render_ref_count));
+  }
+  
   if(ags_atomic_int_get(&(fx_audio_unit_audio->render_ref_count)) <= 0){
+    g_message("Audio Unit render thread stop");
+    
+    g_rec_mutex_lock(recall_mutex);
+    
     fx_audio_unit_audio->render_thread_running = FALSE;
 
+    g_rec_mutex_unlock(recall_mutex);
+
+    /* signal */
     g_mutex_lock(&(fx_audio_unit_audio->pre_sync_mutex));
-    
-    if(ags_atomic_boolean_get(&(fx_audio_unit_audio->pre_sync_wait))){
-      ags_atomic_boolean_set(&(fx_audio_unit_audio->pre_sync_wait),
-			     FALSE);
-      
+
+    is_waiting = ags_atomic_boolean_get(&(fx_audio_unit_audio->pre_sync_wait));
+
+    ags_atomic_boolean_set(&(fx_audio_unit_audio->pre_sync_wait),
+			   FALSE);
+          
+    if(is_waiting){
       g_cond_signal(&(fx_audio_unit_audio->pre_sync_cond));
     }
 
@@ -3457,11 +3791,13 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
     /* fill audio unit input */
     g_rec_mutex_lock(recall_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						channel_data->input, 1, 0,
-						audio_signal->stream->data, 1, 0,
-						channel_data->input_buffer_size, copy_mode);
-  
+    if(audio_signal->stream_current != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  channel_data->input, 1, 0,
+						  audio_signal->stream_current->data, 1, 0,
+						  channel_data->input_buffer_size, copy_mode);
+    }
+    
     g_rec_mutex_unlock(recall_mutex);
   
     /* add iteration audio signal */
@@ -3548,11 +3884,13 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
     /* fill audio unit input */
     g_rec_mutex_lock(recall_mutex);
 
-    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
-						scope_data->input, audio_channels, audio_channel,
-						audio_signal->stream->data, 1, 0,
-						scope_data->input_buffer_size, copy_mode);
-  
+    if(audio_signal->stream_current != NULL){
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  scope_data->input, audio_channels, audio_channel,
+						  audio_signal->stream_current->data, 1, 0,
+						  scope_data->input_buffer_size, copy_mode);
+    }
+    
     g_rec_mutex_unlock(recall_mutex);
 
     /* add iteration audio signal */
@@ -3634,12 +3972,12 @@ ags_fx_audio_unit_audio_render_thread_iteration(AgsFxAudioUnitAudio *fx_audio_un
       /* prepare iteration */
       g_mutex_lock(&(fx_audio_unit_audio->prepare_iteration_mutex));
 
-      if(ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)) != iterate_data){
+      if(g_list_find(ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)), iterate_data) == NULL){
 	ags_atomic_boolean_set(&(fx_audio_unit_audio->prepare_iteration_wait),
 			       TRUE);
       
 	while(ags_atomic_boolean_get(&(fx_audio_unit_audio->prepare_iteration_wait)) &&
-	      ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)) != iterate_data){	
+	      g_list_find(ags_atomic_pointer_get(&(fx_audio_unit_audio->active_iterate_data)), iterate_data) == NULL){
 	  g_cond_wait(&(fx_audio_unit_audio->prepare_iteration_cond),
 		      &(fx_audio_unit_audio->prepare_iteration_mutex));
 	}

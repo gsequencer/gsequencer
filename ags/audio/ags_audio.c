@@ -13705,6 +13705,9 @@ ags_audio_real_play_recall(AgsAudio *audio,
 						    AGS_SOUND_STAGING_RUN_POST |
 						    AGS_SOUND_STAGING_DO_FEEDBACK |
 						    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
+						    AGS_SOUND_STAGING_DONE |
+						    AGS_SOUND_STAGING_CANCEL |
+						    AGS_SOUND_STAGING_REMOVE |
 						    AGS_SOUND_STAGING_FINI);
 
   GRecMutex *audio_mutex;
@@ -15003,6 +15006,9 @@ ags_audio_real_stop(AgsAudio *audio,
 	       NULL);
 
   if(sound_scope >= 0){
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, AGS_SOUND_STAGING_DONE);
+
     /* cancel */
     ags_audio_recursive_run_stage(audio,
 				  sound_scope, staging_flags);
@@ -15073,6 +15079,9 @@ ags_audio_real_stop(AgsAudio *audio,
     }
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      ags_audio_recursive_run_stage(audio,
+				    sound_scope, AGS_SOUND_STAGING_DONE);
+
       /* cancel */
       ags_audio_recursive_run_stage(audio,
 				    i, staging_flags);

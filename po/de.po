@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-08-28 21:42+0200\n"
+"POT-Creation-Date: 2025-08-29 11:56+0200\n"
 "PO-Revision-Date: 2021-01-03 08:52+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: Deutsch <jkraehemann@gmail.com>\n"
@@ -301,27 +301,27 @@ msgstr ""
 msgid "open"
 msgstr "öffnen"
 
-#: ags/app/ags_performance_preferences.c:157
+#: ags/app/ags_performance_preferences.c:159
 msgid "Auto-sense on stream"
 msgstr "Automatischer Sinn des Stroms"
 
-#: ags/app/ags_performance_preferences.c:162
+#: ags/app/ags_performance_preferences.c:164
 msgid "Super threaded - audio"
 msgstr "Super threaded - audio"
 
-#: ags/app/ags_performance_preferences.c:167
+#: ags/app/ags_performance_preferences.c:177
 msgid "Super threaded - channel"
 msgstr "Super threaded - channel"
 
-#: ags/app/ags_performance_preferences.c:177
+#: ags/app/ags_performance_preferences.c:195
 msgid "thread pool - max unused threads"
 msgstr "Thread Pool - maximum unbenützte Threads"
 
-#: ags/app/ags_performance_preferences.c:193
+#: ags/app/ags_performance_preferences.c:211
 msgid "max precision of threads [Hz]"
 msgstr "Maximale Präzision der Threads [Hz]"
 
-#: ags/app/ags_performance_preferences.c:217
+#: ags/app/ags_performance_preferences.c:235
 msgid "update UI timeout[s]"
 msgstr ""
 

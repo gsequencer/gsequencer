@@ -3181,10 +3181,12 @@ endif
 if WITH_AUDIO_UNIT_PLUGINS
 libgsequencer_machine_h_sources += \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.h \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.h \
 	ags/app/machine/ags_audio_unit_bridge.h
 else
 EXTRA_DIST += \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.h \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.h \
 	ags/app/machine/ags_audio_unit_bridge.h
 endif
 
@@ -3324,10 +3326,12 @@ endif
 if WITH_AUDIO_UNIT_PLUGINS
 libgsequencer_machine_c_sources += \
 	ags/app/machine/ags_audio_unit_bridge.c \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.c \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.c
 else
 EXTRA_DIST += \
 	ags/app/machine/ags_audio_unit_bridge.c \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.c \
 	ags/app/machine/ags_audio_unit_bridge_callbacks.c
 endif
 

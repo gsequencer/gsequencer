@@ -9122,6 +9122,11 @@ ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
   AgsRecallID *current_recall_id;
   AgsRecyclingContext *current_recycling_context;
 
+  if(recall == NULL ||
+     !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
+    return(NULL);
+  }
+  
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 

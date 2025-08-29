@@ -43,10 +43,9 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
 						  AgsAudioUnitBridge *audio_unit_bridge)
 {
   AgsAudioUnitPlugin *audio_unit_plugin;
-
-  AUAudioUnit *au_audio_unit;
   
-  if(!AGS_IS_AUDIO_UNIT_BRIDGE(audio_unit_bridge)){
+  if(!AGS_IS_AUDIO_UNIT_BRIDGE(audio_unit_bridge) ||
+     audio_unit_bridge->window == NULL){
     return;
   }
   
@@ -60,42 +59,16 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
   }
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)  
-  au_audio_unit = [(AVAudioNode *) audio_unit_bridge->av_audio_unit AUAudioUnit];
+  NSWindow *window;
 
-  [au_audio_unit requestViewControllerWithCompletionHandler:^(AUViewControllerBase *viewController){
-      NSWindow *window;
-      NSView *auView;
+  window = (NSWindow *) audio_unit_bridge->window;
 
-      gchar *window_title;
+  [window orderFront:audio_unit_bridge];
 
-      NSColor *bg = [NSColor colorWithCalibratedRed:0.3f green:0.3f blue:0.3f alpha:1.0f];
-
-      NSSize auSize = ((NSViewController *) viewController).view.frame.size;
-      
-      NSRect frame = NSMakeRect(0, 0, auSize.width, auSize.height);
-      NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable;
-      NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:windowStyle];
-      
-      window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
-
-      window_title = g_strdup_printf("Audio Unit: %s",
-				     AGS_MACHINE(audio_unit_bridge)->machine_name);
-      
-      auView = ((NSViewController *) viewController).view;
-      auView.translatesAutoresizingMaskIntoConstraints = NO;
-
-      [window.contentView addSubview:auView];
-      
-      [window makeKeyAndOrderFront:window];
-      [window setBackgroundColor:bg];
-      [window setTitle:[NSString stringWithUTF8String:window_title]];
-      [window orderFront:audio_unit_bridge];
-
-      [window center];
-      
-      //      [(AUViewController *) viewController loadView];
-      //      [(AUViewController *) viewController viewDidLoad];
-    }];
+  [window center];
+  
+  //      [(AUViewController *) viewController loadView];
+  //      [(AUViewController *) viewController viewDidLoad];
 #endif
 }
 

@@ -1,3 +1,12 @@
+ags (8.1.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implied new config value in order to support Audio Unit
+	* improved Audio Unit UI window
+	* reverted ags-fx-buffer
+	* fixed ags-fx-audio-unit stereo buffer
+	* fixed ags-fx-audio-unit instrument key on
+
 ags (8.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

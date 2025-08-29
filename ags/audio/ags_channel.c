@@ -9994,6 +9994,9 @@ ags_channel_real_play_recall(AgsChannel *channel,
 				     AGS_SOUND_STAGING_RUN_POST |
 				     AGS_SOUND_STAGING_DO_FEEDBACK |
 				     AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
+				     AGS_SOUND_STAGING_DONE |
+				     AGS_SOUND_STAGING_CANCEL |
+				     AGS_SOUND_STAGING_REMOVE |
 				     AGS_SOUND_STAGING_FINI);
 
   GRecMutex *channel_mutex;
@@ -10144,17 +10147,19 @@ ags_channel_real_play_recall(AgsChannel *channel,
   staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
   
   /* play */
-  list = list_start;
+  if(AGS_IS_RECYCLING_CONTEXT(recycling_context)){
+    list = list_start;
   
-  while((list = ags_recall_find_recycling_context(list,
-						  (GObject *) recycling_context)) != NULL){
-    recall = AGS_RECALL(list->data);
+    while((list = ags_recall_find_recycling_context(list,
+						    (GObject *) recycling_context)) != NULL){
+      recall = AGS_RECALL(list->data);
     
-    /* play stages */
-    ags_recall_set_staging_flags(recall,
-				 staging_flags);
+      /* play stages */
+      ags_recall_set_staging_flags(recall,
+				   staging_flags);
 
-    list = list->next;
+      list = list->next;
+    }
   }
   
   g_list_free_full(list_start,
@@ -11160,6 +11165,9 @@ ags_channel_real_stop(AgsChannel *channel,
 	       NULL);
 
   if(sound_scope >= 0){
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, AGS_SOUND_STAGING_DONE);
+
     /* cancel */
     ags_channel_recursive_run_stage(channel,
 				    sound_scope, staging_flags);
@@ -11178,6 +11186,9 @@ ags_channel_real_stop(AgsChannel *channel,
 						     sound_scope);
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      ags_channel_recursive_run_stage(channel,
+				      sound_scope, AGS_SOUND_STAGING_DONE);
+
       /* cancel */
       ags_channel_recursive_run_stage(channel,
 				      i, staging_flags);
