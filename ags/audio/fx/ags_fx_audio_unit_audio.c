@@ -2540,7 +2540,11 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
     if(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait))){
       g_cond_signal(&(fx_audio_unit_audio->completed_iteration_cond));
     }
-    
+
+    if(active_iterate_data == NULL){
+      g_thread_yield();
+    }
+        
     g_free(active_iterate_data);
     
     /* check is running */
@@ -3003,8 +3007,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	audio_buffer_list = NULL;
 				
 	/* fill av input buffer */
-	if(scope_data != NULL){
-	  audio_buffer_list = (AudioBufferList *) scope_data->audio_buffer_list;
+	if(ags_fx_audio_unit_iterate_scope_data != NULL){
+	  audio_buffer_list = (AudioBufferList *) ags_fx_audio_unit_iterate_scope_data->audio_buffer_list;
 
 	  for(i = 0; i < audio_channels; i++){
 	    if(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE <= inNumberOfFrames){
@@ -3387,6 +3391,10 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
     
     if(ags_atomic_boolean_get(&(fx_audio_unit_audio->completed_iteration_wait))){
       g_cond_signal(&(fx_audio_unit_audio->completed_iteration_cond));
+    }
+
+    if(start_iterate_data == NULL){
+      g_thread_yield();
     }
     
     g_list_free_full(start_iterate_data,
