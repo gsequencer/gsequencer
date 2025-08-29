@@ -2155,11 +2155,14 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
   audio = NULL;
+  
+  output_soundcard = NULL;
 
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   g_object_get(fx_audio_unit_audio,
 	       "audio", &audio,
+	       "output-soundcard", &output_soundcard,
 	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       NULL);
@@ -2190,14 +2193,40 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
   
+  bpm = 120.0;
+
+  /* get note offset */
+  if(output_soundcard != NULL){
+    bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+      
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+      
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  }
+  
   /* sequencer */
-  av_audio_sequencer.currentPositionInBeats = 0.0;
+  av_audio_sequencer.currentPositionInBeats = (double) note_offset / 4.0; // a 16th
 
   //FIXME:JK: available since macOS 13.0
   av_music_track = [av_audio_sequencer createAndAppendTrack];
 
   av_music_track.destinationAudioUnit = av_audio_unit;
+  
+  av_music_track.offsetTime = 0.0; // 0
 
+  av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+
+  //NOTE:JK: read-only
+  //  av_music_track.timeResolution = 64;
+
+  av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+  
+  av_music_track.usesAutomatedParameters = NO;
+  
+  av_music_track.muted = NO;
+  
   scope_data = NULL;
 
   sub_block = 0;
@@ -2388,7 +2417,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 	/* set position */
 	double current_position_in_beats = ((double) note_offset / 4.0) + (delay_counter / absolute_delay / 4.0);
 	  
-	av_audio_sequencer.currentPositionInBeats = 0.0;// current_position_in_beats;
+	av_audio_sequencer.currentPositionInBeats = current_position_in_beats;
 
 	/* set bpm */
 	AVMusicTrack *tempo_track = [av_audio_sequencer tempoTrack];
@@ -2404,7 +2433,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 
 	AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
 
-	double current_beat = 0.0;// (double) note_offset / 4.0;
+	double current_beat = (double) note_offset / 4.0;
 	  
 	[tempo_track addEvent:tempo_event atBeat:current_beat];
       
@@ -2433,7 +2462,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 		
 	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:pad velocity:127 duration:note_event_duration];
 
-	      double note_event_current_beat = (((double) x0_256th / 16.0) - ((double) note_offset + (delay_counter / absolute_delay))) / 4.0;
+	      double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 		
 	      [av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
 
@@ -2728,6 +2757,12 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
 
   audio_unit_plugin = fx_audio_unit_audio->audio_unit_plugin;
 
+  matched_iterate_data = NULL;
+
+  check_iterate_data = NULL;
+  
+  current_iterate_data = NULL;
+  
   start_iterate_data = g_list_copy(fx_audio_unit_audio->iterate_data);
 
   g_rec_mutex_unlock(recall_mutex);
@@ -2742,6 +2777,8 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
+  g_rec_mutex_lock(recall_mutex);
+  
   if(is_instrument){
     iterate_data = start_iterate_data;
 
@@ -2878,6 +2915,8 @@ ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_u
     }
   }
   
+  g_rec_mutex_unlock(recall_mutex);
+  
   g_list_free(start_iterate_data);
   
   return(retval);
@@ -2944,10 +2983,13 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
   audio = NULL;
 
+  output_soundcard = NULL;
+
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   g_object_get(fx_audio_unit_audio,
 	       "audio", &audio,
+	       "output-soundcard", &output_soundcard,
 	       "samplerate", &samplerate,
 	       "buffer-size", &buffer_size,
 	       NULL);
@@ -2977,15 +3019,41 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
+
+  bpm = 120.0;
+
+  /* get note offset */
+  if(output_soundcard != NULL){
+    bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+      
+    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+      
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  }
   
   /* sequencer */
-  av_audio_sequencer.currentPositionInBeats = 0.0;
+  av_audio_sequencer.currentPositionInBeats = (double) note_offset / 4.0; // a 16th
 
   //FIXME:JK: available since macOS 13.0
   av_music_track = [av_audio_sequencer createAndAppendTrack];
 
   av_music_track.destinationAudioUnit = av_audio_unit;
 
+  av_music_track.offsetTime = 0.0; // 0
+
+  av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+
+  //NOTE:JK: read-only
+  //  av_music_track.timeResolution = 64;
+
+  av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+  
+  av_music_track.usesAutomatedParameters = NO;
+  
+  av_music_track.muted = NO;
+  
   channel_data =
     ags_fx_audio_unit_iterate_channel_data = NULL;
   
@@ -3198,7 +3266,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	/* set position */
 	double current_position_in_beats = ((double) note_offset / 4.0) + (delay_counter / absolute_delay / 4.0);
 	  
-	av_audio_sequencer.currentPositionInBeats = 0.0;// current_position_in_beats;
+	av_audio_sequencer.currentPositionInBeats = current_position_in_beats;
 
 	/* set bpm */
 	AVMusicTrack *tempo_track = [av_audio_sequencer tempoTrack];
@@ -3214,7 +3282,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
 	AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
 
-	double current_beat = 0.0;// (double) note_offset / 4.0;
+	double current_beat = (double) note_offset / 4.0;
 	  
 	[tempo_track addEvent:tempo_event atBeat:current_beat];
       
@@ -3243,7 +3311,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 		
 	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:pad velocity:127 duration:note_event_duration];
 
-	      double note_event_current_beat = (((double) x0_256th / 16.0) - ((double) note_offset + (delay_counter / absolute_delay))) / 4.0;
+	      double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 		
 	      [av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
 
@@ -3258,7 +3326,38 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 					 scope_data->input, 1,
 					 audio_channels * buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
-      /* fill midi */
+      if(!is_instrument){
+	copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+								    AGS_AUDIO_BUFFER_UTIL_FLOAT,
+								    ags_audio_buffer_util_format_from_soundcard(NULL, format));
+	
+	ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						    scope_data->input, audio_channels, audio_channel,
+						    audio_signal->stream->data, 1, 0,
+						    buffer_size, copy_mode);
+      }
+
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 scope_data->output, 1,
+					 audio_channels * buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
+      /* iterate */
+      iterate_data = iterate_data->next;
+    }
+    
+    /* fill midi */
+    if(start_iterate_data != NULL){
+      active_iterate_data = start_iterate_data->data;
+
+      channel_data = 
+	ags_fx_audio_unit_iterate_channel_data = active_iterate_data->channel_data;
+      
+      scope_data =
+	ags_fx_audio_unit_iterate_scope_data = (AgsFxAudioUnitAudioScopeData *) channel_data->parent;
+      
+      av_output = (AVAudioPCMBuffer *) scope_data->av_output;
+      av_input = (AVAudioPCMBuffer *) scope_data->av_input;
+      
       sub_block_count = floor(buffer_size / AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE);
 
       for(sub_block = 0; sub_block < sub_block_count; sub_block++){
@@ -3321,7 +3420,33 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 						      AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
 	}
       }
+    }
+    
+    iterate_data = start_iterate_data;
+    
+    while(iterate_data != NULL){
+      GList *list;
+      
+      gint audio_signal_count;
+      
+      active_iterate_data = iterate_data->data;
 
+      audio_signal = active_iterate_data->audio_signal;
+      
+      channel_data = 
+	ags_fx_audio_unit_iterate_channel_data = active_iterate_data->channel_data;
+      
+      scope_data =
+	ags_fx_audio_unit_iterate_scope_data = (AgsFxAudioUnitAudioScopeData *) channel_data->parent;
+      
+      av_output = (AVAudioPCMBuffer *) scope_data->av_output;
+      av_input = (AVAudioPCMBuffer *) scope_data->av_input;    
+      
+      av_audio_sequencer = (AVAudioSequencer *) fx_audio_unit_audio->av_audio_sequencer;
+
+      pad = active_iterate_data->pad;
+      audio_channel = active_iterate_data->audio_channel;
+      
       buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
       format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 	    
@@ -3353,6 +3478,11 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
 	list = list->next;
       }
+
+      
+      ags_audio_buffer_util_clear_buffer(NULL,
+					 audio_signal->stream->data, 1,
+					 buffer_size, ags_audio_buffer_util_format_from_soundcard(NULL, format));
       
       ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						  audio_signal->stream->data, 1, 0,
@@ -3375,15 +3505,11 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
       
       ags_volume_util_compute(scope_data->volume_util);
       
-      ags_audio_buffer_util_clear_buffer(NULL,
-					 scope_data->output, 1,
-					 audio_channels * buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
-
-      // [[av_audio_unit AUAudioUnit] reset];
-
       /* iterate */
       iterate_data = iterate_data->next;
     }
+    
+    // [[av_audio_unit AUAudioUnit] reset];
     
     /* iteration completed */
     ags_atomic_boolean_set(&(fx_audio_unit_audio->completed_iteration_done),
