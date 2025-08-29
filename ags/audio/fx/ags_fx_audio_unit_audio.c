@@ -2446,6 +2446,10 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 	    
 	for(k = 0; k < 128; k++){
 	  if(channel_data->input_data[k]->key_on > 0){
+	    AVMIDINoteEvent *av_midi_note_event;
+
+	    GList *note;
+	    
 	    note = channel_data->input_data[k]->note;
 
 	    while(note != NULL){
