@@ -10147,17 +10147,19 @@ ags_channel_real_play_recall(AgsChannel *channel,
   staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
   
   /* play */
-  list = list_start;
+  if(AGS_IS_RECYCLING_CONTEXT(recycling_context)){
+    list = list_start;
   
-  while((list = ags_recall_find_recycling_context(list,
-						  (GObject *) recycling_context)) != NULL){
-    recall = AGS_RECALL(list->data);
+    while((list = ags_recall_find_recycling_context(list,
+						    (GObject *) recycling_context)) != NULL){
+      recall = AGS_RECALL(list->data);
     
-    /* play stages */
-    ags_recall_set_staging_flags(recall,
-				 staging_flags);
+      /* play stages */
+      ags_recall_set_staging_flags(recall,
+				   staging_flags);
 
-    list = list->next;
+      list = list->next;
+    }
   }
   
   g_list_free_full(list_start,
