@@ -2444,14 +2444,10 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 	    }];
 	}
 	    
-	if(channel_data->input_data[pad]->key_on > 0){
-	  AVMIDINoteEvent *av_midi_note_event;
+	for(k = 0; k < 128; k++){
+	  if(channel_data->input_data[k]->key_on > 0){
+	    note = channel_data->input_data[k]->note;
 
-	  GList *note;
-
-	  note = channel_data->input_data[pad]->note;
-
-	  if(note != NULL){	      
 	    while(note != NULL){
 	      guint x0_256th, x1_256th;
 	    
@@ -2460,7 +2456,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 		
 	      double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
 		
-	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:pad velocity:127 duration:note_event_duration];
+	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
 
 	      double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 		

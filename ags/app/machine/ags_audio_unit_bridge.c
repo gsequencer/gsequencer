@@ -1044,10 +1044,12 @@ ags_audio_unit_bridge_load(AgsAudioUnitBridge *audio_unit_bridge)
 
       [window.contentView addSubview:auView];
       
-      [window makeKeyAndOrderFront:window];
+      [window makeKeyAndOrderFront:audio_unit_bridge];
       [window setBackgroundColor:bg];
       [window setTitle:[NSString stringWithUTF8String:window_title]];
 
+      window.delegate = [[AgsAudioUnitPluginWindowController alloc] initWithWindow:window];
+      
       audio_unit_bridge->window = window;
       //      [(AUViewController *) viewController loadView];
       //      [(AUViewController *) viewController viewDidLoad];
