@@ -1983,7 +1983,7 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 					       effect);
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsAudioUnitBridge",
-				19)){
+				18)){
     machine = ags_machine_util_new_audio_unit_bridge(filename,
 						     effect);
   }else if(!g_ascii_strncasecmp(machine_type_name,

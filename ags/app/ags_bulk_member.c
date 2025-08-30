@@ -872,7 +872,9 @@ ags_bulk_member_set_property(GObject *gobject,
 	g_free(bulk_member->filename);
       }
 
-      if(filename != NULL){
+#if 0
+      if(filename != NULL &&
+	 strlen(filename) > 0){
 	if(!g_file_test(filename,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
@@ -892,7 +894,8 @@ ags_bulk_member_set_property(GObject *gobject,
 	  g_free(str);
 	}
       }
-
+#endif
+      
       bulk_member->filename = g_strdup(filename);
     }
     break;
