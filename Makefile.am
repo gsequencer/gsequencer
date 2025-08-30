@@ -66,6 +66,10 @@ midi2xml_CFLAGS = @MIDI2XML_CFLAGS@
 midi2xml_CXXFLAGS = @MIDI2XML_CXXFLAGS@
 midi2xml_LDFLAGS = @MIDI2XML_LDFLAGS@
 
+gsequencer_audio_unit_test_CFLAGS = @GSEQUENCER_AUDIO_UNIT_TEST_CFLAGS@
+gsequencer_audio_unit_test_CXXFLAGS = @GSEQUENCER_AUDIO_UNIT_TEST_CXXFLAGS@
+gsequencer_audio_unit_test_LDFLAGS = @GSEQUENCER_AUDIO_UNIT_TEST_LDFLAGS@
+
 libags_vst3_RELEASE_TYPE = @LIBAGS_VST3_RELEASE_TYPE@
 libags_vst3_CPPFLAGS = @LIBAGS_VST3_CPPFLAGS@
 libags_vst3_CXXFLAGS = @LIBAGS_VST3_CXXFLAGS@
@@ -106,6 +110,10 @@ lib_LTLIBRARIES += libags_audio.la libags_gui.la
 # lib_LTLIBRARIES += libgsequencer.la
 
 bin_PROGRAMS = gsequencer midi2xml
+
+if WITH_AUDIO_UNIT_PLUGINS
+bin_PROGRAMS += gsequencer_audio_unit_test
+endif
 
 HTMLHELP_XSL = @HTMLHELP_XSL@
 FO_XSL = @FO_XSL@
@@ -1061,6 +1069,20 @@ if WITH_OSXAPI
 else
 midi2xml_LDADD += -ldl
 endif
+endif
+
+gsequencer_audio_unit_test_SOURCES = $(gsequencer_audio_unit_test_c_sources)
+
+gsequencer_audio_unit_test_CPPFLAGS = -x objective-c -framework Cocoa
+
+gsequencer_audio_unit_test_CPPFLAGS += $(CPPFLAGS)
+
+gsequencer_audio_unit_test_CFLAGS += $(CFLAGS) $(GOBJECT_CFLAGS)
+gsequencer_audio_unit_test_LDFLAGS += -pthread $(libags_audio_unit_plugins_LDFLAGS) -framework CoreFoundation -framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI $(GOBJECT_LIBS)
+gsequencer_audio_unit_test_LDADD = -lm
+
+if WITH_AUDIO_UNIT_PLUGINS
+gsequencer_audio_unit_test_LDADD += $(libags_audio_unit_plugins_LIBDIR) $(libags_audio_unit_plugins_LIBS)
 endif
 
 # unit and functional tests
@@ -3636,6 +3658,11 @@ if WITH_W32API
 gsequencer_c_sources += \
 	ags/app/ags_gsequencer_resource.c
 endif
+
+# gsequencer all files
+gsequencer_audio_unit_test_c_sources = \
+	ags/gsequencer_audio_unit_test.c
+
 
 ags-integration-unit-test: 
 	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-test

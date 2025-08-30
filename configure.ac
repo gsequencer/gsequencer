@@ -770,6 +770,9 @@ LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live
       <xi:include href=\"xml/ags_audio_unit_bridge.xml\"/>\\
       <xi:include href=\"xml/ags_audio_unit_bridge_callbacks.xml\"/>"
 
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CFLAGS])
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CXXFLAGS])
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_LDFLAGS])
       AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE)
       AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE)
       AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE)

@@ -62,7 +62,22 @@
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
 #include <ags/app/machine/ags_audio_unit_bridge.h>
+
+#include <AppKit/AppKit.h>
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <AVFoundation/AVFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#include <AudioToolbox/AUComponent.h>
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <CoreAudio/CoreAudio.h>
+
+#include <sys/wait.h>
+#include <unistd.h>
 #endif
+
+gboolean ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin);
 
 /**
  * SECTION:ags_machine_util
@@ -1314,6 +1329,84 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
 #endif
 }
 
+gboolean
+ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin)
+{
+  AgsConfig *config;
+  
+  AudioComponentDescription desc;
+  
+  gchar **argv;
+  gchar *output = NULL;
+  gchar *error_output = NULL;
+  
+  gint exit_status = 0;
+  
+  GError *error = NULL;
+  
+  gboolean success;
+  
+  config = ags_config_get_instance();
+
+  AudioComponentGetDescription(audio_unit_plugin->component,
+			       &desc);
+
+  argv = (gchar **) g_malloc(9 * sizeof(gchar *));
+
+  argv[0] = g_strdup_printf("gsequencer_audio_unit_test");
+
+  argv[1] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentType>>24),
+			    (desc.componentType>>16),
+			    (desc.componentType>>8),
+			    desc.componentType);
+  
+  argv[2] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentSubType>>24),
+			    (desc.componentSubType>>16),
+			    (desc.componentSubType>>8),
+			    desc.componentSubType);
+  
+  argv[3] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentManufacturer>>24),
+			    (desc.componentManufacturer>>16),
+			    (desc.componentManufacturer>>8),
+			    desc.componentManufacturer);
+  
+  argv[4] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "pcm-channels");
+  
+  argv[5] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "pcm-channels");
+  
+  argv[6] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "pcm-channels");
+  
+  argv[7] = g_strdup((!g_strcmp0(ags_config_get_value(config,
+						      AGS_CONFIG_THREAD,
+						      "super-threaded-scope"), "channels")) ? "true": "false");
+  
+  argv[8] = NULL;
+  
+  success = g_spawn_sync(NULL,
+			 argv,
+			 NULL,
+			 G_SPAWN_DEFAULT,
+			 NULL,
+			 NULL,
+			 NULL,
+			 NULL,
+			 &exit_status,
+			 &error);
+
+  g_strfreev(argv);
+  
+  return(success);
+}
+
 /**
  * ags_machine_util_new_audio_unit_bridge:
  * @filename: the filename
@@ -1352,6 +1445,10 @@ ags_machine_util_new_audio_unit_bridge(gchar *filename, gchar *effect)
     return(NULL);
   }
 
+  if(!ags_machine_util_audio_unit_bridge_test_plugin(audio_unit_plugin)){
+    return(NULL);
+  }
+  
   audio_unit_bridge = ags_audio_unit_bridge_new(G_OBJECT(default_soundcard),
 						filename,
 						effect);
