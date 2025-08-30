@@ -32,6 +32,8 @@
 #include <ags/app/ags_bulk_member.h>
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/app/machine/ags_audio_unit_plugin_window_controller.h>
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <AVFoundation/AVFoundation.h>
 #include <AudioToolbox/AudioToolbox.h>
@@ -1032,7 +1034,7 @@ ags_audio_unit_bridge_load(AgsAudioUnitBridge *audio_unit_bridge)
       NSSize auSize = ((NSViewController *) viewController).view.frame.size;
       
       NSRect frame = NSMakeRect(0, 0, auSize.width, auSize.height);
-      NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable ; // | NSWindowStyleMaskClosable;
+      NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable;
       NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:windowStyle];
       
       window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];

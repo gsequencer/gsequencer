@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import <AppKit/AppKit.h>
+#include <AppKit/AppKit.h>
 
 @interface AgsAudioUnitPluginWindowController : NSWindowController<NSWindowDelegate>
 @end
