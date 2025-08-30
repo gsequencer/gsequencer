@@ -19,6 +19,8 @@
 
 #include <ags/app/ags_machine_util.h>
 
+#include <ags/ags_api_config.h>
+ 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
@@ -1353,9 +1355,13 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 
   argv = (gchar **) g_malloc(9 * sizeof(gchar *));
 
+#if defined(AGS_OSX_DMG_ENV)
   argv[0] = g_strdup_printf("%s/gsequencer_audio_unit_test",
 			    [[NSBundle mainBundle] bundlePath].UTF8String);
-
+#else
+  argv[0] = g_strdup(getenv("GSEQUENCER_AUDIO_UNIT_TEST_FILENAME"));
+#endif
+  
   argv[1] = g_strdup_printf("%c%c%c%c",
 			    (desc.componentType>>24),
 			    (desc.componentType>>16),
