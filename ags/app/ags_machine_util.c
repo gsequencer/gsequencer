@@ -1353,7 +1353,8 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 
   argv = (gchar **) g_malloc(9 * sizeof(gchar *));
 
-  argv[0] = g_strdup_printf("gsequencer_audio_unit_test");
+  argv[0] = g_strdup_printf("%s/gsequencer_audio_unit_test",
+			    [[NSBundle mainBundle] bundlePath].UTF8String);
 
   argv[1] = g_strdup_printf("%c%c%c%c",
 			    (desc.componentType>>24),
