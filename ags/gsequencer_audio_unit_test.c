@@ -283,6 +283,16 @@ ags_audio_unit_test_plugin(gchar *au_type,
   return(TRUE);
 }
 
+void
+ags_audio_unit_test_print_usage()
+{
+   printf("GSequencerAudioUnitTest is an Audio Unit test utility\n\n");
+
+   printf("Usage:\n\t%s\n\t%s\n\n",
+	  "Report bugs to <jkraehemann@gmail.com>\n",
+	  "type sub_type manufacturer pcm_channels samplerate buffer_size super_threaded_channel");
+}
+
 int
 main(int argc, char **argv)
 {
@@ -296,6 +306,8 @@ main(int argc, char **argv)
   gboolean super_threaded_channel;
   
   if(argc != 8){
+    ags_audio_unit_test_print_usage();
+    
     return(-1);
   }
   
