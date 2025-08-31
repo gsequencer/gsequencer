@@ -1361,6 +1361,11 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 #else
   argv[0] = g_strdup(getenv("GSEQUENCER_AUDIO_UNIT_TEST_FILENAME"));
 #endif
+
+  if(!g_file_test(argv[0],
+		  G_FILE_TEST_EXISTS)){
+    return(TRUE);
+  }
   
   argv[1] = g_strdup_printf("%c%c%c%c",
 			    (desc.componentType>>24),
