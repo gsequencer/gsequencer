@@ -19,6 +19,8 @@
 
 #import "ags_audio_unit_plugin_window_controller.h"
 
+#include <ags/app/machine/ags_audio_unit_bridge.h>
+
 @interface AgsAudioUnitPluginWindowController ()
 @end
 

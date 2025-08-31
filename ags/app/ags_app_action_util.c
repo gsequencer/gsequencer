@@ -139,14 +139,6 @@ void ags_app_action_util_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
 								 AgsLiveVst3Bridge *live_vst3_bridge);
 #endif
 
-#if 0 // defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-void ags_app_action_util_add_audio_unit_bridge_add_audio_callback(AgsTask *task,
-								  AgsAudioUnitBridge *audio_unit_bridge);
-
-void ags_app_action_util_add_live_audio_unit_bridge_add_audio_callback(AgsTask *task,
-								       AgsLiveAudioUnitBridge *live_audio_unit_bridge);
-#endif
-
 void
 ags_app_action_util_open()
 {
@@ -1904,6 +1896,10 @@ ags_app_action_util_add_audio_unit_bridge(gchar *filename, gchar *effect)
   
   /* create audio unit bridge */
   audio_unit_bridge = (AgsAudioUnitBridge *) ags_machine_util_new_audio_unit_bridge(filename, effect);
+
+  if(audio_unit_bridge == NULL){
+    return;
+  }
   
   add_audio = ags_add_audio_new(AGS_MACHINE(audio_unit_bridge)->audio);
 

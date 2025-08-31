@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2025-08-29 11:56+0200\n"
+"POT-Creation-Date: 2025-08-31 09:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -310,7 +310,7 @@ msgstr ""
 msgid "update UI timeout[s]"
 msgstr ""
 
-#: ags/app/ags_bulk_member.c:887 ags/app/machine/ags_dssi_bridge.c:419
+#: ags/app/ags_bulk_member.c:889 ags/app/machine/ags_dssi_bridge.c:419
 #: ags/app/machine/ags_live_dssi_bridge.c:422
 #: ags/app/machine/ags_live_vst3_bridge.c:479
 #: ags/app/machine/ags_vst3_bridge.c:459
@@ -1251,11 +1251,11 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:171
+#: ags/app/ags_app_action_util.c:163
 msgid "open file"
 msgstr ""
 
-#: ags/app/ags_app_action_util.c:683
+#: ags/app/ags_app_action_util.c:675
 msgid "save file as"
 msgstr ""
 

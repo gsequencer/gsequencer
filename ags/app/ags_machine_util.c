@@ -19,6 +19,8 @@
 
 #include <ags/app/ags_machine_util.h>
 
+#include <ags/config.h>
+ 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
@@ -62,6 +64,23 @@
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
 #include <ags/app/machine/ags_audio_unit_bridge.h>
+
+#include <AppKit/AppKit.h>
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <AVFoundation/AVFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#include <AudioToolbox/AUComponent.h>
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <CoreAudio/CoreAudio.h>
+
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+gboolean ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin);
 #endif
 
 /**
@@ -1314,6 +1333,103 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
 #endif
 }
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+gboolean
+ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin)
+{
+  AgsConfig *config;
+  
+  AudioComponentDescription desc;
+  
+  gchar **argv;
+  gchar *gsequencer_audio_unit_test_filename;
+  gchar *output = NULL;
+  gchar *error_output = NULL;
+  
+  gint exit_status = 0;
+  
+  GError *error = NULL;
+  
+  gboolean success;
+  
+  config = ags_config_get_instance();
+
+  AudioComponentGetDescription(audio_unit_plugin->component,
+			       &desc);
+
+  argv = (gchar **) g_malloc(9 * sizeof(gchar *));
+
+  gsequencer_audio_unit_test_filename = getenv("GSEQUENCER_AUDIO_UNIT_TEST_FILENAME");
+
+  if(gsequencer_audio_unit_test_filename == NULL){
+#if defined(AGS_OSX_DMG_ENV)
+    argv[0] = g_strdup_printf("%s/Contents/MacOS/com.gsequencer.GSequencerAudioUnitTest",
+			      [[NSBundle mainBundle] bundlePath].UTF8String);
+#else
+    argv[0] = NULL;
+#endif
+  }else{
+    argv[0] = g_strdup(gsequencer_audio_unit_test_filename);
+  }
+  
+  if(!g_file_test(argv[0],
+		  G_FILE_TEST_EXISTS)){
+    return(TRUE);
+  }
+  
+  argv[1] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentType>>24),
+			    (desc.componentType>>16),
+			    (desc.componentType>>8),
+			    desc.componentType);
+  
+  argv[2] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentSubType>>24),
+			    (desc.componentSubType>>16),
+			    (desc.componentSubType>>8),
+			    desc.componentSubType);
+  
+  argv[3] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentManufacturer>>24),
+			    (desc.componentManufacturer>>16),
+			    (desc.componentManufacturer>>8),
+			    desc.componentManufacturer);
+  
+  argv[4] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "pcm-channels");
+  
+  argv[5] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "pcm-channels");
+  
+  argv[6] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "pcm-channels");
+  
+  argv[7] = g_strdup((!g_strcmp0(ags_config_get_value(config,
+						      AGS_CONFIG_THREAD,
+						      "super-threaded-scope"), "channels")) ? "true": "false");
+  
+  argv[8] = NULL;
+  
+  success = g_spawn_sync(NULL,
+			 argv,
+			 NULL,
+			 G_SPAWN_DEFAULT,
+			 NULL,
+			 NULL,
+			 NULL,
+			 NULL,
+			 &exit_status,
+			 &error);
+
+  g_strfreev(argv);
+  
+  return(success);
+}
+#endif
+
 /**
  * ags_machine_util_new_audio_unit_bridge:
  * @filename: the filename
@@ -1352,6 +1468,10 @@ ags_machine_util_new_audio_unit_bridge(gchar *filename, gchar *effect)
     return(NULL);
   }
 
+  if(!ags_machine_util_audio_unit_bridge_test_plugin(audio_unit_plugin)){
+    return(NULL);
+  }
+  
   audio_unit_bridge = ags_audio_unit_bridge_new(G_OBJECT(default_soundcard),
 						filename,
 						effect);
@@ -1983,7 +2103,7 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 					       effect);
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsAudioUnitBridge",
-				19)){
+				18)){
     machine = ags_machine_util_new_audio_unit_bridge(filename,
 						     effect);
   }else if(!g_ascii_strncasecmp(machine_type_name,

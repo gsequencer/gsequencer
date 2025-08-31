@@ -1,7 +1,12 @@
+ags (8.1.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented GSequencerAudioUnitTest Audio Unit test program
+
 ags (8.1.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implied new config value in order to support Audio Unit
+	* implied config value in order to support Audio Unit
 	* improved Audio Unit UI window
 	* reverted ags-fx-buffer
 	* fixed ags-fx-audio-unit stereo buffer

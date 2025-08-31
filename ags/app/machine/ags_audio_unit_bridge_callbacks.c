@@ -21,12 +21,15 @@
 
 #include <ags/ags_api_config.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_bulk.h>
 #include <ags/app/ags_bulk_member.h>
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/app/machine/ags_audio_unit_plugin_window_controller.h>
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <AVFoundation/AVFoundation.h>
 #include <AudioToolbox/AudioToolbox.h>
@@ -44,8 +47,7 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
 {
   AgsAudioUnitPlugin *audio_unit_plugin;
   
-  if(!AGS_IS_AUDIO_UNIT_BRIDGE(audio_unit_bridge) ||
-     audio_unit_bridge->window == NULL){
+  if(!AGS_IS_AUDIO_UNIT_BRIDGE(audio_unit_bridge)){
     return;
   }
   
@@ -58,17 +60,57 @@ ags_audio_unit_bridge_show_audio_unit_ui_callback(GAction *action, GVariant *par
     return;
   }
 
-#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)  
-  NSWindow *window;
-
-  window = (NSWindow *) audio_unit_bridge->window;
-
-  [window orderFront:audio_unit_bridge];
-
-  [window center];
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  if(audio_unit_bridge->window != NULL){
+    NSWindow *window;
+    
+    window = (NSWindow *) audio_unit_bridge->window;
+    
+    [window orderFront:audio_unit_bridge];
+    
+    [window center];
+  }else{
+     AUAudioUnit *au_audio_unit;
   
-  //      [(AUViewController *) viewController loadView];
-  //      [(AUViewController *) viewController viewDidLoad];
+     au_audio_unit = [(AVAudioNode *) audio_unit_bridge->av_audio_unit AUAudioUnit];
+     
+     [au_audio_unit requestViewControllerWithCompletionHandler:^(AUViewControllerBase *viewController){
+	 NSWindow *window;
+	 
+	 NSView *auView;
+	 
+	 gchar *window_title;
+
+	 NSColor *bg = [NSColor colorWithCalibratedRed:0.3f green:0.3f blue:0.3f alpha:1.0f];
+
+	 NSSize auSize = ((NSViewController *) viewController).view.frame.size;
+      
+	 NSRect frame = NSMakeRect(0, 0, auSize.width, auSize.height);
+	 NSUInteger windowStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskClosable;
+	 NSRect rect = [NSWindow contentRectForFrameRect:frame styleMask:windowStyle];
+      
+	 window = [[NSWindow alloc] initWithContentRect:rect styleMask:windowStyle backing:NSBackingStoreBuffered defer:NO];
+
+	 window_title = g_strdup_printf("Audio Unit: %s",
+					AGS_MACHINE(audio_unit_bridge)->machine_name);
+      
+	 auView = ((NSViewController *) viewController).view;
+	 auView.translatesAutoresizingMaskIntoConstraints = NO;
+
+	 [window.contentView addSubview:auView];
+      
+	 [window makeKeyAndOrderFront:audio_unit_bridge];
+	 [window setBackgroundColor:bg];
+	 [window setTitle:[NSString stringWithUTF8String:window_title]];
+
+	 window.delegate = [[AgsAudioUnitPluginWindowController alloc] initWithWindow:window];
+      
+	 audio_unit_bridge->window = window;
+	
+	 //      [(AUViewController *) viewController loadView];
+	 //      [(AUViewController *) viewController viewDidLoad];
+       }];
+  }
 #endif
 }
 

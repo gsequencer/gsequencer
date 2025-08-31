@@ -326,6 +326,7 @@ ags_audio_unit_manager_find_audio_unit_plugin(AgsAudioUnitManager *audio_unit_ma
     g_rec_mutex_lock(base_plugin_mutex);
 
     success = ((filename == NULL ||
+		strlen(filename) == 0 ||
 		!g_strcmp0(AGS_BASE_PLUGIN(audio_unit_plugin)->filename,
 			   filename)) &&
 		!g_strcmp0(AGS_BASE_PLUGIN(audio_unit_plugin)->effect,

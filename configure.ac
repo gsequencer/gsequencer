@@ -9,9 +9,9 @@
 
 LT_CURRENT=8
 LT_REVISION=1
-LT_AGE=7
+LT_AGE=8
 
-m4_define([ags_version], [8.1.7])
+m4_define([ags_version], [8.1.8])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -770,6 +770,9 @@ LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live
       <xi:include href=\"xml/ags_audio_unit_bridge.xml\"/>\\
       <xi:include href=\"xml/ags_audio_unit_bridge_callbacks.xml\"/>"
 
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CFLAGS])
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CXXFLAGS])
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_LDFLAGS])
       AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE)
       AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE)
       AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE)

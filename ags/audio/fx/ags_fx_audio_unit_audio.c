@@ -1734,7 +1734,7 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   
   fx_audio_unit_audio->audio_engine = (gpointer) audio_engine;
 
-    ns_error = NULL;
+  ns_error = NULL;
   
   [audio_engine enableManualRenderingMode:AVAudioEngineManualRenderingModeOffline
    format:av_format
@@ -1762,7 +1762,9 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   av_input_node = [audio_engine inputNode];
 
   /* mixer node */
-  av_audio_mixer_node = [audio_engine mainMixerNode];
+  //  av_audio_mixer_node = [audio_engine mainMixerNode];
+
+  av_audio_mixer_node = NULL;
   
   /* audio unit */
   [audio_engine attachNode:av_audio_unit];
@@ -1770,9 +1772,11 @@ ags_fx_audio_unit_audio_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio)
   if(!ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
     [audio_engine connect:av_input_node to:av_audio_unit format:av_format];
   }
+
+  //  [audio_engine connect:av_audio_unit to:av_audio_mixer_node format:av_format];
+  //  [audio_engine connect:av_audio_mixer_node to:av_output_node format:av_format];
   
-  [audio_engine connect:av_audio_unit to:av_audio_mixer_node format:av_format];
-  [audio_engine connect:av_audio_mixer_node to:av_output_node format:av_format];
+  [audio_engine connect:av_audio_unit to:av_output_node format:av_format];
   
   /* audio sequencer */
   av_audio_sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:audio_engine];
