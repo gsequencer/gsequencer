@@ -9,13 +9,13 @@ and synthesizers. They usually can be connected to a MIDI input source
 AgsPanel, thus the properties dialog from machine's context menu is
 responsible.
 
-The engine is extensible by following plugin formats: LADSPA, DSSI, LV2 and
-VST3.
+The engine is extensible by following plugin formats: LADSPA, DSSI, LV2,
+VST3 and Audio Unit.
 
-It has support for various audio backends like ALSA, Pulseaudio, JACK, OSSv4
-and CoreAudio.
+It has support for various audio backends like ALSA, Pulseaudio, JACK, OSSv4,
+WASAPI and CoreAudio.
 
-Copyright (C) 2005-2024 Joël Krähemann
+Copyright (C) 2005-2025 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
@@ -64,9 +64,9 @@ allows to share audio data across channels. Further it avoids to wedge the
 parallel tree. There is support for free plugin standards like LADPSA, DSSI
 and Lv2. So it does give support to read or write MIDI data.
 
-libags-gui is a standalone library providing additional Gtk+-2.0 widgets.
+libags-gui is a standalone library providing additional Gtk+-4.0 widgets.
 
-GSequencer is the main application providing a Gtk+-2.0 GUI. Allowing you to
+GSequencer is the main application providing a Gtk+-4.0 GUI. Allowing you to
 edit or record notation. It is designed to be accessible you should be able to
 $control the entire application by keyboard. Likewise it implements various
 Atk interfaces. The frontend to AGS requires to add machines by menubar and
