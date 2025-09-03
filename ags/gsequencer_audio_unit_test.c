@@ -21,6 +21,7 @@
 
 #include <AppKit/AppKit.h>
 
+#include <Foundation/Foundation.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <AVFoundation/AVFoundation.h>
 #include <AudioToolbox/AudioToolbox.h>
@@ -42,7 +43,10 @@ void
 ags_audio_unit_test_plugin_signal_handler(int signr)
 {
   if(signr == SIGINT ||
-     signr == SIGABRT ){
+     signr == SIGABRT ||
+     signr == SIGSEGV ||
+     signr == SIGPIPE ||
+     signr == SIGILL){
     if(audio_unit_test_success){
       exit(0);
     }else{
@@ -50,6 +54,16 @@ ags_audio_unit_test_plugin_signal_handler(int signr)
     }
   }else{
     sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
+  }
+}
+
+void
+ags_audio_unit_test_exception_handler(NSException *e)
+{
+  if(audio_unit_test_success){
+    exit(0);
+  }else{
+    exit(-1);
   }
 }
 
@@ -277,6 +291,10 @@ ags_audio_unit_test_plugin(gchar *au_type,
     }
     break;
   }
+  
+  [av_audio_sequencer stop];
+
+  [audio_engine stop];
 
   audio_unit_test_success = TRUE;
   
@@ -318,8 +336,13 @@ main(int argc, char **argv)
 
   sigaction(SIGINT, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
   sigaction(SIGABRT, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
+  sigaction(SIGSEGV, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
+  sigaction(SIGPIPE, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
+  sigaction(SIGILL, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
 
+  NSSetUncaughtExceptionHandler(&ags_audio_unit_test_exception_handler);
+  
   memcpy(au_type, argv[1], 4 * sizeof(char));
   
   memcpy(au_sub_type, argv[2], 4 * sizeof(char));
