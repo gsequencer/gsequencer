@@ -1401,11 +1401,11 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
   
   argv[5] = ags_config_get_value(config,
 				  AGS_CONFIG_SOUNDCARD_0,
-				 "pcm-channels");
+				 "samplerate");
   
   argv[6] = ags_config_get_value(config,
 				  AGS_CONFIG_SOUNDCARD_0,
-				 "pcm-channels");
+				 "buffer-size");
   
   argv[7] = g_strdup((!g_strcmp0(ags_config_get_value(config,
 						      AGS_CONFIG_THREAD,

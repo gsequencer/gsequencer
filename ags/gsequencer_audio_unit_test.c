@@ -47,10 +47,12 @@ ags_audio_unit_test_plugin_signal_handler(int signr)
      signr == SIGSEGV ||
      signr == SIGPIPE ||
      signr == SIGILL){
+    sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
+    
     if(audio_unit_test_success){
-      exit(0);
+      _Exit(0);
     }else{
-      exit(-1);
+      _Exit(-1);
     }
   }else{
     sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
@@ -61,9 +63,9 @@ void
 ags_audio_unit_test_exception_handler(NSException *e)
 {
   if(audio_unit_test_success){
-    exit(0);
+    _Exit(0);
   }else{
-    exit(-1);
+    _Exit(-1);
   }
 }
 
@@ -363,7 +365,7 @@ main(int argc, char **argv)
 
   super_threaded_channel = (!g_strcmp0(argv[7], "false") == FALSE) ? TRUE: FALSE;
 
-  g_message("test %s %s %s", argv[1], argv[2], argv[3]);
+  g_message("test %s %s %s with channels %d and samplerate %d", argv[1], argv[2], argv[3], pcm_channels, samplerate);
   
   if(!ags_audio_unit_test_plugin(au_type, au_sub_type, au_manufacturer, pcm_channels, samplerate, buffer_size, super_threaded_channel)){
     return(-1);
