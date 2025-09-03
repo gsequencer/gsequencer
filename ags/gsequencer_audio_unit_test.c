@@ -50,9 +50,9 @@ ags_audio_unit_test_plugin_signal_handler(int signr)
     sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
     
     if(audio_unit_test_success){
-      _Exit(0);
+      exit(0);
     }else{
-      _Exit(-1);
+      exit(-1);
     }
   }else{
     sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
@@ -105,200 +105,207 @@ ags_audio_unit_test_plugin(gchar *au_type,
 
   pid_t p;
 
-  bpm = 120.0;
+  @try {
+    bpm = 120.0;
     
-  memset(&desc, 0, sizeof(desc));
+    memset(&desc, 0, sizeof(desc));
 
-  desc.componentType = au_type[3] | (au_type[2]<<8) | (au_type[1]<<16) | (au_type[0]<<24);
+    desc.componentType = au_type[3] | (au_type[2]<<8) | (au_type[1]<<16) | (au_type[0]<<24);
   
-  desc.componentSubType = au_sub_type[3] | (au_sub_type[2]<<8) | (au_sub_type[1]<<16) | (au_sub_type[0]<<24);
+    desc.componentSubType = au_sub_type[3] | (au_sub_type[2]<<8) | (au_sub_type[1]<<16) | (au_sub_type[0]<<24);
 
-  desc.componentManufacturer = au_manufacturer[3] | (au_manufacturer[2]<<8) | (au_manufacturer[1]<<16) | (au_manufacturer[0]<<24);
+    desc.componentManufacturer = au_manufacturer[3] | (au_manufacturer[2]<<8) | (au_manufacturer[1]<<16) | (au_manufacturer[0]<<24);
 
-  comp = AudioComponentFindNext(NULL,
-				&desc);
+    comp = AudioComponentFindNext(NULL,
+				  &desc);
 
-  if(comp == NULL){
-    return(FALSE);
-  }
+    if(comp == NULL){
+      return(FALSE);
+    }
   
-  AudioComponentGetDescription(comp,
-			       &desc);
+    AudioComponentGetDescription(comp,
+				 &desc);
   
-  is_instrument = (desc.componentType == kAudioUnitType_MusicDevice) ? TRUE: FALSE;
+    is_instrument = (desc.componentType == kAudioUnitType_MusicDevice) ? TRUE: FALSE;
   
-  /* plugin channels */
-  plugin_channels = pcm_channels;
+    /* plugin channels */
+    plugin_channels = pcm_channels;
   
-  if(!super_threaded_channel){
-    plugin_channels = 1;
-  }else{
-    switch(pcm_channels){
-    case 1:
-      {
-      }
-      break;
-    case 2:
-      {
-      }
-      break;
-    case 3:
-      {
-      }
-      break;
-    case 6:
-      {
-      }
-      break;
-    case 8:
-      {
-      }
-      break;
-    default:
-      {
-	plugin_channels = 1;
+    if(!super_threaded_channel){
+      plugin_channels = 1;
+    }else{
+      switch(pcm_channels){
+      case 1:
+	{
+	}
+	break;
+      case 2:
+	{
+	}
+	break;
+      case 3:
+	{
+	}
+	break;
+      case 6:
+	{
+	}
+	break;
+      case 8:
+	{
+	}
+	break;
+      default:
+	{
+	  plugin_channels = 1;
+	}
       }
     }
-  }
   
-  /* audio unit */
-  stream_description = (AudioStreamBasicDescription) {0,};
+    /* audio unit */
+    stream_description = (AudioStreamBasicDescription) {0,};
 
-  stream_description.mFormatID = kAudioFormatLinearPCM;
-  stream_description.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved | kLinearPCMFormatFlagIsPacked | kAudioFormatFlagsNativeEndian;
-  stream_description.mSampleRate = (double) samplerate;
-  stream_description.mBitsPerChannel = 8 * sizeof(gfloat);
-  stream_description.mFramesPerPacket = 1;
-  stream_description.mChannelsPerFrame = plugin_channels;
-  stream_description.mBytesPerFrame = sizeof(gfloat);
-  stream_description.mBytesPerPacket = sizeof(gfloat);
+    stream_description.mFormatID = kAudioFormatLinearPCM;
+    stream_description.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved | kLinearPCMFormatFlagIsPacked | kAudioFormatFlagsNativeEndian;
+    stream_description.mSampleRate = (double) samplerate;
+    stream_description.mBitsPerChannel = 8 * sizeof(gfloat);
+    stream_description.mFramesPerPacket = 1;
+    stream_description.mChannelsPerFrame = plugin_channels;
+    stream_description.mBytesPerFrame = sizeof(gfloat);
+    stream_description.mBytesPerPacket = sizeof(gfloat);
 
-  av_format = [[AVAudioFormat alloc] initWithStreamDescription:&stream_description];
+    av_format = [[AVAudioFormat alloc] initWithStreamDescription:&stream_description];
 
-  /* audio engine */
-  audio_engine = [[AVAudioEngine alloc] init];
+    /* audio engine */
+    audio_engine = [[AVAudioEngine alloc] init];
   
-  ns_error = NULL;
+    ns_error = NULL;
   
-  [audio_engine enableManualRenderingMode:AVAudioEngineManualRenderingModeOffline
-   format:av_format
-   maximumFrameCount:BUFFER_SIZE
-   error:&ns_error];
+    [audio_engine enableManualRenderingMode:AVAudioEngineManualRenderingModeOffline
+     format:av_format
+     maximumFrameCount:BUFFER_SIZE
+     error:&ns_error];
 
-  if(ns_error != NULL &&
-     [ns_error code] != noErr){
-    g_warning("enable manual rendering mode error - %d", [ns_error code]);
-  }
+    if(ns_error != NULL &&
+       [ns_error code] != noErr){
+      g_warning("enable manual rendering mode error - %d", [ns_error code]);
+    }
 
-  /* av audio unit */
-  if(!is_instrument){
-    av_audio_unit_effect = [[AVAudioUnitEffect alloc] initWithAudioComponentDescription:desc];
+    /* av audio unit */
+    if(!is_instrument){
+      av_audio_unit_effect = [[AVAudioUnitEffect alloc] initWithAudioComponentDescription:desc];
 
-    av_audio_unit = (AVAudioUnit *) av_audio_unit_effect;
-  }else{
-    av_audio_unit_midi_instrument = [[AVAudioUnitMIDIInstrument alloc] initWithAudioComponentDescription:desc];
+      av_audio_unit = (AVAudioUnit *) av_audio_unit_effect;
+    }else{
+      av_audio_unit_midi_instrument = [[AVAudioUnitMIDIInstrument alloc] initWithAudioComponentDescription:desc];
 
-    av_audio_unit = (AVAudioUnit *) av_audio_unit_midi_instrument;
-  }
+      av_audio_unit = (AVAudioUnit *) av_audio_unit_midi_instrument;
+    }
 
-  /* output node */
-  av_output_node = [audio_engine outputNode];
+    /* output node */
+    av_output_node = [audio_engine outputNode];
 
-  /* input node */
-  av_input_node = [audio_engine inputNode];
+    /* input node */
+    av_input_node = [audio_engine inputNode];
 
-  /* audio unit */
-  [audio_engine attachNode:av_audio_unit];
+    /* audio unit */
+    [audio_engine attachNode:av_audio_unit];
 
-  if(!is_instrument){
-    [audio_engine connect:av_input_node to:av_audio_unit format:av_format];
-  }
+    if(!is_instrument){
+      [audio_engine connect:av_input_node to:av_audio_unit format:av_format];
+    }
 
-  [audio_engine connect:av_audio_unit to:av_output_node format:av_format];
+    [audio_engine connect:av_audio_unit to:av_output_node format:av_format];
   
-  /* audio sequencer */
-  av_audio_sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:audio_engine];
+    /* audio sequencer */
+    av_audio_sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:audio_engine];
   
-  /* sequencer */
-  av_audio_sequencer.currentPositionInBeats = 0.0; // a 16th
+    /* sequencer */
+    av_audio_sequencer.currentPositionInBeats = 0.0; // a 16th
 
-  //FIXME:JK: available since macOS 13.0
-  av_music_track = [av_audio_sequencer createAndAppendTrack];
+    //FIXME:JK: available since macOS 13.0
+    av_music_track = [av_audio_sequencer createAndAppendTrack];
 
-  av_music_track.destinationAudioUnit = av_audio_unit;
+    av_music_track.destinationAudioUnit = av_audio_unit;
   
-  av_music_track.offsetTime = 0.0; // 0
+    av_music_track.offsetTime = 0.0; // 0
 
-  av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+    av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
 
-  av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+    av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
   
-  av_music_track.usesAutomatedParameters = NO;
+    av_music_track.usesAutomatedParameters = NO;
   
-  av_music_track.muted = NO;
+    av_music_track.muted = NO;
 
-  [audio_engine prepare];
-  [audio_engine startAndReturnError:&ns_error];
+    [audio_engine prepare];
+    [audio_engine startAndReturnError:&ns_error];
 
-  if(ns_error != NULL &&
-     [ns_error code] != noErr){
-    g_warning("error during audio engine start - %d", [ns_error code]);
-  }
+    if(ns_error != NULL &&
+       [ns_error code] != noErr){
+      g_warning("error during audio engine start - %d", [ns_error code]);
+    }
   
-  [av_audio_sequencer prepareToPlay];
+    [av_audio_sequencer prepareToPlay];
 
-  ns_error = NULL;
+    ns_error = NULL;
   
-  [av_audio_sequencer startAndReturnError:&ns_error];
+    [av_audio_sequencer startAndReturnError:&ns_error];
 
-  if(ns_error != NULL &&
-     [ns_error code] != noErr){
-    g_warning("error during audio sequencer start - %d", [ns_error code]);
-  }
+    if(ns_error != NULL &&
+       [ns_error code] != noErr){
+      g_warning("error during audio sequencer start - %d", [ns_error code]);
+    }
   
-  /* output */
-  av_output = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
-	       frameCapacity:(plugin_channels * BUFFER_SIZE)];
+    /* output */
+    av_output = [[AVAudioPCMBuffer alloc] initWithPCMFormat:av_format
+		 frameCapacity:(plugin_channels * BUFFER_SIZE)];
 
-  /* render */
-  ns_error = NULL;
+    /* render */
+    ns_error = NULL;
 	  
-  status = [audio_engine renderOffline:BUFFER_SIZE toBuffer:av_output error:&ns_error];
+    status = [audio_engine renderOffline:BUFFER_SIZE toBuffer:av_output error:&ns_error];
     
-  if(ns_error != NULL &&
-     [ns_error code] != noErr){
-    g_warning("render offline error - %d", [ns_error code]);
-  }
+    if(ns_error != NULL &&
+       [ns_error code] != noErr){
+      g_warning("render offline error - %d", [ns_error code]);
+    }
   
-  switch(status){
-  case AVAudioEngineManualRenderingStatusSuccess:
-    {
-      //NOTE:JK: this is fine
-      //	    g_message("OK");
+    switch(status){
+    case AVAudioEngineManualRenderingStatusSuccess:
+      {
+	//NOTE:JK: this is fine
+	//	    g_message("OK");
+      }
+      break;
+    case AVAudioEngineManualRenderingStatusInsufficientDataFromInputNode:
+      {
+	g_message("insufficient data from input");
+      }
+      break;
+    case AVAudioEngineManualRenderingStatusCannotDoInCurrentContext:
+      {
+	g_message("cannot do in current context");
+      }
+      break;
+    case AVAudioEngineManualRenderingStatusError:
+      {
+	g_message("error");
+      }
+      break;
     }
-    break;
-  case AVAudioEngineManualRenderingStatusInsufficientDataFromInputNode:
-    {
-      g_message("insufficient data from input");
-    }
-    break;
-  case AVAudioEngineManualRenderingStatusCannotDoInCurrentContext:
-    {
-      g_message("cannot do in current context");
-    }
-    break;
-  case AVAudioEngineManualRenderingStatusError:
-    {
-      g_message("error");
-    }
-    break;
-  }
   
-  [av_audio_sequencer stop];
+    [av_audio_sequencer stop];
 
-  [audio_engine stop];
+    [audio_engine stop];
 
-  audio_unit_test_success = TRUE;
+    audio_unit_test_success = TRUE;
+  }
+  @catch (NSException *exception) {
+    g_critical("exception occured - %s", [exception.reason UTF8String]);
+    
+    exit(-1);
+  }
   
   return(TRUE);
 }
