@@ -75,6 +75,7 @@
 #include <AudioUnit/AUComponent.h>
 #include <CoreAudio/CoreAudio.h>
 
+#include <spawn.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #endif
@@ -1345,10 +1346,22 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
   gchar *gsequencer_audio_unit_test_filename;
   gchar *output = NULL;
   gchar *error_output = NULL;
+
+  gchar *const envp[] = {NULL};
+ 
+  pid_t child_pid;
+  pid_t new_pgid;
+
+  posix_spawnattr_t attr;
   
+  short flags;
+  int status;
+  
+#if 0  
   gint exit_status = 0;
   
   GError *error = NULL;
+#endif
   
   gboolean success;
   
@@ -1412,7 +1425,8 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 						      "super-threaded-scope"), "channels")) ? "true": "false");
   
   argv[8] = NULL;
-  
+
+#if 0  
   success = g_spawn_sync(NULL,
 			 argv,
 			 NULL,
@@ -1423,7 +1437,35 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 			 NULL,
 			 &exit_status,
 			 &error);
+#endif
 
+  posix_spawnattr_init(&attr);
+
+  new_pgid = 0;
+  
+  flags =  = POSIX_SPAWN_SETPGROUP;
+  
+  posix_spawnattr_setflags(&attr,
+			   flags);
+
+  posix_spawnattr_setpgroup(&attr,
+			    new_pgid);
+  
+  posix_spawn(&child_pid,
+	      argv[0],
+	      NULL,
+	      &attr,
+	      argv,
+	      envp);
+
+  waitpid(child_pid,
+	  &status,
+	  0);
+
+  success = (status == 0) ? TRUE: FALSE;
+  
+  posix_spawnattr_destroy(&attr);
+  
   g_strfreev(argv);
   
   return(success);

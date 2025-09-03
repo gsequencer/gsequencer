@@ -46,7 +46,8 @@ ags_audio_unit_test_plugin_signal_handler(int signr)
      signr == SIGABRT ||
      signr == SIGSEGV ||
      signr == SIGPIPE ||
-     signr == SIGILL){
+     signr == SIGILL ||
+     signr == SIGKILL){
     sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
     
     if(audio_unit_test_success){
@@ -347,14 +348,14 @@ ags_audio_unit_test_plugin(gchar *au_type,
     [av_audio_sequencer stop];
 
     [audio_engine stop];
-
-    audio_unit_test_success = TRUE;
   }
   @catch (NSException *exception) {
     g_critical("exception occured - %s", [exception.reason UTF8String]);
     
     _Exit(-1);
   }
+
+  audio_unit_test_success = TRUE;
   
   return(TRUE);
 }
@@ -397,6 +398,7 @@ main(int argc, char **argv)
   sigaction(SIGSEGV, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
   sigaction(SIGPIPE, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
   sigaction(SIGILL, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
+  sigaction(SIGKILL, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
   sigaction(SA_RESTART, &ags_audio_unit_test_sigact, (struct sigaction *) NULL);
 
   NSSetUncaughtExceptionHandler(&ags_audio_unit_test_exception_handler);
