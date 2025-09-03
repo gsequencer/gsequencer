@@ -1,3 +1,8 @@
+ags (8.1.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test use posix_spawn()
+
 ags (8.1.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

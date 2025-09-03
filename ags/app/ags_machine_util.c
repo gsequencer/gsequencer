@@ -1443,7 +1443,7 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 
   new_pgid = 0;
   
-  flags =  = POSIX_SPAWN_SETPGROUP;
+  flags = POSIX_SPAWN_SETPGROUP;
   
   posix_spawnattr_setflags(&attr,
 			   flags);
