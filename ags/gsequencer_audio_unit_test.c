@@ -100,6 +100,7 @@ ags_audio_unit_test_plugin(gchar *au_type,
   guint plugin_channels;
   gint status;
   gboolean is_instrument;
+  gboolean input_success;
   
   NSError *ns_error;
 
@@ -237,13 +238,13 @@ ags_audio_unit_test_plugin(gchar *au_type,
 		
 	  audio_buffer_list->mNumberBuffers = pcm_channels;
 	
-	  for(j = 0; j < pcm_channels; j++){
-	    audio_buffer_list->mBuffers[j].mData = (float *) malloc(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	  for(i = 0; i < pcm_channels; i++){
+	    audio_buffer_list->mBuffers[i].mData = (float *) malloc(BUFFER_SIZE * sizeof(float));
 	    
-	    memset(audio_buffer_list->mBuffers[j].mData, 0, AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	    memset(audio_buffer_list->mBuffers[i].mData, 0, BUFFER_SIZE * sizeof(float));
 
-	    audio_buffer_list->mBuffers[j].mDataByteSize = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float);
-	    audio_buffer_list->mBuffers[j].mNumberChannels = 1;
+	    audio_buffer_list->mBuffers[i].mDataByteSize = BUFFER_SIZE * sizeof(float);
+	    audio_buffer_list->mBuffers[i].mNumberChannels = 1;
 	  }
 	  
 	  audio_channels = [av_format channelCount];
