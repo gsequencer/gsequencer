@@ -9,9 +9,9 @@
 
 LT_CURRENT=8
 LT_REVISION=1
-LT_AGE=13
+LT_AGE=14
 
-m4_define([ags_version], [8.1.13])
+m4_define([ags_version], [8.1.14])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -459,7 +459,7 @@ AS_IF([test "x$enable_core_audio" != xno],
       [AC_DEFINE([AGS_WITH_CORE_AUDIO], [1], [core-audio enabled])
 
       CORE_AUDIO_CFLAGS= 
-      CORE_AUDIO_LIBS=""-framework Foundation -framework CoreFoundation -framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
+      CORE_AUDIO_LIBS="-framework Foundation -framework CoreFoundation -framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
       AC_SUBST(CORE_AUDIO_CFLAGS)
       AC_SUBST(CORE_AUDIO_LIBS)
 

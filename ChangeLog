@@ -1,3 +1,8 @@
+ags (8.1.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test handle additional signals
+
 ags (8.1.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
