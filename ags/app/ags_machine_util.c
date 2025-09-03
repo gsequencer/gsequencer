@@ -1351,7 +1351,8 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
  
   pid_t child_pid;
   pid_t new_pgid;
-
+  pid_t child_pid_retval;
+  
   posix_spawnattr_t attr;
   
   short flags;
@@ -1458,11 +1459,20 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 	      argv,
 	      envp);
 
-  waitpid(child_pid,
-	  &status,
-	  0);
+  success = TRUE;
 
-  success = (status == 0) ? TRUE: FALSE;
+  child_pid_retval = waitpid(child_pid,
+			     &status,
+			     0);
+  
+  if(child_pid_retval != -1 &&
+     WIFEXITED(status)){
+    int es;
+
+    es = WEXITSTATUS(status);
+
+    success = (es == 0) ? TRUE: FALSE;
+  }
   
   posix_spawnattr_destroy(&attr);
   
