@@ -19,7 +19,7 @@
 
 #include <ags/app/ags_machine_util.h>
 
-#include <ags/ags_api_config.h>
+#include <ags/config.h>
  
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
@@ -79,7 +79,9 @@
 #include <unistd.h>
 #endif
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
 gboolean ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin);
+#endif
 
 /**
  * SECTION:ags_machine_util
@@ -1331,6 +1333,7 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
 #endif
 }
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
 gboolean
 ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin)
 {
@@ -1339,6 +1342,7 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
   AudioComponentDescription desc;
   
   gchar **argv;
+  gchar *gsequencer_audio_unit_test_filename;
   gchar *output = NULL;
   gchar *error_output = NULL;
   
@@ -1355,13 +1359,19 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 
   argv = (gchar **) g_malloc(9 * sizeof(gchar *));
 
-#if defined(AGS_OSX_DMG_ENV)
-  argv[0] = g_strdup_printf("%s/com.gsequencer.gsequencer_audio_unit_test",
-			    [[NSBundle mainBundle] bundlePath].UTF8String);
-#else
-  argv[0] = g_strdup(getenv("GSEQUENCER_AUDIO_UNIT_TEST_FILENAME"));
-#endif
+  gsequencer_audio_unit_test_filename = getenv("GSEQUENCER_AUDIO_UNIT_TEST_FILENAME");
 
+  if(gsequencer_audio_unit_test_filename == NULL){
+#if defined(AGS_OSX_DMG_ENV)
+    argv[0] = g_strdup_printf("%s/Contents/MacOS/com.gsequencer.GSequencer.AudioUnitTest",
+			      [[NSBundle mainBundle] bundlePath].UTF8String);
+#else
+    argv[0] = NULL;
+#endif
+  }else{
+    argv[0] = g_strdup(gsequencer_audio_unit_test_filename);
+  }
+  
   if(!g_file_test(argv[0],
 		  G_FILE_TEST_EXISTS)){
     return(TRUE);
@@ -1418,6 +1428,7 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
   
   return(success);
 }
+#endif
 
 /**
  * ags_machine_util_new_audio_unit_bridge:
