@@ -1363,7 +1363,7 @@ ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_pl
 
   if(gsequencer_audio_unit_test_filename == NULL){
 #if defined(AGS_OSX_DMG_ENV)
-    argv[0] = g_strdup_printf("%s/Contents/MacOS/com.gsequencer.GSequencerAudioUnitTest",
+    argv[0] = g_strdup_printf("%s/Contents/MacOS/com.gsequencer.GSequencer.AudioUnitTest",
 			      [[NSBundle mainBundle] bundlePath].UTF8String);
 #else
     argv[0] = NULL;

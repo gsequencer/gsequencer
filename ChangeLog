@@ -1,3 +1,33 @@
+ags (8.1.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test handle additional signals
+
+ags (8.1.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* new micro release for macOS
+
+ags (8.1.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* new micro release for macOS
+
+ags (8.1.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed AudioUnitTest to com.gsequencer.GSequencer.AudioUnitTest
+
+ags (8.1.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed com.gsequencer.AudioUnitTest to AudioUnitTest
+
+ags (8.1.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed com.gsequencer.GSequencerAudioUnitTest to com.gsequencer.AudioUnitTest
+
 ags (8.1.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
