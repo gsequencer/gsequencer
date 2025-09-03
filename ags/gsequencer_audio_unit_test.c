@@ -50,9 +50,9 @@ ags_audio_unit_test_plugin_signal_handler(int signr)
     sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
     
     if(audio_unit_test_success){
-      exit(0);
+      _Exit(0);
     }else{
-      exit(-1);
+      _Exit(-1);
     }
   }else{
     sigemptyset(&(ags_audio_unit_test_sigact.sa_mask));
@@ -127,7 +127,14 @@ ags_audio_unit_test_plugin(gchar *au_type,
 				 &desc);
   
     is_instrument = (desc.componentType == kAudioUnitType_MusicDevice) ? TRUE: FALSE;
-  
+
+    if(desc.componentType != kAudioUnitType_MusicDevice &&
+       desc.componentType != kAudioUnitType_Effect &&
+       desc.componentType != kAudioUnitType_MusicEffect &&
+       desc.componentType != kAudioUnitType_Panner){
+      return(FALSE);
+    }
+    
     /* plugin channels */
     plugin_channels = pcm_channels;
   
@@ -216,7 +223,49 @@ ags_audio_unit_test_plugin(gchar *au_type,
     }
 
     [audio_engine connect:av_audio_unit to:av_output_node format:av_format];
-  
+
+    /*  */
+    if(!is_instrument){
+      input_success = [av_input_node setManualRenderingInputPCMFormat:av_format
+		       inputBlock:^(AVAudioFrameCount inNumberOfFrames){
+	  AudioBufferList *audio_buffer_list;
+
+	  guint audio_channels;
+	  guint i;
+
+	  audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + (pcm_channels * sizeof(AudioBuffer)));
+		
+	  audio_buffer_list->mNumberBuffers = pcm_channels;
+	
+	  for(j = 0; j < pcm_channels; j++){
+	    audio_buffer_list->mBuffers[j].mData = (float *) malloc(AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+	    
+	    memset(audio_buffer_list->mBuffers[j].mData, 0, AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float));
+
+	    audio_buffer_list->mBuffers[j].mDataByteSize = AGS_FX_AUDIO_UNIT_AUDIO_FIXED_BUFFER_SIZE * sizeof(float);
+	    audio_buffer_list->mBuffers[j].mNumberChannels = 1;
+	  }
+	  
+	  audio_channels = [av_format channelCount];
+
+	  audio_buffer_list = NULL;
+				
+	  /* fill av input buffer */
+	  for(i = 0; i < audio_channels; i++){
+	    if(BUFFER_SIZE <= inNumberOfFrames){
+	      memset(audio_buffer_list->mBuffers[i].mData, 0, BUFFER_SIZE * sizeof(gfloat));
+	    }else{
+	      memset(audio_buffer_list->mBuffers[i].mData, 0, inNumberOfFrames * sizeof(gfloat));
+	    }
+	  }
+      
+	  return((const AudioBufferList *) audio_buffer_list);
+	}];
+
+      if(input_success != YES){
+	g_warning("set manual rendering input failed");
+      }
+    }
     /* audio sequencer */
     av_audio_sequencer = [[AVAudioSequencer alloc] initWithAudioEngine:audio_engine];
   
@@ -304,7 +353,7 @@ ags_audio_unit_test_plugin(gchar *au_type,
   @catch (NSException *exception) {
     g_critical("exception occured - %s", [exception.reason UTF8String]);
     
-    exit(-1);
+    _Exit(-1);
   }
   
   return(TRUE);
