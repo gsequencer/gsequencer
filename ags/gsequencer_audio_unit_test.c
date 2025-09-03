@@ -101,6 +101,7 @@ ags_audio_unit_test_plugin(gchar *au_type,
   guint plugin_channels;
   gint status;
   gboolean is_instrument;
+  gboolean input_success;
   
   NSError *ns_error;
 
