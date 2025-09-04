@@ -1,3 +1,48 @@
+ags (8.1.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted implied config value super threaded scope channel on macOS
+
+ags (8.1.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test dereference NULL pointer
+
+ags (8.1.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test waitpid() return value and exit status
+
+ags (8.1.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test
+
+ags (8.1.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test
+
+ags (8.1.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test use posix_spawn()
+
+ags (8.1.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test use posix_spawn()
+
+ags (8.1.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test
+
+ags (8.1.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test
+
 ags (8.1.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
