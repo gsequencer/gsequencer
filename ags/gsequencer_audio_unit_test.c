@@ -234,12 +234,14 @@ ags_audio_unit_test_plugin(gchar *au_type,
 
 	  guint audio_channels;
 	  guint i;
+	  
+	  audio_channels = [av_format channelCount];
 
-	  audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + (pcm_channels * sizeof(AudioBuffer)));
+	  audio_buffer_list = (AudioBufferList *) malloc(sizeof(AudioBufferList) + (audio_channels * sizeof(AudioBuffer)));
 		
-	  audio_buffer_list->mNumberBuffers = pcm_channels;
+	  audio_buffer_list->mNumberBuffers = audio_channels;
 	
-	  for(i = 0; i < pcm_channels; i++){
+	  for(i = 0; i < audio_channels; i++){
 	    audio_buffer_list->mBuffers[i].mData = (float *) malloc(BUFFER_SIZE * sizeof(float));
 	    
 	    memset(audio_buffer_list->mBuffers[i].mData, 0, BUFFER_SIZE * sizeof(float));
@@ -247,11 +249,7 @@ ags_audio_unit_test_plugin(gchar *au_type,
 	    audio_buffer_list->mBuffers[i].mDataByteSize = BUFFER_SIZE * sizeof(float);
 	    audio_buffer_list->mBuffers[i].mNumberChannels = 1;
 	  }
-	  
-	  audio_channels = [av_format channelCount];
 
-	  audio_buffer_list = NULL;
-				
 	  /* fill av input buffer */
 	  for(i = 0; i < audio_channels; i++){
 	    if(BUFFER_SIZE <= inNumberOfFrames){
