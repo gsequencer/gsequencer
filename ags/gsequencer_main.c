@@ -799,7 +799,7 @@ main(int argc, char **argv)
       ags_config_load_from_file(config,
 				config_filename);
 
-#if defined(AGS_OSX_DMG_ENV)
+#if 0 // defined(AGS_OSX_DMG_ENV)
       ags_config_set_value(config,
 			   AGS_CONFIG_THREAD,
 			   "model",

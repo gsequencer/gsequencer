@@ -165,7 +165,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_append(GTK_BOX(performance_preferences),
 		 GTK_WIDGET(performance_preferences->super_threaded_audio));
 
-#if defined(AGS_OSX_DMG_ENV)
+#if 0 // defined(AGS_OSX_DMG_ENV)
   gtk_check_button_set_active(performance_preferences->super_threaded_audio,
 			      TRUE);
 
@@ -178,7 +178,7 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
   gtk_box_append(GTK_BOX(performance_preferences),
 		 GTK_WIDGET(performance_preferences->super_threaded_channel));
 
-#if defined(AGS_OSX_DMG_ENV)
+#if 0 // defined(AGS_OSX_DMG_ENV)
   gtk_check_button_set_active(performance_preferences->super_threaded_channel,
 			      TRUE);
 
