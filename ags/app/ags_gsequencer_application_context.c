@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -85,6 +85,9 @@
 #if defined(AGS_OSX_DMG_ENV)
 #include <Cocoa/Cocoa.h>
 #include <Foundation/Foundation.h>
+
+#import <CoreFoundation/CoreFoundation.h>
+#import <AVFoundation/AVFoundation.h>
 #endif
 
 #include <sys/types.h>
@@ -712,11 +715,13 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
   gsequencer_application_context->dssi_loading = FALSE;
   gsequencer_application_context->lv2_loading = FALSE;
   gsequencer_application_context->vst3_loading = FALSE;
+  gsequencer_application_context->audio_unit_loading = FALSE;
   
   gsequencer_application_context->ladspa_loader = NULL;
   gsequencer_application_context->dssi_loader = NULL;
   gsequencer_application_context->lv2_loader = NULL;
   gsequencer_application_context->vst3_loader = NULL;
+  gsequencer_application_context->audio_unit_loader = NULL;
 
   gsequencer_application_context->lv2_turtle_scanner = NULL;
 
@@ -728,6 +733,22 @@ ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequen
 
   gsequencer_application_context->visible_window = NULL;
 
+#if 0 // defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AVAudioSession *audio_session = [AVAudioSession sharedInstance];
+
+  NSError *ns_error = NULL;
+  
+  [audio_session setCategory:AVAudioSessionCategoryPlayback mode:AVAudioSessionModeDefault policy:AVAudioSessionRouteSharingPolicyDefault options:AVAudioSessionCategoryOptionMixWithOthers error:&ns_error];
+
+  if(ns_error != NULL &&
+     [ns_error code] != noErr){
+    g_warning("audio session set category error code: %d", [ns_error code]);
+  }
+
+  [audio_session renderingMode:AVAudioSessionRenderingModeNotApplicable];
+#endif
+  
+  /* poll */
   g_timeout_add(AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL,
 		(GSourceFunc) ags_gsequencer_application_context_loader_timeout,
 		gsequencer_application_context);
@@ -3435,6 +3456,9 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 #if defined(AGS_WITH_VST3)
   AgsVst3Manager *vst3_manager;
 #endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsAudioUnitManager *audio_unit_manager;
+#endif
   
   AgsLv2uiManager *lv2ui_manager;
   AgsLv2WorkerManager *lv2_worker_manager;
@@ -3728,7 +3752,19 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   ags_vst3_manager_load_blacklist(vst3_manager,
 				  blacklist_filename);
 #endif
-    
+
+  /* load audio unit manager */
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  audio_unit_manager = ags_audio_unit_manager_get_instance();
+
+  blacklist_filename = g_strdup_printf("%s%c%s",
+				       blacklist_path,
+				       G_DIR_SEPARATOR,
+				       "audio_unit_plugin.blacklist");
+  ags_audio_unit_manager_load_blacklist(audio_unit_manager,
+					blacklist_filename);
+#endif
+  
   gsequencer_application_context->start_loader = TRUE;
   
   /* sound server */
@@ -4056,101 +4092,103 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 
     g_free(backend);
 
-    gsequencer_application_context->soundcard = g_list_append(gsequencer_application_context->soundcard,
-							      soundcard);
-    g_object_ref(soundcard);
+    if(soundcard != NULL){
+      gsequencer_application_context->soundcard = g_list_append(gsequencer_application_context->soundcard,
+								soundcard);
+      g_object_ref(soundcard);
 
-    /* device */
-    if(device != NULL){
-      ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			       device);
+      /* device */
+      if(device != NULL){
+	ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+				 device);
       
-      g_free(device);
-    }
-
-    /* presets */
-    ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
-			      pcm_channels,
-			      samplerate,
-			      buffer_size,
-			      format);
-
-    /* cache */
-    use_cache = TRUE;
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "use-cache");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "false",
-			    5)){
-      use_cache = FALSE;
-    }
-
-    cache_buffer_size = 4096;
-    str = ags_config_get_value(config,
-			       soundcard_group,
-			       "cache-buffer-size");
-
-    if(str != NULL){
-      cache_buffer_size = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-    }
-
-    if(AGS_IS_PULSE_DEVOUT(soundcard)){
-      GList *start_port, *port;
-
-      g_object_get(soundcard,
-		   "pulse-port", &start_port,
-		   NULL);
-
-      port = start_port;
-
-      while(port != NULL){
-	ags_pulse_port_set_samplerate(port->data,
-				      samplerate);
-	ags_pulse_port_set_pcm_channels(port->data,
-					pcm_channels);
-	ags_pulse_port_set_buffer_size(port->data,
-				       buffer_size);
-	ags_pulse_port_set_format(port->data,
-				  format);
-	ags_pulse_port_set_cache_buffer_size(port->data,
-					     buffer_size * ceil(cache_buffer_size / buffer_size));
-	
-	port = port->next;
+	g_free(device);
       }
 
-      g_list_free_full(start_port,
-		       g_object_unref);
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-      GList *start_port, *port;
+      /* presets */
+      ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
+				pcm_channels,
+				samplerate,
+				buffer_size,
+				format);
 
-      g_object_get(soundcard,
-		   "core-audio-port", &start_port,
-		   NULL);
+      /* cache */
+      use_cache = TRUE;
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "use-cache");
 
-      port = start_port;
-
-      while(port != NULL){
-	ags_core_audio_port_set_samplerate(port->data,
-					   samplerate);
-	ags_core_audio_port_set_pcm_channels(port->data,
-					     pcm_channels);
-	ags_core_audio_port_set_buffer_size(port->data,
-					    buffer_size);
-	ags_core_audio_port_set_format(port->data,
-				       format);
-	ags_core_audio_port_set_cache_buffer_size(port->data,
-						  buffer_size * ceil(cache_buffer_size / buffer_size));
-	
-	port = port->next;
+      if(str != NULL &&
+	 !g_ascii_strncasecmp(str,
+			      "false",
+			      5)){
+	use_cache = FALSE;
       }
 
-      g_list_free_full(start_port,
-		       g_object_unref);
+      cache_buffer_size = 4096;
+      str = ags_config_get_value(config,
+				 soundcard_group,
+				 "cache-buffer-size");
+
+      if(str != NULL){
+	cache_buffer_size = g_ascii_strtoull(str,
+					     NULL,
+					     10);
+      }
+
+      if(AGS_IS_PULSE_DEVOUT(soundcard)){
+	GList *start_port, *port;
+
+	g_object_get(soundcard,
+		     "pulse-port", &start_port,
+		     NULL);
+
+	port = start_port;
+
+	while(port != NULL){
+	  ags_pulse_port_set_samplerate(port->data,
+					samplerate);
+	  ags_pulse_port_set_pcm_channels(port->data,
+					  pcm_channels);
+	  ags_pulse_port_set_buffer_size(port->data,
+					 buffer_size);
+	  ags_pulse_port_set_format(port->data,
+				    format);
+	  ags_pulse_port_set_cache_buffer_size(port->data,
+					       buffer_size * ceil(cache_buffer_size / buffer_size));
+	
+	  port = port->next;
+	}
+
+	g_list_free_full(start_port,
+			 g_object_unref);
+      }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+	GList *start_port, *port;
+
+	g_object_get(soundcard,
+		     "core-audio-port", &start_port,
+		     NULL);
+
+	port = start_port;
+
+	while(port != NULL){
+	  ags_core_audio_port_set_samplerate(port->data,
+					     samplerate);
+	  ags_core_audio_port_set_pcm_channels(port->data,
+					       pcm_channels);
+	  ags_core_audio_port_set_buffer_size(port->data,
+					      buffer_size);
+	  ags_core_audio_port_set_format(port->data,
+					 format);
+	  ags_core_audio_port_set_cache_buffer_size(port->data,
+						    buffer_size * ceil(cache_buffer_size / buffer_size));
+	
+	  port = port->next;
+	}
+
+	g_list_free_full(start_port,
+			 g_object_unref);
+      }
     }
     
     g_free(soundcard_group);    
@@ -4257,22 +4295,24 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
           
       continue;
     }
-    
-    gsequencer_application_context->sequencer = g_list_append(gsequencer_application_context->sequencer,
-							      sequencer);
-    g_object_ref(sequencer);
 
-    /* device */
-    str = ags_config_get_value(config,
-			       sequencer_group,
-			       "device");
+    if(sequencer != NULL){
+      gsequencer_application_context->sequencer = g_list_append(gsequencer_application_context->sequencer,
+								sequencer);
+      g_object_ref(sequencer);
+
+      /* device */
+      str = ags_config_get_value(config,
+				 sequencer_group,
+				 "device");
     
-    if(str != NULL){
-      ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
-			       str);
-      g_free(str);
+      if(str != NULL){
+	ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+				 str);
+	g_free(str);
+      }
     }
-
+    
     g_free(sequencer_group);    
     sequencer_group = g_strdup_printf("%s-%d",
 				      AGS_CONFIG_SEQUENCER,
@@ -4826,6 +4866,9 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
 #if defined(AGS_WITH_VST3)
   AgsVst3Manager *vst3_manager;
 #endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsAudioUnitManager *audio_unit_manager;
+#endif
 
   AgsCoreAudioServer *core_audio_server;
 
@@ -4872,6 +4915,11 @@ ags_gsequencer_application_context_quit(AgsApplicationContext *application_conte
   }
   
   g_object_unref(vst3_manager);
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  audio_unit_manager = ags_audio_unit_manager_get_instance();  
+  g_object_unref(audio_unit_manager);
 #endif
   
   /* retrieve core audio server */
@@ -5176,6 +5224,9 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
 #if defined(AGS_WITH_VST3)
   AgsVst3Manager *vst3_manager;
 #endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsAudioUnitManager *audio_unit_manager;
+#endif
   
   AgsLog *log;
 
@@ -5194,6 +5245,8 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
   gint64 current_time;
   gboolean initial_load;
 
+  guint i, i_stop;  
+
   GError *error;
 
   if(!gsequencer_application_context->start_loader){
@@ -5206,7 +5259,8 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
      gsequencer_application_context->ladspa_loader == NULL &&
      gsequencer_application_context->dssi_loader == NULL &&
      gsequencer_application_context->lv2_loader == NULL &&
-     gsequencer_application_context->vst3_loader == NULL){
+     gsequencer_application_context->vst3_loader == NULL &&
+     gsequencer_application_context->audio_unit_loader == NULL){
     ags_log_add_message(log,
 			"* Launch user interface");
 
@@ -5245,6 +5299,10 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
   
 #if defined(AGS_WITH_VST3)
   vst3_manager = ags_vst3_manager_get_instance();
+#endif
+  
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  audio_unit_manager = ags_audio_unit_manager_get_instance();
 #endif
   
   ladspa_path = ags_ladspa_manager_get_default_path();
@@ -5468,6 +5526,32 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
     }
 
     gsequencer_application_context->vst3_loader = g_list_reverse(gsequencer_application_context->vst3_loader);
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+    AudioComponent theComponent;
+    AudioComponentDescription theDescription;
+    
+    memset(&theDescription, 0, sizeof(theDescription));
+ 
+    //	Use the flag to indicate that we want to find Sandbox Safe AudioComponents
+    theDescription.componentFlags = kAudioComponentFlag_SandboxSafe;
+    theDescription.componentFlagsMask = kAudioComponentFlag_SandboxSafe;
+ 
+    //	get the first AudioComponent
+    theComponent = AudioComponentFindNext(NULL,
+					  &theDescription);
+
+    while(theComponent != NULL){
+      gsequencer_application_context->audio_unit_loader = g_list_prepend(gsequencer_application_context->audio_unit_loader,
+									 theComponent);
+    
+      //	get the next one in the list
+      theComponent = AudioComponentFindNext(theComponent,
+					    &theDescription);
+    }
+    
+    gsequencer_application_context->audio_unit_loader = g_list_reverse(gsequencer_application_context->audio_unit_loader);
 #endif
     
     gsequencer_application_context->loader_ready = TRUE;
@@ -5889,6 +5973,53 @@ ags_gsequencer_application_context_loader_timeout(AgsGSequencerApplicationContex
   }
 #endif
 
+  /* load audio_unit */
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  current_time = g_get_monotonic_time();
+  
+  if(current_time < start_time + AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL &&
+     !gsequencer_application_context->audio_unit_loading){
+    ags_log_add_message(log,
+			"* Loading Audio Unit plugins");
+
+    gsequencer_application_context->audio_unit_loading = TRUE;
+  }
+  
+  while(gsequencer_application_context->audio_unit_loader != NULL){
+    AudioComponent theComponent;
+    
+    struct __CFString *compName;
+    
+    gchar *loader_effect;
+    
+    current_time = g_get_monotonic_time();
+    
+    if(!initial_load &&
+       current_time > start_time + AGS_GSEQUENCER_APPLICATION_CONTEXT_DEFAULT_LOADER_INTERVAL){
+      break;
+    }
+
+    theComponent = gsequencer_application_context->audio_unit_loader->data;
+
+    AudioComponentCopyName(theComponent,
+			   &compName);
+
+    loader_effect = [(__bridge NSString *) compName UTF8String];
+    
+    if(g_list_find_custom(audio_unit_manager->audio_unit_plugin_blacklist,
+			  loader_effect,
+			  (GCompareFunc) g_strcmp0) == NULL){
+      ags_audio_unit_manager_load_component(audio_unit_manager,
+					    theComponent);
+    }
+
+    gsequencer_application_context->audio_unit_loader = g_list_remove(gsequencer_application_context->audio_unit_loader,
+								      theComponent);
+    
+    initial_load = FALSE;
+  }
+#endif
+  
   return(TRUE);
 }
 

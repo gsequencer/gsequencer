@@ -1272,7 +1272,10 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
     }
 
     recycling = first_recycling;
-    g_object_ref(recycling);
+
+    if(recycling != NULL){
+      g_object_ref(recycling);
+    }
     
 //    g_message(" - audio processor");
 
@@ -1320,7 +1323,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 				     audio_signal);
       
 #if 0 // AGS_DEBUG
-      g_message("ags-fx-notation [key-on] 0x%x", audio_signal);
+      g_message("ags-fx-notation [key-on] audio signal: 0x%x", audio_signal);
 #endif
 
 #if 0

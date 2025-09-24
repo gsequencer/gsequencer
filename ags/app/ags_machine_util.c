@@ -19,6 +19,8 @@
 
 #include <ags/app/ags_machine_util.h>
 
+#include <ags/config.h>
+ 
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 
@@ -58,6 +60,28 @@
 #if defined(AGS_WITH_VST3)
 #include <ags/app/machine/ags_vst3_bridge.h>
 #include <ags/app/machine/ags_live_vst3_bridge.h>
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/app/machine/ags_audio_unit_bridge.h>
+
+#include <AppKit/AppKit.h>
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <AVFoundation/AVFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#include <AudioToolbox/AUComponent.h>
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <CoreAudio/CoreAudio.h>
+
+#include <spawn.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+gboolean ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin);
 #endif
 
 /**
@@ -1310,6 +1334,261 @@ ags_machine_util_new_vst3_bridge(gchar *filename, gchar *effect)
 #endif
 }
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+gboolean
+ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin)
+{
+  AgsConfig *config;
+  
+  AudioComponentDescription desc;
+  
+  gchar **argv;
+  gchar *gsequencer_audio_unit_test_filename;
+  gchar *output = NULL;
+  gchar *error_output = NULL;
+
+  gchar *const envp[] = {NULL};
+ 
+  pid_t child_pid;
+  pid_t new_pgid;
+  pid_t child_pid_retval;
+  
+  posix_spawnattr_t attr;
+  
+  short flags;
+  int status;
+  
+#if 0  
+  gint exit_status = 0;
+  
+  GError *error = NULL;
+#endif
+  
+  gboolean success;
+  
+  config = ags_config_get_instance();
+
+  AudioComponentGetDescription(audio_unit_plugin->component,
+			       &desc);
+
+  argv = (gchar **) g_malloc(9 * sizeof(gchar *));
+
+  gsequencer_audio_unit_test_filename = getenv("GSEQUENCER_AUDIO_UNIT_TEST_FILENAME");
+
+  if(gsequencer_audio_unit_test_filename == NULL){
+#if defined(AGS_OSX_DMG_ENV)
+    argv[0] = g_strdup_printf("%s/Contents/MacOS/com.gsequencer.GSequencer.AudioUnitTest",
+			      [[NSBundle mainBundle] bundlePath].UTF8String);
+#else
+    argv[0] = NULL;
+#endif
+  }else{
+    argv[0] = g_strdup(gsequencer_audio_unit_test_filename);
+  }
+  
+  if(!g_file_test(argv[0],
+		  G_FILE_TEST_EXISTS)){
+    return(TRUE);
+  }
+  
+  argv[1] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentType>>24),
+			    (desc.componentType>>16),
+			    (desc.componentType>>8),
+			    desc.componentType);
+  
+  argv[2] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentSubType>>24),
+			    (desc.componentSubType>>16),
+			    (desc.componentSubType>>8),
+			    desc.componentSubType);
+  
+  argv[3] = g_strdup_printf("%c%c%c%c",
+			    (desc.componentManufacturer>>24),
+			    (desc.componentManufacturer>>16),
+			    (desc.componentManufacturer>>8),
+			    desc.componentManufacturer);
+  
+  argv[4] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "pcm-channels");
+  
+  argv[5] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "samplerate");
+  
+  argv[6] = ags_config_get_value(config,
+				  AGS_CONFIG_SOUNDCARD_0,
+				 "buffer-size");
+  
+  argv[7] = g_strdup((!g_strcmp0(ags_config_get_value(config,
+						      AGS_CONFIG_THREAD,
+						      "super-threaded-scope"), "channels")) ? "true": "false");
+  
+  argv[8] = NULL;
+
+#if 0  
+  success = g_spawn_sync(NULL,
+			 argv,
+			 NULL,
+			 G_SPAWN_DEFAULT,
+			 NULL,
+			 NULL,
+			 NULL,
+			 NULL,
+			 &exit_status,
+			 &error);
+#endif
+
+  posix_spawnattr_init(&attr);
+
+  new_pgid = 0;
+  
+  flags = POSIX_SPAWN_SETPGROUP;
+  
+  posix_spawnattr_setflags(&attr,
+			   flags);
+
+  posix_spawnattr_setpgroup(&attr,
+			    new_pgid);
+  
+  posix_spawn(&child_pid,
+	      argv[0],
+	      NULL,
+	      &attr,
+	      argv,
+	      envp);
+
+  success = TRUE;
+
+  child_pid_retval = waitpid(child_pid,
+			     &status,
+			     0);
+  
+  if(child_pid_retval != -1 &&
+     WIFEXITED(status)){
+    int es;
+
+    es = WEXITSTATUS(status);
+
+    success = (es == 0) ? TRUE: FALSE;
+  }
+  
+  posix_spawnattr_destroy(&attr);
+  
+  g_strfreev(argv);
+  
+  return(success);
+}
+#endif
+
+/**
+ * ags_machine_util_new_audio_unit_bridge:
+ * @filename: the filename
+ * @effect: the effect
+ * 
+ * Create #AgsAudioUnitBridge.
+ * 
+ * returns: the newly instantiated #AgsAudioUnitBridge
+ * 
+ * Since: 8.1.2
+ */
+GtkWidget*
+ags_machine_util_new_audio_unit_bridge(gchar *filename, gchar *effect)
+{
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  AgsWindow *window;
+  AgsAudioUnitBridge *audio_unit_bridge;
+
+  AgsApplicationContext *application_context;
+
+  AgsAudioUnitPlugin *audio_unit_plugin;
+
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create audio unit bridge */
+  audio_unit_plugin = ags_audio_unit_manager_find_audio_unit_plugin(ags_audio_unit_manager_get_instance(),
+								    filename, effect);
+
+  if(audio_unit_plugin == NULL){
+    return(NULL);
+  }
+
+  if(!ags_machine_util_audio_unit_bridge_test_plugin(audio_unit_plugin)){
+    return(NULL);
+  }
+  
+  audio_unit_bridge = ags_audio_unit_bridge_new(G_OBJECT(default_soundcard),
+						filename,
+						effect);
+
+  audio_unit_bridge->audio_unit_plugin = audio_unit_plugin;
+  
+  ags_window_add_machine(window,
+			 AGS_MACHINE(audio_unit_bridge));
+
+  if(ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+    ags_audio_set_flags(AGS_MACHINE(audio_unit_bridge)->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+								AGS_AUDIO_INPUT_HAS_RECYCLING |
+								AGS_AUDIO_SYNC |
+								AGS_AUDIO_ASYNC));
+    ags_audio_set_ability_flags(AGS_MACHINE(audio_unit_bridge)->audio, (AGS_SOUND_ABILITY_NOTATION));
+    ags_audio_set_behaviour_flags(AGS_MACHINE(audio_unit_bridge)->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT |
+									  AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
+    
+    g_object_set(AGS_MACHINE(audio_unit_bridge)->audio,
+		 "max-input-pads", 128,
+		 "audio-start-mapping", 0,
+		 "audio-end-mapping", 128,
+		 "midi-start-mapping", 0,
+		 "midi-end-mapping", 128,
+		 NULL);
+    
+    AGS_MACHINE(audio_unit_bridge)->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
+					      AGS_MACHINE_REVERSE_NOTATION);
+  }
+    
+  /*  */
+  ags_audio_set_audio_channels(AGS_MACHINE(audio_unit_bridge)->audio,
+			       2, 0);
+
+  if(audio_unit_plugin != NULL){
+    if(!ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT)){
+      ags_audio_set_pads(AGS_MACHINE(audio_unit_bridge)->audio,
+			 AGS_TYPE_INPUT,
+			 1, 0);
+    }else{
+      ags_audio_set_pads(AGS_MACHINE(audio_unit_bridge)->audio,
+			 AGS_TYPE_INPUT,
+			 128, 0);
+    }
+  }
+
+  ags_audio_set_pads(AGS_MACHINE(audio_unit_bridge)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  /* connect everything */
+  ags_connectable_connect(AGS_CONNECTABLE(audio_unit_bridge));
+
+  /*  */
+  ags_audio_unit_bridge_load(audio_unit_bridge);
+
+  /* */
+  gtk_widget_show(GTK_WIDGET(audio_unit_bridge));
+
+  return((GtkWidget *) audio_unit_bridge);
+#else
+  return(NULL);
+#endif
+}
+
 /**
  * ags_machine_util_new_lv2_bridge:
  * @filename: the filename
@@ -1874,6 +2153,11 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				14)){
     machine = ags_machine_util_new_vst3_bridge(filename,
 					       effect);
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsAudioUnitBridge",
+				18)){
+    machine = ags_machine_util_new_audio_unit_bridge(filename,
+						     effect);
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsLiveDssiBridge",
 				18)){

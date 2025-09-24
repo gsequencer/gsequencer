@@ -87,6 +87,10 @@
 #include <ags/app/machine/ags_live_vst3_bridge.h>
 #endif
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/app/machine/ags_audio_unit_bridge.h>
+#endif
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -143,6 +147,10 @@ void ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValu
 void ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window);
 void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 					AgsWindow *window);
+
+void ags_simple_file_read_automation_port_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation_port);
+void ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, AgsMachineAutomationPort **automation_port);
+
 void ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine);
 void ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine);
 void ags_simple_file_read_machine_resize_audio_channels(AgsMachine *machine,
@@ -179,6 +187,9 @@ void ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xm
 
 void ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge);
 void ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge);
+#endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+void ags_simple_file_read_audio_unit_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudioUnitBridge *audio_unit_bridge);
 #endif
 void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
 void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
@@ -2127,6 +2138,79 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 }
 
 void
+ags_simple_file_read_automation_port_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation_port)
+{
+  AgsMachineAutomationPort *current;
+  
+  xmlNode *child;
+
+  GList *list;
+
+  guint i;
+  
+  child = node->children;
+  list = NULL;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-automation-port",
+		     23)){
+	current = NULL;
+	
+	ags_simple_file_read_automation_port(simple_file, child, &current);
+
+	if(current != NULL){
+	  list = g_list_prepend(list, current);
+	}
+	
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  list = g_list_reverse(list);
+  *automation_port = list;
+}
+
+void
+ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, AgsMachineAutomationPort **automation_port)
+{
+  AgsMachineAutomationPort *current;
+
+  GType channel_type;
+  
+  xmlChar *control_name;
+  xmlChar *str;
+  
+  channel_type = G_TYPE_NONE;
+  control_name = NULL;
+
+  str = xmlGetProp(node,
+		   BAD_CAST "scope");
+
+  if(!strncmp(str, "output", 7)){
+    channel_type = AGS_TYPE_OUTPUT;
+  }else if(!strncmp(str, "input", 6)){
+    channel_type = AGS_TYPE_INPUT;
+  }
+  
+  xmlFree(str);
+
+  control_name = xmlGetProp(node,
+			    BAD_CAST "specifier");
+  
+  current = ags_machine_automation_port_alloc(channel_type, control_name);
+  automation_port[0] = current;
+
+  xmlFree(control_name);
+}
+
+void
 ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine)
 {
   AgsMachine *current;
@@ -2643,6 +2727,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 #if defined(AGS_WITH_VST3)
 	AgsVst3Manager *vst3_manager;
 #endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+	AgsAudioUnitManager *audio_unit_manager;
+#endif
 	
 	xmlNode *effect_list_child;
 
@@ -2653,6 +2741,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	gboolean is_ladspa, is_lv2;
 #if defined(AGS_WITH_VST3)
 	gboolean is_vst3;
+#endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+	gboolean is_audio_unit;
 #endif
 	gboolean is_output;
 	guint pads;
@@ -2666,7 +2757,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	   || AGS_IS_VST3_BRIDGE(gobject)
 	   || AGS_IS_LIVE_VST3_BRIDGE(gobject)
 #endif
-
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+	   || AGS_IS_AUDIO_UNIT_BRIDGE(gobject)
+#endif
 	   ){
 	  child = child->next;
 	  
@@ -2716,8 +2809,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	
 	ladspa_manager = ags_ladspa_manager_get_instance();
 	lv2_manager = ags_lv2_manager_get_instance();
+
 #if defined(AGS_WITH_VST3)
 	vst3_manager = ags_vst3_manager_get_instance();
+#endif
+	
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+	audio_unit_manager = ags_audio_unit_manager_get_instance();
 #endif
 	
 	is_ladspa = (ags_ladspa_manager_find_ladspa_plugin(ladspa_manager, filename, effect) != NULL) ? TRUE: FALSE;
@@ -2727,6 +2825,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	is_vst3 = (ags_vst3_manager_find_vst3_plugin(vst3_manager, filename, effect) != NULL) ? TRUE: FALSE;
 #endif
 	
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+	is_audio_unit = (ags_audio_unit_manager_find_audio_unit_plugin(audio_unit_manager, filename, effect) != NULL) ? TRUE: FALSE;
+#endif
+	
 	if(is_ladspa){
 	  plugin_name = "ags-fx-ladspa";
 	}else if(is_lv2){
@@ -2734,6 +2836,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 #if defined(AGS_WITH_VST3)
 	}else if(is_vst3){
 	  plugin_name = "ags-fx-vst3";
+#endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+	}else if(is_audio_unit){
+	  plugin_name = "ags-fx-audio-unit";
 #endif
 	}
 	
@@ -3170,8 +3276,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     (xmlChar *) "ags-sf-automation-list",
-		     23)){
+		     (xmlChar *) "ags-sf-automation-port-list",
+		     28)){
+	ags_simple_file_read_automation_port_list(simple_file, child, &(gobject->enabled_automation_port));
+      }else if(!xmlStrncmp(child->name,
+			   (xmlChar *) "ags-sf-automation-list",
+			   23)){
 	AgsTimestamp *timestamp;
 	
 	GType channel_type;
@@ -12409,6 +12519,14 @@ ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode
 }
 #endif
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+void
+ags_simple_file_read_audio_unit_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudioUnitBridge *audio_unit_bridge)
+{
+  //nothing
+}
+#endif
+
 void
 ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge)
 {
@@ -12964,6 +13082,10 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_vst3_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsVst3Bridge *) machine);
   }else if(AGS_IS_LIVE_VST3_BRIDGE(machine)){
     ags_simple_file_read_live_vst3_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveVst3Bridge *) machine);
+#endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  }else if(AGS_IS_AUDIO_UNIT_BRIDGE(machine)){
+    ags_simple_file_read_audio_unit_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsAudioUnitBridge *) machine);
 #endif
   }
   
@@ -15567,7 +15689,7 @@ ags_simple_file_read_composite_editor(AgsSimpleFile *simple_file, xmlNode *node,
   }else{
     return;
   }
-
+  
   /* launch AgsLine */
   file_launch = (AgsFileLaunch *) g_object_new(AGS_TYPE_FILE_LAUNCH,
 					       "file", simple_file,
@@ -17931,7 +18053,8 @@ ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *paren
 
       scope = NULL;
 
-      if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
+      if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE ||
+	 AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_AUDIO){
 	scope = "audio";
       }else if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == AGS_TYPE_OUTPUT){
 	scope = "output";
@@ -23323,6 +23446,20 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     xmlNewProp(node,
 	       "effect",
 	       live_vst3_bridge->effect);
+#endif
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+  }else if(AGS_IS_AUDIO_UNIT_BRIDGE(machine)){
+    AgsAudioUnitBridge *audio_unit_bridge;
+
+    audio_unit_bridge = (AgsAudioUnitBridge *) machine;
+
+    xmlNewProp(node,
+	       "plugin-file",
+	       audio_unit_bridge->filename);
+
+    xmlNewProp(node,
+	       "effect",
+	       audio_unit_bridge->effect);
 #endif
   }
   

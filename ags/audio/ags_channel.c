@@ -9373,12 +9373,14 @@ void
 ags_channel_real_duplicate_recall(AgsChannel *channel,
 				  AgsRecallID *recall_id)
 {
+  AgsAudio *audio;
+  AgsChannel *output;
   AgsRecall *recall, *copy_recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
   GList *list_start, *list;
 
-  guint sound_scope;
+  gint sound_scope;
   AgsSoundStagingFlags current_staging_flags;
   gboolean play_context;
   
@@ -9408,6 +9410,10 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     return;
   }
 
+  audio = (AgsAudio *) ags_channel_get_audio(channel);
+
+  output = NULL;
+  
   recycling_context = NULL;
 
   g_object_get(recall_id,
@@ -9582,6 +9588,14 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
   g_list_free_full(list_start,
 		   g_object_unref);
 
+  if(audio != NULL){
+    g_object_unref(audio);
+  }
+  
+  if(output != NULL){
+    g_object_unref(output);
+  }
+  
   if(parent_recycling_context != NULL){
     g_object_unref(parent_recycling_context);
   }
@@ -9778,7 +9792,7 @@ ags_channel_real_init_recall(AgsChannel *channel,
   
   GList *list_start, *list;
 
-  guint sound_scope;
+  gint sound_scope;
   AgsSoundStagingFlags current_staging_flags;
   static const guint staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
 				     AGS_SOUND_STAGING_RUN_INIT_PRE |
@@ -9980,6 +9994,9 @@ ags_channel_real_play_recall(AgsChannel *channel,
 				     AGS_SOUND_STAGING_RUN_POST |
 				     AGS_SOUND_STAGING_DO_FEEDBACK |
 				     AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
+				     AGS_SOUND_STAGING_DONE |
+				     AGS_SOUND_STAGING_CANCEL |
+				     AGS_SOUND_STAGING_REMOVE |
 				     AGS_SOUND_STAGING_FINI);
 
   GRecMutex *channel_mutex;
@@ -10130,17 +10147,19 @@ ags_channel_real_play_recall(AgsChannel *channel,
   staging_flags = staging_flags & (~AGS_SOUND_STAGING_MIDI2_CONTROL_CHANGE);
   
   /* play */
-  list = list_start;
+  if(AGS_IS_RECYCLING_CONTEXT(recycling_context)){
+    list = list_start;
   
-  while((list = ags_recall_find_recycling_context(list,
-						  (GObject *) recycling_context)) != NULL){
-    recall = AGS_RECALL(list->data);
+    while((list = ags_recall_find_recycling_context(list,
+						    (GObject *) recycling_context)) != NULL){
+      recall = AGS_RECALL(list->data);
     
-    /* play stages */
-    ags_recall_set_staging_flags(recall,
-				 staging_flags);
+      /* play stages */
+      ags_recall_set_staging_flags(recall,
+				   staging_flags);
 
-    list = list->next;
+      list = list->next;
+    }
   }
   
   g_list_free_full(list_start,
@@ -10722,11 +10741,14 @@ ags_channel_real_start(AgsChannel *channel,
   AgsMessageDelivery *message_delivery;
 
   AgsApplicationContext *application_context;  
+  AgsConfig *config;
 
   GList *start_message_queue;
   GList *start_recall_id;
   GList *start_tree_list, *current_tree_list;
 
+  gchar *thread_model, *super_threaded_scope;
+  
   gint i;
   guint success_counter, current_success_counter;
   gboolean super_threaded_channel;  
@@ -10761,11 +10783,41 @@ ags_channel_real_start(AgsChannel *channel,
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
+  /* config */
+  config = ags_config_get_instance();
+
   /* add channel to AgsAudioLoop */
   ags_audio_loop_add_channel(AGS_AUDIO_LOOP(audio_loop),
 			     (GObject *) channel);
   
   ags_audio_loop_set_flags((AgsAudioLoop *) audio_loop, AGS_AUDIO_LOOP_PLAY_CHANNEL);
+
+  /* thread model */
+  super_threaded_channel = FALSE;
+  
+  thread_model = ags_config_get_value(config,
+				      AGS_CONFIG_THREAD,
+				      "model");
+  super_threaded_scope = NULL;
+  
+  if(thread_model != NULL &&
+     !g_ascii_strncasecmp(thread_model,
+			  "super-threaded",
+			  15)){
+    super_threaded_scope = ags_config_get_value(config,
+						AGS_CONFIG_THREAD,
+						"super-threaded-scope");
+    if(super_threaded_scope != NULL &&
+       (!g_ascii_strncasecmp(super_threaded_scope,
+			     "channel",
+			     8))){
+      super_threaded_channel = TRUE;
+    }
+  }
+
+  g_free(thread_model);
+  
+  g_free(super_threaded_scope);
 
   /* get playback domain */
   g_object_get(audio,
@@ -10782,12 +10834,6 @@ ags_channel_real_start(AgsChannel *channel,
   start_recall_id = NULL;
 
   success_counter = 0;
-
-  super_threaded_channel = FALSE;
-
-  if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
-    super_threaded_channel = TRUE;
-  }
 
   if(sound_scope >= 0){
     current_recall_id = ags_playback_get_recall_id(playback,
@@ -11119,11 +11165,9 @@ ags_channel_real_stop(AgsChannel *channel,
 	       NULL);
 
   if(sound_scope >= 0){
-    /* stop thread */
-    ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioLoop *) audio_loop)->audio_tree_dispatcher,
-						     (GObject *) channel,
-						     sound_scope);
-    
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, AGS_SOUND_STAGING_DONE);
+
     /* cancel */
     ags_channel_recursive_run_stage(channel,
 				    sound_scope, staging_flags);
@@ -11135,7 +11179,25 @@ ags_channel_real_stop(AgsChannel *channel,
     ags_playback_set_recall_id(playback,
 			       NULL,
 			       sound_scope);
+    
+    /* stop thread */
+    ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioLoop *) audio_loop)->audio_tree_dispatcher,
+						     (GObject *) channel,
+						     sound_scope);
   }else{
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      ags_channel_recursive_run_stage(channel,
+				      sound_scope, AGS_SOUND_STAGING_DONE);
+
+      /* cancel */
+      ags_channel_recursive_run_stage(channel,
+				      i, staging_flags);
+
+      /* clean - fini */
+      ags_channel_recursive_run_stage(channel,
+				      i, AGS_SOUND_STAGING_FINI);
+    }
+    
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       /* stop thread */
       ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioLoop *) audio_loop)->audio_tree_dispatcher,
@@ -11144,14 +11206,6 @@ ags_channel_real_stop(AgsChannel *channel,
     }
         
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      /* cancel */
-      ags_channel_recursive_run_stage(channel,
-				      i, staging_flags);
-
-      /* clean - fini */
-      ags_channel_recursive_run_stage(channel,
-				      i, AGS_SOUND_STAGING_FINI);
-
       ags_playback_set_recall_id(playback,
 				 NULL,
 				 i);
@@ -14634,7 +14688,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	g_object_unref(start_output);
       }
     }else{
-      while(!ags_channel_test_staging_completed(channel, sound_scope));
+      while(!ags_channel_test_staging_completed(channel, sound_scope)){
+	g_thread_yield();
+      }
 
       ags_channel_recursive_do_run_stage_up(channel,
 					    recycling_context,

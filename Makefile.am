@@ -66,12 +66,22 @@ midi2xml_CFLAGS = @MIDI2XML_CFLAGS@
 midi2xml_CXXFLAGS = @MIDI2XML_CXXFLAGS@
 midi2xml_LDFLAGS = @MIDI2XML_LDFLAGS@
 
+gsequencer_audio_unit_test_CFLAGS = @GSEQUENCER_AUDIO_UNIT_TEST_CFLAGS@
+gsequencer_audio_unit_test_CXXFLAGS = @GSEQUENCER_AUDIO_UNIT_TEST_CXXFLAGS@
+gsequencer_audio_unit_test_LDFLAGS = @GSEQUENCER_AUDIO_UNIT_TEST_LDFLAGS@
+
 libags_vst3_RELEASE_TYPE = @LIBAGS_VST3_RELEASE_TYPE@
 libags_vst3_CPPFLAGS = @LIBAGS_VST3_CPPFLAGS@
 libags_vst3_CXXFLAGS = @LIBAGS_VST3_CXXFLAGS@
 libags_vst3_LDFLAGS = @LIBAGS_VST3_LDFLAGS@
 libags_vst3_LIBDIR = @LIBAGS_VST3_LIBDIR@
 libags_vst3_LIBS = @LIBAGS_VST3_LIBS@
+
+libags_audio_unit_plugins_CPPFLAGS = @LIBAGS_AUDIO_UNIT_PLUGINS_CPPFLAGS@
+libags_audio_unit_plugins_OBJCFLAGS = @LIBAGS_AUDIO_UNIT_PLUGINS_OBJCFLAGS@
+libags_audio_unit_plugins_LDFLAGS = @LIBAGS_AUDIO_UNIT_PLUGINS_LDFLAGS@
+libags_audio_unit_plugins_LIBDIR = @LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR@
+libags_audio_unit_plugins_LIBS = @LIBAGS_AUDIO_UNIT_PLUGINS_LIBS@
 
 if WITH_W32API
 LDFLAGS += -no-undefined -L$(top_builddir)/lib -lgnu -L/usr/lib -luuid -Wl,-subsystem,windows
@@ -100,6 +110,10 @@ lib_LTLIBRARIES += libags_audio.la libags_gui.la
 # lib_LTLIBRARIES += libgsequencer.la
 
 bin_PROGRAMS = gsequencer midi2xml
+
+if WITH_AUDIO_UNIT_PLUGINS
+bin_PROGRAMS += gsequencer_audio_unit_test
+endif
 
 HTMLHELP_XSL = @HTMLHELP_XSL@
 FO_XSL = @FO_XSL@
@@ -857,12 +871,16 @@ endif
 libags_audio_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_AUDIO_CPPFLAGS)
 
 libags_audio_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
-libags_audio_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread 
+libags_audio_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(libags_audio_unit_plugins_OBJCFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(W32API_CFLAGS)
+libags_audio_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread $(libags_audio_unit_plugins_LDFLAGS)
 libags_audio_la_LIBADD = -lm 
 
 if WITH_VST3
 libags_audio_la_LIBADD += $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) libags_vst.la
+endif
+
+if WITH_AUDIO_UNIT_PLUGINS
+libags_audio_la_LIBADD += $(libags_audio_unit_plugins_LIBDIR) $(libags_audio_unit_plugins_LIBS)
 endif
 
 if WITH_W32API
@@ -922,12 +940,16 @@ endif
 
 libgsequencer_la_CPPFLAGS += $(CPPFLAGS) $(LIBGSEQUENCER_CPPFLAGS)
 libgsequencer_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
-libgsequencer_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
-libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -pthread
+libgsequencer_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(libags_vst3_CXXFLAGS) $(libags_audio_unit_plugins_OBJCFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(CORE_AUDIO_CFLAGS) $(WASAPI_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(LIBSOUP_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
+libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -pthread $(libags_audio_unit_plugins_LDFLAGS)
 libgsequencer_la_LIBADD = -lm
 
 if WITH_VST3
 libgsequencer_la_LIBADD += $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) libags_vst.la
+endif
+
+if WITH_AUDIO_UNIT_PLUGINS
+libgsequencer_la_LIBADD += $(libags_audio_unit_plugins_LIBDIR) $(libags_audio_unit_plugins_LIBS)
 endif
 
 if WITH_W32API
@@ -990,11 +1012,15 @@ DISTCLEANFILES += $(defexec_DATA)
 gsequencer_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
 
 gsequencer_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
-gsequencer_LDFLAGS += -pthread
+gsequencer_LDFLAGS += -pthread $(libags_audio_unit_plugins_LDFLAGS)
 gsequencer_LDADD = -lm
 
 if WITH_VST3
 gsequencer_LDADD += $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) libags_vst.la
+endif
+
+if WITH_AUDIO_UNIT_PLUGINS
+gsequencer_LDADD += $(libags_audio_unit_plugins_LIBDIR) $(libags_audio_unit_plugins_LIBS)
 endif
 
 gsequencer_LDADD += libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la
@@ -1023,11 +1049,15 @@ endif
 midi2xml_CPPFLAGS += $(CPPFLAGS) $(libags_vst3_RELEASE_TYPE)
 
 midi2xml_CFLAGS += $(CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(LIBSOUP_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(GSTREAMER_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JSON_GLIB_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_UNIX_PRINT_CFLAGS) $(POPPLER_CFLAGS) $(VTE_CFLAGS) $(W32API_CFLAGS)
-midi2xml_LDFLAGS += -pthread
+midi2xml_LDFLAGS += -pthread $(libags_audio_unit_plugins_LDFLAGS)
 midi2xml_LDADD = -lm
 
 if WITH_VST3
 midi2xml_LDADD += $(libags_vst3_LIBDIR) $(libags_vst3_LIBS) libags_vst.la
+endif
+
+if WITH_AUDIO_UNIT_PLUGINS
+midi2xml_LDADD += $(libags_audio_unit_plugins_LIBDIR) $(libags_audio_unit_plugins_LIBS)
 endif
 
 midi2xml_LDADD += libags_audio.la libags_server.la libags_thread.la libags.la
@@ -1039,6 +1069,20 @@ if WITH_OSXAPI
 else
 midi2xml_LDADD += -ldl
 endif
+endif
+
+gsequencer_audio_unit_test_SOURCES = $(gsequencer_audio_unit_test_c_sources)
+
+gsequencer_audio_unit_test_CPPFLAGS = -x objective-c -framework Cocoa
+
+gsequencer_audio_unit_test_CPPFLAGS += $(CPPFLAGS)
+
+gsequencer_audio_unit_test_CFLAGS += $(CFLAGS) $(GOBJECT_CFLAGS)
+gsequencer_audio_unit_test_LDFLAGS += -pthread $(libags_audio_unit_plugins_LDFLAGS) -framework CoreFoundation -framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI $(GOBJECT_LIBS)
+gsequencer_audio_unit_test_LDADD = -lm
+
+if WITH_AUDIO_UNIT_PLUGINS
+gsequencer_audio_unit_test_LDADD += $(libags_audio_unit_plugins_LIBDIR) $(libags_audio_unit_plugins_LIBS)
 endif
 
 # unit and functional tests
@@ -1632,6 +1676,18 @@ EXTRA_DIST +=  \
 	ags/plugin/ags_vst3_plugin.h
 endif
 
+if WITH_AUDIO_UNIT_PLUGINS
+libags_plugin_h_sources += \
+	ags/plugin/ags_audio_unit_conversion.h \
+	ags/plugin/ags_audio_unit_manager.h \
+	ags/plugin/ags_audio_unit_plugin.h
+else
+EXTRA_DIST +=  \
+	ags/plugin/ags_audio_unit_conversion.h \
+	ags/plugin/ags_audio_unit_manager.h \
+	ags/plugin/ags_audio_unit_plugin.h
+endif
+
 deprecated_libags_plugin_c_sources =
 
 libags_plugin_c_sources = \
@@ -1670,6 +1726,18 @@ EXTRA_DIST +=  \
 	ags/plugin/ags_vst3_conversion.c \
 	ags/plugin/ags_vst3_manager.c \
 	ags/plugin/ags_vst3_plugin.c
+endif
+
+if WITH_AUDIO_UNIT_PLUGINS
+libags_plugin_c_sources += \
+	ags/plugin/ags_audio_unit_conversion.c \
+	ags/plugin/ags_audio_unit_manager.c \
+	ags/plugin/ags_audio_unit_plugin.c
+else
+EXTRA_DIST +=  \
+	ags/plugin/ags_audio_unit_conversion.c \
+	ags/plugin/ags_audio_unit_manager.c \
+	ags/plugin/ags_audio_unit_plugin.c
 endif
 
 # libags-audio - file
@@ -2203,6 +2271,24 @@ EXTRA_DIST += \
 	ags/audio/fx/ags_fx_vst3_audio_signal.h
 endif
 
+if WITH_AUDIO_UNIT_PLUGINS
+libags_audio_fx_h_sources += \
+	ags/audio/fx/ags_fx_audio_unit_audio.h \
+	ags/audio/fx/ags_fx_audio_unit_audio_processor.h \
+	ags/audio/fx/ags_fx_audio_unit_channel.h \
+	ags/audio/fx/ags_fx_audio_unit_channel_processor.h \
+	ags/audio/fx/ags_fx_audio_unit_recycling.h \
+	ags/audio/fx/ags_fx_audio_unit_audio_signal.h
+else
+EXTRA_DIST += \
+	ags/audio/fx/ags_fx_audio_unit_audio.h \
+	ags/audio/fx/ags_fx_audio_unit_audio_processor.h \
+	ags/audio/fx/ags_fx_audio_unit_channel.h \
+	ags/audio/fx/ags_fx_audio_unit_channel_processor.h \
+	ags/audio/fx/ags_fx_audio_unit_recycling.h \
+	ags/audio/fx/ags_fx_audio_unit_audio_signal.h
+endif
+
 deprecated_libags_audio_fx_c_sources =
 
 libags_audio_fx_c_sources = \
@@ -2374,6 +2460,24 @@ EXTRA_DIST += \
 	ags/audio/fx/ags_fx_vst3_channel_processor.c \
 	ags/audio/fx/ags_fx_vst3_recycling.c \
 	ags/audio/fx/ags_fx_vst3_audio_signal.c
+endif
+
+if WITH_AUDIO_UNIT_PLUGINS
+libags_audio_fx_c_sources += \
+	ags/audio/fx/ags_fx_audio_unit_audio.c \
+	ags/audio/fx/ags_fx_audio_unit_audio_processor.c \
+	ags/audio/fx/ags_fx_audio_unit_channel.c \
+	ags/audio/fx/ags_fx_audio_unit_channel_processor.c \
+	ags/audio/fx/ags_fx_audio_unit_recycling.c \
+	ags/audio/fx/ags_fx_audio_unit_audio_signal.c
+else
+EXTRA_DIST += \
+	ags/audio/fx/ags_fx_audio_unit_audio.c \
+	ags/audio/fx/ags_fx_audio_unit_audio_processor.c \
+	ags/audio/fx/ags_fx_audio_unit_channel.c \
+	ags/audio/fx/ags_fx_audio_unit_channel_processor.c \
+	ags/audio/fx/ags_fx_audio_unit_recycling.c \
+	ags/audio/fx/ags_fx_audio_unit_audio_signal.c
 endif
 
 # libags-audio - task
@@ -3096,6 +3200,18 @@ EXTRA_DIST += \
 	ags/app/machine/ags_vst3_bridge.h
 endif
 
+if WITH_AUDIO_UNIT_PLUGINS
+libgsequencer_machine_h_sources += \
+	ags/app/machine/ags_audio_unit_bridge_callbacks.h \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.h \
+	ags/app/machine/ags_audio_unit_bridge.h
+else
+EXTRA_DIST += \
+	ags/app/machine/ags_audio_unit_bridge_callbacks.h \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.h \
+	ags/app/machine/ags_audio_unit_bridge.h
+endif
+
 deprecated_libgsequencer_machine_c_sources =
 
 libgsequencer_machine_c_sources = \
@@ -3227,6 +3343,18 @@ EXTRA_DIST += \
 	ags/app/machine/ags_live_vst3_bridge_callbacks.c \
 	ags/app/machine/ags_vst3_bridge.c \
 	ags/app/machine/ags_vst3_bridge_callbacks.c
+endif
+
+if WITH_AUDIO_UNIT_PLUGINS
+libgsequencer_machine_c_sources += \
+	ags/app/machine/ags_audio_unit_bridge.c \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.c \
+	ags/app/machine/ags_audio_unit_bridge_callbacks.c
+else
+EXTRA_DIST += \
+	ags/app/machine/ags_audio_unit_bridge.c \
+	ags/app/machine/ags_audio_unit_plugin_window_controller.c \
+	ags/app/machine/ags_audio_unit_bridge_callbacks.c
 endif
 
 # libgsequencer - editor
@@ -3530,6 +3658,11 @@ if WITH_W32API
 gsequencer_c_sources += \
 	ags/app/ags_gsequencer_resource.c
 endif
+
+# gsequencer all files
+gsequencer_audio_unit_test_c_sources = \
+	ags/gsequencer_audio_unit_test.c
+
 
 ags-integration-unit-test: 
 	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-test

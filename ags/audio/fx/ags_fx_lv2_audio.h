@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,8 +125,11 @@ struct _AgsFxLv2AudioChannelData
   guint event_count;
   
   float *output;
+  guint output_size;
+  
   float *input;
-
+  guint input_size;
+  
   gpointer midiin_event_port;
   gpointer midiout_event_port;
   
@@ -172,7 +175,10 @@ struct _AgsFxLv2AudioInputData
   gpointer parent;
 
   float *output;
+  guint output_size;
+  
   float *input;
+  guint input_size;
 
   gpointer midiin_event_port;
   gpointer midiout_event_port;

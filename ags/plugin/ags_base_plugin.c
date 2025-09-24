@@ -1736,7 +1736,8 @@ ags_base_plugin_apply_port_group_by_prefix(AgsBasePlugin *base_plugin)
  */
 gpointer
 ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
-			    guint samplerate, guint buffer_size)
+			    guint samplerate,
+			    guint buffer_size)
 {
   gpointer retval;
   

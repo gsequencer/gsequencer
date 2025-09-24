@@ -431,6 +431,28 @@ ags_gsequencer_add_vst3_bridge_callback(GAction *action, GVariant *parameter,
 }
 
 void
+ags_gsequencer_add_audio_unit_bridge_callback(GAction *action, GVariant *parameter,
+					      AgsGSequencerApplication *gsequencer_app)
+{
+  GVariantIter *iter;
+  
+  gchar *filename;
+  gchar *effect;
+  
+  iter = NULL;
+
+  filename = NULL;
+  effect = NULL;
+  
+  g_variant_get(parameter, "as", &iter);
+
+  //  g_variant_iter_loop(iter, "s", &filename);
+  g_variant_iter_loop(iter, "s", &effect);
+  
+  ags_app_action_util_add_audio_unit_bridge(filename, effect);
+}
+
+void
 ags_gsequencer_add_live_dssi_bridge_callback(GAction *action, GVariant *parameter,
 					     AgsGSequencerApplication *gsequencer_app)
 {

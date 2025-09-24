@@ -2785,8 +2785,10 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 		       AgsRecycling *recycling)
 {
   AgsRecycling *current, *next;
+  AgsRecycling *end_next;
 
   gint position;
+  gboolean success;
 
   if(!AGS_IS_RECYCLING(start_region)){
     return(-1);
@@ -2796,13 +2798,23 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
   current = start_region;
   g_object_ref(current);
 
+  end_next = ags_recycling_next(end_region);
+
   position = -1;
-    
-  while(current != NULL && current != end_region){
+  
+  success = FALSE;
+  
+  while(current != NULL){
     position++;
 
     /* check if new match */
     if(current == recycling){
+      success = TRUE;
+      
+      break;
+    }
+
+    if(current == end_next){
       break;
     }
 
@@ -2816,6 +2828,14 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
 
   if(current != NULL){
     g_object_unref(current);
+  }
+
+  if(end_next != NULL){
+    g_object_unref(end_next);
+  }
+  
+  if(!success){
+    position = -1;
   }
   
   return(position);

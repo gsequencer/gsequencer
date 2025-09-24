@@ -798,6 +798,18 @@ main(int argc, char **argv)
     }else{
       ags_config_load_from_file(config,
 				config_filename);
+
+#if 0 // defined(AGS_OSX_DMG_ENV)
+      ags_config_set_value(config,
+			   AGS_CONFIG_THREAD,
+			   "model",
+			   "super-threaded");
+
+      ags_config_set_value(config,
+			   AGS_CONFIG_THREAD,
+			   "super-threaded-scope",
+			   "channel");
+#endif
     }
     
     g_free(config_filename);

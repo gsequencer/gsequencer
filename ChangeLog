@@ -1,3 +1,156 @@
+ags (8.1.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit compatibility check since macOS 13.0
+
+ags (8.1.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* new micro release for macOS
+
+ags (8.1.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted implied config value super threaded scope channel on macOS
+
+ags (8.1.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test dereference NULL pointer
+
+ags (8.1.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test waitpid() return value and exit status
+
+ags (8.1.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test
+
+ags (8.1.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test
+
+ags (8.1.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio unit test use posix_spawn()
+
+ags (8.1.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test use posix_spawn()
+
+ags (8.1.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test
+
+ags (8.1.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test
+
+ags (8.1.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit test handle additional signals
+
+ags (8.1.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* new micro release for macOS
+
+ags (8.1.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* new micro release for macOS
+
+ags (8.1.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed AudioUnitTest to com.gsequencer.GSequencer.AudioUnitTest
+
+ags (8.1.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed com.gsequencer.AudioUnitTest to AudioUnitTest
+
+ags (8.1.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* renamed com.gsequencer.GSequencerAudioUnitTest to com.gsequencer.AudioUnitTest
+
+ags (8.1.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented GSequencerAudioUnitTest Audio Unit test program
+
+ags (8.1.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implied config value in order to support Audio Unit
+	* improved Audio Unit UI window
+	* reverted ags-fx-buffer
+	* fixed ags-fx-audio-unit stereo buffer
+	* fixed ags-fx-audio-unit instrument key on
+
+ags (8.1.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted ags-fx-buffer
+	* generated symbols
+
+ags (8.1.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented stereo or more channel synchronization of ags-fx-audio-unit
+	* fixed AgsAudioUnitBridge load port
+	* fixed ags_fx_audio_unit_audio_port_safe_write_callback()
+
+ags (8.1.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-audio-unit missing clear of audio buffer
+
+ags (8.1.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsAudioUnitManager to use wildcard to load plugins
+
+ags (8.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAudioUnitManager
+	* implemented AgsAudioUnitNewQueueManager
+	* implemented AgsAudioUnitPlugin
+	* implemented AgsAudioUnitNewQueue
+	* implemented AgsAudioUnitConversion
+	* implemented AgsAudioUnitBridge
+	* implemented ags-fx-audio-unit
+	* implemented AgsSimpleFile audio unit bridge persistence
+	* added Audio Unit menu to application window
+	* added live Audio Unit menu to application window
+	* fixed bug in ags_recycling_position()
+
+ags (8.1.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation port restore from XML
+
+ags (8.1.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented automation port restore from XML
+	* fixed potential SIGSEGV with composite toolbar popovers
+	* improved AgsAudioLoop
+	* improved AgsDial accessibility
+	* improved AgsIndicator accessibility
+	* improved ags-fx-lv2 output and input size
+	* reverted some changes related to clipping in ags_notation_edit_draw_note()
+
 ags (8.0.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -8599,7 +8752,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2024 Joël Krähemann
+Copyright (C) 2005-2025 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3

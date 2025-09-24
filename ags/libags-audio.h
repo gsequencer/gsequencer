@@ -58,6 +58,12 @@
 #include <ags/plugin/ags_vst3_plugin.h>
 #endif
 
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/plugin/ags_audio_unit_conversion.h>
+#include <ags/plugin/ags_audio_unit_manager.h>
+#include <ags/plugin/ags_audio_unit_plugin.h>
+#endif
+
 /* audio */
 #include <ags/audio/ags_acceleration.h>
 #include <ags/audio/ags_audio.h>
@@ -422,6 +428,15 @@
 #include <ags/audio/fx/ags_fx_vst3_channel.h>
 #include <ags/audio/fx/ags_fx_vst3_channel_processor.h>
 #include <ags/audio/fx/ags_fx_vst3_recycling.h>
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+#include <ags/audio/fx/ags_fx_audio_unit_audio.h>
+#include <ags/audio/fx/ags_fx_audio_unit_audio_processor.h>
+#include <ags/audio/fx/ags_fx_audio_unit_audio_signal.h>
+#include <ags/audio/fx/ags_fx_audio_unit_channel.h>
+#include <ags/audio/fx/ags_fx_audio_unit_channel_processor.h>
+#include <ags/audio/fx/ags_fx_audio_unit_recycling.h>
 #endif
 
 #include <ags/audio/fx/ags_fx_eq10_audio.h>

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,12 +19,20 @@
 
 #include <ags/audio/fx/ags_fx_buffer_audio_processor.h>
 
+#include <ags/audio/fx/ags_fx_buffer_audio.h>
+
 #include <ags/i18n.h>
 
 void ags_fx_buffer_audio_processor_class_init(AgsFxBufferAudioProcessorClass *fx_buffer_audio_processor);
 void ags_fx_buffer_audio_processor_init(AgsFxBufferAudioProcessor *fx_buffer_audio_processor);
 void ags_fx_buffer_audio_processor_dispose(GObject *gobject);
 void ags_fx_buffer_audio_processor_finalize(GObject *gobject);
+
+void ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall);
+
+void ags_fx_buffer_audio_scope_data_destination_remove(AgsRecycling *key, AgsAudioSignal *value, AgsFxBufferAudioScopeData *scope_data);
+
+void ags_fx_buffer_audio_processor_done(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_audio_processor
@@ -73,6 +81,7 @@ void
 ags_fx_buffer_audio_processor_class_init(AgsFxBufferAudioProcessorClass *fx_buffer_audio_processor)
 {
   GObjectClass *gobject;
+  AgsRecallClass *recall;
   
   ags_fx_buffer_audio_processor_parent_class = g_type_class_peek_parent(fx_buffer_audio_processor);
 
@@ -81,6 +90,12 @@ ags_fx_buffer_audio_processor_class_init(AgsFxBufferAudioProcessorClass *fx_buff
 
   gobject->dispose = ags_fx_buffer_audio_processor_dispose;
   gobject->finalize = ags_fx_buffer_audio_processor_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) fx_buffer_audio_processor;
+  
+  recall->run_init_pre = ags_fx_buffer_audio_processor_run_init_pre;
+  recall->done = ags_fx_buffer_audio_processor_done;
 }
 
 void
@@ -112,6 +127,88 @@ ags_fx_buffer_audio_processor_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_buffer_audio_processor_parent_class)->finalize(gobject);
+}
+
+void
+ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall)
+{
+  AgsFxBufferAudio *fx_buffer_audio;
+
+  AgsFxBufferAudioScopeData *scope_data;
+
+  gint sound_scope;
+
+  GRecMutex *fx_buffer_audio_mutex;
+  
+  fx_buffer_audio = NULL;
+
+  g_object_get(recall,
+	       "recall-audio", &fx_buffer_audio,
+	       NULL);
+  
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  fx_buffer_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
+
+  g_rec_mutex_lock(fx_buffer_audio_mutex);
+  
+  scope_data = fx_buffer_audio->scope_data[sound_scope];
+
+  //nothing
+  
+  g_rec_mutex_unlock(fx_buffer_audio_mutex);
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_buffer_audio_processor_parent_class)->run_init_pre(recall);
+}
+
+void
+ags_fx_buffer_audio_scope_data_destination_remove(AgsRecycling *key, AgsAudioSignal *value, AgsFxBufferAudioScopeData *scope_data)
+{
+  g_message("remove");
+  
+  ags_recycling_remove_audio_signal(key,
+				    value);
+}
+
+void
+ags_fx_buffer_audio_processor_done(AgsRecall *recall)
+{
+  AgsFxBufferAudio *fx_buffer_audio;
+
+  AgsFxBufferAudioScopeData *scope_data;
+
+  gint sound_scope;
+
+  GRecMutex *fx_buffer_audio_mutex;
+  
+  fx_buffer_audio = NULL;
+
+  g_object_get(recall,
+	       "recall-audio", &fx_buffer_audio,
+	       NULL);
+  
+  sound_scope = ags_recall_get_sound_scope(recall);
+
+  fx_buffer_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_buffer_audio);
+
+  g_rec_mutex_lock(fx_buffer_audio_mutex);
+  
+  scope_data = fx_buffer_audio->scope_data[sound_scope];
+  
+  g_rec_mutex_unlock(fx_buffer_audio_mutex);
+
+  if(sound_scope >= 0 &&
+     scope_data != NULL){
+    g_hash_table_foreach(scope_data->destination,
+			 (GHFunc) ags_fx_buffer_audio_scope_data_destination_remove,
+			 (gpointer) scope_data);
+      
+    g_hash_table_remove_all(scope_data->destination);
+  }
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_buffer_audio_processor_parent_class)->done(recall);
 }
 
 /**

@@ -134,11 +134,13 @@ struct _AgsGSequencerApplicationContext
   gboolean dssi_loading;
   gboolean lv2_loading;
   gboolean vst3_loading;
+  gboolean audio_unit_loading;
   
   GList *ladspa_loader;
   GList *dssi_loader;
   GList *lv2_loader;
   GList *vst3_loader;
+  GList *audio_unit_loader;
   
   AgsLv2TurtleScanner *lv2_turtle_scanner;
 

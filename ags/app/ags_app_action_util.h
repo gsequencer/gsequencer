@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,6 +76,7 @@ void ags_app_action_util_add_ladspa_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_dssi_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_lv2_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_vst3_bridge(gchar *filename, gchar *effect);
+void ags_app_action_util_add_audio_unit_bridge(gchar *filename, gchar *effect);
 
 void ags_app_action_util_add_live_dssi_bridge(gchar *filename, gchar *effect);
 void ags_app_action_util_add_live_lv2_bridge(gchar *filename, gchar *effect);

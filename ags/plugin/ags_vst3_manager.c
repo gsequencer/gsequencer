@@ -121,6 +121,7 @@ ags_vst3_manager_init(AgsVst3Manager *vst3_manager)
   g_rec_mutex_init(&(vst3_manager->obj_mutex));
 
   /* vst3 plugin and path */
+  vst3_manager->vst3_plugin_blacklist = NULL;
   vst3_manager->vst3_plugin = NULL;
 
   if(ags_vst3_default_path == NULL){

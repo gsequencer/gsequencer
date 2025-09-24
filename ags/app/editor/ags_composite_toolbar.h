@@ -42,7 +42,7 @@ G_BEGIN_DECLS
 #define AGS_COMPOSITE_TOOLBAR_DEFAULT_VERSION "6.11.0"
 #define AGS_COMPOSITE_TOOLBAR_DEFAULT_BUILD_ID "Sun May  5 10:39:01 UTC 2024"
 
-#define AGS_COMPOSITE_TOOLBAR_DIALOG_SCOPE_COUNT (5)
+#define AGS_COMPOSITE_TOOLBAR_POPOVER_SCOPE_COUNT (5)
 
 #define AGS_COMPOSITE_TOOLBAR_SCOPE_COMMON "common"
 #define AGS_COMPOSITE_TOOLBAR_SCOPE_NOTATION "notation"
@@ -97,36 +97,36 @@ typedef enum{
 }AgsCompositeToolbarZoom;
 
 typedef enum{
-  AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_AUDIO_CHANNELS       = 1,
-  AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_AUDIO_CHANNELS      = 1 <<  1,
-  AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_ENABLE_ALL_LINES                = 1 <<  2,
-  AGS_COMPOSITE_TOOLBAR_COMMON_DIALOG_DISABLE_ALL_LINES               = 1 <<  3,
-}AgsCompositeToolbarCommonDialog;
+  AGS_COMPOSITE_TOOLBAR_COMMON_POPOVER_ENABLE_ALL_AUDIO_CHANNELS       = 1,
+  AGS_COMPOSITE_TOOLBAR_COMMON_POPOVER_DISABLE_ALL_AUDIO_CHANNELS      = 1 <<  1,
+  AGS_COMPOSITE_TOOLBAR_COMMON_POPOVER_ENABLE_ALL_LINES                = 1 <<  2,
+  AGS_COMPOSITE_TOOLBAR_COMMON_POPOVER_DISABLE_ALL_LINES               = 1 <<  3,
+}AgsCompositeToolbarCommonPopover;
 
 typedef enum{
-  AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_MOVE_NOTE           = 1,
-  AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_CROP_NOTE           = 1 <<  1,
-  AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_SELECT_NOTE         = 1 <<  2,
-  AGS_COMPOSITE_TOOLBAR_NOTATION_DIALOG_POSITION_CURSOR     = 1 <<  3,
-}AgsCompositeToolbarNotationDialog;
+  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_MOVE_NOTE           = 1,
+  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_CROP_NOTE           = 1 <<  1,
+  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_SELECT_NOTE         = 1 <<  2,
+  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_POSITION_CURSOR     = 1 <<  3,
+}AgsCompositeToolbarNotationPopover;
 
 typedef enum{
-  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_POSITION_CURSOR       = 1,
-  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_ADD_PAGE              = 1 <<  1,
-  AGS_COMPOSITE_TOOLBAR_SHEET_DIALOG_REMOVE_PAGE           = 1 <<  2,  
-}AgsCompositeToolbarSheetDialog;
+  AGS_COMPOSITE_TOOLBAR_SHEET_POPOVER_POSITION_CURSOR       = 1,
+  AGS_COMPOSITE_TOOLBAR_SHEET_POPOVER_ADD_PAGE              = 1 <<  1,
+  AGS_COMPOSITE_TOOLBAR_SHEET_POPOVER_REMOVE_PAGE           = 1 <<  2,  
+}AgsCompositeToolbarSheetPopover;
 
 typedef enum{
-  AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_SELECT_ACCELERATION   = 1,
-  AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_RAMP_ACCELERATION     = 1 <<  1,
-  AGS_COMPOSITE_TOOLBAR_AUTOMATION_DIALOG_POSITION_CURSOR       = 1 <<  2,
-}AgsCompositeToolbarAutomationDialog;
+  AGS_COMPOSITE_TOOLBAR_AUTOMATION_POPOVER_SELECT_ACCELERATION   = 1,
+  AGS_COMPOSITE_TOOLBAR_AUTOMATION_POPOVER_RAMP_ACCELERATION     = 1 <<  1,
+  AGS_COMPOSITE_TOOLBAR_AUTOMATION_POPOVER_POSITION_CURSOR       = 1 <<  2,
+}AgsCompositeToolbarAutomationPopover;
 
 typedef enum{
-  AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_SELECT_BUFFER       = 1,
-  AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_POSITION_CURSOR     = 1 <<  1,
-  AGS_COMPOSITE_TOOLBAR_WAVE_DIALOG_TIME_STRETCH_BUFFER = 1 <<  2,
-}AgsCompositeToolbarWaveDialog;
+  AGS_COMPOSITE_TOOLBAR_WAVE_POPOVER_SELECT_BUFFER       = 1,
+  AGS_COMPOSITE_TOOLBAR_WAVE_POPOVER_POSITION_CURSOR     = 1 <<  1,
+  AGS_COMPOSITE_TOOLBAR_WAVE_POPOVER_TIME_STRETCH_BUFFER = 1 <<  2,
+}AgsCompositeToolbarWavePopover;
 
 struct _AgsCompositeToolbar
 {
@@ -147,6 +147,8 @@ struct _AgsCompositeToolbar
   gboolean block_selected_tool;
   GtkButton *selected_tool;
 
+  GtkBox *button_box;
+  
   GtkToggleButton *position;
   GtkToggleButton *edit;
   GtkToggleButton *clear;
@@ -160,8 +162,10 @@ struct _AgsCompositeToolbar
   GtkMenuButton *paste;
   GMenuModel *paste_popup;
 
+  GtkBox *tool_box;
+  
   GtkBox *menu_tool_box;
-  gchar **menu_tool_dialog;
+  gchar **menu_tool_popover;
   GValue *menu_tool_value;
   GtkMenuButton *menu_tool;
   GMenuModel *menu_tool_popup;
@@ -226,7 +230,7 @@ void ags_composite_toolbar_unset_option(AgsCompositeToolbar *composite_toolbar, 
 GMenuModel* ags_composite_toolbar_paste_popup_new(AgsCompositeToolbar *composite_toolbar,
 						  guint paste_mode);
 GMenuModel* ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar,
-						      gchar **dialog,
+						      gchar **popover,
 						      GValue *value);
 
 void ags_composite_toolbar_load_port(AgsCompositeToolbar *composite_toolbar);

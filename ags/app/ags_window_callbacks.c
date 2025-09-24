@@ -75,6 +75,11 @@ ags_window_setup_completed_callback(AgsApplicationContext *application_context, 
   ags_window_load_add_menu_vst3(window,
 				gsequencer_app->add_menu);
 
+  ags_window_load_add_menu_audio_unit(window,
+				      menu);
+  ags_window_load_add_menu_audio_unit(window,
+				      gsequencer_app->add_menu);
+
   ags_window_load_add_menu_live_dssi(window,
 				     menu);
   ags_window_load_add_menu_live_dssi(window,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 void ags_indicator_class_init(AgsIndicatorClass *indicator);
 void ags_indicator_orientable_interface_init(GtkOrientableIface *orientable);
+void ags_indicator_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
 void ags_indicator_init(AgsIndicator *indicator);
 void ags_indicator_set_property(GObject *gobject,
 				guint prop_id,
@@ -46,6 +47,9 @@ void ags_indicator_size_allocate(GtkWidget *widget,
 				 int width,
 				 int height,
 				 int baseline);
+
+gboolean ags_indicator_set_current_value(GtkAccessibleRange *accessible_range,
+					 gdouble current_value);
 
 void ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
 					       AgsIndicator *indicator);
@@ -108,6 +112,12 @@ ags_indicator_get_type(void)
       NULL, /* interface_data */
     };
 
+    static const GInterfaceInfo ags_accessible_range_interface_info = {
+      (GInterfaceInitFunc) ags_indicator_accessible_range_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_indicator = g_type_register_static(GTK_TYPE_WIDGET,
 						"AgsIndicator", &ags_indicator_info,
 						0);
@@ -115,6 +125,10 @@ ags_indicator_get_type(void)
     g_type_add_interface_static(ags_type_indicator,
 				GTK_TYPE_ORIENTABLE,
 				&ags_orientable_interface_info);
+
+    g_type_add_interface_static(ags_type_indicator,
+				GTK_TYPE_ACCESSIBLE_RANGE,
+				&ags_accessible_range_interface_info);
 
     g_once_init_leave(&g_define_type_id__static, ags_type_indicator);
   }
@@ -126,6 +140,12 @@ void
 ags_indicator_orientable_interface_init(GtkOrientableIface *orientable)
 {
   //empty
+}
+
+void
+ags_indicator_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range)
+{
+  accessible_range->set_current_value = ags_indicator_set_current_value;
 }
 
 void
@@ -528,6 +548,13 @@ ags_indicator_size_allocate(GtkWidget *widget,
 							      width,
 							      height,
 							      baseline);
+}
+
+gboolean
+ags_indicator_set_current_value(GtkAccessibleRange *accessible_range,
+				gdouble current_value)
+{
+  return(FALSE);
 }
 
 void

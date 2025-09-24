@@ -28,10 +28,10 @@ ags_preferences_close_request_callback(GtkWindow *window, gpointer user_data)
   AgsApplicationContext *application_context;
 
   application_context = ags_application_context_get_instance();
-  
+
   ags_gsequencer_application_refresh_window_menu((AgsGSequencerApplication *) ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context)));
 
-  return(FALSE);
+  return(TRUE);
 }
 
 void

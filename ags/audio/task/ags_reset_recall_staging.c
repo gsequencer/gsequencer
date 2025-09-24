@@ -113,6 +113,8 @@ ags_reset_recall_staging_init(AgsResetRecallStaging *reset_recall_staging)
 					AGS_SOUND_STAGING_RUN_POST |
 					AGS_SOUND_STAGING_DO_FEEDBACK |
 					AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
+					AGS_SOUND_STAGING_CANCEL |
+					AGS_SOUND_STAGING_REMOVE |
 					AGS_SOUND_STAGING_FINI);
   
   reset_recall_staging->recall = NULL;

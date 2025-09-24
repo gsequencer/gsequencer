@@ -4757,6 +4757,7 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
   guint samplerate;
   guint buffer_size;
   AgsSoundcardFormat format;
+  AgsRecallFlags recall_flags;
   AgsSoundAbilityFlags recall_ability_flags;
   AgsSoundBehaviourFlags recall_behaviour_flags;
   gint recall_sound_scope;
@@ -4800,6 +4801,7 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
   /* add child */
   g_rec_mutex_lock(recall_mutex);
 
+  recall_flags = recall->flags;
   recall_ability_flags = recall->ability_flags;
   recall_behaviour_flags = recall->behaviour_flags;
   recall_sound_scope = recall->sound_scope;
@@ -4826,6 +4828,8 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
 	       NULL);
   
   /* ref new */
+  // ags_recall_set_flags(child, recall_flags);
+
   ags_recall_set_ability_flags(child, recall_ability_flags);
   ags_recall_set_behaviour_flags(child, recall_behaviour_flags);
   ags_recall_set_sound_scope(child, recall_sound_scope);
@@ -4878,9 +4882,12 @@ ags_recall_add_child(AgsRecall *recall, AgsRecall *child)
 #endif
   
     /* set staging flags */
-    ags_recall_set_staging_flags(child,
-				 staging_flags);
-
+    if(!ags_recall_test_flags(child, AGS_RECALL_TEMPLATE) ||
+       !ags_recall_test_flags(child, AGS_RECALL_DEFAULT_TEMPLATE)){
+      ags_recall_set_staging_flags(child,
+				   staging_flags);
+    }
+    
     g_object_unref(recall_id);
   }
 }
@@ -9115,6 +9122,11 @@ ags_recall_find_recycling_context(GList *recall, GObject *recycling_context)
   AgsRecallID *current_recall_id;
   AgsRecyclingContext *current_recycling_context;
 
+  if(recall == NULL ||
+     !AGS_IS_RECYCLING_CONTEXT(recycling_context)){
+    return(NULL);
+  }
+  
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
@@ -9400,14 +9412,15 @@ ags_recall_child_done(AgsRecall *child,
   ags_recall_remove_child(parent,
 			  child);
 
+  //NOTE:JK: only unref
   if(TRUE){
     AgsDestroyWorker *destroy_worker;
     
     destroy_worker = ags_destroy_worker_get_instance();
     ags_destroy_worker_add(destroy_worker,
-			   child, (AgsDestroyFunc) ags_destroy_util_dispose_and_unref);
+			   child, (AgsDestroyFunc) g_object_unref); // ags_destroy_util_dispose_and_unref
   }else{
-    g_object_run_dispose((GObject *) child);
+    //    g_object_run_dispose((GObject *) child);
     g_object_unref((GObject *) child);
   }
   

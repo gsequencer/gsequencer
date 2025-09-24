@@ -8,10 +8,10 @@
 # Process this file with autoconf to produce a configure script.
 
 LT_CURRENT=8
-LT_REVISION=0
-LT_AGE=14
+LT_REVISION=1
+LT_AGE=24
 
-m4_define([ags_version], [8.0.14])
+m4_define([ags_version], [8.1.24])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -164,6 +164,11 @@ AC_ARG_ENABLE(audio-unit, [AS_HELP_STRING([--enable-audio-unit],
                                           [enable audio unit (default is no)])],
               [],
               [enable_audio_unit=no])
+
+AC_ARG_ENABLE(audio-unit-plugins, [AS_HELP_STRING([--enable-audio-unit-plugins],
+                                          [enable audio unit (default is no)])],
+              [],
+              [enable_audio_unit_plugins=no])
 
 AC_ARG_ENABLE(wasapi, [AS_HELP_STRING([--enable-wasapi],
                                       [enable WASAPI (default is no)])],
@@ -454,7 +459,7 @@ AS_IF([test "x$enable_core_audio" != xno],
       [AC_DEFINE([AGS_WITH_CORE_AUDIO], [1], [core-audio enabled])
 
       CORE_AUDIO_CFLAGS= 
-      CORE_AUDIO_LIBS="-framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
+      CORE_AUDIO_LIBS="-framework Foundation -framework CoreFoundation -framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
       AC_SUBST(CORE_AUDIO_CFLAGS)
       AC_SUBST(CORE_AUDIO_LIBS)
 
@@ -478,6 +483,17 @@ AS_IF([test "x$enable_audio_unit" != xno],
 
       AC_MSG_NOTICE([audio-unit enabled])],
       [AC_MSG_NOTICE([audio-unit disabled])])
+
+AS_IF([test "x$enable_audio_unit_plugins" != xno],
+      [AC_DEFINE([AGS_WITH_AUDIO_UNIT_PLUGINS], [1], [audio-unit-plugins enabled])
+
+      AUDIO_UNIT_PLUGINS_CFLAGS= 
+      AUDIO_UNIT_PLUGINS_LIBS="-framework Foundation -framework CoreFoundation -framework AVFoundation -framework AudioUnit -framework AudioToolbox"
+      AC_SUBST(AUDIO_UNIT_PLUGINS_CFLAGS)
+      AC_SUBST(AUDIO_UNIT_PLUGINS_LIBS)
+
+      AC_MSG_NOTICE([audio-unit-plugins enabled])],
+      [AC_MSG_NOTICE([audio-unit-plugins disabled])])
 
 AS_IF([test "x$enable_wasapi" != xno],
       [AC_DEFINE([AGS_WITH_WASAPI], [1], [wasapi enabled])
@@ -707,6 +723,70 @@ LIBGSEQUENCER_VST3_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live_vst3_
       [AC_MSG_NOTICE([VST3 disabled])])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
 
+WITH_AUDIO_UNIT_PLUGINS=0
+
+if test "${LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR+set}" = set; then
+echo "variable \$LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR is set to: $LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR"
+else
+LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR="-L$libexecdir/lib/audio-unit"
+echo "variable \$LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR is set to: $LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR"
+fi
+
+if test "${LIBAGS_AUDIO_UNIT_PLUGINS_LIBS+set}" = set; then
+echo "variable \$LIBAGS_AUDIO_UNIT_PLUGINS_LIBS is set to: $LIBAGS_AUDIO_UNIT_PLUGINS_LIBS"
+else
+# -lvstgui_standalone
+LIBAGS_AUDIO_UNIT_PLUGINS_LIBS="-framework Foundation -framework CoreFoundation -framework AVFoundation -framework AudioToolbox"
+echo "variable \$LIBAGS_AUDIO_UNIT_PLUGINS_LIBS is set to: $LIBAGS_AUDIO_UNIT_PLUGINS_LIBS"
+fi
+
+AS_IF([test "x$enable_audio_unit_plugins" != xno],
+      [AC_DEFINE([AGS_WITH_AUDIO_UNIT_PLUGINS], [1], [AUDIO_UNIT_PLUGINS enabled])
+LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE="    <chapter id=\"plugin-audio_unit\">\\
+      <title>AUDIO_UNIT plugins</title>\\
+      <para>The AUDIO_UNIT plugin objects.</para>\\
+      <xi:include href=\"xml/ags_audio_unit_conversion.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_plugin.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_manager.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_new_queue.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_new_queue_manager.xml\"/>\\
+    </chapter>"
+
+LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE="      <xi:include href=\"xml/ags_fx_audio_unit_audio.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_audio_unit_audio_processor.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_audio_unit_audio_signal.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_audio_unit_channel.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_audio_unit_channel_processor.xml\"/>\\
+      <xi:include href=\"xml/ags_fx_audio_unit_recycling.xml\"/>"
+
+LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE="      <xi:include href=\"xml/ags_instantiate_audio_unit_plugin.xml\"/>\\
+      <xi:include href=\"xml/ags_write_audio_unit_port.xml\"/>"
+
+LIBGSEQUENCER_AUDIO_UNIT_BROWSER_XINCLUDE="      <xi:include href=\"xml/ags_audio_unit_browser.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_browser_callbacks.xml\"/>"
+
+LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live_audio_unit_bridge.xml\"/>\\
+      <xi:include href=\"xml/ags_live_audio_unit_bridge_callbacks.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_bridge.xml\"/>\\
+      <xi:include href=\"xml/ags_audio_unit_bridge_callbacks.xml\"/>"
+
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CFLAGS])
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CXXFLAGS])
+      AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_LDFLAGS])
+      AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE)
+      AC_SUBST(LIBGSEQUENCER_AUDIO_UNIT_BROWSER_XINCLUDE)
+      AC_SUBST(LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE)
+      AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_CPPFLAGS)
+      AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_OBJCFLAGS)
+      AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_LDFLAGS)
+      AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_LIBDIR)
+      AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_LIBS)
+      AC_MSG_NOTICE([AUDIO_UNIT_PLUGINS enabled])],
+      [AC_MSG_NOTICE([AUDIO_UNIT_PLUGINS disabled])])
+AM_CONDITIONAL([WITH_AUDIO_UNIT_PLUGINS], [test "x$enable_audio_unit_plugins" == xyes])
+
 AM_CONDITIONAL([WITH_MIDI2], [test "x$enable_midi2" == xyes])
 
 PKG_CHECK_MODULES([CAIRO], [cairo >= 1.12.0])
@@ -819,6 +899,7 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 
 AM_CONDITIONAL([WITH_SYSTEM_TESTS], [test "x$enable_run_system_tests" == xyes])
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
+AM_CONDITIONAL([WITH_AUDIO_UNIT_PLUGINS], [test "x$enable_audio_unit_plugins" == xyes])
 AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
 
 AGS_POTFILES([])
@@ -881,7 +962,7 @@ AS_IF([test "x$enable_upstream_gtk_doc" != xno],
 AS_IF([test "x$GTK_API_DOC" != x],
       [AC_SUBST(GTK_API_DOC, $GTK_API_DOC)
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])],
-      [AC_SUBST(GTK_API_DOC, '/usr/share/doc/libgtk-3-doc/gtk3')
+      [AC_SUBST(GTK_API_DOC, '/usr/share/doc/libgtk-4-doc/gtk4')
        AC_MSG_NOTICE([GTK_API_DOC = $GTK_API_DOC])])
 
 AS_IF([test "x$LIBAGS_API_DOC" != x],

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,12 +37,18 @@ G_BEGIN_DECLS
 #define AGS_IS_FX_BUFFER_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FX_BUFFER_AUDIO))
 #define AGS_FX_BUFFER_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FX_BUFFER_AUDIO, AgsFxBufferAudioClass))
 
+#define AGS_FX_BUFFER_AUDIO_SCOPE_DATA(ptr) ((AgsFxBufferAudioScopeData *) (ptr))
+#define AGS_FX_BUFFER_AUDIO_SCOPE_DATA_GET_STRCT_MUTEX(ptr) (&(((AgsFxBufferAudioScopeData *)(ptr))->strct_mutex))
+
 typedef struct _AgsFxBufferAudio AgsFxBufferAudio;
+typedef struct _AgsFxBufferAudioScopeData AgsFxBufferAudioScopeData;
 typedef struct _AgsFxBufferAudioClass AgsFxBufferAudioClass;
 
 struct _AgsFxBufferAudio
 {
   AgsRecallAudio recall_audio;
+
+  AgsFxBufferAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];  
 };
 
 struct _AgsFxBufferAudioClass
@@ -50,7 +56,21 @@ struct _AgsFxBufferAudioClass
   AgsRecallAudioClass recall_audio;
 };
 
+struct _AgsFxBufferAudioScopeData
+{
+  GRecMutex strct_mutex;
+
+  gpointer parent;
+
+  GHashTable *destination;
+  GHashTable *resample_cache;
+};
+
 GType ags_fx_buffer_audio_get_type();
+
+/* runtime */
+AgsFxBufferAudioScopeData* ags_fx_buffer_audio_scope_data_alloc();
+void ags_fx_buffer_audio_scope_data_free(AgsFxBufferAudioScopeData *scope_data);
 
 /* instantiate */
 AgsFxBufferAudio* ags_fx_buffer_audio_new(AgsAudio *audio);

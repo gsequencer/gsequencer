@@ -179,10 +179,10 @@ ags_fx_buffer_channel_input_data_free(AgsFxBufferChannelInputData *input_data)
   }
 
   g_hash_table_destroy(input_data->destination);
-
+  g_hash_table_destroy(input_data->resample_cache);
+  
   g_free(input_data);
 }
-
 
 /**
  * ags_fx_buffer_channel_input_data_get_strct_mutex:

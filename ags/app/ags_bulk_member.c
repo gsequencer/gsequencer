@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -507,7 +507,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
   g_object_set(dial,
-	       "radius", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_RADIUS),
+	       "radius", (guint) (gui_scale_factor * 12.0),
 	       "font-size", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_FONT_SIZE),
 	       "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
 	       "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
@@ -872,7 +872,9 @@ ags_bulk_member_set_property(GObject *gobject,
 	g_free(bulk_member->filename);
       }
 
-      if(filename != NULL){
+#if 0
+      if(filename != NULL &&
+	 strlen(filename) > 0){
 	if(!g_file_test(filename,
 			G_FILE_TEST_EXISTS)){
 	  AgsWindow *window;
@@ -892,7 +894,8 @@ ags_bulk_member_set_property(GObject *gobject,
 	  g_free(str);
 	}
       }
-
+#endif
+      
       bulk_member->filename = g_strdup(filename);
     }
     break;
