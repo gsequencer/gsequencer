@@ -2126,6 +2126,8 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   AVAudioFormat *av_input_format;
   AVAudioPCMBuffer *av_output, *av_input;
   
+  NSOperatingSystemVersion os_version;
+  
   GList *iterate_data;
 
   gboolean is_instrument;
@@ -2155,6 +2157,8 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 
   fx_audio_unit_audio = (AgsFxAudioUnitAudio *) data;
   
+  os_version = [[NSProcessInfo processInfo] operatingSystemVersion];
+
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
@@ -2214,23 +2218,24 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   av_audio_sequencer.currentPositionInBeats = (double) note_offset / 4.0; // a 16th
 
   //FIXME:JK: available since macOS 13.0
-  av_music_track = [av_audio_sequencer createAndAppendTrack];
-
-  av_music_track.destinationAudioUnit = av_audio_unit;
+  if(os_version.majorVersion >= 13){
+    av_music_track = [av_audio_sequencer createAndAppendTrack];
+    
+    av_music_track.destinationAudioUnit = av_audio_unit;
   
-  av_music_track.offsetTime = 0.0; // 0
+    av_music_track.offsetTime = 0.0; // 0
 
-  av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+    av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
 
-  //NOTE:JK: read-only
-  //  av_music_track.timeResolution = 64;
-
-  av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+    av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
   
-  av_music_track.usesAutomatedParameters = NO;
+    av_music_track.usesAutomatedParameters = NO;
   
-  av_music_track.muted = NO;
-  
+    av_music_track.muted = NO;
+  }else{
+    av_music_track = NULL;
+  }
+    
   scope_data = NULL;
 
   sub_block = 0;
@@ -2430,51 +2435,63 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 	  .start = 0.0,
 	  .length = 1.0,
 	};
-	  
-	[tempo_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
-	    *removeEvent = YES;
-	  }];
-
-	AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
-
-	double current_beat = (double) note_offset / 4.0;
-	  
-	[tempo_track addEvent:tempo_event atBeat:current_beat];
-      
-	/* schedule input buffer */
-	if(av_music_track != NULL){
-	  [av_music_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
+	
+	//FIXME:JK: available since macOS 13.0
+	if(os_version.majorVersion >= 13){
+	  [tempo_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
 	      *removeEvent = YES;
 	    }];
 	}
+       
+	//FIXME:JK: available since macOS 13.0
+	double current_beat = (double) note_offset / 4.0;
+
+	if(os_version.majorVersion >= 13){
+	  AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
+	  
+	  [tempo_track addEvent:tempo_event atBeat:current_beat];
+	}
+	
+	/* schedule input buffer */
+	//FIXME:JK: available since macOS 13.0
+	if(os_version.majorVersion >= 13){
+	  if(av_music_track != NULL){
+	    [av_music_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
+		*removeEvent = YES;
+	      }];
+	  }
+	}
 	    
-	for(k = 0; k < 128; k++){
-	  if(channel_data->input_data[k]->key_on > 0){
-	    AVMIDINoteEvent *av_midi_note_event;
+	//FIXME:JK: available since macOS 13.0
+	if(os_version.majorVersion >= 13){
+	  for(k = 0; k < 128; k++){
+	    if(channel_data->input_data[k]->key_on > 0){
+	      AVMIDINoteEvent *av_midi_note_event;
 
-	    GList *note;
+	      GList *note;
 	    
-	    note = channel_data->input_data[k]->note;
+	      note = channel_data->input_data[k]->note;
 
-	    while(note != NULL){
-	      guint x0_256th, x1_256th;
+	      while(note != NULL){
+		guint x0_256th, x1_256th;
 	    
-	      x0_256th = ags_note_get_x0_256th(note->data);
-	      x1_256th = ags_note_get_x1_256th(note->data);
+		x0_256th = ags_note_get_x0_256th(note->data);
+		x1_256th = ags_note_get_x1_256th(note->data);
 		
-	      double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
+		double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
 		
-	      av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
+		av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
 
-	      double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
+		double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 		
-	      [av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
+		[av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
 
-	      /* iterate */
-	      note = note->next;
+		/* iterate */
+		note = note->next;
+	      }
 	    }
 	  }
-	}	  
+	}
       }
       
       ags_audio_buffer_util_clear_buffer(NULL,
@@ -3031,6 +3048,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
   AVAudioFormat *av_input_format;
   AVAudioPCMBuffer *av_output, *av_input;
   
+  NSOperatingSystemVersion os_version;
+  
   GList *start_iterate_data, *iterate_data;
 
   gboolean is_instrument;
@@ -3061,6 +3080,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 
   fx_audio_unit_audio = (AgsFxAudioUnitAudio *) data;
   
+  os_version = [[NSProcessInfo processInfo] operatingSystemVersion];
+
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_audio_unit_audio);
 
@@ -3122,22 +3143,26 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
   av_audio_sequencer.currentPositionInBeats = (double) note_offset / 4.0; // a 16th
 
   //FIXME:JK: available since macOS 13.0
-  av_music_track = [av_audio_sequencer createAndAppendTrack];
+  if(os_version.majorVersion >= 13){
+    av_music_track = [av_audio_sequencer createAndAppendTrack];
 
-  av_music_track.destinationAudioUnit = av_audio_unit;
+    av_music_track.destinationAudioUnit = av_audio_unit;
 
-  av_music_track.offsetTime = 0.0; // 0
+    av_music_track.offsetTime = 0.0; // 0
 
-  av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+    av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
 
-  //NOTE:JK: read-only
-  //  av_music_track.timeResolution = 64;
+    //NOTE:JK: read-only
+    //  av_music_track.timeResolution = 64;
 
-  av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+    av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
   
-  av_music_track.usesAutomatedParameters = NO;
+    av_music_track.usesAutomatedParameters = NO;
   
-  av_music_track.muted = NO;
+    av_music_track.muted = NO;
+  }else{
+    av_music_track = NULL;
+  }
   
   channel_data =
     ags_fx_audio_unit_iterate_channel_data = NULL;
@@ -3360,51 +3385,60 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 	  .start = 0.0,
 	  .length = 1.0,
 	};
-	  
-	[tempo_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
-	    *removeEvent = YES;
-	  }];
-
-	AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
-
-	double current_beat = (double) note_offset / 4.0;
-	  
-	[tempo_track addEvent:tempo_event atBeat:current_beat];
-      
-	/* schedule input buffer */
-	if(av_music_track != NULL){
-	  [av_music_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
+	
+	//FIXME:JK: available since macOS 13.0
+	if(os_version.majorVersion >= 13){
+	  [tempo_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
 	      *removeEvent = YES;
 	    }];
 	}
 
-	for(k = 0; k < 128; k++){
-	  if(channel_data->input_data[k]->key_on > 0){
-	    AVMIDINoteEvent *av_midi_note_event;
+	double current_beat = (double) note_offset / 4.0;
+	
+	if(os_version.majorVersion >= 13){
+	  AVExtendedTempoEvent *tempo_event = [[AVExtendedTempoEvent alloc] initWithTempo:bpm];
+	  
+	  [tempo_track addEvent:tempo_event atBeat:current_beat];
+	}
+	
+	/* schedule input buffer */
+	if(os_version.majorVersion >= 13){
+	  if(av_music_track != NULL){
+	    [av_music_track enumerateEventsInRange:beat_range usingBlock:^(AVMusicEvent *event, AVMusicTimeStamp *timeStamp, BOOL *removeEvent){
+		*removeEvent = YES;
+	      }];
+	  }
+	}
 
-	    GList *note;
+	if(os_version.majorVersion >= 13){
+	  for(k = 0; k < 128; k++){
+	    if(channel_data->input_data[k]->key_on > 0){
+	      AVMIDINoteEvent *av_midi_note_event;
 
-	    note = channel_data->input_data[k]->note;
+	      GList *note;
 
-	    if(note != NULL){	      
-	      while(note != NULL){
-		guint x0_256th, x1_256th;
+	      note = channel_data->input_data[k]->note;
+
+	      if(note != NULL){	      
+		while(note != NULL){
+		  guint x0_256th, x1_256th;
 	    
-		x0_256th = ags_note_get_x0_256th(note->data);
-		x1_256th = ags_note_get_x1_256th(note->data);
+		  x0_256th = ags_note_get_x0_256th(note->data);
+		  x1_256th = ags_note_get_x1_256th(note->data);
 	      
-		double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
+		  double note_event_duration = ((double) (x1_256th - x0_256th) / 64.0);
 		
-		av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
+		  av_midi_note_event = [[AVMIDINoteEvent alloc] initWithChannel:0 key:k velocity:127 duration:note_event_duration];
 
-		double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
+		  double note_event_current_beat = ((double) x0_256th / 16.0) / 4.0;
 
-		//		g_message("key [%d] -> x 256th %d - %d", k, x0_256th, x1_256th);
+		  //		g_message("key [%d] -> x 256th %d - %d", k, x0_256th, x1_256th);
 	      
-		[av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
+		  [av_music_track addEvent:av_midi_note_event atBeat:note_event_current_beat];
 
-		/* iterate */
-		note = note->next;
+		  /* iterate */
+		  note = note->next;
+		}
 	      }
 	    }
 	  }

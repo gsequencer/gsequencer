@@ -1,3 +1,8 @@
+ags (8.1.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved audio unit compatibility check since macOS 13.0
+
 ags (8.1.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
