@@ -97,6 +97,8 @@ ags_audio_unit_test_plugin(gchar *au_type,
 
   AVAudioPCMBuffer *av_output;
 
+  NSOperatingSystemVersion os_version;
+
   gdouble bpm;
   guint plugin_channels;
   gint status;
@@ -108,6 +110,8 @@ ags_audio_unit_test_plugin(gchar *au_type,
   pid_t p;
 
   @try {
+    os_version = [[NSProcessInfo processInfo] operatingSystemVersion];
+    
     bpm = 120.0;
     
     memset(&desc, 0, sizeof(desc));
@@ -273,19 +277,23 @@ ags_audio_unit_test_plugin(gchar *au_type,
     av_audio_sequencer.currentPositionInBeats = 0.0; // a 16th
 
     //FIXME:JK: available since macOS 13.0
-    av_music_track = [av_audio_sequencer createAndAppendTrack];
-
-    av_music_track.destinationAudioUnit = av_audio_unit;
+    if(os_version.majorVersion >= 13){
+      av_music_track = [av_audio_sequencer createAndAppendTrack];
+      
+      av_music_track.destinationAudioUnit = av_audio_unit;
   
-    av_music_track.offsetTime = 0.0; // 0
+      av_music_track.offsetTime = 0.0; // 0
 
-    av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
+      av_music_track.lengthInBeats = 19200.0 * 4.0; // a 16th
 
-    av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
+      av_music_track.lengthInSeconds = 19200.0 * 4.0 * (60.0 / bpm);
   
-    av_music_track.usesAutomatedParameters = NO;
+      av_music_track.usesAutomatedParameters = NO;
   
-    av_music_track.muted = NO;
+      av_music_track.muted = NO;
+    }else{
+      av_music_track = NULL;
+    }
 
     [audio_engine prepare];
     [audio_engine startAndReturnError:&ns_error];
