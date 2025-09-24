@@ -1,3 +1,8 @@
+ags (8.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsImportNotationSMFPopover
+
 ags (8.1.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
