@@ -1077,6 +1077,7 @@ libgsequencer_sources = files(
   'app/editor/ags_envelope_editor_callbacks.c',
   'app/editor/ags_envelope_info.c',
   'app/editor/ags_envelope_info_callbacks.c',
+  'app/editor/ags_import_notation_smf_popover.c',
   'app/editor/ags_machine_radio_button.c',
   'app/editor/ags_machine_radio_button_callbacks.c',
   'app/editor/ags_machine_selection.c',

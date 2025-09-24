@@ -29,6 +29,7 @@
 #include <ags/app/editor/ags_crop_note_popover.h>
 #include <ags/app/editor/ags_select_note_popover.h>
 #include <ags/app/editor/ags_position_notation_cursor_popover.h>
+#include <ags/app/editor/ags_import_notation_smf_popover.h>
 
 #if 0
 #include <ags/app/editor/ags_position_sheet_cursor_popover.h>
@@ -284,6 +285,15 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   g_action_map_add_action(G_ACTION_MAP(action_group),
 			  G_ACTION(action));
 
+  /* import notation smf */
+  action = g_simple_action_new_stateful("import_notation_smf",
+					NULL,
+					NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_composite_toolbar_menu_tool_popup_notation_import_smf_callback), composite_toolbar);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+
   /* position sheet cursor */
   action = g_simple_action_new_stateful("position_sheet_cursor",
 					NULL,
@@ -447,6 +457,10 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   composite_toolbar->notation_position_cursor = (GtkPopover *) ags_position_notation_cursor_popover_new();
   gtk_box_append(composite_toolbar->tool_box,
 		 (GtkWidget *) composite_toolbar->notation_position_cursor); 
+
+  composite_toolbar->notation_import_smf = (GtkPopover *) ags_import_notation_smf_popover_new();
+  gtk_box_append(composite_toolbar->tool_box,
+		 (GtkWidget *) composite_toolbar->notation_import_smf); 
 
 #if 0
   composite_toolbar->sheet_position_cursor = (GtkPopover *) ags_position_sheet_cursor_popover_new();
@@ -633,6 +647,7 @@ ags_composite_toolbar_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_crop_note));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_select_note));
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_position_cursor));
+  ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->notation_import_smf));
 
 #if 0
   ags_connectable_connect(AGS_CONNECTABLE(composite_toolbar->sheet_position_cursor));
@@ -668,6 +683,7 @@ ags_composite_toolbar_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_crop_note));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_select_note));
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_position_cursor));
+  ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->notation_import_smf));
 
 #if 0
   ags_connectable_disconnect(AGS_CONNECTABLE(composite_toolbar->sheet_position_cursor));
@@ -710,7 +726,7 @@ ags_composite_toolbar_connect_connection(AgsConnectable *connectable,
 
   if((GObject *) composite_toolbar->clear == connection){
     g_signal_connect_after(connection, "toggled",
-			   G_CALLBACK(ags_composite_toolbar_position_callback), composite_toolbar);
+			   G_CALLBACK(ags_composite_toolbar_clear_callback), composite_toolbar);
   }
 
   if((GObject *) composite_toolbar->select == connection){
@@ -778,7 +794,7 @@ ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
 
   if((GObject *) composite_toolbar->clear == connection){
     g_object_disconnect(connection, "any_signal::toggled",
-			G_CALLBACK(ags_composite_toolbar_position_callback),
+			G_CALLBACK(ags_composite_toolbar_clear_callback),
 			composite_toolbar,
 			NULL);
   }
@@ -1863,6 +1879,17 @@ ags_composite_toolbar_menu_tool_popup_new(AgsCompositeToolbar *composite_toolbar
 
 	    j++;
 	  }
+
+	  current_value = g_value_get_uint(value + i);
+	  
+	  if((AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_IMPORT_SMF & current_value) != 0){
+	    item = g_menu_item_new(i18n("import notation smf"),
+				   "composite_toolbar.import_notation_smf");
+	    g_menu_append_item(menu,
+			       item);
+
+	    j++;
+	  }
 	}else if(!g_strcmp0(popover[i],
 			    AGS_COMPOSITE_TOOLBAR_SCOPE_SHEET)){
 	  current_value = g_value_get_uint(value + i);
@@ -2426,6 +2453,7 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_crop_note));
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_select_note));
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_position_cursor));
+  ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->notation_import_smf));
 
 #if 0
   ags_applicable_reset(AGS_APPLICABLE(composite_toolbar->sheet_position_cursor));
@@ -2473,7 +2501,8 @@ ags_composite_toolbar_scope_create_and_connect(AgsCompositeToolbar *composite_to
 			 (AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_MOVE_NOTE |
 			  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_CROP_NOTE |
 			  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_SELECT_NOTE |
-			  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_POSITION_CURSOR));
+			  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_POSITION_CURSOR |
+			  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_IMPORT_SMF));
 	
 	initialized = TRUE;
       }

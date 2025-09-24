@@ -186,6 +186,7 @@ struct _AgsCompositeToolbar
   GtkPopover *notation_crop_note;  
   GtkPopover *notation_select_note;
   GtkPopover *notation_position_cursor;
+  GtkPopover *notation_import_smf;
   
   GtkPopover *sheet_position_cursor;
   GtkPopover *sheet_add_page;

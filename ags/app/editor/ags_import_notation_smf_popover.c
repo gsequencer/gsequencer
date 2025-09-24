@@ -568,26 +568,38 @@ ags_import_notation_smf_popover_reset(AgsApplicable *applicable)
 void
 ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notation_smf_popover)
 {
+  AgsWindow *window;
+  AgsCompositeEditor *composite_editor;
   AgsMachine *machine;
   
   AgsNotation *current_notation;
   AgsNote *note;
 
+  AgsMidiUtil midi_util;  
+
   AgsTimestamp *timestamp;
 
-  AgsMidiUtil midi_util;  
+  AgsApplicationContext *application_context;
+
+  GList *start_notation, *notation;
+  GList *list;
 
   xmlDoc *midi_doc;
   xmlXPathContext *xpath_context;
   xmlXPathObject *xpath_object;
   xmlNode *header_node, *tempo_node;
   xmlNode *time_signature_node;
+  xmlNode *midi_track_per_channel;
   xmlNode **node;
 
   xmlChar *str;
 
+  gchar *segmentation;
+
   gdouble sec_val;
   guint denominator, numerator;
+
+  gint midi_channel;
 
   guint audio_channels;
   
@@ -610,6 +622,13 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
     return;
   }
 
+  /* application context */
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+    
+  composite_editor = window->composite_editor;
+
   machine = composite_editor->selected_machine;
 
   midi_doc = import_notation_smf_popover->midi_doc;
@@ -619,7 +638,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 
   audio_channels = ags_audio_get_audio_channels(machine->audio);
   
-  /* bpm and first_offset */
+  /* MIDI header */
   header_node = NULL;
   
   xpath_context = xmlXPathNewContext(import_notation_smf_popover->midi_doc);
@@ -636,6 +655,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
     }
   }
 
+  /* tempo node */
   tempo_node = NULL;
   
   xpath_context = xmlXPathNewContext(import_notation_smf_popover->midi_doc);
@@ -656,6 +676,17 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
     return;
   }
 
+  /* division, tempo and bpm */
+  division = 96;
+
+  tempo = 500000;
+
+  bpm = 120.0;
+  
+  first_offset = 0;
+    
+  first_note_256th_offset = 0;
+
   str = xmlGetProp(header_node,
 		   BAD_CAST "division");
 
@@ -664,14 +695,11 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 			      10);
   
   xmlFree(str);
-  
+    
   if(tempo_node != NULL){
-    first_offset = 0;
-    
-    first_note_256th_offset = 0;
-    
     str = xmlGetProp(tempo_node,
 		     BAD_CAST "tempo");
+
     tempo = g_ascii_strtoull(str,
 			     NULL,
 			     10);
@@ -688,7 +716,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 
   delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;  
 
-  /* default length */
+  /* time signature and default length */
   time_signature_node = NULL;
   
   denominator = 4;
@@ -744,7 +772,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 
   timestamp->timer.ags_offset.offset = 0;
   
-  /* collect */
+  /* MIDI track */
   xpath_context = xmlXPathNewContext(midi_doc);
   xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track",
 			      xpath_context);
@@ -760,7 +788,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 
 	guint midi_channel;
 
-	midi_channnel = (guint) gtk_spin_button_get_value(import_notation_smf_popover->midi_channel);
+	midi_channel = (guint) gtk_spin_button_get_value(import_notation_smf_popover->midi_channel);
 	  
 	midi_track_per_channel = xmlNewNode(NULL,
 					    "midi-track");
@@ -842,7 +870,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 						      10);
 		  xmlFree(str);
 
-		  for(i = 0; i < audio_channels; i++){
+		  for(j = 0; j < audio_channels; j++){
 		    /* new note */
 		    note = ags_note_new();
 		    note->x[0] = x;
@@ -854,19 +882,21 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		    note->y = y;
 
 		    /* find notation */
+		    start_notation = ags_audio_get_notation(machine->audio);
+		    
 		    ags_timestamp_set_ags_offset(timestamp,
 						 AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
 
-		    notation = ags_notation_find_near_timestamp(notation_start, i,
+		    notation = ags_notation_find_near_timestamp(start_notation, j,
 								timestamp);
 	    
 		    if(notation == NULL){
 		      current_notation = ags_notation_new(NULL,
-							  i);
+							  j);
 		      ags_timestamp_set_ags_offset(current_notation->timestamp,
 						   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
 	      
-		      notation_start = ags_notation_add(notation_start,
+		      start_notation = ags_notation_add(start_notation,
 							current_notation);
 		    }else{
 		      current_notation = notation->data;
@@ -876,6 +906,9 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		    ags_notation_add_note(current_notation,
 					  note,
 					  FALSE);
+
+		    g_list_free_full(start_notation,
+				     (GDestroyNotify) g_object_unref);
 		  }
 		}else if(!g_ascii_strcasecmp(midi_event,
 					     "note-off")){
@@ -904,19 +937,19 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		  /* x */
 		  x = ags_midi_util_delta_time_to_offset(&midi_util,
 							 delay_factor,
-							 track_collection->division,
-							 track_collection->tempo,
-							 (glong) track_collection->bpm,
+							 division,
+							 tempo,
+							 (glong) bpm,
 							 delta_time);
-		  x -= track_collection->first_offset;
+		  x -= first_offset;
 
 		  x_256th = ags_midi_util_delta_time_to_note_256th_offset(&midi_util,
 									  delay_factor,
-									  track_collection->division,
-									  track_collection->tempo,
-									  (glong) track_collection->bpm,
+									  division,
+									  tempo,
+									  (glong) bpm,
 									  delta_time);
-		  x_256th -= track_collection->first_note_256th_offset;
+		  x_256th -= first_note_256th_offset;
 
 		  /* y */
 		  str = xmlGetProp(child,
@@ -937,14 +970,16 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		  xmlFree(str);
 
 		  /*  */
-		  for(i = 0; i < audio_channels; i++){
+		  for(j = 0; j < audio_channels; j++){
 		    list = NULL;
 	    
 		    /* find notation */
+		    start_notation = ags_audio_get_notation(machine->audio);
+
 		    ags_timestamp_set_ags_offset(timestamp,
 						 AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
 
-		    notation = ags_notation_find_near_timestamp(notation_start, i,
+		    notation = ags_notation_find_near_timestamp(start_notation, j,
 								timestamp);
 
 		    if(notation == NULL){
@@ -953,7 +988,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 			ags_timestamp_set_ags_offset(timestamp,
 						     AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET) - AGS_NOTATION_DEFAULT_OFFSET);
 
-			notation = ags_notation_find_near_timestamp(notation_start, i,
+			notation = ags_notation_find_near_timestamp(start_notation, j,
 								    timestamp);
 
 			/* find prev */
@@ -975,7 +1010,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 			  ags_timestamp_set_ags_offset(timestamp,
 						       AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET) - AGS_NOTATION_DEFAULT_OFFSET);
 
-			  notation = ags_notation_find_near_timestamp(notation_start, i,
+			  notation = ags_notation_find_near_timestamp(start_notation, j,
 								      timestamp);
 
 			  /* find prev */
@@ -1005,8 +1040,10 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		
 		      note->y = y;
 		    }	    
-		  }
 
+		    g_list_free_full(start_notation,
+				     (GDestroyNotify) g_object_unref);
+		  }
 		}
 
 		xmlFree(midi_event);

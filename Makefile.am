@@ -3382,6 +3382,7 @@ libgsequencer_editor_h_sources = \
 	ags/app/editor/ags_envelope_editor.h \
 	ags/app/editor/ags_envelope_info_callbacks.h \
 	ags/app/editor/ags_envelope_info.h \
+	ags/app/editor/ags_import_notation_smf_popover.h \
 	ags/app/editor/ags_machine_radio_button.h \
 	ags/app/editor/ags_machine_radio_button_callbacks.h \
 	ags/app/editor/ags_machine_selection.h \
@@ -3452,6 +3453,7 @@ libgsequencer_editor_c_sources = \
 	ags/app/editor/ags_envelope_info_callbacks.c \
 	ags/app/editor/ags_envelope_info.c \
 	ags/app/editor/ags_editor_history.c \
+	ags/app/editor/ags_import_notation_smf_popover.c \
 	ags/app/editor/ags_machine_radio_button.c \
 	ags/app/editor/ags_machine_radio_button_callbacks.c \
 	ags/app/editor/ags_machine_selection.c \
