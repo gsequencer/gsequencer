@@ -108,11 +108,17 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->format = ptr->format;
   new_ptr->samplerate = ptr->samplerate;
 
-  new_ptr->synth_oscillator_mode = ptr->synth_oscillator_mode;
+  new_ptr->osc_0_oscillator = ptr->osc_0_oscillator;
 
-  new_ptr->frequency = ptr->frequency;
-  new_ptr->phase = ptr->phase;
-  new_ptr->volume = ptr->volume;
+  new_ptr->osc_0_frequency = ptr->osc_0_frequency;
+  new_ptr->osc_0_phase = ptr->osc_0_phase;
+  new_ptr->osc_0_volume = ptr->osc_0_volume;
+
+  new_ptr->osc_1_oscillator = ptr->osc_1_oscillator;
+
+  new_ptr->osc_1_frequency = ptr->osc_1_frequency;
+  new_ptr->osc_1_phase = ptr->osc_1_phase;
+  new_ptr->osc_1_volume = ptr->osc_1_volume;
 
   new_ptr->env_0_attack = ptr->env_0_attack;
   new_ptr->env_0_decay = ptr->env_0_decay;
@@ -132,14 +138,16 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->noise_gain = ptr->noise_gain;
   new_ptr->noise_sends = ptr->noise_sends;
 
-  new_ptr->lfo_0_oscillator_mode = ptr->lfo_0_oscillator_mode;
+  new_ptr->lfo_0_oscillator = ptr->lfo_0_oscillator;
   new_ptr->lfo_0_frequency = ptr->lfo_0_frequency;
   new_ptr->lfo_0_depth = new_ptr->lfo_0_depth;
+  new_ptr->lfo_0_tuning = new_ptr->lfo_0_tuning;
   new_ptr->lfo_0_sends = new_ptr->lfo_0_sends;
 
-  new_ptr->lfo_1_oscillator_mode = ptr->lfo_1_oscillator_mode;
+  new_ptr->lfo_1_oscillator = ptr->lfo_1_oscillator;
   new_ptr->lfo_1_frequency = ptr->lfo_1_frequency;
   new_ptr->lfo_1_depth = new_ptr->lfo_1_depth;
+  new_ptr->lfo_1_tuning = new_ptr->lfo_1_tuning;
   new_ptr->lfo_1_sends = new_ptr->lfo_1_sends;
 
   new_ptr->frame_count = ptr->frame_count;
@@ -285,6 +293,23 @@ ags_modular_synth_util_set_buffer_length(AgsModularSynthUtil *modular_synth_util
   }
 
   modular_synth_util->buffer_length = buffer_length;
+
+  ags_common_pitch_util_set_buffer_length(modular_synth_util->pitch_util,
+					  modular_synth_util->pitch_type,
+					  buffer_length);
+
+  ags_noise_util_set_buffer_length(modular_synth_util->noise_util,
+				   buffer_length);
+
+  /* pitch buffer */
+  ags_stream_free(modular_synth_util->pitch_buffer);
+  
+  modular_synth_util->pitch_buffer = NULL;
+
+  if(buffer_length > 0){
+    modular_synth_util->pitch_buffer = ags_stream_alloc(buffer_length,
+							format);
+  }
 }
 
 /**
@@ -320,11 +345,33 @@ void
 ags_modular_synth_util_set_format(AgsModularSynthUtil *modular_synth_util,
 				  AgsSoundcardFormat format)
 {
+  guint buffer_length;
+
   if(modular_synth_util == NULL){
     return;
   }
 
   modular_synth_util->format = format;
+
+  buffer_length = modular_synth_util->buffer_length;
+
+  /*  */
+  ags_common_pitch_util_set_format(modular_synth_util->pitch_util,
+				   modular_synth_util->pitch_type,
+				   format);
+
+  ags_noise_util_set_format(modular_synth_util->noise_util,
+			    format);
+
+  /* pitch buffer */
+  ags_stream_free(modular_synth_util->pitch_buffer);
+
+  modular_synth_util->pitch_buffer = NULL;
+
+  if(buffer_length > 0){
+    modular_synth_util->pitch_buffer = ags_stream_alloc(buffer_length,
+							format);
+  }
 }
 
 /**
@@ -365,166 +412,333 @@ ags_modular_synth_util_set_samplerate(AgsModularSynthUtil *modular_synth_util,
   }
 
   modular_synth_util->samplerate = samplerate;
+
+  ags_common_pitch_util_set_samplerate(modular_synth_util->pitch_util,
+				       modular_synth_util->pitch_type,
+				       samplerate);
+
+  ags_noise_util_set_samplerate(modular_synth_util->noise_util,
+				samplerate);
 }
 
 /**
- * ags_modular_synth_util_get_synth_oscillator_mode:
+ * ags_modular_synth_util_get_osc_0_oscillator:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * 
- * Get synth oscillator mode of @modular_synth_util.
+ * Get osc-0 oscillator mode of @modular_synth_util.
  * 
- * Returns: the synth oscillator mode
+ * Returns: the osc-0 oscillator mode as #AgsSynthOscillatorMode-enum
  * 
  * Since: 8.2.0
  */
-guint
-ags_modular_synth_util_get_synth_oscillator_mode(AgsModularSynthUtil *modular_synth_util)
+AgsSynthOscillatorMode
+ags_modular_synth_util_get_osc_0_oscillator(AgsModularSynthUtil *modular_synth_util)
 {
   if(modular_synth_util == NULL){
-    return(0);
+    return(AGS_SYNTH_OSCILLATOR_SIN);
   }
 
-  return(modular_synth_util->synth_oscillator_mode);
+  return(modular_synth_util->osc_0_oscillator);
 }
 
 /**
- * ags_modular_synth_util_set_synth_oscillator_mode:
+ * ags_modular_synth_util_set_osc_0_oscillator:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
- * @synth_oscillator_mode: the synth oscillator mode
+ * @osc_0_oscillator: the osc-0 oscillator mode as #AgsSynthOscillatorMode-enum
  *
- * Set @synth_oscillator_mode of @modular_synth_util.
+ * Set @osc_0_oscillator of @modular_synth_util.
  *
  * Since: 8.2.0
  */
 void
-ags_modular_synth_util_set_synth_oscillator_mode(AgsModularSynthUtil *modular_synth_util,
-						 guint synth_oscillator_mode)
+ags_modular_synth_util_set_osc_0_oscillator(AgsModularSynthUtil *modular_synth_util,
+					    AgsSynthOscillatorMode osc_0_oscillator)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->synth_oscillator_mode = synth_oscillator_mode;
+  modular_synth_util->osc_0_oscillator = osc_0_oscillator;
 }
 
 /**
- * ags_modular_synth_util_get_frequency:
+ * ags_modular_synth_util_get_osc_0_frequency:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * 
- * Get frequency of @modular_synth_util.
+ * Get osc-0 frequency of @modular_synth_util.
  * 
- * Returns: the frequency
+ * Returns: the osc-0 frequency
  * 
  * Since: 8.2.0
  */
 gdouble
-ags_modular_synth_util_get_frequency(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_get_osc_0_frequency(AgsModularSynthUtil *modular_synth_util)
 {
   if(modular_synth_util == NULL){
     return(440.0);
   }
 
-  return(modular_synth_util->frequency);
+  return(modular_synth_util->osc_0_frequency);
 }
 
 /**
- * ags_modular_synth_util_set_frequency:
+ * ags_modular_synth_util_set_osc_0_frequency:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
- * @frequency: the frequency
+ * @osc_0_frequency: the osc-0 frequency
  *
- * Set @frequency of @modular_synth_util.
+ * Set @osc_0_frequency of @modular_synth_util.
  *
  * Since: 8.2.0
  */
 void
-ags_modular_synth_util_set_frequency(AgsModularSynthUtil *modular_synth_util,
-				     gdouble frequency)
+ags_modular_synth_util_set_osc_0_frequency(AgsModularSynthUtil *modular_synth_util,
+					   gdouble osc_0_frequency)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->frequency = frequency;
+  modular_synth_util->osc_0_frequency = osc_0_frequency;
 }
 
 /**
- * ags_modular_synth_util_get_phase:
+ * ags_modular_synth_util_get_osc_0_phase:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * 
- * Get phase of @modular_synth_util.
+ * Get osc-0 phase of @modular_synth_util.
  * 
- * Returns: the phase
+ * Returns: the osc-0 phase
  * 
  * Since: 8.2.0
  */
 gdouble
-ags_modular_synth_util_get_phase(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_get_osc_0_phase(AgsModularSynthUtil *modular_synth_util)
 {
   if(modular_synth_util == NULL){
     return(1.0);
   }
 
-  return(modular_synth_util->phase);
+  return(modular_synth_util->osc_0_phase);
 }
 
 /**
- * ags_modular_synth_util_set_phase:
+ * ags_modular_synth_util_set_osc_0_phase:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
- * @phase: the phase
+ * @osc_0_phase: the osc-0 phase
  *
- * Set @phase of @modular_synth_util.
+ * Set @osc_0_phase of @modular_synth_util.
  *
  * Since: 8.2.0
  */
 void
-ags_modular_synth_util_set_phase(AgsModularSynthUtil *modular_synth_util,
-				 gdouble phase)
+ags_modular_synth_util_set_osc_0_phase(AgsModularSynthUtil *modular_synth_util,
+				       gdouble osc_0_phase)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->phase = phase;
+  modular_synth_util->osc_0_phase = osc_0_phase;
 }
 
 /**
- * ags_modular_synth_util_get_volume:
+ * ags_modular_synth_util_get_osc_0_volume:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * 
- * Get volume of @modular_synth_util.
+ * Get osc-0 volume of @modular_synth_util.
  * 
- * Returns: the volume
+ * Returns: the osc-0 volume
  * 
  * Since: 8.2.0
  */
 gdouble
-ags_modular_synth_util_get_volume(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_get_osc_0_volume(AgsModularSynthUtil *modular_synth_util)
 {
   if(modular_synth_util == NULL){
     return(1.0);
   }
 
-  return(modular_synth_util->volume);
+  return(modular_synth_util->osc_0_volume);
 }
 
 /**
- * ags_modular_synth_util_set_volume:
+ * ags_modular_synth_util_set_osc_0_volume:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
- * @volume: the volume
+ * @osc_0_volume: the osc-0 volume
  *
- * Set @volume of @modular_synth_util.
+ * Set @osc_0_volume of @modular_synth_util.
  *
  * Since: 8.2.0
  */
 void
-ags_modular_synth_util_set_volume(AgsModularSynthUtil *modular_synth_util,
-				  gdouble volume)
+ags_modular_synth_util_set_osc_0_volume(AgsModularSynthUtil *modular_synth_util,
+					gdouble osc_0_volume)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->volume = volume;
+  modular_synth_util->osc_0_volume = osc_0_volume;
+}
+
+/**
+ * ags_modular_synth_util_get_osc_1_oscillator:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * 
+ * Get osc-1 oscillator mode of @modular_synth_util.
+ * 
+ * Returns: the osc-1 oscillator mode as #AgsSynthOscillatorMode-enum
+ * 
+ * Since: 8.2.0
+ */
+AgsSynthOscillatorMode
+ags_modular_synth_util_get_osc_1_oscillator(AgsModularSynthUtil *modular_synth_util)
+{
+  if(modular_synth_util == NULL){
+    return(AGS_SYNTH_OSCILLATOR_SIN);
+  }
+
+  return(modular_synth_util->osc_1_oscillator);
+}
+
+/**
+ * ags_modular_synth_util_set_osc_1_oscillator:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @osc_1_oscillator: the osc-1 oscillator mode as #AgsSynthOscillatorMode-enum
+ *
+ * Set @osc_1_oscillator of @modular_synth_util.
+ *
+ * Since: 8.2.0
+ */
+void
+ags_modular_synth_util_set_osc_1_oscillator(AgsModularSynthUtil *modular_synth_util,
+					    AgsSynthOscillatorMode osc_1_oscillator)
+{
+  if(modular_synth_util == NULL){
+    return;
+  }
+
+  modular_synth_util->osc_1_oscillator = osc_1_oscillator;
+}
+
+/**
+ * ags_modular_synth_util_get_osc_1_frequency:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * 
+ * Get osc-1 frequency of @modular_synth_util.
+ * 
+ * Returns: the osc-1 frequency
+ * 
+ * Since: 8.2.0
+ */
+gdouble
+ags_modular_synth_util_get_osc_1_frequency(AgsModularSynthUtil *modular_synth_util)
+{
+  if(modular_synth_util == NULL){
+    return(440.0);
+  }
+
+  return(modular_synth_util->osc_1_frequency);
+}
+
+/**
+ * ags_modular_synth_util_set_osc_1_frequency:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @osc_1_frequency: the osc-1 frequency
+ *
+ * Set @osc_1_frequency of @modular_synth_util.
+ *
+ * Since: 8.2.0
+ */
+void
+ags_modular_synth_util_set_osc_1_frequency(AgsModularSynthUtil *modular_synth_util,
+					   gdouble osc_1_frequency)
+{
+  if(modular_synth_util == NULL){
+    return;
+  }
+
+  modular_synth_util->osc_1_frequency = osc_1_frequency;
+}
+
+/**
+ * ags_modular_synth_util_get_osc_1_phase:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * 
+ * Get osc-1 phase of @modular_synth_util.
+ * 
+ * Returns: the osc-1 phase
+ * 
+ * Since: 8.2.0
+ */
+gdouble
+ags_modular_synth_util_get_osc_1_phase(AgsModularSynthUtil *modular_synth_util)
+{
+  if(modular_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(modular_synth_util->osc_1_phase);
+}
+
+/**
+ * ags_modular_synth_util_set_osc_1_phase:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @osc_1_phase: the osc-1 phase
+ *
+ * Set @osc_1_phase of @modular_synth_util.
+ *
+ * Since: 8.2.0
+ */
+void
+ags_modular_synth_util_set_osc_1_phase(AgsModularSynthUtil *modular_synth_util,
+				       gdouble osc_1_phase)
+{
+  if(modular_synth_util == NULL){
+    return;
+  }
+
+  modular_synth_util->osc_1_phase = osc_1_phase;
+}
+
+/**
+ * ags_modular_synth_util_get_osc_1_volume:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * 
+ * Get osc-1 volume of @modular_synth_util.
+ * 
+ * Returns: the osc-1 volume
+ * 
+ * Since: 8.2.0
+ */
+gdouble
+ags_modular_synth_util_get_osc_1_volume(AgsModularSynthUtil *modular_synth_util)
+{
+  if(modular_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(modular_synth_util->osc_1_volume);
+}
+
+/**
+ * ags_modular_synth_util_set_osc_1_volume:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @osc_1_volume: the osc-1 volume
+ *
+ * Set @osc_1_volume of @modular_synth_util.
+ *
+ * Since: 8.2.0
+ */
+void
+ags_modular_synth_util_set_osc_1_volume(AgsModularSynthUtil *modular_synth_util,
+					gdouble osc_1_volume)
+{
+  if(modular_synth_util == NULL){
+    return;
+  }
+
+  modular_synth_util->osc_1_volume = osc_1_volume;
 }
 
 /**
@@ -1132,43 +1346,43 @@ ags_modular_synth_util_set_env_1_sends(AgsModularSynthUtil *modular_synth_util,
 }
 
 /**
- * ags_modular_synth_util_get_lfo_0_oscillator_mode:
+ * ags_modular_synth_util_get_lfo_0_oscillator:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * 
  * Get lfo-0 oscillator mode of @modular_synth_util.
  * 
- * Returns: the lfo-0 oscillator mode
+ * Returns: the lfo-0 oscillator mode as #AgsSynthOscillatorMode-enum
  * 
  * Since: 8.2.0
  */
-guint
-ags_modular_synth_util_get_lfo_0_oscillator_mode(AgsModularSynthUtil *modular_synth_util)
+AgsSynthOscillatorMode
+ags_modular_synth_util_get_lfo_0_oscillator(AgsModularSynthUtil *modular_synth_util)
 {
   if(modular_synth_util == NULL){
-    return(0);
+    return(AGS_SYNTH_OSCILLATOR_SIN);
   }
 
-  return(modular_synth_util->lfo_0_synth_oscillator_mode);
+  return(modular_synth_util->lfo_0_oscillator);
 }
 
 /**
- * ags_modular_synth_util_set_lfo_0_synth_oscillator_mode:
+ * ags_modular_synth_util_set_lfo_0_synth_oscillator:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
- * @lfo_0_oscillator_mode: the lfo-0 oscillator mode
+ * @lfo_0_oscillator: the lfo-0 oscillator mode as #AgsSynthOscillatorMode-enum
  *
- * Set @lfo_0_oscillator_mode of @modular_synth_util.
+ * Set @lfo_0_oscillator of @modular_synth_util.
  *
  * Since: 8.2.0
  */
 void
-ags_modular_synth_util_set_lfo_0_oscillator_mode(AgsModularSynthUtil *modular_synth_util,
-						 guint lfo_0_oscillator_mode)
+ags_modular_synth_util_set_lfo_0_oscillator(AgsModularSynthUtil *modular_synth_util,
+					    AgsSynthOscillatorMode lfo_0_oscillator)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->lfo_0_synth_oscillator_mode = lfo_0_synth_oscillator_mode;
+  modular_synth_util->lfo_0_oscillator = lfo_0_oscillator;
 }
 
 /**
@@ -1334,43 +1548,43 @@ ags_modular_synth_util_set_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
 }
 
 /**
- * ags_modular_synth_util_get_lfo_1_oscillator_mode:
+ * ags_modular_synth_util_get_lfo_1_oscillator:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * 
  * Get lfo-1 oscillator mode of @modular_synth_util.
  * 
- * Returns: the lfo-1 oscillator mode
+ * Returns: the lfo-1 oscillator mode as #AgsSynthOscillatorMode-mode
  * 
  * Since: 8.2.0
  */
-guint
-ags_modular_synth_util_get_lfo_1_oscillator_mode(AgsModularSynthUtil *modular_synth_util)
+AgsSynthOscillatorMode
+ags_modular_synth_util_get_lfo_1_oscillator(AgsModularSynthUtil *modular_synth_util)
 {
   if(modular_synth_util == NULL){
-    return(0);
+    return(AGS_SYNTH_OSCILLATOR_SIN);
   }
 
-  return(modular_synth_util->lfo_1_synth_oscillator_mode);
+  return(modular_synth_util->lfo_1_oscillator);
 }
 
 /**
- * ags_modular_synth_util_set_lfo_1_synth_oscillator_mode:
+ * ags_modular_synth_util_set_lfo_1_synth_oscillator:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
- * @lfo_1_oscillator_mode: the lfo-1 oscillator mode
+ * @lfo_1_oscillator: the lfo-1 oscillator mode
  *
- * Set @lfo_1_oscillator_mode of @modular_synth_util.
+ * Set @lfo_1_oscillator of @modular_synth_util.
  *
  * Since: 8.2.0
  */
 void
-ags_modular_synth_util_set_lfo_1_oscillator_mode(AgsModularSynthUtil *modular_synth_util,
-						 guint lfo_1_oscillator_mode)
+ags_modular_synth_util_set_lfo_1_oscillator(AgsModularSynthUtil *modular_synth_util,
+					    AgsSynthOscillatorMode lfo_1_oscillator)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->lfo_1_synth_oscillator_mode = lfo_1_synth_oscillator_mode;
+  modular_synth_util->lfo_1_oscillator = lfo_1_oscillator;
 }
 
 /**

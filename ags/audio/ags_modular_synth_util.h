@@ -43,11 +43,17 @@ G_BEGIN_DECLS
       .buffer_length = 0,						\
       .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
       .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
-      .synth_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN,		\
-      .frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY,		\
-      .phase = 0.0,							\
-      .volume = 1.0,							\
-      .pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,	\
+      .osc_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
+      .osc_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY,	\
+      .osc_0_phase = 0.0,						\
+      .osc_0_volume = 1.0,						\
+      .osc_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
+      .osc_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY,	\
+      .osc_1_phase = 0.0,						\
+      .osc_1_volume = 1.0,						\
+      .pitch_util = NULL,						\
+      .pitch_buffer = NULL,						\
+      .pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,		\
       .pitch_base_key = 440.0						\
       .pitch_tuning = 0.0						\
       .env_0_attack = 1.0,						\
@@ -62,19 +68,20 @@ G_BEGIN_DECLS
       .env_1_release = 1.0,						\
       .env_1_gain = 1.0,						\
       .env_1_sends = {0,},						\
+      .noise_util = NULL,						\
       .noise_frequency = 220.0,						\
       .noise_gain = 1.0,						\
       .noise_sends = {0,},						\
-      .lfo_0_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN,		\
+      .lfo_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,		\
       .lfo_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_0_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
+      .lfo_0_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,			\
       .lfo_0_sends = {0,},						\
-      .lfo_1_oscillator_mode = AGS_SYNTH_OSCILLATOR_SIN,		\
+      .lfo_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,		\
       .lfo_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_1_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
+      .lfo_1_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,			\
       .lfo_1_sends = {0,},						\
-      .volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME,			\
-      .tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,			\
       .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),		\
       .offset = 0,							\
       .note_256th_mode = TRUE,						\
@@ -97,11 +104,21 @@ struct _AgsModularSynthUtil
   AgsSoundcardFormat format;
   guint samplerate;
 
-  guint synth_oscillator_mode;
+  guint osc_0_oscillator;
   
-  gdouble frequency;
-  gdouble phase;
-  gdouble volume;
+  gdouble osc_0_frequency;
+  gdouble osc_0_phase;
+  gdouble osc_0_volume;
+
+  guint osc_1_oscillator;
+  
+  gdouble osc_1_frequency;
+  gdouble osc_1_phase;
+  gdouble osc_1_volume;
+
+  gpointer pitch_util;
+  
+  gpointer pitch_buffer;
 
   GType pitch_type;
   
@@ -139,6 +156,8 @@ struct _AgsModularSynthUtil
   gdouble lfo_1_tuning;
 
   gint lfo_1_sends[3];
+  
+  gpointer noise_util;
   
   gdouble noise_frequency;
   gdouble noise_gain;
@@ -180,21 +199,37 @@ guint ags_modular_synth_util_get_samplerate(AgsModularSynthUtil *modular_synth_u
 void ags_modular_synth_util_set_samplerate(AgsModularSynthUtil *modular_synth_util,
 					   guint samplerate);
 
-guint ags_modular_synth_util_get_synth_oscillator_mode(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_synth_oscillator_mode(AgsModularSynthUtil *modular_synth_util,
-						      guint synth_oscillator_mode);
+AgsSynthOscillatorMode ags_modular_synth_util_get_osc_0_oscillator(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_0_oscillator(AgsModularSynthUtil *modular_synth_util,
+						 AgsSynthOscillatorMode osc_0_oscillator);
 
-gdouble ags_modular_synth_util_get_frequency(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_frequency(AgsModularSynthUtil *modular_synth_util,
-					  gdouble frequency);
+gdouble ags_modular_synth_util_get_osc_0_frequency(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_0_frequency(AgsModularSynthUtil *modular_synth_util,
+						gdouble osc_0_frequency);
 
-gdouble ags_modular_synth_util_get_phase(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_phase(AgsModularSynthUtil *modular_synth_util,
-				      gdouble phase);
+gdouble ags_modular_synth_util_get_osc_0_phase(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_0_phase(AgsModularSynthUtil *modular_synth_util,
+					    gdouble osc_0_phase);
 
-gdouble ags_modular_synth_util_get_volume(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_volume(AgsModularSynthUtil *modular_synth_util,
-				       gdouble volume);
+gdouble ags_modular_synth_util_get_osc_0_volume(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_0_volume(AgsModularSynthUtil *modular_synth_util,
+					     gdouble osc_0_volume);
+
+AgsSynthOscillatorMode ags_modular_synth_util_get_osc_1_oscillator(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_1_oscillator(AgsModularSynthUtil *modular_synth_util,
+						 AgsSynthOscillatorMode osc_1_oscillator);
+
+gdouble ags_modular_synth_util_get_osc_1_frequency(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_1_frequency(AgsModularSynthUtil *modular_synth_util,
+						gdouble osc_1_frequency);
+
+gdouble ags_modular_synth_util_get_osc_1_phase(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_1_phase(AgsModularSynthUtil *modular_synth_util,
+					    gdouble osc_1_phase);
+
+gdouble ags_modular_synth_util_get_osc_1_volume(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_osc_1_volume(AgsModularSynthUtil *modular_synth_util,
+					     gdouble osc_1_volume);
 
 GType ags_modular_synth_util_get_pitch_type(AgsModularSynthUtil *modular_synth_util);
 void ags_modular_synth_util_set_pitch_type(AgsModularSynthUtil *modular_synth_util,
@@ -260,9 +295,9 @@ void ags_modular_synth_util_set_env_1_sends(AgsModularSynthUtil *modular_synth_u
 					    gint env_1_sends,
 					    guint env_1_sends_count);
 
-guint ags_modular_synth_util_get_lfo_0_oscillator_mode(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_lfo_0_oscillator_mode(AgsModularSynthUtil *modular_synth_util,
-						      guint lfo_0_oscillator_mode);
+AgsSynthOscillatorMode ags_modular_synth_util_get_lfo_0_oscillator(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_lfo_0_oscillator(AgsModularSynthUtil *modular_synth_util,
+						 AgsSynthOscillatorMode lfo_0_oscillator);
 
 gdouble ags_modular_synth_util_get_lfo_0_frequency(AgsModularSynthUtil *modular_synth_util);
 void ags_modular_synth_util_set_lfo_0_frequency(AgsModularSynthUtil *modular_synth_util,
@@ -282,9 +317,9 @@ void ags_modular_synth_util_set_lfo_0_sends(AgsModularSynthUtil *modular_synth_u
 					    gint lfo_0_sends,
 					    guint lfo_0_sends_count);
 
-guint ags_modular_synth_util_get_lfo_1_oscillator_mode(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_lfo_1_oscillator_mode(AgsModularSynthUtil *modular_synth_util,
-						      guint lfo_1_oscillator_mode);
+AgsSynthOscillatorMode ags_modular_synth_util_get_lfo_1_oscillator(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_lfo_1_oscillator(AgsModularSynthUtil *modular_synth_util,
+						 AgsSynthOscillatorMode lfo_1_oscillator);
 
 gdouble ags_modular_synth_util_get_lfo_1_frequency(AgsModularSynthUtil *modular_synth_util);
 void ags_modular_synth_util_set_lfo_1_frequency(AgsModularSynthUtil *modular_synth_util,

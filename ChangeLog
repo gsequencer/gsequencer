@@ -3,6 +3,7 @@ ags (8.2.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsModularSynth
 	* TODO:JK: implemented ags_modular_synth_util.[ch]
+	* TODO:JK: implemented ags-fx-modular-synth
 	* implemented AgsImportNotationSMFPopover
 
 ags (8.1.25)
