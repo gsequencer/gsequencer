@@ -32,10 +32,11 @@ G_BEGIN_DECLS
 #define AGS_TYPE_MODULAR_SYNTH_UTIL         (ags_modular_synth_util_get_type())
 
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY (440.0)
-#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY (12.0)
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY (6.0)
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH (0.0)
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_TUNING (0.0)
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_PITCH_TUNING (0.0)
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME (1.0)
-#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING (0.0)
 
 #define AGS_MODULAR_SYNTH_UTIL_INITIALIZER ((AgsModularSynthUtil) {		\
       .source = NULL,							\
@@ -46,28 +47,30 @@ G_BEGIN_DECLS
       .osc_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
       .osc_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY,	\
       .osc_0_phase = 0.0,						\
-      .osc_0_volume = 1.0,						\
+      .osc_0_volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME,		\
       .osc_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
       .osc_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY,	\
       .osc_1_phase = 0.0,						\
-      .osc_1_volume = 1.0,						\
+      .osc_1_volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME,		\
       .pitch_util = NULL,						\
       .pitch_buffer = NULL,						\
       .pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,		\
       .pitch_base_key = 440.0,						\
-      .pitch_tuning = 0.0,						\
-      .volume = 1.0,							\
+      .pitch_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_PITCH_TUNING,	\
+      .volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME,			\
       .env_0_attack = 1.0,						\
       .env_0_decay = 1.0,						\
       .env_0_sustain = 1.0,						\
       .env_0_release = 1.0,						\
       .env_0_gain = 1.0,						\
+      .env_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .env_0_sends = {0,},						\
       .env_1_attack = 1.0,						\
       .env_1_decay = 1.0,						\
       .env_1_sustain = 1.0,						\
       .env_1_release = 1.0,						\
       .env_1_gain = 1.0,						\
+      .env_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .env_1_sends = {0,},						\
       .noise_util = NULL,						\
       .noise_frequency = 220.0,						\
@@ -76,12 +79,12 @@ G_BEGIN_DECLS
       .lfo_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
       .lfo_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_0_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
-      .lfo_0_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,		\
+      .lfo_0_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_TUNING,	\
       .lfo_0_sends = {0,},						\
       .lfo_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
       .lfo_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_1_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
-      .lfo_1_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,		\
+      .lfo_1_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_TUNING,	\
       .lfo_1_sends = {0,},						\
       .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),		\
       .offset = 0,							\
