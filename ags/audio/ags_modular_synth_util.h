@@ -54,8 +54,9 @@ G_BEGIN_DECLS
       .pitch_util = NULL,						\
       .pitch_buffer = NULL,						\
       .pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,		\
-      .pitch_base_key = 440.0						\
-      .pitch_tuning = 0.0						\
+      .pitch_base_key = 440.0,						\
+      .pitch_tuning = 0.0,						\
+      .volume = 1.0,							\
       .env_0_attack = 1.0,						\
       .env_0_decay = 1.0,						\
       .env_0_sustain = 1.0,						\
@@ -72,15 +73,15 @@ G_BEGIN_DECLS
       .noise_frequency = 220.0,						\
       .noise_gain = 1.0,						\
       .noise_sends = {0,},						\
-      .lfo_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,		\
+      .lfo_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
       .lfo_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_0_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
-      .lfo_0_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,			\
+      .lfo_0_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,		\
       .lfo_0_sends = {0,},						\
-      .lfo_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,		\
+      .lfo_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
       .lfo_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_1_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
-      .lfo_1_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,			\
+      .lfo_1_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_TUNING,		\
       .lfo_1_sends = {0,},						\
       .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),		\
       .offset = 0,							\
@@ -90,9 +91,14 @@ G_BEGIN_DECLS
 typedef struct _AgsModularSynthUtil AgsModularSynthUtil;
 
 typedef enum{
-  AGS_MODULAR_SYNTH_SENDS_FREQUENCY   = 1,
-  AGS_MODULAR_SYNTH_SENDS_PHASE       = 1 <<  1,
-  AGS_MODULAR_SYNTH_SENDS_VOLUME      = 1 <<  2,
+  AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY         = 1,
+  AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE             = 1 <<  1,
+  AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME            = 1 <<  2,
+  AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY         = 1 <<  3,
+  AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE             = 1 <<  4,
+  AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME            = 1 <<  5,
+  AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING            = 1 <<  6,
+  AGS_MODULAR_SYNTH_SENDS_VOLUME                  = 1 <<  7,
 }AgsModularSynthSends;
 
 struct _AgsModularSynthUtil
@@ -104,13 +110,13 @@ struct _AgsModularSynthUtil
   AgsSoundcardFormat format;
   guint samplerate;
 
-  guint osc_0_oscillator;
+  AgsSynthOscillatorMode osc_0_oscillator;
   
   gdouble osc_0_frequency;
   gdouble osc_0_phase;
   gdouble osc_0_volume;
 
-  guint osc_1_oscillator;
+  AgsSynthOscillatorMode osc_1_oscillator;
   
   gdouble osc_1_frequency;
   gdouble osc_1_phase;
@@ -125,6 +131,8 @@ struct _AgsModularSynthUtil
   gdouble pitch_base_key;
   gdouble pitch_tuning;
   
+  gdouble volume;
+
   gdouble env_0_attack;
   gdouble env_0_decay;
   gdouble env_0_sustain;
@@ -143,14 +151,14 @@ struct _AgsModularSynthUtil
 
   gint env_1_sends[3];
   
-  gdouble lfo_0_oscillator;
+  AgsSynthOscillatorMode lfo_0_oscillator;
   gdouble lfo_0_frequency;
   gdouble lfo_0_depth;
   gdouble lfo_0_tuning;
 
   gint lfo_0_sends[3];
   
-  gdouble lfo_1_oscillator;
+  AgsSynthOscillatorMode lfo_1_oscillator;
   gdouble lfo_1_frequency;
   gdouble lfo_1_depth;
   gdouble lfo_1_tuning;

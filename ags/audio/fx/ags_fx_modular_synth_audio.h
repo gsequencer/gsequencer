@@ -74,6 +74,8 @@ struct _AgsFxModularSynthAudio
   
   AgsPort *synth_0_pitch_type;
   AgsPort *synth_0_pitch_tuning;
+
+  AgsPort *synth_0_volume;
   
   AgsPort *synth_0_env_0_attack;
   AgsPort *synth_0_env_0_decay;

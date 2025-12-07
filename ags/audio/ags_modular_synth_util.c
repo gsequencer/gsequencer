@@ -862,6 +862,46 @@ ags_modular_synth_util_set_pitch_tuning(AgsModularSynthUtil *modular_synth_util,
 }
 
 /**
+ * ags_modular_synth_util_get_volume:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * 
+ * Get volume of @modular_synth_util.
+ * 
+ * Returns: the volume
+ * 
+ * Since: 8.2.0
+ */
+gdouble
+ags_modular_synth_util_get_volume(AgsModularSynthUtil *modular_synth_util)
+{
+  if(modular_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(modular_synth_util->volume);
+}
+
+/**
+ * ags_modular_synth_util_set_volume:
+ * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @volume: the volume
+ *
+ * Set @volume of @modular_synth_util.
+ *
+ * Since: 8.2.0
+ */
+void
+ags_modular_synth_util_set_volume(AgsModularSynthUtil *modular_synth_util,
+				  gdouble volume)
+{
+  if(modular_synth_util == NULL){
+    return;
+  }
+
+  modular_synth_util->volume = volume;
+}
+
+/**
  * ags_modular_synth_util_get_env_0_attack:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * 
