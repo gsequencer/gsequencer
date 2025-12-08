@@ -30,6 +30,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MODULAR_SYNTH_UTIL         (ags_modular_synth_util_get_type())
+#define AGS_MODULAR_SYNTH_UTIL(ptr) ((AgsModularSynthUtil *)(ptr))
 
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR (AGS_SYNTH_OSCILLATOR_SIN)
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY (440.0)
@@ -317,7 +318,7 @@ void ags_modular_synth_util_set_env_0_frequency(AgsModularSynthUtil *modular_syn
 gint* ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
 					     guint *env_0_sends_count);
 void ags_modular_synth_util_set_env_0_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint env_0_sends,
+					    gint *env_0_sends,
 					    guint env_0_sends_count);
 
 gdouble ags_modular_synth_util_get_env_1_attack(AgsModularSynthUtil *modular_synth_util);
@@ -347,7 +348,7 @@ void ags_modular_synth_util_set_env_1_frequency(AgsModularSynthUtil *modular_syn
 gint* ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
 					     guint *env_1_sends_count);
 void ags_modular_synth_util_set_env_1_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint env_1_sends,
+					    gint *env_1_sends,
 					    guint env_1_sends_count);
 
 AgsSynthOscillatorMode ags_modular_synth_util_get_lfo_0_oscillator(AgsModularSynthUtil *modular_synth_util);
@@ -369,7 +370,7 @@ void ags_modular_synth_util_set_lfo_0_tuning(AgsModularSynthUtil *modular_synth_
 gint* ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
 					     guint *lfo_0_sends_count);
 void ags_modular_synth_util_set_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint lfo_0_sends,
+					    gint *lfo_0_sends,
 					    guint lfo_0_sends_count);
 
 AgsSynthOscillatorMode ags_modular_synth_util_get_lfo_1_oscillator(AgsModularSynthUtil *modular_synth_util);
@@ -391,7 +392,7 @@ void ags_modular_synth_util_set_lfo_1_tuning(AgsModularSynthUtil *modular_synth_
 gint* ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
 					     guint *lfo_1_sends_count);
 void ags_modular_synth_util_set_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint lfo_1_sends,
+					    gint *lfo_1_sends,
 					    guint lfo_1_sends_count);
 
 gdouble ags_modular_synth_util_get_noise_frequency(AgsModularSynthUtil *modular_synth_util);
@@ -405,7 +406,7 @@ void ags_modular_synth_util_set_noise_gain(AgsModularSynthUtil *modular_synth_ut
 gint* ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
 					     guint *noise_sends_count);
 void ags_modular_synth_util_set_noise_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint noise_sends,
+					    gint *noise_sends,
 					    guint noise_sends_count);
 
 guint ags_modular_synth_util_get_frame_count(AgsModularSynthUtil *modular_synth_util);
@@ -424,65 +425,17 @@ guint ags_modular_synth_util_get_offset_256th(AgsModularSynthUtil *modular_synth
 void ags_modular_synth_util_set_offset_256th(AgsModularSynthUtil *modular_synth_util,
 					     guint offset_256th);
 
-/* seq sin oscillator */
-void ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sin_s16(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sin_s24(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sin_s32(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sin_s64(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sin_float(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sin_double(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sin_complex(AgsModularSynthUtil *modular_synth_util);
+/* compute */
+void ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util);
 
-void ags_modular_synth_util_compute_sin(AgsModularSynthUtil *modular_synth_util);
-
-/* seq sawtooth oscillator */
-void ags_modular_synth_util_compute_sawtooth_s8(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sawtooth_s16(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sawtooth_s24(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sawtooth_s32(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sawtooth_s64(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sawtooth_float(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sawtooth_double(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_sawtooth_complex(AgsModularSynthUtil *modular_synth_util);
-
-void ags_modular_synth_util_compute_sawtooth(AgsModularSynthUtil *modular_synth_util);
-
-/* seq triangle oscillator */
-void ags_modular_synth_util_compute_triangle_s8(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_triangle_s16(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_triangle_s24(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_triangle_s32(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_triangle_s64(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_triangle_float(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_triangle_double(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_triangle_complex(AgsModularSynthUtil *modular_synth_util);
-
-void ags_modular_synth_util_compute_triangle(AgsModularSynthUtil *modular_synth_util);
-
-/* seq square oscillator */
-void ags_modular_synth_util_compute_square_s8(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_square_s16(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_square_s24(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_square_s32(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_square_s64(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_square_float(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_square_double(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_square_complex(AgsModularSynthUtil *modular_synth_util);
-
-void ags_modular_synth_util_compute_square(AgsModularSynthUtil *modular_synth_util);
-
-/* seq impulse oscillator */
-void ags_modular_synth_util_compute_impulse_s8(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_impulse_s16(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_impulse_s24(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_impulse_s32(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_impulse_s64(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_impulse_float(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_impulse_double(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_compute_impulse_complex(AgsModularSynthUtil *modular_synth_util);
-
-void ags_modular_synth_util_compute_impulse(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_compute(AgsModularSynthUtil *modular_synth_util);
 
 G_END_DECLS
 

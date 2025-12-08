@@ -32,6 +32,8 @@
 
 #include <ags/app/ags_machine.h>
 
+#include <ags/app/machine/ags_modulation_matrix.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_MODULAR_SYNTH                (ags_modular_synth_get_type())
@@ -59,8 +61,8 @@ struct _AgsModularSynth
   AgsRecallContainer *playback_play_container;
   AgsRecallContainer *playback_recall_container;
 
-  AgsRecallContainer *synth_play_container;
-  AgsRecallContainer *synth_recall_container;
+  AgsRecallContainer *modular_synth_play_container;
+  AgsRecallContainer *modular_synth_recall_container;
 
   AgsRecallContainer *volume_play_container;
   AgsRecallContainer *volume_recall_container;

@@ -45,6 +45,8 @@ typedef struct _AgsFxModularSynthAudioSignalClass AgsFxModularSynthAudioSignalCl
 struct _AgsFxModularSynthAudioSignal
 {
   AgsFxNotationAudioSignal fx_notation_audio_signal;
+
+  AgsAudioBufferUtil audio_buffer_util;
 };
 
 struct _AgsFxModularSynthAudioSignalClass

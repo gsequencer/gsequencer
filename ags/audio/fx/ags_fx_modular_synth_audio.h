@@ -58,13 +58,15 @@ struct _AgsFxModularSynthAudio
 {
   AgsFxNotationAudio fx_notation_audio;
 
-  AgsPort *synth_0_oscillator;
+  AgsPort *synth_0_osc_0_oscillator;
   
   AgsPort *synth_0_osc_0_octave;
   AgsPort *synth_0_osc_0_key;
 
   AgsPort *synth_0_osc_0_phase;
   AgsPort *synth_0_osc_0_volume;
+  
+  AgsPort *synth_0_osc_1_oscillator;
   
   AgsPort *synth_0_osc_1_octave;
   AgsPort *synth_0_osc_1_key;
@@ -139,7 +141,7 @@ struct _AgsFxModularSynthAudioChannelData
   
   gpointer parent;
 
-  gpointer synth_buffer_0;
+  gpointer synth_0_buffer;
   
   AgsModularSynthUtil *modular_synth_0_util;
 

@@ -290,9 +290,9 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     channel_data = fx_modular_synth_audio->scope_data[sound_scope]->channel_data[audio_channel];
     
-    /* synth-0 oscillator */
+    /* synth-0 osc-0 oscillator */
     g_object_get(fx_modular_synth_audio,
-		 "synth-0-oscillator", &port,
+		 "synth-0-osc-0-oscillator", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -301,7 +301,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_synth_oscillator_mode(channel_data->modular_synth_0,
+      ags_modular_synth_util_set_osc_0_oscillator_mode(channel_data->modular_synth_0,
 						       (guint) g_value_get_float(&value));
       
       g_object_unref(port);
@@ -309,9 +309,9 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     g_value_unset(&value);
     
-    /* synth-0 octave */
+    /* synth-0 osc-0 octave */
     g_object_get(fx_modular_synth_audio,
-		 "synth-0-octave", &port,
+		 "synth-0-osc-0-octave", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -327,9 +327,9 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     g_value_unset(&value);
     
-    /* synth-0 key */    
+    /* synth-0 osc-0 key */    
     g_object_get(fx_modular_synth_audio,
-		 "synth-0-key", &port,
+		 "synth-0-osc-0-key", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -350,9 +350,9 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     //    g_message("synth 0 - osc = %d, frequency = %f, octave = %f, key= %f", channel_data->modular_synth_0.synth_oscillator_mode, channel_data->modular_synth_0.frequency, octave, key);
       
-    /* synth-0 phase */    
+    /* synth-0 osc-0 phase */    
     g_object_get(fx_modular_synth_audio,
-		 "synth-0-phase", &port,
+		 "synth-0-osc-0-phase", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -361,8 +361,87 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_phase(channel_data->modular_synth_0,
-				       ((gdouble) samplerate / ags_modular_synth_util_get_frequency(channel_data->modular_synth_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+      ags_modular_synth_util_set_synth_0_phase(channel_data->modular_synth_0,
+					       ((gdouble) samplerate / ags_modular_synth_util_get_frequency(channel_data->modular_synth_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-1 oscillator */
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-osc-1-oscillator", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_osc_1_oscillator_mode(channel_data->modular_synth_0,
+						       (guint) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-1 octave */
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-osc-1-octave", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      octave = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-1 key */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-osc-1-key", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      key = (gdouble) g_value_get_float(&value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    ags_modular_synth_util_set_frequency(channel_data->modular_synth_0,
+					 exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
+
+    //    g_message("synth 0 - osc = %d, frequency = %f, octave = %f, key= %f", channel_data->modular_synth_0.synth_oscillator_mode, channel_data->modular_synth_0.frequency, octave, key);
+      
+    /* synth-0 osc-1 phase */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-osc-1-phase", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_synth_0_phase(channel_data->modular_synth_0,
+					       ((gdouble) samplerate / ags_modular_synth_util_get_frequency(channel_data->modular_synth_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
       
       g_object_unref(port);
     }
@@ -404,9 +483,8 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_common_pitch_util_set_tuning(channel_data->pitch_util,
-				       channel_data->pitch_type,
-				       (gdouble) g_value_get_float(&value));
+      ags_modular_synth_util_set_pitch_tuning(channel_data->modular_synth_util,
+					      (gdouble) g_value_get_float(&value));
       
       g_object_unref(port);
     }

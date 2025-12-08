@@ -19,8 +19,11 @@
 
 #include <ags/audio/ags_modular_synth_util.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_common_pitch_util.h>
+#include <ags/audio/ags_fluid_util.h>
+#include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
 #include <ags/audio/ags_envelope_util.h>
 #include <ags/audio/ags_lfo_synth_util.h>
 #include <ags/audio/ags_noise_util.h>
@@ -59,6 +62,8 @@ gboolean ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modul
 gboolean ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
 						gint *sends,
 						AgsModularSynthSends modular_synth_sends);
+
+extern void ags_fluid_interpolate_4th_order_util_config();
 
 extern gboolean interp_coeff_4th_order_initialized;
 
@@ -147,8 +152,6 @@ gpointer
 ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
 {
   AgsModularSynthUtil *new_ptr;
-
-  guint i;
   
   g_return_val_if_fail(ptr != NULL, NULL);
 
@@ -181,7 +184,7 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->env_0_gain = ptr->env_0_gain;
   new_ptr->env_0_frequency = ptr->env_0_frequency;
 
-  new_ptr->env_0_sends = ptr->env_0_sends;
+  memcpy(&(new_ptr->env_0_sends[0]), &(ptr->env_0_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 
   ags_stream_free(new_ptr->env_0_buffer);
 
@@ -199,7 +202,7 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->env_1_gain = ptr->env_1_gain;
   new_ptr->env_1_frequency = ptr->env_1_frequency;
 
-  new_ptr->env_1_sends = ptr->env_1_sends;
+  memcpy(&(new_ptr->env_1_sends[0]), &(ptr->env_1_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 
   ags_stream_free(new_ptr->env_1_buffer);
 
@@ -214,7 +217,8 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->lfo_0_frequency = ptr->lfo_0_frequency;
   new_ptr->lfo_0_depth = new_ptr->lfo_0_depth;
   new_ptr->lfo_0_tuning = new_ptr->lfo_0_tuning;
-  new_ptr->lfo_0_sends = new_ptr->lfo_0_sends;
+
+  memcpy(&(new_ptr->lfo_0_sends[0]), &(ptr->lfo_0_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 
   ags_stream_free(new_ptr->lfo_0_buffer);
 
@@ -229,7 +233,8 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->lfo_1_frequency = ptr->lfo_1_frequency;
   new_ptr->lfo_1_depth = new_ptr->lfo_1_depth;
   new_ptr->lfo_1_tuning = new_ptr->lfo_1_tuning;
-  new_ptr->lfo_1_sends = new_ptr->lfo_1_sends;
+
+  memcpy(&(new_ptr->lfo_1_sends[0]), &(ptr->lfo_1_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 
   ags_stream_free(new_ptr->lfo_1_buffer);
 
@@ -242,7 +247,8 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   
   new_ptr->noise_frequency = ptr->noise_frequency;
   new_ptr->noise_gain = ptr->noise_gain;
-  new_ptr->noise_sends = ptr->noise_sends;
+
+  memcpy(&(new_ptr->noise_sends[0]), &(ptr->noise_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 
   ags_stream_free(new_ptr->noise_buffer);
 
@@ -422,7 +428,7 @@ ags_modular_synth_util_set_buffer_length(AgsModularSynthUtil *modular_synth_util
 
   if(buffer_length > 0){
     modular_synth_util->pitch_buffer = ags_stream_alloc(buffer_length,
-							format);
+							modular_synth_util->format);
   }
 
   /* env-0 */
@@ -1338,7 +1344,11 @@ ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
     return(NULL);
   }
 
-  return(&(modular_synth_util->env_0_sends));
+  if(env_0_sends_count != NULL){
+    env_0_sends_count[0] = AGS_MODULAR_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(modular_synth_util->env_0_sends[0]));
 }
 
 /**
@@ -1352,14 +1362,14 @@ ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_env_0_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint env_0_sends,
+				       gint *env_0_sends,
 				       guint env_0_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->env_0_sends = *env_0_sends;
+  memcpy(&(modular_synth_util->env_0_sends[0]), env_0_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 }
 
 /**
@@ -1623,7 +1633,11 @@ ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
     return(NULL);
   }
 
-  return(&(modular_synth_util->env_1_sends));
+  if(env_1_sends_count != NULL){
+    env_1_sends_count[0] = AGS_MODULAR_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(modular_synth_util->env_1_sends[0]));
 }
 
 /**
@@ -1637,14 +1651,14 @@ ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_env_1_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint env_1_sends,
+				       gint *env_1_sends,
 				       guint env_1_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->env_1_sends = *env_1_sends;
+  memcpy(&(modular_synth_util->env_1_sends[0]), env_1_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 }
 
 /**
@@ -1828,7 +1842,11 @@ ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
     return(NULL);
   }
 
-  return(&(modular_synth_util->lfo_0_sends));
+  if(lfo_0_sends_count != NULL){
+    lfo_0_sends_count[0] = AGS_MODULAR_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(modular_synth_util->lfo_0_sends[0]));
 }
 
 /**
@@ -1842,14 +1860,14 @@ ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint lfo_0_sends,
+				       gint *lfo_0_sends,
 				       guint lfo_0_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->lfo_0_sends = *lfo_0_sends;
+  memcpy(&(modular_synth_util->lfo_0_sends[0]), lfo_0_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 }
 
 /**
@@ -2033,7 +2051,11 @@ ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
     return(NULL);
   }
 
-  return(&(modular_synth_util->lfo_1_sends));
+  if(lfo_1_sends_count != NULL){
+    lfo_1_sends_count[0] = AGS_MODULAR_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(modular_synth_util->lfo_1_sends[0]));
 }
 
 /**
@@ -2047,14 +2069,14 @@ ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint lfo_1_sends,
+				       gint *lfo_1_sends,
 				       guint lfo_1_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  modular_synth_util->lfo_1_sends = *lfo_1_sends;
+  memcpy(&(modular_synth_util->lfo_1_sends[0]), lfo_1_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 }
 
 /**
@@ -2155,7 +2177,11 @@ ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
     return(NULL);
   }
 
-  return(&(modular_synth_util->noise_sends));
+  if(noise_sends_count != NULL){
+    noise_sends_count[0] = AGS_MODULAR_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(modular_synth_util->noise_sends[0]));
 }
 
 /**
@@ -2169,15 +2195,16 @@ ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_noise_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint noise_sends,
+				       gint *noise_sends,
 				       guint noise_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
-
-  modular_synth_util->noise_sends = *noise_sends;
+  
+  memcpy(&(modular_synth_util->noise_sends[0]), noise_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
 }
+
 /**
  * ags_modular_synth_util_get_frame_count:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
@@ -2540,11 +2567,12 @@ ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
 
 /* seq sin oscillator */
 void
-ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 {
   gint8 *source, *tmp_source;
 
   guint source_stride;
+  guint buffer_length;
   guint samplerate;
 
   guint nth_sends;
@@ -2605,6 +2633,14 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  osc_0_frequency = modular_synth_util->osc_0_frequency;
+  osc_0_phase = modular_synth_util->osc_0_phase;
+  osc_0_volume = modular_synth_util->osc_0_volume;
+
+  osc_1_frequency = modular_synth_util->osc_1_frequency;
+  osc_1_phase = modular_synth_util->osc_1_phase;
+  osc_1_volume = modular_synth_util->osc_1_volume;
+  
   pitch_buffer = modular_synth_util->pitch_buffer;
   
   frame_count = modular_synth_util->frame_count;
@@ -2615,7 +2651,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
   /* env-0 */
   env_0_has_sends = FALSE;
   
-  for(nth_sends; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
+  for(nth_sends = 0; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
     if(modular_synth_util->env_0_sends[nth_sends] != 0){
       env_0_has_sends = TRUE;
 
@@ -2635,9 +2671,6 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
     ags_envelope_util_set_format(modular_synth_util->env_0_util,
 				 modular_synth_util->format);
-
-    ags_envelope_util_set_samplerate(modular_synth_util->env_0_util,
-				     samplerate);
 
     tmp_offset = offset;
     
@@ -2664,23 +2697,26 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
 				   tmp_offset);
+
+      env_amount = 1.0;
+      env_volume = 1.0;
       
       if((double) tmp_offset >= 0.0 &&
 	 (double) tmp_offset < (double) frame_count / 4.0){
 	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
 	       (double) tmp_offset < (double) frame_count / 2.0){
 	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
 	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
 	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
 	       (double) tmp_offset < (double) frame_count){
 	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
@@ -2699,7 +2735,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
   /* env-1 */
   env_1_has_sends = FALSE;
   
-  for(nth_sends; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
+  for(nth_sends = 0; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
     if(modular_synth_util->env_1_sends[nth_sends] != 0){
       env_1_has_sends = TRUE;
 
@@ -2719,9 +2755,6 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
     ags_envelope_util_set_format(modular_synth_util->env_1_util,
 				 modular_synth_util->format);
-
-    ags_envelope_util_set_samplerate(modular_synth_util->env_1_util,
-				     samplerate);
 
     tmp_offset = offset;
     
@@ -2749,22 +2782,25 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
       
+      env_amount = 1.0;
+      env_volume = 1.0;
+
       if((double) tmp_offset >= 0.0 &&
 	 (double) tmp_offset < (double) frame_count / 4.0){
 	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
 	       (double) tmp_offset < (double) frame_count / 2.0){
 	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
 	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
 	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
 	       (double) tmp_offset < (double) frame_count){
 	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (frame_count / 4.0)));
+	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
       }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
@@ -2783,7 +2819,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
-  for(nth_sends; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
+  for(nth_sends = 0; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
     if(modular_synth_util->lfo_0_sends[nth_sends] != 0){
       lfo_0_has_sends = TRUE;
 
@@ -2807,25 +2843,51 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
     ags_lfo_synth_util_set_lfo_synth_oscillator_mode(modular_synth_util->lfo_0_util,
 						     modular_synth_util->lfo_0_oscillator);
 
-    ags_lfo_synth_util_set_lfo_frequency(modular_synth_util->lfo_0_util,
-					 modular_synth_util->lfo_0_frequency);
+    ags_lfo_synth_util_set_frequency(modular_synth_util->lfo_0_util,
+				     modular_synth_util->lfo_0_frequency);
 
     ags_lfo_synth_util_set_lfo_depth(modular_synth_util->lfo_0_util,
 				     modular_synth_util->lfo_0_depth);
   
-    ags_lfo_synth_util_set_lfo_tuning(modular_synth_util->lfo_0_util,
+    ags_lfo_synth_util_set_tuning(modular_synth_util->lfo_0_util,
 				      modular_synth_util->lfo_0_tuning);
 
     ags_lfo_synth_util_set_offset(modular_synth_util->lfo_0_util,
 				  offset);
 
-    ags_lfo_synth_util_compute(modular_synth_util->lfo_0_util);
+    switch(modular_synth_util->lfo_0_oscillator){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_lfo_synth_util_compute_sin(modular_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_lfo_synth_util_compute_sawtooth(modular_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      {
+	ags_lfo_synth_util_compute_triangle(modular_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {
+	ags_lfo_synth_util_compute_square(modular_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_lfo_synth_util_compute_impulse(modular_synth_util->lfo_0_util);
+      }
+      break;
+    }
   }
 
   /* LFO-1 */
   lfo_1_has_sends = FALSE;
   
-  for(nth_sends; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
+  for(nth_sends = 0; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
     if(modular_synth_util->lfo_1_sends[nth_sends] != 0){
       lfo_1_has_sends = TRUE;
 
@@ -2849,25 +2911,51 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
     ags_lfo_synth_util_set_lfo_synth_oscillator_mode(modular_synth_util->lfo_1_util,
 						     modular_synth_util->lfo_1_oscillator);
 
-    ags_lfo_synth_util_set_lfo_frequency(modular_synth_util->lfo_1_util,
-					 modular_synth_util->lfo_1_frequency);
+    ags_lfo_synth_util_set_frequency(modular_synth_util->lfo_1_util,
+				     modular_synth_util->lfo_1_frequency);
 
     ags_lfo_synth_util_set_lfo_depth(modular_synth_util->lfo_1_util,
 				     modular_synth_util->lfo_1_depth);
   
-    ags_lfo_synth_util_set_lfo_tuning(modular_synth_util->lfo_1_util,
-				      modular_synth_util->lfo_1_tuning);
+    ags_lfo_synth_util_set_tuning(modular_synth_util->lfo_1_util,
+				  modular_synth_util->lfo_1_tuning);
 
     ags_lfo_synth_util_set_offset(modular_synth_util->lfo_1_util,
 				  offset);
 
-    ags_lfo_synth_util_compute(modular_synth_util->lfo_1_util);
+    switch(modular_synth_util->lfo_1_oscillator){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_lfo_synth_util_compute_sin(modular_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_lfo_synth_util_compute_sawtooth(modular_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      {
+	ags_lfo_synth_util_compute_triangle(modular_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {
+	ags_lfo_synth_util_compute_square(modular_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_lfo_synth_util_compute_impulse(modular_synth_util->lfo_1_util);
+      }
+      break;
+    }
   }
   
   /* noise */
   noise_has_sends = FALSE;
   
-  for(nth_sends; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
+  for(nth_sends = 0; nth_sends < AGS_MODULAR_SYNTH_SENDS_COUNT; nth_sends++){
     if(modular_synth_util->noise_sends[nth_sends] != 0){
       noise_has_sends = TRUE;
 
@@ -2888,8 +2976,8 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
     ags_noise_util_set_samplerate(modular_synth_util->noise_util,
 				  samplerate);
 
-    ags_noise_util_set_gain(modular_synth_util->noise_util,
-			    modular_synth_util->noise_gain);
+    ags_noise_util_set_volume(modular_synth_util->noise_util,
+			      modular_synth_util->noise_gain);
 
     ags_noise_util_set_frequency(modular_synth_util->noise_util,
 				 modular_synth_util->noise_frequency);
@@ -2907,17 +2995,12 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
     ags_v8double v_sine;
     ags_v8double v_buffer;
 
-    ags_v8double v_osc_0_frequency, tmp_v_osc_0_frequency;
-    ags_v8double v_osc_0_phase, tmp_v_osc_0_phase;
-    ags_v8double v_osc_0_volume, tmp_v_osc_0_volume;
-
-    ags_v8double v_osc_1_frequency, tmp_v_osc_1_frequency;
-    ags_v8double v_osc_1_phase, tmp_v_osc_1_phase;
-    ags_v8double v_osc_1_volume, tmp_v_osc_1_volume;
-  
-    ags_v8double v_pitch_tuning, tmp_v_pitch_tuning;
-
-    ags_v8double v_volume, tmp_v_volume;
+    ags_v8double v_osc_0_frequency;
+    ags_v8double tmp_v_osc_0_frequency;
+    ags_v8double v_osc_0_phase;
+    ags_v8double tmp_v_osc_0_phase;
+    ags_v8double v_osc_0_volume;
+    ags_v8double tmp_v_osc_0_volume;
 
     tmp_source = source;
     
@@ -3403,13 +3486,12 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
     ags_v8double v_sine;
     ags_v8double v_buffer;
 
-    ags_v8double v_osc_1_frequency, tmp_v_osc_1_frequency;
-    ags_v8double v_osc_1_phase, tmp_v_osc_1_phase;
-    ags_v8double v_osc_1_volume, tmp_v_osc_1_volume;
-
-    ags_v8double v_osc_1_frequency, tmp_v_osc_1_frequency;
-    ags_v8double v_osc_1_phase, tmp_v_osc_1_phase;
-    ags_v8double v_osc_1_volume, tmp_v_osc_1_volume;
+    ags_v8double v_osc_1_frequency;
+    ags_v8double tmp_v_osc_1_frequency;
+    ags_v8double v_osc_1_phase;
+    ags_v8double tmp_v_osc_1_phase;
+    ags_v8double v_osc_1_volume;
+    ags_v8double tmp_v_osc_1_volume;
   
     tmp_source = source;
     
@@ -3907,7 +3989,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
   dsp_phase_index = ags_fluid_phase_index(dsp_phase);
 
-  root_pitch_hz = exp2(((double) fluid_interpolate_4th_order_util->base_key - 48.0) / 12.0) * 440.0;
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
 
   //TODO:JK: implement me
   
@@ -3917,7 +3999,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
     gint row;
     
-    main_pitch_tuning = pitch_tuning;
+    main_pitch_tuning = modular_synth_util->pitch_tuning;
 
     /* env-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
@@ -3996,7 +4078,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
     gint row;
     
-    main_pitch_tuning = pitch_tuning;
+    main_pitch_tuning = modular_synth_util->pitch_tuning;
 
     /* env-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
@@ -4071,7 +4153,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 
   /* fill pitch */
   for(i = 0; i < buffer_length; i++){
-    source[i * source_stride] = pitch_buffer[i];
+    source[i * source_stride] = (gint8) pitch_buffer[i];
   }
   
   /* volume */
@@ -4084,7 +4166,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
   //TODO:JK: implement me
 
   for(; i < modular_synth_util->buffer_length;){
-    main_volume = volume;
+    main_volume = modular_synth_util->volume;
     
     /* env-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
@@ -4122,7 +4204,7 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
     }
 
     /* volume */
-    source[0] = (gint8) (((double) source[0]) * main_volume));
+    source[0] = (gint8) (((double) source[0]) * main_volume);
 
     source += source_stride;
     i++;
@@ -4130,269 +4212,49 @@ ags_modular_synth_util_compute_sin_s8(AgsModularSynthUtil *modular_synth_util)
 }
 
 void
-ags_modular_synth_util_compute_sin_s16(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_modular_synth_util_compute_sin_s24(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_modular_synth_util_compute_sin_s32(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_modular_synth_util_compute_sin_s64(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_modular_synth_util_compute_sin_float(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_modular_synth_util_compute_sin_double(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_modular_synth_util_compute_sin_complex(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_modular_synth_util_compute_sin(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-/* seq sawtooth oscillator */
-void
-ags_modular_synth_util_compute_sawtooth_s8(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth_s16(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth_s24(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth_s32(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth_s64(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth_float(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth_double(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth_complex(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_sawtooth(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-/* seq triangle oscillator */
-void
-ags_modular_synth_util_compute_triangle_s8(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle_s16(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle_s24(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle_s32(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle_s64(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle_float(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle_double(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle_complex(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_triangle(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-/* seq square oscillator */
-void
-ags_modular_synth_util_compute_square_s8(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square_s16(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square_s24(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square_s32(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square_s64(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square_float(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square_double(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square_complex(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_square(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-/* seq impulse oscillator */
-void
-ags_modular_synth_util_compute_impulse_s8(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse_s16(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse_s24(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse_s32(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse_s64(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse_float(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse_double(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse_complex(AgsModularSynthUtil *modular_synth_util)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_modular_synth_util_compute_impulse(AgsModularSynthUtil *modular_synth_util)
+ags_modular_synth_util_compute(AgsModularSynthUtil *modular_synth_util)
 {
   //TODO:JK: implement me
 }

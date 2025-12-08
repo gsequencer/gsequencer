@@ -68,8 +68,8 @@ typedef enum{
 
 struct _AgsModulationMatrix
 {
-  GtkGrid grid;
-
+  GtkBox box;
+  
   guint flags;
   guint connectable_flags;
   
@@ -87,6 +87,8 @@ struct _AgsModulationMatrix
   gchar **label_x;
   gchar **label_y;
   
+  GtkGrid *grid;
+
   GtkDrawingArea *drawing_area;
   
   GtkScrollbar *vscrollbar;
@@ -95,7 +97,7 @@ struct _AgsModulationMatrix
 
 struct _AgsModulationMatrixClass
 {
-  GtkGridClass grid;
+  GtkBoxClass box;
 };
 
 GType ags_modulation_matrix_get_type(void);

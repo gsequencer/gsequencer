@@ -2408,7 +2408,7 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_modular_synth_channel.c \
 	ags/audio/fx/ags_fx_modular_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_modular_synth_recycling.c \
-	ags/audio/fx/ags_fx_raven_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_modular_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_raven_synth_audio.c \
 	ags/audio/fx/ags_fx_raven_synth_audio_processor.c \
 	ags/audio/fx/ags_fx_raven_synth_channel.c \
@@ -3152,6 +3152,8 @@ libgsequencer_machine_h_sources = \
 	ags/app/machine/ags_pitch_sampler_callbacks.h \
 	ags/app/machine/ags_pitch_sampler_file.h \
 	ags/app/machine/ags_pitch_sampler_file_callbacks.h \
+	ags/app/machine/ags_modulation_matrix.h \
+	ags/app/machine/ags_modulation_matrix_callbacks.h \
 	ags/app/machine/ags_modular_synth.h \
 	ags/app/machine/ags_modular_synth_callbacks.h \
 	ags/app/machine/ags_raven_synth.h \
@@ -3299,6 +3301,8 @@ libgsequencer_machine_c_sources = \
 	ags/app/machine/ags_pitch_sampler_callbacks.c \
 	ags/app/machine/ags_pitch_sampler_file.c \
 	ags/app/machine/ags_pitch_sampler_file_callbacks.c \
+	ags/app/machine/ags_modulation_matrix.c \
+	ags/app/machine/ags_modulation_matrix_callbacks.c \
 	ags/app/machine/ags_modular_synth.c \
 	ags/app/machine/ags_modular_synth_callbacks.c \
 	ags/app/machine/ags_raven_synth.c \
