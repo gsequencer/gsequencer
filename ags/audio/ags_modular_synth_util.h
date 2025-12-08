@@ -31,33 +31,43 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_MODULAR_SYNTH_UTIL         (ags_modular_synth_util_get_type())
 
-#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY (440.0)
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR (AGS_SYNTH_OSCILLATOR_SIN)
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY (440.0)
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_PHASE (0.0)
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_VOLUME (1.0)
+
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_PITCH_TUNING (0.0)
+
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME (1.0)
+
+#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_OSCILLATOR (AGS_SYNTH_OSCILLATOR_SIN)
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY (6.0)
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH (0.0)
 #define AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_TUNING (0.0)
-#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_PITCH_TUNING (0.0)
-#define AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME (1.0)
 
-#define AGS_MODULAR_SYNTH_UTIL_INITIALIZER ((AgsModularSynthUtil) {		\
+#define AGS_MODULAR_SYNTH_SENDS_COUNT (8)
+
+#define AGS_MODULAR_SYNTH_UTIL_INITIALIZER ((AgsModularSynthUtil) {	\
       .source = NULL,							\
       .source_stride = 1,						\
       .buffer_length = 0,						\
       .format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
       .samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
-      .osc_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
-      .osc_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY,	\
-      .osc_0_phase = 0.0,						\
-      .osc_0_volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME,		\
-      .osc_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
-      .osc_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_FREQUENCY,	\
-      .osc_1_phase = 0.0,						\
-      .osc_1_volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME,		\
+      .osc_0_oscillator = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR, \
+      .osc_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY,	\
+      .osc_0_phase = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_PHASE,		\
+      .osc_0_volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_VOLUME,	\
+      .osc_1_oscillator = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR, \
+      .osc_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY,	\
+      .osc_1_phase = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_PHASE,		\
+      .osc_1_volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_OSC_VOLUME,	\
       .pitch_util = NULL,						\
       .pitch_buffer = NULL,						\
       .pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,		\
       .pitch_base_key = 440.0,						\
       .pitch_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_PITCH_TUNING,	\
       .volume = AGS_MODULAR_SYNTH_UTIL_DEFAULT_VOLUME,			\
+      .env_0_util = NULL,						\
       .env_0_attack = 1.0,						\
       .env_0_decay = 1.0,						\
       .env_0_sustain = 1.0,						\
@@ -65,6 +75,8 @@ G_BEGIN_DECLS
       .env_0_gain = 1.0,						\
       .env_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .env_0_sends = {0,},						\
+      .env_0_buffer = NULL,						\
+      .env_1_util = NULL,						\
       .env_1_attack = 1.0,						\
       .env_1_decay = 1.0,						\
       .env_1_sustain = 1.0,						\
@@ -72,20 +84,26 @@ G_BEGIN_DECLS
       .env_1_gain = 1.0,						\
       .env_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .env_1_sends = {0,},						\
-      .noise_util = NULL,						\
-      .noise_frequency = 220.0,						\
-      .noise_gain = 1.0,						\
-      .noise_sends = {0,},						\
-      .lfo_0_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
+      .env_1_buffer = NULL,						\
+      .lfo_0_util = NULL,						\
+      .lfo_0_oscillator = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_OSCILLATOR, \
       .lfo_0_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_0_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
       .lfo_0_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_TUNING,	\
       .lfo_0_sends = {0,},						\
-      .lfo_1_oscillator = AGS_SYNTH_OSCILLATOR_SIN,			\
+      .lfo_0_buffer = NULL,						\
+      .lfo_1_util = NULL,						\
+      .lfo_1_oscillator = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_OSCILLATOR, \
       .lfo_1_frequency = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY,	\
       .lfo_1_depth = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_DEPTH,		\
       .lfo_1_tuning = AGS_MODULAR_SYNTH_UTIL_DEFAULT_LFO_TUNING,	\
       .lfo_1_sends = {0,},						\
+      .lfo_1_buffer = NULL,						\
+      .noise_util = NULL,						\
+      .noise_frequency = 220.0,						\
+      .noise_gain = 1.0,						\
+      .noise_sends = {0,},						\
+      .noise_buffer = NULL,						\
       .frame_count = (AGS_SOUNDCARD_DEFAULT_SAMPLERATE / 6.0),		\
       .offset = 0,							\
       .note_256th_mode = TRUE,						\
@@ -136,6 +154,8 @@ struct _AgsModularSynthUtil
   
   gdouble volume;
 
+  gpointer env_0_util;
+
   gdouble env_0_attack;
   gdouble env_0_decay;
   gdouble env_0_sustain;
@@ -143,8 +163,12 @@ struct _AgsModularSynthUtil
   gdouble env_0_gain;
   gdouble env_0_frequency;
 
-  gint env_0_sends[3];
+  gint env_0_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+  gpointer env_0_buffer;
   
+  gpointer env_1_util;
+
   gdouble env_1_attack;
   gdouble env_1_decay;
   gdouble env_1_sustain;
@@ -152,28 +176,40 @@ struct _AgsModularSynthUtil
   gdouble env_1_gain;
   gdouble env_1_frequency;
 
-  gint env_1_sends[3];
+  gint env_1_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+  gpointer env_1_buffer;
   
+  gpointer lfo_0_util;
+
   AgsSynthOscillatorMode lfo_0_oscillator;
   gdouble lfo_0_frequency;
   gdouble lfo_0_depth;
   gdouble lfo_0_tuning;
 
-  gint lfo_0_sends[3];
+  gint lfo_0_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
   
+  gpointer lfo_0_buffer;
+
+  gpointer lfo_1_util;
+
   AgsSynthOscillatorMode lfo_1_oscillator;
   gdouble lfo_1_frequency;
   gdouble lfo_1_depth;
   gdouble lfo_1_tuning;
 
-  gint lfo_1_sends[3];
+  gint lfo_1_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+  
+  gpointer lfo_1_buffer;
   
   gpointer noise_util;
   
   gdouble noise_frequency;
   gdouble noise_gain;
 
-  gint noise_sends[3];
+  gint noise_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+  
+  gpointer noise_buffer;
 
   guint frame_count;
   guint offset;
@@ -274,6 +310,10 @@ gdouble ags_modular_synth_util_get_env_0_gain(AgsModularSynthUtil *modular_synth
 void ags_modular_synth_util_set_env_0_gain(AgsModularSynthUtil *modular_synth_util,
 					   gdouble env_0_gain);
 
+gdouble ags_modular_synth_util_get_env_0_frequency(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_env_0_frequency(AgsModularSynthUtil *modular_synth_util,
+						gdouble env_0_frequency);
+
 gint* ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
 					     guint *env_0_sends_count);
 void ags_modular_synth_util_set_env_0_sends(AgsModularSynthUtil *modular_synth_util,
@@ -299,6 +339,10 @@ void ags_modular_synth_util_set_env_1_release(AgsModularSynthUtil *modular_synth
 gdouble ags_modular_synth_util_get_env_1_gain(AgsModularSynthUtil *modular_synth_util);
 void ags_modular_synth_util_set_env_1_gain(AgsModularSynthUtil *modular_synth_util,
 					   gdouble env_1_gain);
+
+gdouble ags_modular_synth_util_get_env_1_frequency(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_env_1_frequency(AgsModularSynthUtil *modular_synth_util,
+						gdouble env_1_frequency);
 
 gint* ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
 					     guint *env_1_sends_count);
