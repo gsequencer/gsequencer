@@ -36,6 +36,7 @@
 #include <ags/app/machine/ags_stargazer_synth.h>
 #include <ags/app/machine/ags_quantum_synth.h>
 #include <ags/app/machine/ags_raven_synth.h>
+#include <ags/app/machine/ags_modular_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -220,6 +221,10 @@ ags_machine_counter_manager_load(AgsMachineCounterManager *machine_counter_manag
 
   start_machine_counter = g_list_prepend(start_machine_counter,
 					 ags_machine_counter_new(AGS_TYPE_RAVEN_SYNTH,
+								 NULL, NULL));
+
+  start_machine_counter = g_list_prepend(start_machine_counter,
+					 ags_machine_counter_new(AGS_TYPE_MODULAR_SYNTH,
 								 NULL, NULL));
 
 #if defined(AGS_WITH_LIBINSTPATCH)

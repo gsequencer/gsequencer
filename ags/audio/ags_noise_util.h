@@ -55,6 +55,7 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_NOISE_UTIL         (ags_noise_util_get_type())
+#define AGS_NOISE_UTIL(ptr) ((AgsNoiseUtil *)(ptr))
 
 #define AGS_NOISE_UTIL_DEFAULT_FREQUENCY (440.0)
 

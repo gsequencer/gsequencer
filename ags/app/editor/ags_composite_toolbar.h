@@ -108,6 +108,7 @@ typedef enum{
   AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_CROP_NOTE           = 1 <<  1,
   AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_SELECT_NOTE         = 1 <<  2,
   AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_POSITION_CURSOR     = 1 <<  3,
+  AGS_COMPOSITE_TOOLBAR_NOTATION_POPOVER_IMPORT_SMF          = 1 <<  4,
 }AgsCompositeToolbarNotationPopover;
 
 typedef enum{
@@ -185,6 +186,7 @@ struct _AgsCompositeToolbar
   GtkPopover *notation_crop_note;  
   GtkPopover *notation_select_note;
   GtkPopover *notation_position_cursor;
+  GtkPopover *notation_import_smf;
   
   GtkPopover *sheet_position_cursor;
   GtkPopover *sheet_add_page;

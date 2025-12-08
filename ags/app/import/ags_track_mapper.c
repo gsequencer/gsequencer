@@ -952,7 +952,7 @@ ags_track_mapper_map(AgsTrackMapper *track_mapper)
 	   &denominator,
 	   &numerator);
     
-    delay_factor = 1.0 / (16.0 / denominator);
+    delay_factor = 1.0 / (16.0 / (double) denominator);
 
     g_free(segmentation);
   }

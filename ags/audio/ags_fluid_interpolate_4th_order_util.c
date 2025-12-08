@@ -40,6 +40,8 @@
 
 #include <ags/audio/ags_fluid_util.h>
 
+void ags_fluid_interpolate_4th_order_util_config();
+
 /* 4th Order interpolation table (2 coefficients centered on 1st) */
 gboolean interp_coeff_4th_order_initialized = FALSE;
 
