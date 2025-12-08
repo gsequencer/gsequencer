@@ -1057,7 +1057,7 @@ gdouble
 ags_modular_synth_util_get_volume(AgsModularSynthUtil *modular_synth_util)
 {
   if(modular_synth_util == NULL){
-    return(0.0);
+    return(1.0);
   }
 
   return(modular_synth_util->volume);
@@ -1329,6 +1329,7 @@ ags_modular_synth_util_set_env_0_frequency(AgsModularSynthUtil *modular_synth_ut
 /**
  * ags_modular_synth_util_get_env_0_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @env_0_sends_count: (out): return location of the env-0 sends count
  * 
  * Get env-0 sends of @modular_synth_util.
  * 
@@ -1355,6 +1356,7 @@ ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_env_0_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @env_0_sends: the env-0 sends
+ * @env_0_sends_count: the env-0 sends count
  *
  * Set @env_0_sends of @modular_synth_util.
  *

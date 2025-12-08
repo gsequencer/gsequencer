@@ -357,6 +357,29 @@ ags_modular_synth_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_modular_synth_resize_audio_channels(AgsMachine *machine,
+					guint audio_channels, guint audio_channels_old,
+					gpointer data)
+{
+  AgsModularSynth *modular_synth;
+
+  modular_synth = (AgsModularSynth *) machine;
+
+  if(audio_channels > audio_channels_old){    
+    /* recall */
+    if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
+      ags_modular_synth_input_map_recall(modular_synth,
+					 audio_channels_old,
+					 0);
+      
+      ags_modular_synth_output_map_recall(modular_synth,
+					  audio_channels_old,
+					  0);
+    }
+  }
+}
+
+void
 ags_modular_synth_resize_pads(AgsMachine *machine, GType type,
 			      guint pads, guint pads_old,
 			      gpointer data)

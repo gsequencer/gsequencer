@@ -279,17 +279,13 @@ gdouble ags_modular_synth_util_get_osc_1_volume(AgsModularSynthUtil *modular_syn
 void ags_modular_synth_util_set_osc_1_volume(AgsModularSynthUtil *modular_synth_util,
 					     gdouble osc_1_volume);
 
-GType ags_modular_synth_util_get_pitch_type(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_pitch_type(AgsModularSynthUtil *modular_synth_util,
-					   GType pitch_type);
-
-gdouble ags_modular_synth_util_get_pitch_base_key(AgsModularSynthUtil *modular_synth_util);
-void ags_modular_synth_util_set_pitch_base_key(AgsModularSynthUtil *modular_synth_util,
-					       gdouble pitch_base_key);
-
 gdouble ags_modular_synth_util_get_pitch_tuning(AgsModularSynthUtil *modular_synth_util);
 void ags_modular_synth_util_set_pitch_tuning(AgsModularSynthUtil *modular_synth_util,
 					     gdouble pitch_tuning);
+
+gdouble ags_modular_synth_util_get_volume(AgsModularSynthUtil *modular_synth_util);
+void ags_modular_synth_util_set_volume(AgsModularSynthUtil *modular_synth_util,
+				       gdouble volume);
 
 gdouble ags_modular_synth_util_get_env_0_attack(AgsModularSynthUtil *modular_synth_util);
 void ags_modular_synth_util_set_env_0_attack(AgsModularSynthUtil *modular_synth_util,

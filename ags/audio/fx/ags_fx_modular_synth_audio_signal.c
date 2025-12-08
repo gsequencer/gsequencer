@@ -301,8 +301,8 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_osc_0_oscillator_mode(channel_data->modular_synth_0,
-						       (guint) g_value_get_float(&value));
+      ags_modular_synth_util_set_osc_0_oscillator(channel_data->modular_synth_0_util,
+						  (guint) g_value_get_float(&value));
       
       g_object_unref(port);
     }
@@ -345,8 +345,8 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     g_value_unset(&value);
 
-    ags_modular_synth_util_set_frequency(channel_data->modular_synth_0,
-					 exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
+    ags_modular_synth_util_set_osc_0_frequency(channel_data->modular_synth_0_util,
+					       exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
 
     //    g_message("synth 0 - osc = %d, frequency = %f, octave = %f, key= %f", channel_data->modular_synth_0.synth_oscillator_mode, channel_data->modular_synth_0.frequency, octave, key);
       
@@ -361,8 +361,27 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_synth_0_phase(channel_data->modular_synth_0,
-					       ((gdouble) samplerate / ags_modular_synth_util_get_frequency(channel_data->modular_synth_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+      ags_modular_synth_util_set_osc_0_phase(channel_data->modular_synth_0_util,
+					     ((gdouble) samplerate / ags_modular_synth_util_get_osc_0_frequency(channel_data->modular_synth_0_util)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+      
+    /* synth-0 osc-0 volume */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-osc-0-volume", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_osc_0_volume(channel_data->modular_synth_0_util,
+					      (gdouble) g_value_get_float(&value));
       
       g_object_unref(port);
     }
@@ -380,8 +399,8 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_osc_1_oscillator_mode(channel_data->modular_synth_0,
-						       (guint) g_value_get_float(&value));
+      ags_modular_synth_util_set_osc_1_oscillator(channel_data->modular_synth_0_util,
+						  (guint) g_value_get_float(&value));
       
       g_object_unref(port);
     }
@@ -424,8 +443,8 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     g_value_unset(&value);
 
-    ags_modular_synth_util_set_frequency(channel_data->modular_synth_0,
-					 exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
+    ags_modular_synth_util_set_osc_1_frequency(channel_data->modular_synth_0_util,
+					       exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
 
     //    g_message("synth 0 - osc = %d, frequency = %f, octave = %f, key= %f", channel_data->modular_synth_0.synth_oscillator_mode, channel_data->modular_synth_0.frequency, octave, key);
       
@@ -440,17 +459,17 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_synth_0_phase(channel_data->modular_synth_0,
-					       ((gdouble) samplerate / ags_modular_synth_util_get_frequency(channel_data->modular_synth_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+      ags_modular_synth_util_set_osc_1_phase(channel_data->modular_synth_0_util,
+					     ((gdouble) samplerate / ags_modular_synth_util_get_osc_1_frequency(channel_data->modular_synth_0_util)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
       
       g_object_unref(port);
     }
 
     g_value_unset(&value);
-
-    /* synth-0 volume */    
+      
+    /* synth-0 osc-1 volume */    
     g_object_get(fx_modular_synth_audio,
-		 "synth-0-volume", &port,
+		 "synth-0-osc-1-volume", &port,
 		 NULL);
 
     g_value_init(&value, G_TYPE_FLOAT);
@@ -459,8 +478,8 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_volume(channel_data->modular_synth_0,
-					(gdouble) g_value_get_float(&value));
+      ags_modular_synth_util_set_osc_1_volume(channel_data->modular_synth_0_util,
+					      (gdouble) g_value_get_float(&value));
       
       g_object_unref(port);
     }
@@ -483,7 +502,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_modular_synth_util_set_pitch_tuning(channel_data->modular_synth_util,
+      ags_modular_synth_util_set_pitch_tuning(channel_data->modular_synth_0_util,
 					      (gdouble) g_value_get_float(&value));
       
       g_object_unref(port);
@@ -491,7 +510,313 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     g_value_unset(&value);
 
+    /* synth-0 volume */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-volume", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_volume(channel_data->modular_synth_0_util,
+					(gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+      
+    /* synth-0 env-0 attack */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-0-attack", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_0_attack(channel_data->modular_synth_0_util,
+					      (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 decay */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-0-decay", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_0_decay(channel_data->modular_synth_0_util,
+					     (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 sustain */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-0-sustain", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_0_sustain(channel_data->modular_synth_0_util,
+					       (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 release */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-0-release", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_0_release(channel_data->modular_synth_0_util,
+					       (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 gain */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-0-gain", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_0_gain(channel_data->modular_synth_0_util,
+					    (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 frequency */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-0-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_0_frequency(channel_data->modular_synth_0_util,
+						 (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 sends */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-0-sends", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_0_sends(channel_data->modular_synth_0_util,
+					     (gint *) g_value_get_pointer(&value),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 attack */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-1-attack", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_1_attack(channel_data->modular_synth_0_util,
+					      (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 decay */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-1-decay", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_1_decay(channel_data->modular_synth_0_util,
+					     (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 sustain */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-1-sustain", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_1_sustain(channel_data->modular_synth_0_util,
+					       (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 release */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-1-release", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_1_release(channel_data->modular_synth_0_util,
+					       (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 gain */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-1-gain", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_1_gain(channel_data->modular_synth_0_util,
+					    (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 frequency */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-1-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_1_frequency(channel_data->modular_synth_0_util,
+						 (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 sends */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-env-1-sends", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_env_1_sends(channel_data->modular_synth_0_util,
+					     (gint *) g_value_get_pointer(&value),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
     //TODO:JK: implement me
+    
+    /* noise frequency */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-noise-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_noise_util_set_frequency(channel_data->modular_synth_0_util->noise_util,
+				   (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);    
     
     /* noise gain */    
     g_object_get(fx_modular_synth_audio,
@@ -504,13 +829,33 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_port_safe_read(port,
 			 &value);
 
-      ags_noise_util_set_volume(channel_data->noise_util,
+      ags_noise_util_set_volume(channel_data->modular_synth_0_util->noise_util,
 				(gdouble) g_value_get_float(&value));
       
       g_object_unref(port);
     }
 
     g_value_unset(&value);    
+
+    /* synth-0 noise sends */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-noise-sends", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_noise_sends(channel_data->modular_synth_0_util,
+					     (gint *) g_value_get_pointer(&value),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
   }
 
   copy_mode_out = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_modular_synth_audio_signal->audio_buffer_util),
@@ -543,29 +888,29 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
     }
 
     ags_audio_buffer_util_clear_buffer(&(fx_modular_synth_audio_signal->audio_buffer_util),
-				       channel_data->synth_buffer_0, 1,
+				       channel_data->synth_0_buffer, 1,
 				       buffer_size, audio_buffer_util_format);
     
     /* modular synth 0 */
-    ags_modular_synth_util_set_source(channel_data->modular_synth_0,
-				      channel_data->synth_buffer_0);
-    ags_modular_synth_util_set_source_stride(channel_data->modular_synth_0,
+    ags_modular_synth_util_set_source(channel_data->modular_synth_0_util,
+				      channel_data->synth_0_buffer);
+    ags_modular_synth_util_set_source_stride(channel_data->modular_synth_0_util,
 					     1);
 
-    ags_modular_synth_util_set_buffer_length(channel_data->modular_synth_0,
+    ags_modular_synth_util_set_buffer_length(channel_data->modular_synth_0_util,
 					     buffer_size);
-    ags_modular_synth_util_set_format(channel_data->modular_synth_0,
+    ags_modular_synth_util_set_format(channel_data->modular_synth_0_util,
 				      format);
-    ags_modular_synth_util_set_samplerate(channel_data->modular_synth_0,
+    ags_modular_synth_util_set_samplerate(channel_data->modular_synth_0_util,
 					  samplerate);
 
     //TODO:JK: implement me
     
     if(!note_256th_mode){
-      ags_modular_synth_util_set_frame_count(channel_data->modular_synth_0,
+      ags_modular_synth_util_set_frame_count(channel_data->modular_synth_0_util,
 					     floor(((offset_counter - x0) * delay + delay_counter + 1.0) * buffer_size));
 
-      ags_modular_synth_util_set_offset(channel_data->modular_synth_0,
+      ags_modular_synth_util_set_offset(channel_data->modular_synth_0_util,
 					floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
     }else{
       g_rec_mutex_lock(fx_modular_synth_audio_processor_mutex);
@@ -576,49 +921,23 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
       g_rec_mutex_unlock(fx_modular_synth_audio_processor_mutex);
 
-      ags_modular_synth_util_set_frame_count(channel_data->modular_synth_0,
+      ags_modular_synth_util_set_frame_count(channel_data->modular_synth_0_util,
 					     (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
-      ags_modular_synth_util_set_offset(channel_data->modular_synth_0,
+      ags_modular_synth_util_set_offset(channel_data->modular_synth_0_util,
 					(guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
 
-      ags_modular_synth_util_set_offset_256th(channel_data->modular_synth_0,
+      ags_modular_synth_util_set_offset_256th(channel_data->modular_synth_0_util,
 					      (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
     }
     
     g_rec_mutex_lock(source_stream_mutex);
 
-    switch(ags_modular_synth_util_get_synth_oscillator_mode(channel_data->modular_synth_0)){
-    case AGS_SYNTH_OSCILLATOR_SIN:
-      {
-	ags_modular_synth_util_compute_sin(channel_data->modular_synth_0);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
-      {
-	ags_modular_synth_util_compute_sawtooth(channel_data->modular_synth_0);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
-      {
-	ags_modular_synth_util_compute_triangle(channel_data->modular_synth_0);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_SQUARE:
-      {
-	ags_modular_synth_util_compute_square(channel_data->modular_synth_0);
-      }
-      break;
-    case AGS_SYNTH_OSCILLATOR_IMPULSE:
-      {
-	ags_modular_synth_util_compute_impulse(channel_data->modular_synth_0);
-      }
-      break;
-    }
+    ags_modular_synth_util_compute(channel_data->modular_synth_0_util);
 
     g_rec_mutex_unlock(source_stream_mutex);
 
-    ags_modular_synth_util_set_source(channel_data->modular_synth_0,
+    ags_modular_synth_util_set_source(channel_data->modular_synth_0_util,
 				      NULL);
     
     /* copy synth buffer */
@@ -628,12 +947,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
     ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_modular_synth_audio_signal->audio_buffer_util),
 						source->stream_current->data, 1, 0,
-						channel_data->synth_buffer_0, 1, 0,
-						buffer_size, copy_mode);
-
-    ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_modular_synth_audio_signal->audio_buffer_util),
-						source->stream_current->data, 1, 0,
-						channel_data->synth_buffer_1, 1, 0,
+						channel_data->synth_0_buffer, 1, 0,
 						buffer_size, copy_mode);
   }
   
