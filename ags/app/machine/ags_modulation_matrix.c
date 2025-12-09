@@ -27,6 +27,7 @@
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line.h>
 
+#include <string.h>
 #include <math.h>
 
 #include <pango/pango.h>
@@ -144,8 +145,57 @@ ags_modulation_matrix_connectable_interface_init(AgsConnectableInterface *connec
 void
 ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix)
 {
+  GtkEventController *event_controller;
+
+  GStrvBuilder *strv_builder;
+
+  modulation_matrix->flags = 0;
+  modulation_matrix->connectable_flags = 0;
+  
+  modulation_matrix->key_mask = 0;
+
   modulation_matrix->font_size = 11;
 
+  modulation_matrix->cell_width = AGS_MODULATION_MATRIX_DEFAULT_CELL_WIDTH;
+  modulation_matrix->cell_height = AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT;
+  
+  modulation_matrix->n_cols = 8;
+  modulation_matrix->n_rows = 5;
+
+  modulation_matrix->cursor_x = 0;
+  modulation_matrix->cursor_y = 0;
+
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add_many(strv_builder,
+			  "osc-0 - frequency",
+			  "osc-0 - phase",
+			  "osc-0 - volume",
+			  "osc-1 - frequency",
+			  "osc-1 - phase",
+			  "osc-1 - volume",
+			  "pitch tuning",
+			  "volume",
+			  NULL);
+
+  modulation_matrix->label_x = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_add_many(strv_builder,
+			  "env-0",
+			  "env-1",
+			  "lfo-0",
+			  "lfo-1",
+			  "noise",
+			  NULL);
+
+  modulation_matrix->label_y = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_unref(strv_builder);
+
+  modulation_matrix->matrix_enabled = g_malloc(AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * sizeof(guint64));
+
+  memset(modulation_matrix->matrix_enabled, 0, AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * sizeof(guint64));
+    
   modulation_matrix->grid = (GtkGrid *) gtk_grid_new();
 
   gtk_widget_set_valign((GtkWidget *) modulation_matrix->grid,
@@ -169,8 +219,8 @@ ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix)
 			   TRUE);
 
   gtk_widget_set_size_request(GTK_WIDGET(modulation_matrix->drawing_area),
-			      (AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_WIDTH) + 2),
-			      (AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_HEIGHT) + 2));
+			      (AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * modulation_matrix->cell_width) + 2),
+			      (AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * modulation_matrix->cell_height) + 2));
 
   gtk_widget_set_halign((GtkWidget *) modulation_matrix->drawing_area,
 			GTK_ALIGN_FILL);
@@ -187,7 +237,32 @@ ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix)
 		  0, 0,
 		  1, 1);
   
+  /* event controller */
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) modulation_matrix->drawing_area,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_modulation_matrix_key_pressed_callback), modulation_matrix);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_modulation_matrix_key_released_callback), modulation_matrix);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_modulation_matrix_modifiers_callback), modulation_matrix);
+
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) modulation_matrix,
+			    event_controller);
+
+  g_signal_connect(event_controller, "pressed",
+		   G_CALLBACK(ags_modulation_matrix_gesture_click_pressed_callback), modulation_matrix);
+
+  g_signal_connect(event_controller, "released",
+		   G_CALLBACK(ags_modulation_matrix_gesture_click_released_callback), modulation_matrix);
+
   //TODO:JK: implement me
+  
 }
 
 void
@@ -255,6 +330,67 @@ ags_modulation_matrix_disconnect(AgsConnectable *connectable)
 }
 
 void
+ags_modulation_matrix_set_enabled(AgsModulationMatrix *modulation_matrix,
+				  gint x, gint y,
+				  gboolean enabled)
+{
+  guint64 val;
+  guint64 toggle_val;
+  
+  if(!AGS_IS_MODULATION_MATRIX(modulation_matrix) ||
+     !(x >= 0 &&
+       x < modulation_matrix->n_cols) ||
+     !(y >= 0 &&
+       y < modulation_matrix->n_rows)){
+    return;
+  }
+
+  val = modulation_matrix->matrix_enabled[((y * (guint) ceil(modulation_matrix->n_cols / 64.0)) + (guint) floor(x / 64.0))];
+  
+  toggle_val = 1L << (x % 64);
+  
+  if(enabled){
+    //    g_message("set");
+    
+    modulation_matrix->matrix_enabled[(y * (guint) ceil(modulation_matrix->n_cols / 64.0)) + (guint) floor(x / 64.0)] = (val | toggle_val);
+  }else{
+    //    g_message("unset");
+    
+    modulation_matrix->matrix_enabled[(y * (guint) ceil(modulation_matrix->n_cols / 64.0)) + (guint) floor(x / 64.0)] = (val & (~toggle_val));
+  }
+}
+
+gboolean
+ags_modulation_matrix_get_enabled(AgsModulationMatrix *modulation_matrix,
+				  gint x, gint y)
+{
+  guint64 val;
+  guint64 test_val;
+  
+  gboolean enabled;
+  
+  if(!AGS_IS_MODULATION_MATRIX(modulation_matrix) ||
+     !(x >= 0 &&
+       x < modulation_matrix->n_cols) ||
+     !(y >= 0 &&
+       y < modulation_matrix->n_rows)){
+    return(FALSE);
+  }
+
+  val = modulation_matrix->matrix_enabled[((y * ((guint) ceil(modulation_matrix->n_cols / 64.0))) + (guint) floor(x / 64.0))];
+
+  test_val = 1L << (x % 64);
+  
+  enabled = FALSE;
+
+  if((test_val & (val)) != 0L){
+    enabled = TRUE;
+  }
+  
+  return(enabled);
+}
+
+void
 ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
 			   cairo_t *cr)
 {
@@ -280,41 +416,12 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
 
   double width, height;
   gdouble x_start, y_start;
-  guint i;
+  guint i, j;
   
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
   gboolean shadow_success;
-
-  GStrvBuilder *strv_builder;
-
-  strv_builder = g_strv_builder_new();
-
-  g_strv_builder_add_many(strv_builder,
-			  "osc-0 - frequency",
-			  "osc-0 - phase",
-			  "osc-0 - volume",
-			  "osc-1 - frequency",
-			  "osc-1 - phase",
-			  "osc-1 - volume",
-			  "pitch tuning",
-			  "volume",
-			  NULL);
-
-  sends_sink_strv = g_strv_builder_end(strv_builder);
-
-  g_strv_builder_add_many(strv_builder,
-			  "env-0",
-			  "env-1",
-			  "lfo-0",
-			  "lfo-1",
-			  "noise",
-			  NULL);
-
-  sends_source_strv = g_strv_builder_end(strv_builder);
-
-  g_strv_builder_unref(strv_builder);
   
   gtk_widget_get_allocation(GTK_WIDGET(modulation_matrix->drawing_area),
 			    &allocation);
@@ -400,11 +507,11 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   for(i = 0; i < 6; i++){
     cairo_move_to(cr,
 		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH,
-		  2.0 + AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_HEIGHT));
+		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_height));
   
     cairo_line_to(cr,
-		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_WIDTH),
-		  2.0 + (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (i * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_HEIGHT));
+		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * modulation_matrix->cell_width),
+		  2.0 + (double) AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (i * modulation_matrix->cell_height));
 
   }
   
@@ -422,18 +529,20 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
 
   for(i = 0; i < 9; i++){
     cairo_move_to(cr,
-		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_WIDTH),
-		  2.0 + AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH);
+		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_width),
+		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH);
   
     cairo_line_to(cr,
-		  AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_WIDTH),
-		  2.0 + AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_HEIGHT));
+		  AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_width),
+		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * modulation_matrix->cell_height));
 
   }
   
   cairo_stroke(cr);
 
   /* horizontal text */
+  sends_source_strv = modulation_matrix->label_y;
+  
   cairo_set_source_rgba(cr,
 			fg_color.red,
 			fg_color.green,
@@ -464,7 +573,7 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
 
     cairo_move_to(cr,
 		  x_start,
-		  y_start + (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_HEIGHT) - 8.0 + ((double) logical_rect.height / (double) PANGO_SCALE) / 4.0);
+		  y_start + (double) AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_height) - 8.0 + ((double) logical_rect.height / (double) PANGO_SCALE) / 4.0);
   
     pango_cairo_show_layout(cr,
 			    layout);
@@ -476,6 +585,8 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   }
 
   /* vertical text */
+  sends_sink_strv = modulation_matrix->label_x;
+
   cairo_set_source_rgba(cr,
 			fg_color.red,
 			fg_color.green,
@@ -506,7 +617,7 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
 			     &logical_rect);
     
     cairo_move_to(cr,
-		  x_start + (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) ((i + 1) * AGS_MODULATION_MATRIX_DEFAULT_MODULATION_WIDTH) - 8.0,
+		  x_start + (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) ((i + 1) * modulation_matrix->cell_width) - 8.0,
 		  y_start + ((double) logical_rect.height / (double) PANGO_SCALE) / 4.0);
     cairo_rotate(cr,
 		 2.0 * M_PI * -0.75);
@@ -520,6 +631,30 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
     g_object_unref(layout);
 
     g_free(text);
+  }
+
+  double xc = 0.0;
+  double yc = 0.0;
+  double radius = ((double) AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT / 2.0) - 1.0;
+  double angle_0 = 0.0;
+  double angle_1 = 2.0 * M_PI;
+
+  for(i = 0; i < AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY; i++){
+    for(j = 0; j < AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY; j++){      
+      if(ags_modulation_matrix_get_enabled(modulation_matrix, j, i)){
+	//	g_message("enabled %d | %d", j, i);
+
+	xc = (double) x_start + (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (j * modulation_matrix->cell_width) - 8.0 + ((double) AGS_MODULATION_MATRIX_DEFAULT_CELL_WIDTH / 2.0);
+	yc = (double) y_start + (double) AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_height) - 8.0 + ((double) AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT);
+	
+	cairo_save (cr);
+
+	cairo_arc(cr, xc, yc, radius, angle_0, angle_1);
+	cairo_fill(cr);
+	
+	cairo_restore(cr);    
+      }
+    }
   }
   
   /* complete */
