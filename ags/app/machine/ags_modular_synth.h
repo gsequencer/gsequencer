@@ -85,13 +85,13 @@ struct _AgsModularSynth
   AgsDial *env_1_release;
   AgsDial *env_1_gain;
 
-  GtkComboBox *lfo_0_oscillator;
+  GtkDropDown *lfo_0_oscillator;
 
   AgsDial *lfo_0_frequency;
   AgsDial *lfo_0_depth;
   AgsDial *lfo_0_tuning;
   
-  GtkComboBox *lfo_1_oscillator;
+  GtkDropDown *lfo_1_oscillator;
 
   AgsDial *lfo_1_frequency;
   AgsDial *lfo_1_depth;
@@ -102,7 +102,7 @@ struct _AgsModularSynth
 
   AgsModulationMatrix *modulation_matrix;
 
-  GtkComboBox *osc_0_oscillator;
+  GtkDropDown *osc_0_oscillator;
 
   AgsDial *osc_0_octave;
   AgsDial *osc_0_key;
@@ -110,7 +110,7 @@ struct _AgsModularSynth
   AgsDial *osc_0_phase;
   AgsDial *osc_0_volume;
 
-  GtkComboBox *osc_1_oscillator;  
+  GtkDropDown *osc_1_oscillator;  
 
   AgsDial *osc_1_octave;
   AgsDial *osc_1_key;

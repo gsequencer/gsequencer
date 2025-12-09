@@ -22,3 +22,13 @@
 #include <ags/app/ags_window.h>
 
 #include <math.h>
+
+void
+ags_modulation_matrix_draw_callback(GtkWidget *drawing_area,
+				    cairo_t *cr,
+				    int width, int height,
+				    AgsModulationMatrix *modulation_matrix)
+{
+  ags_modulation_matrix_draw(modulation_matrix,
+			     cr);
+}

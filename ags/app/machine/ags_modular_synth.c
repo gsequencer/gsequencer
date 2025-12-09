@@ -157,6 +157,7 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   GtkGrid *lfo_0_grid;  
   GtkGrid *lfo_1_grid;  
   GtkGrid *noise_grid;  
+  GtkGrid *modulation_grid;  
   GtkGrid *osc_0_grid;  
   GtkGrid *osc_1_grid;  
   GtkGrid *effect_grid;  
@@ -675,6 +676,118 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 		  0, 1,
 		  1, 1);
 
+  /* oscillator */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - oscillator"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  modular_synth->lfo_0_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
+
+  gtk_drop_down_set_selected(modular_synth->lfo_0_oscillator,
+			     0);
+
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) modular_synth->lfo_0_oscillator,
+		  1, 0,
+		  1, 1);
+
+  /* frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  modular_synth->lfo_0_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->lfo_0_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.01);
+  gtk_adjustment_set_upper(adjustment,
+			   16.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   6.0);
+  ags_dial_set_radius(modular_synth->lfo_0_frequency,
+		      12);
+  
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) modular_synth->lfo_0_frequency,
+		  1, 1,
+		  1, 1);
+
+  /* depth */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - depth"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  modular_synth->lfo_0_depth = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->lfo_0_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->lfo_0_depth,
+		      12);
+  
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) modular_synth->lfo_0_depth,
+		  1, 2,
+		  1, 1);
+
+  /* tuning */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - tuning"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+  
+  modular_synth->lfo_0_tuning = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->lfo_0_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -1200.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(modular_synth->lfo_0_tuning,
+		      12);
+  
+  gtk_grid_attach(lfo_0_grid,
+		  (GtkWidget *) modular_synth->lfo_0_tuning,
+		  1, 3,
+		  1, 1);
+
   /* lfo-1 */
   lfo_1_grid = (GtkGrid *) gtk_grid_new();
   gtk_widget_set_halign((GtkWidget *) lfo_1_grid,
@@ -684,7 +797,204 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 		  1, 1,
 		  1, 1);
 
-  //TODO:JK: implement me
+  /* oscillator */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - oscillator"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  modular_synth->lfo_1_oscillator = (GtkDropDown *) gtk_drop_down_new_from_strings((const char * const *) osc_strv);
+
+  gtk_drop_down_set_selected(modular_synth->lfo_1_oscillator,
+			     0);
+
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) modular_synth->lfo_1_oscillator,
+		  1, 0,
+		  1, 1);
+
+  /* frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  modular_synth->lfo_1_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->lfo_1_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.01);
+  gtk_adjustment_set_upper(adjustment,
+			   16.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   6.0);
+  ags_dial_set_radius(modular_synth->lfo_1_frequency,
+		      12);
+  
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) modular_synth->lfo_1_frequency,
+		  1, 1,
+		  1, 1);
+
+  /* depth */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - depth"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  modular_synth->lfo_1_depth = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->lfo_1_depth);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->lfo_1_depth,
+		      12);
+  
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) modular_synth->lfo_1_depth,
+		  1, 2,
+		  1, 1);
+
+  /* tuning */
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - tuning"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+  
+  modular_synth->lfo_1_tuning = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->lfo_1_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -1200.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1200.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(modular_synth->lfo_1_tuning,
+		      12);
+  
+  gtk_grid_attach(lfo_1_grid,
+		  (GtkWidget *) modular_synth->lfo_1_tuning,
+		  1, 3,
+		  1, 1);
+
+  /* noise */
+  noise_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_halign((GtkWidget *) noise_grid,
+			GTK_ALIGN_START);
+  gtk_grid_attach(modular_synth_grid,
+		  (GtkWidget *) noise_grid,
+		  0, 2,
+		  2, 1);
+
+  /* frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("noise - frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(noise_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  modular_synth->noise_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->noise_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   220.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1760.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    1.0);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(modular_synth->noise_frequency,
+		      12);
+
+  gtk_grid_attach(noise_grid,
+		  (GtkWidget *) modular_synth->noise_frequency,
+		  1, 0,
+		  1, 1);
+  
+  /* gain */
+  label = (GtkLabel *) gtk_label_new(i18n("noise - gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(noise_grid,
+		  (GtkWidget *) label,
+		  2, 0,
+		  1, 1);
+  
+  modular_synth->noise_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->noise_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(modular_synth->noise_gain,
+		      12);
+
+  gtk_grid_attach(noise_grid,
+		  (GtkWidget *) modular_synth->noise_gain,
+		  3, 0,
+		  1, 1);
+
+  /* modulation */
+  modulation_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_halign((GtkWidget *) modulation_grid,
+			GTK_ALIGN_START);
+  gtk_grid_attach(modular_synth_grid,
+		  (GtkWidget *) modulation_grid,
+		  2, 0,
+		  1, 3);
+
+  /* modulation matrix */
+  modular_synth->modulation_matrix = ags_modulation_matrix_new();
+  gtk_grid_attach(modulation_grid,
+		  (GtkWidget *) modular_synth->modulation_matrix,
+		  0, 0,
+		  1, 1);
 }
 
 void
@@ -708,6 +1018,8 @@ ags_modular_synth_connect(AgsConnectable *connectable)
   /* AgsModularSynth */
   modular_synth = AGS_MODULAR_SYNTH(connectable);
 
+  ags_connectable_connect(AGS_CONNECTABLE(modular_synth->modulation_matrix));
+  
   //TODO:JK: implement me
 }
 
@@ -724,6 +1036,8 @@ ags_modular_synth_disconnect(AgsConnectable *connectable)
 
   /* AgsModularSynth */
   modular_synth = AGS_MODULAR_SYNTH(connectable);
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(modular_synth->modulation_matrix));
 
   //TODO:JK: implement me
 }
