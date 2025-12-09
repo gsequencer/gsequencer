@@ -102,27 +102,36 @@ struct _AgsModularSynth
 
   AgsModulationMatrix *modulation_matrix;
 
-  GtkComboBox *synth_0_oscillator;
+  GtkComboBox *osc_0_oscillator;
 
-  AgsDial *synth_0_octave;
-  AgsDial *synth_0_key;
+  AgsDial *osc_0_octave;
+  AgsDial *osc_0_key;
 
-  AgsDial *synth_0_phase;
-  AgsDial *synth_0_volume;
+  AgsDial *osc_0_phase;
+  AgsDial *osc_0_volume;
 
-  GtkComboBox *synth_1_oscillator;  
+  GtkComboBox *osc_1_oscillator;  
 
-  AgsDial *synth_1_octave;
-  AgsDial *synth_1_key;
+  AgsDial *osc_1_octave;
+  AgsDial *osc_1_key;
 
-  AgsDial *synth_1_phase;
-  AgsDial *synth_1_volume;
+  AgsDial *osc_1_phase;
+  AgsDial *osc_1_volume;
 
   AgsDial *volume;
 
   GtkDropDown *pitch_type;
   AgsDial *pitch_tuning;
 
+  AgsDial *low_pass_0_cut_off_frequency;
+  AgsDial *low_pass_0_filter_gain;
+  AgsDial *low_pass_0_no_clip;
+
+  GtkScale *amplifier_0_amp_0_gain;
+  GtkScale *amplifier_0_amp_1_gain;
+  GtkScale *amplifier_0_amp_2_gain;
+  GtkScale *amplifier_0_amp_3_gain;
+  
   GtkCheckButton *chorus_enabled;
 
   AgsDial *chorus_input_volume;

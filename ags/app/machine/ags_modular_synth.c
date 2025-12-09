@@ -151,6 +151,21 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   AgsCompositeEditor *composite_editor;
   GtkBox *vbox;
   GtkBox *hbox;
+  GtkGrid *modular_synth_grid;
+  GtkGrid *env_0_grid;  
+  GtkGrid *env_1_grid;  
+  GtkGrid *lfo_0_grid;  
+  GtkGrid *lfo_1_grid;  
+  GtkGrid *noise_grid;  
+  GtkGrid *osc_0_grid;  
+  GtkGrid *osc_1_grid;  
+  GtkGrid *effect_grid;  
+  GtkGrid *low_pass_grid;  
+  GtkGrid *amplifier_grid;  
+  GtkGrid *chorus_grid;
+  GtkLabel *label;
+
+  GtkAdjustment *adjustment;
   
   AgsAudio *audio;
 
@@ -311,6 +326,363 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
+
+  /* modular synth */
+  modular_synth_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(modular_synth_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(modular_synth_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_box_append(hbox,
+		 (GtkWidget *) modular_synth_grid);
+
+  /* env-0 */
+  env_0_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_halign((GtkWidget *) env_0_grid,
+			GTK_ALIGN_START);
+  gtk_grid_attach(modular_synth_grid,
+		  (GtkWidget *) env_0_grid,
+		  0, 0,
+		  1, 1);
+
+  /* attack */
+  label = (GtkLabel *) gtk_label_new(i18n("env-0 - attack"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  modular_synth->env_0_attack = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_0_attack);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_0_attack,
+		      12);
+  
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) modular_synth->env_0_attack,
+		  1, 0,
+		  1, 1);
+
+  /* decay */
+  label = (GtkLabel *) gtk_label_new(i18n("env-0 - decay"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  modular_synth->env_0_decay = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_0_decay);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_0_decay,
+		      12);
+  
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) modular_synth->env_0_decay,
+		  1, 1,
+		  1, 1);
+
+  /* sustain */
+  label = (GtkLabel *) gtk_label_new(i18n("env-0 - sustain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  modular_synth->env_0_sustain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_0_sustain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_0_sustain,
+		      12);
+  
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) modular_synth->env_0_sustain,
+		  1, 2,
+		  1, 1);
+
+  /* release */
+  label = (GtkLabel *) gtk_label_new(i18n("env-0 - release"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+  
+  modular_synth->env_0_release = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_0_release);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_0_release,
+		      12);
+  
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) modular_synth->env_0_release,
+		  1, 3,
+		  1, 1);
+
+  /* gain */
+  label = (GtkLabel *) gtk_label_new(i18n("env-0 - gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+  
+  modular_synth->env_0_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_0_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_0_gain,
+		      12);
+  
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) modular_synth->env_0_gain,
+		  1, 4,
+		  1, 1);
+
+  /* env-1 */
+  env_1_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_halign((GtkWidget *) env_1_grid,
+			GTK_ALIGN_START);
+  gtk_grid_attach(modular_synth_grid,
+		  (GtkWidget *) env_1_grid,
+		  1, 0,
+		  1, 1);
+
+  /* attack */
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - attack"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  modular_synth->env_1_attack = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_1_attack);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_1_attack,
+		      12);
+  
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) modular_synth->env_1_attack,
+		  1, 0,
+		  1, 1);
+
+  /* decay */
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - decay"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  modular_synth->env_1_decay = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_1_decay);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_1_decay,
+		      12);
+  
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) modular_synth->env_1_decay,
+		  1, 1,
+		  1, 1);
+
+  /* sustain */
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - sustain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  modular_synth->env_1_sustain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_1_sustain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_1_sustain,
+		      12);
+  
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) modular_synth->env_1_sustain,
+		  1, 2,
+		  1, 1);
+
+  /* release */
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - release"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+  
+  modular_synth->env_1_release = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_1_release);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_1_release,
+		      12);
+  
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) modular_synth->env_1_release,
+		  1, 3,
+		  1, 1);
+
+  /* gain */
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+  
+  modular_synth->env_1_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_1_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_1_gain,
+		      12);
+  
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) modular_synth->env_1_gain,
+		  1, 4,
+		  1, 1);
+
+  /* lfo-0 */
+  lfo_0_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_halign((GtkWidget *) lfo_0_grid,
+			GTK_ALIGN_START);
+  gtk_grid_attach(modular_synth_grid,
+		  (GtkWidget *) lfo_0_grid,
+		  0, 1,
+		  1, 1);
+
+  /* lfo-1 */
+  lfo_1_grid = (GtkGrid *) gtk_grid_new();
+  gtk_widget_set_halign((GtkWidget *) lfo_1_grid,
+			GTK_ALIGN_START);
+  gtk_grid_attach(modular_synth_grid,
+		  (GtkWidget *) lfo_1_grid,
+		  1, 1,
+		  1, 1);
 
   //TODO:JK: implement me
 }
