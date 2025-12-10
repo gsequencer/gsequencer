@@ -77,13 +77,17 @@ struct _AgsModularSynth
   AgsDial *env_0_sustain;
   AgsDial *env_0_decay;
   AgsDial *env_0_release;
+
   AgsDial *env_0_gain;
+  AgsDial *env_0_frequency;
 
   AgsDial *env_1_attack;
   AgsDial *env_1_sustain;
   AgsDial *env_1_decay;
   AgsDial *env_1_release;
+
   AgsDial *env_1_gain;
+  AgsDial *env_1_frequency;
 
   GtkDropDown *lfo_0_oscillator;
 
@@ -131,6 +135,8 @@ struct _AgsModularSynth
   GtkScale *amplifier_0_amp_1_gain;
   GtkScale *amplifier_0_amp_2_gain;
   GtkScale *amplifier_0_amp_3_gain;
+
+  GtkScale *amplifier_0_filter_gain;
   
   GtkCheckButton *chorus_enabled;
 

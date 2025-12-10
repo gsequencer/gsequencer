@@ -503,6 +503,37 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 		  1, 4,
 		  1, 1);
 
+  /* frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("env-0 - frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) label,
+		  0, 5,
+		  1, 1);
+  
+  modular_synth->env_0_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_0_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   16.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_0_frequency,
+		      12);
+  
+  gtk_grid_attach(env_0_grid,
+		  (GtkWidget *) modular_synth->env_0_frequency,
+		  1, 5,
+		  1, 1);
+
   /* env-1 */
   env_1_grid = (GtkGrid *) gtk_grid_new();
   gtk_widget_set_halign((GtkWidget *) env_1_grid,
@@ -665,6 +696,37 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   gtk_grid_attach(env_1_grid,
 		  (GtkWidget *) modular_synth->env_1_gain,
 		  1, 4,
+		  1, 1);
+
+  /* frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) label,
+		  0, 5,
+		  1, 1);
+  
+  modular_synth->env_1_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->env_1_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   16.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   1.0);
+  ags_dial_set_radius(modular_synth->env_1_frequency,
+		      12);
+  
+  gtk_grid_attach(env_1_grid,
+		  (GtkWidget *) modular_synth->env_1_frequency,
+		  1, 5,
 		  1, 1);
 
   /* lfo-0 */
@@ -1269,6 +1331,37 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 		  1, 3,
 		  1, 1);
 
+  /* volume */
+  label = (GtkLabel *) gtk_label_new(i18n("osc-1 - volume"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(osc_1_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+  
+  modular_synth->osc_1_volume = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(modular_synth->osc_1_volume);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   2.0 * M_PI);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(modular_synth->osc_1_volume,
+		      12);
+
+  gtk_grid_attach(osc_1_grid,
+		  (GtkWidget *) modular_synth->osc_1_volume,
+		  1, 4,
+		  1, 1);
+
   /* effect */
   effect_grid = (GtkGrid *) gtk_grid_new();
 
@@ -1576,6 +1669,32 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 		  7, 0,
 		  1, 1);
 
+  /* amplifier-0 filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("filter gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(amplifier_grid,
+		  (GtkWidget *) label,
+		  8, 0,
+		  1, 1);
+  
+  modular_synth->amplifier_0_filter_gain = (GtkScale *) gtk_scale_new_with_range(GTK_ORIENTATION_VERTICAL,
+										 -20.0,
+										 20.0,
+										 1.0);
+  gtk_widget_set_size_request((GtkWidget *) modular_synth->amplifier_0_filter_gain,
+			      16, 100);
+
+  gtk_range_set_value((GtkRange *) modular_synth->amplifier_0_filter_gain,
+		      0.0);
+  gtk_range_set_inverted((GtkRange *) modular_synth->amplifier_0_filter_gain,
+			 TRUE);
+
+  gtk_grid_attach(amplifier_grid,
+		  (GtkWidget *) modular_synth->amplifier_0_filter_gain,
+		  9, 0,
+		  1, 1);
+
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
 
@@ -1823,9 +1942,173 @@ ags_modular_synth_connect(AgsConnectable *connectable)
   /* AgsModularSynth */
   modular_synth = AGS_MODULAR_SYNTH(connectable);
 
-  ags_connectable_connect(AGS_CONNECTABLE(modular_synth->modulation_matrix));
+  /* env-0 */
+  g_signal_connect_after(modular_synth->env_0_attack, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_0_attack_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_0_decay, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_0_decay_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_0_sustain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_0_sustain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_0_release, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_0_release_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_0_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_0_gain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_0_frequency, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_0_frequency_callback), modular_synth);
+
+  /* env-1 */
+  g_signal_connect_after(modular_synth->env_1_attack, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_1_attack_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_1_decay, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_1_decay_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_1_sustain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_1_sustain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_1_release, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_1_release_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_1_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_1_gain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->env_1_frequency, "value-changed",
+			 G_CALLBACK(ags_modular_synth_env_1_frequency_callback), modular_synth);
+
+  /* LFO-0 */
+  g_signal_connect_after(modular_synth->lfo_0_oscillator, "notify::selected",
+			 G_CALLBACK(ags_modular_synth_lfo_0_oscillator_callback), modular_synth);
   
-  //TODO:JK: implement me
+  g_signal_connect_after(modular_synth->lfo_0_frequency, "value-changed",
+			 G_CALLBACK(ags_modular_synth_lfo_0_frequency_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->lfo_0_depth, "value-changed",
+			 G_CALLBACK(ags_modular_synth_lfo_0_depth_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->lfo_0_tuning, "value-changed",
+			 G_CALLBACK(ags_modular_synth_lfo_0_tuning_callback), modular_synth);
+
+  /* LFO-1 */
+  g_signal_connect_after(modular_synth->lfo_1_oscillator, "notify::selected",
+			 G_CALLBACK(ags_modular_synth_lfo_1_oscillator_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->lfo_1_frequency, "value-changed",
+			 G_CALLBACK(ags_modular_synth_lfo_1_frequency_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->lfo_1_depth, "value-changed",
+			 G_CALLBACK(ags_modular_synth_lfo_1_depth_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->lfo_1_tuning, "value-changed",
+			 G_CALLBACK(ags_modular_synth_lfo_1_tuning_callback), modular_synth);
+
+  /* noise */
+  g_signal_connect_after(modular_synth->noise_frequency, "value-changed",
+			 G_CALLBACK(ags_modular_synth_noise_frequency_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->noise_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_noise_gain_callback), modular_synth);
+
+  /* modulation matrix */
+  ags_connectable_connect(AGS_CONNECTABLE(modular_synth->modulation_matrix));
+
+  /* osc-0 */
+  g_signal_connect_after(modular_synth->osc_0_oscillator, "notify::selected",
+			 G_CALLBACK(ags_modular_synth_osc_0_oscillator_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_0_octave, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_0_octave_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_0_key, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_0_key_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_0_phase, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_0_phase_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_0_volume, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_0_volume_callback), modular_synth);
+
+  /* osc-1 */
+  g_signal_connect_after(modular_synth->osc_1_oscillator, "notify::selected",
+			 G_CALLBACK(ags_modular_synth_osc_1_oscillator_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_1_octave, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_1_octave_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_1_key, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_1_key_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_1_phase, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_1_phase_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->osc_1_volume, "value-changed",
+			 G_CALLBACK(ags_modular_synth_osc_1_volume_callback), modular_synth);
+
+  /* volume */
+  g_signal_connect_after(modular_synth->volume, "value-changed",
+			 G_CALLBACK(ags_modular_synth_volume_callback), modular_synth);
+
+  /* pitch */
+  g_signal_connect_after(modular_synth->pitch_tuning, "value-changed",
+			 G_CALLBACK(ags_modular_synth_pitch_tuning_callback), modular_synth);
+
+  /* low-pass 0 */
+  g_signal_connect_after(modular_synth->low_pass_0_cut_off_frequency, "value-changed",
+			 G_CALLBACK(ags_modular_synth_low_pass_0_cut_off_frequency_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->low_pass_0_filter_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_low_pass_0_filter_gain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->low_pass_0_no_clip, "value-changed",
+			 G_CALLBACK(ags_modular_synth_low_pass_0_no_clip_callback), modular_synth);
+
+  /* amplifier 0 */  
+  g_signal_connect_after(modular_synth->amplifier_0_amp_0_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_amplifier_0_amp_0_gain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->amplifier_0_amp_1_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_amplifier_0_amp_1_gain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->amplifier_0_amp_2_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_amplifier_0_amp_2_gain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->amplifier_0_amp_3_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_amplifier_0_amp_3_gain_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->amplifier_0_filter_gain, "value-changed",
+			 G_CALLBACK(ags_modular_synth_amplifier_0_filter_gain_callback), modular_synth);
+
+  /* chorus */
+  g_signal_connect_after(modular_synth->chorus_input_volume, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_input_volume_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->chorus_output_volume, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_output_volume_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->chorus_lfo_oscillator, "notify::selected",
+			 G_CALLBACK(ags_modular_synth_chorus_lfo_oscillator_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->chorus_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_lfo_frequency_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->chorus_depth, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_depth_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->chorus_mix, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_mix_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->chorus_delay, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_delay_callback), modular_synth);
+
+  g_signal_connect_after(modular_synth->chorus_input_volume, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_input_volume_callback), modular_synth);
+  
+  g_signal_connect_after(modular_synth->chorus_output_volume, "value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_output_volume_callback), modular_synth);
 }
 
 void
@@ -1842,9 +2125,326 @@ ags_modular_synth_disconnect(AgsConnectable *connectable)
   /* AgsModularSynth */
   modular_synth = AGS_MODULAR_SYNTH(connectable);
 
+  /* env-0 */
+  g_object_disconnect(modular_synth->env_0_attack,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_0_attack_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_0_decay,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_0_decay_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_0_sustain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_0_sustain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_0_release,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_0_release_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_0_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_0_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_0_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_0_frequency_callback),
+		      modular_synth,
+		      NULL);
+
+  /* env-1 */
+  g_object_disconnect(modular_synth->env_1_attack,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_1_attack_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_1_decay,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_1_decay_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_1_sustain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_1_sustain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_1_release,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_1_release_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_1_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_1_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->env_1_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_env_1_frequency_callback),
+		      modular_synth,
+		      NULL);
+
+  /* LFO-0 */
+  g_object_disconnect(modular_synth->lfo_0_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_modular_synth_lfo_0_oscillator_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->lfo_0_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_lfo_0_frequency_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->lfo_0_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_lfo_0_depth_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->lfo_0_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_lfo_0_tuning_callback),
+		      modular_synth,
+		      NULL);
+
+  /* LFO-1 */
+  g_object_disconnect(modular_synth->lfo_1_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_modular_synth_lfo_1_oscillator_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->lfo_1_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_lfo_1_frequency_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->lfo_1_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_lfo_1_depth_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->lfo_1_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_lfo_1_tuning_callback),
+		      modular_synth,
+		      NULL);
+
+  /* noise */
+  g_object_disconnect(modular_synth->noise_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_noise_frequency_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->noise_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_noise_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  /* modulation matrix */
   ags_connectable_disconnect(AGS_CONNECTABLE(modular_synth->modulation_matrix));
 
-  //TODO:JK: implement me
+  /* osc-0 */
+  g_object_disconnect(modular_synth->osc_0_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_modular_synth_osc_0_oscillator_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_0_octave,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_0_octave_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_0_key,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_0_key_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_0_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_0_phase_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_0_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_0_volume_callback),
+		      modular_synth,
+		      NULL);
+
+  /* osc-1 */
+  g_object_disconnect(modular_synth->osc_1_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_modular_synth_osc_1_oscillator_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_1_octave,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_1_octave_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_1_key,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_1_key_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_1_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_1_phase_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->osc_1_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_osc_1_volume_callback),
+		      modular_synth,
+		      NULL);
+
+  /* volume */
+  g_object_disconnect(modular_synth->volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_volume_callback),
+		      modular_synth,
+		      NULL);
+
+  /* pitch */
+  g_object_disconnect(modular_synth->pitch_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_pitch_tuning_callback),
+		      modular_synth,
+		      NULL);
+
+  /* low-pass 0 */
+  g_object_disconnect(modular_synth->low_pass_0_cut_off_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_low_pass_0_cut_off_frequency_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->low_pass_0_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_low_pass_0_filter_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->low_pass_0_no_clip,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_low_pass_0_no_clip_callback),
+		      modular_synth,
+		      NULL);
+
+  /* amplifier 0 */  
+  g_object_disconnect(modular_synth->amplifier_0_amp_0_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_amplifier_0_amp_0_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->amplifier_0_amp_1_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_amplifier_0_amp_1_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->amplifier_0_amp_2_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_amplifier_0_amp_2_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->amplifier_0_amp_3_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_amplifier_0_amp_3_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->amplifier_0_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_amplifier_0_filter_gain_callback),
+		      modular_synth,
+		      NULL);
+
+  /* chorus */
+  g_object_disconnect(modular_synth->chorus_input_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_chorus_input_volume_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->chorus_output_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_chorus_output_volume_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->chorus_lfo_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_modular_synth_chorus_lfo_oscillator_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->chorus_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_chorus_lfo_frequency_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->chorus_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_chorus_depth_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->chorus_mix,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_chorus_mix_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->chorus_delay,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_chorus_delay_callback),
+		      modular_synth,
+		      NULL);
+
+  g_object_disconnect(modular_synth->chorus_input_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_modular_synth_chorus_input_volume_callback),
+		      modular_synth,
+		      NULL);
+  
+  g_object_disconnect(modular_synth->chorus_output_volume,
+		      "any_signal::value-changed",
+			 G_CALLBACK(ags_modular_synth_chorus_output_volume_callback),
+		      modular_synth,
+		      NULL);
 }
 
 void
