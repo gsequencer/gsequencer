@@ -12741,9 +12741,6 @@ ags_fx_raven_synth_audio_channel_data_alloc()
   /* chorus util */
   channel_data->chorus_util = ags_chorus_util_alloc();
   
-  /* chorus util */
-  channel_data->chorus_util = ags_chorus_util_alloc();
-  
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     channel_data->input_data[i] = ags_fx_raven_synth_audio_input_data_alloc();
 
@@ -13574,7 +13571,6 @@ ags_fx_raven_synth_audio_get_synth_lfo_tuning_plugin_port()
     
   return(plugin_port);
 }
-
 
 static AgsPluginPort*
 ags_fx_raven_synth_audio_get_low_pass_cut_off_frequency_plugin_port()

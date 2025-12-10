@@ -116,6 +116,31 @@ struct _AgsFxModularSynthAudio
 
   AgsPort *synth_0_noise_sends;
 
+  AgsPort *low_pass_0_cut_off_frequency;
+  AgsPort *low_pass_0_filter_gain;
+  AgsPort *low_pass_0_no_clip;
+
+  AgsPort *amplifier_0_amp_0_gain;
+  AgsPort *amplifier_0_amp_1_gain;
+  AgsPort *amplifier_0_amp_2_gain;
+  AgsPort *amplifier_0_amp_3_gain;
+
+  AgsPort *amplifier_0_filter_gain;
+
+  AgsPort *chorus_enabled;
+  
+  AgsPort *chorus_pitch_type;
+
+  AgsPort *chorus_input_volume;
+  AgsPort *chorus_output_volume;
+  
+  AgsPort *chorus_lfo_oscillator;
+  AgsPort *chorus_lfo_frequency;
+
+  AgsPort *chorus_depth;
+  AgsPort *chorus_mix;
+  AgsPort *chorus_delay;
+  
   AgsFxModularSynthAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
 
@@ -143,7 +168,13 @@ struct _AgsFxModularSynthAudioChannelData
 
   gpointer synth_0_buffer;
   
-  AgsModularSynthUtil *modular_synth_0_util;
+  AgsModularSynthUtil *modular_synth_util_0;
+
+  AgsLowPassFilterUtil *low_pass_filter_util_0;
+
+  AgsAmplifierUtil *amplifier_util_0;
+
+  AgsChorusUtil *chorus_util;
 
   AgsFxModularSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };
