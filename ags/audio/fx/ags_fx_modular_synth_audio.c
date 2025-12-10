@@ -1448,7 +1448,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
 							"port-value-length", 1,
 							NULL);
   
-  fx_modular_synth_audio->synth_0_volume->port_value.ags_port_float = (gfloat) 0.0;
+  fx_modular_synth_audio->synth_0_volume->port_value.ags_port_float = (gfloat) 0.333;
 
   g_object_set(fx_modular_synth_audio->synth_0_volume,
 	       "plugin-port", ags_fx_modular_synth_audio_get_synth_0_volume_plugin_port(),
@@ -1580,7 +1580,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
 								 "port-value-length", 1,
 								 NULL);
   
-  fx_modular_synth_audio->synth_0_env_0_frequency->port_value.ags_port_float = (gfloat) 0.333;
+  fx_modular_synth_audio->synth_0_env_0_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
   g_object_set(fx_modular_synth_audio->synth_0_env_0_frequency,
 	       "plugin-port", ags_fx_modular_synth_audio_get_synth_0_env_0_frequency_plugin_port(),
@@ -1596,14 +1596,16 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-env-0-sends[0]",
 							     "control-port", "19/56",
-							     "port-value-is-pointer", FALSE,
-							     "port-value-type", G_TYPE_FLOAT,
-							     "port-value-size", sizeof(gfloat),
-							     "port-value-length", 1,
+							     "port-value-is-pointer", TRUE,
+							     "port-value-type", G_TYPE_INT64,
+							     "port-value-size", sizeof(gint64),
+							     "port-value-length", AGS_MODULAR_SYNTH_SENDS_COUNT,
 							     NULL);
   
-  fx_modular_synth_audio->synth_0_env_0_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_modular_synth_audio->synth_0_env_0_sends->port_value.ags_port_pointer = (gint *) g_malloc(AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
+  memset(fx_modular_synth_audio->synth_0_env_0_sends->port_value.ags_port_pointer, 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+  
   g_object_set(fx_modular_synth_audio->synth_0_env_0_sends,
 	       "plugin-port", ags_fx_modular_synth_audio_get_synth_0_env_0_sends_plugin_port(),
 	       NULL);
@@ -1750,13 +1752,15 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-env-1-sends[0]",
 							     "control-port", "26/56",
-							     "port-value-is-pointer", FALSE,
-							     "port-value-type", G_TYPE_FLOAT,
-							     "port-value-size", sizeof(gfloat),
-							     "port-value-length", 1,
+							     "port-value-is-pointer", TRUE,
+							     "port-value-type", G_TYPE_INT64,
+							     "port-value-size", sizeof(gint64),
+							     "port-value-length", AGS_MODULAR_SYNTH_SENDS_COUNT,
 							     NULL);
   
-  fx_modular_synth_audio->synth_0_env_1_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_modular_synth_audio->synth_0_env_1_sends->port_value.ags_port_pointer = (gint *) g_malloc(AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_modular_synth_audio->synth_0_env_1_sends->port_value.ags_port_pointer, 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   g_object_set(fx_modular_synth_audio->synth_0_env_1_sends,
 	       "plugin-port", ags_fx_modular_synth_audio_get_synth_0_env_1_sends_plugin_port(),
@@ -1860,13 +1864,15 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-lfo-0-sends[0]",
 							     "control-port", "31/56",
-							     "port-value-is-pointer", FALSE,
-							     "port-value-type", G_TYPE_FLOAT,
-							     "port-value-size", sizeof(gfloat),
-							     "port-value-length", 1,
+							     "port-value-is-pointer", TRUE,
+							     "port-value-type", G_TYPE_INT64,
+							     "port-value-size", sizeof(gint64),
+							     "port-value-length", AGS_MODULAR_SYNTH_SENDS_COUNT,
 							     NULL);
   
-  fx_modular_synth_audio->synth_0_lfo_0_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_modular_synth_audio->synth_0_lfo_0_sends->port_value.ags_port_pointer = (gint *) g_malloc(AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_modular_synth_audio->synth_0_lfo_0_sends->port_value.ags_port_pointer, 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   g_object_set(fx_modular_synth_audio->synth_0_lfo_0_sends,
 	       "plugin-port", ags_fx_modular_synth_audio_get_synth_0_lfo_0_sends_plugin_port(),
@@ -1970,13 +1976,15 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-lfo-1-sends[0]",
 							     "control-port", "36/56",
-							     "port-value-is-pointer", FALSE,
-							     "port-value-type", G_TYPE_FLOAT,
-							     "port-value-size", sizeof(gfloat),
-							     "port-value-length", 1,
+							     "port-value-is-pointer", TRUE,
+							     "port-value-type", G_TYPE_INT64,
+							     "port-value-size", sizeof(gint64),
+							     "port-value-length", AGS_MODULAR_SYNTH_SENDS_COUNT,
 							     NULL);
   
-  fx_modular_synth_audio->synth_0_lfo_1_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_modular_synth_audio->synth_0_lfo_1_sends->port_value.ags_port_pointer = (gint *) g_malloc(AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_modular_synth_audio->synth_0_lfo_1_sends->port_value.ags_port_pointer, 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   g_object_set(fx_modular_synth_audio->synth_0_lfo_1_sends,
 	       "plugin-port", ags_fx_modular_synth_audio_get_synth_0_lfo_1_sends_plugin_port(),
@@ -2036,13 +2044,15 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./noise-sends[0]",
 							     "control-port", "39/56",
-							     "port-value-is-pointer", FALSE,
-							     "port-value-type", G_TYPE_FLOAT,
-							     "port-value-size", sizeof(gfloat),
-							     "port-value-length", 1,
+							     "port-value-is-pointer", TRUE,
+							     "port-value-type", G_TYPE_INT64,
+							     "port-value-size", sizeof(gint64),
+							     "port-value-length", AGS_MODULAR_SYNTH_SENDS_COUNT,
 							     NULL);
   
-  fx_modular_synth_audio->synth_0_noise_sends->port_value.ags_port_float = (gfloat) 0.0;
+  fx_modular_synth_audio->synth_0_noise_sends->port_value.ags_port_pointer = (gint *) g_malloc(AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_modular_synth_audio->synth_0_noise_sends->port_value.ags_port_pointer, 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   g_object_set(fx_modular_synth_audio->synth_0_noise_sends,
 	       "plugin-port", ags_fx_modular_synth_audio_get_synth_0_noise_sends_plugin_port(),

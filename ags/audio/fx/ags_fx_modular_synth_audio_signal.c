@@ -659,7 +659,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 			 &value);
 
       ags_modular_synth_util_set_env_0_sends(channel_data->modular_synth_util_0,
-					     (gint *) g_value_get_pointer(&value),
+					     (gint64 *) g_value_get_pointer(&value),
 					     AGS_MODULAR_SYNTH_SENDS_COUNT);
       
       g_object_unref(port);
@@ -793,7 +793,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 			 &value);
 
       ags_modular_synth_util_set_env_1_sends(channel_data->modular_synth_util_0,
-					     (gint *) g_value_get_pointer(&value),
+					     (gint64 *) g_value_get_pointer(&value),
 					     AGS_MODULAR_SYNTH_SENDS_COUNT);
       
       g_object_unref(port);
@@ -853,7 +853,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 			 &value);
 
       ags_modular_synth_util_set_noise_sends(channel_data->modular_synth_util_0,
-					     (gint *) g_value_get_pointer(&value),
+					     (gint64 *) g_value_get_pointer(&value),
 					     AGS_MODULAR_SYNTH_SENDS_COUNT);
       
       g_object_unref(port);

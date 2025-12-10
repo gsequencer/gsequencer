@@ -69,6 +69,10 @@ void ags_modular_synth_lfo_1_frequency_callback(GtkSpinButton *spin_button, AgsM
 void ags_modular_synth_lfo_1_depth_callback(AgsDial *dial, AgsModularSynth *modular_synth);
 void ags_modular_synth_lfo_1_tuning_callback(AgsDial *dial, AgsModularSynth *modular_synth);
 
+void ags_modular_synth_modulation_matrix_callback(AgsModulationMatrix *modulation_matrix,
+						  gint x, gint y,
+						  AgsModularSynth *modular_synth);
+
 void ags_modular_synth_osc_0_oscillator_callback(GObject *gobject,
 						 GParamSpec *pspec,
 						 AgsModularSynth *modular_synth);

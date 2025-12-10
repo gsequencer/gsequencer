@@ -63,8 +63,15 @@ void ags_modulation_matrix_show(GtkWidget *widget);
  * The #AgsModulationMatrix is a composite widget to act as modular synth.
  */
 
+enum{
+  TOGGLED,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_modulation_matrix_parent_class = NULL;
 static AgsConnectableInterface *ags_modulation_matrix_parent_connectable_interface;
+
+static guint modulation_matrix_signals[LAST_SIGNAL];
 
 GType
 ags_modulation_matrix_get_type(void)
@@ -117,6 +124,29 @@ ags_modulation_matrix_class_init(AgsModulationMatrixClass *modulation_matrix)
   gobject = (GObjectClass *) modulation_matrix;
 
   gobject->finalize = ags_modulation_matrix_finalize;
+
+  /* AgsModulationMatrixClass */
+  modulation_matrix->toggled = NULL;
+
+  /* signals */
+  /**
+   * AgsModulationMatrix::toggled:
+   * @modulation_matrix: the #AgsModulationMatrix
+   *
+   * The ::toggled signal notifies matrix modified.
+   *
+   * Since: 8.2.0
+   */
+  modulation_matrix_signals[TOGGLED] =
+    g_signal_new("toggled",
+		 G_TYPE_FROM_CLASS(modulation_matrix),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsModulationMatrixClass, toggled),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
 }
 
 void
@@ -388,6 +418,19 @@ ags_modulation_matrix_get_enabled(AgsModulationMatrix *modulation_matrix,
   }
   
   return(enabled);
+}
+
+void
+ags_modulation_matrix_toggled(AgsModulationMatrix *modulation_matrix,
+			      gint x, gint y)
+{
+  g_return_if_fail(AGS_IS_MODULATION_MATRIX(modulation_matrix));
+
+  g_object_ref((GObject *) modulation_matrix);
+  g_signal_emit(G_OBJECT(modulation_matrix),
+		modulation_matrix_signals[TOGGLED], 0,
+		x, y);
+  g_object_unref((GObject *) modulation_matrix);  
 }
 
 void

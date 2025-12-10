@@ -88,6 +88,9 @@ ags_modulation_matrix_gesture_click_released_callback(GtkGestureClick *event_con
 					cursor_x, cursor_y,
 					FALSE);
     }
+
+    ags_modulation_matrix_toggled(modulation_matrix,
+				  cursor_x, cursor_y);    
   }
 
   /* queue draw */

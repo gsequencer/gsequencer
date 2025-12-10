@@ -2016,6 +2016,9 @@ ags_modular_synth_connect(AgsConnectable *connectable)
   /* modulation matrix */
   ags_connectable_connect(AGS_CONNECTABLE(modular_synth->modulation_matrix));
 
+  g_signal_connect_after(modular_synth->modulation_matrix, "toggled",
+			 G_CALLBACK(ags_modular_synth_modulation_matrix_callback), modular_synth);
+
   /* osc-0 */
   g_signal_connect_after(modular_synth->osc_0_oscillator, "notify::selected",
 			 G_CALLBACK(ags_modular_synth_osc_0_oscillator_callback), modular_synth);
@@ -2264,6 +2267,12 @@ ags_modular_synth_disconnect(AgsConnectable *connectable)
 
   /* modulation matrix */
   ags_connectable_disconnect(AGS_CONNECTABLE(modular_synth->modulation_matrix));
+
+  g_object_disconnect(modular_synth->modulation_matrix,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_modular_synth_modulation_matrix_callback),
+		      modular_synth,
+		      NULL);
 
   /* osc-0 */
   g_object_disconnect(modular_synth->osc_0_oscillator,

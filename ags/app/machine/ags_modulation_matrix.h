@@ -105,6 +105,9 @@ struct _AgsModulationMatrix
 struct _AgsModulationMatrixClass
 {
   GtkBoxClass box;
+
+  void (*toggled)(AgsModulationMatrix *modulation_matrix,
+		  gint x, gint y);
 };
 
 GType ags_modulation_matrix_get_type(void);
@@ -114,6 +117,9 @@ void ags_modulation_matrix_set_enabled(AgsModulationMatrix *modulation_matrix,
 				       gboolean enabled);
 gboolean ags_modulation_matrix_get_enabled(AgsModulationMatrix *modulation_matrix,
 					   gint x, gint y);
+
+void ags_modulation_matrix_toggled(AgsModulationMatrix *modulation_matrix,
+				   gint x, gint y);
 
 void ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
 				cairo_t *cr);

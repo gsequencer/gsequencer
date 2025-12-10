@@ -36,31 +36,31 @@
 #include <complex.h>
 
 gboolean ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-							 gint *sends,
+							 gint64 *sends,
 							 AgsModularSynthSends modular_synth_sends);
 gboolean ags_modular_synth_util_osc_0_phase_receives(AgsModularSynthUtil *modular_synth_util,
-						     gint *sends,
+						     gint64 *sends,
 						     AgsModularSynthSends modular_synth_sends);
 gboolean ags_modular_synth_util_osc_0_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint *sends,
+						      gint64 *sends,
 						      AgsModularSynthSends modular_synth_sends);
 
 gboolean ags_modular_synth_util_osc_1_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-							 gint *sends,
+							 gint64 *sends,
 							 AgsModularSynthSends modular_synth_sends);
 gboolean ags_modular_synth_util_osc_1_phase_receives(AgsModularSynthUtil *modular_synth_util,
-						     gint *sends,
+						     gint64 *sends,
 						     AgsModularSynthSends modular_synth_sends);
 gboolean ags_modular_synth_util_osc_1_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint *sends,
+						      gint64 *sends,
 						      AgsModularSynthSends modular_synth_sends);
 
 gboolean ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint *sends,
+						      gint64 *sends,
 						      AgsModularSynthSends modular_synth_sends);
 
 gboolean ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						gint *sends,
+						gint64 *sends,
 						AgsModularSynthSends modular_synth_sends);
 
 extern void ags_fluid_interpolate_4th_order_util_config();
@@ -184,7 +184,7 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->env_0_gain = ptr->env_0_gain;
   new_ptr->env_0_frequency = ptr->env_0_frequency;
 
-  memcpy(&(new_ptr->env_0_sends[0]), &(ptr->env_0_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(new_ptr->env_0_sends[0]), &(ptr->env_0_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   ags_stream_free(new_ptr->env_0_buffer);
 
@@ -202,7 +202,7 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->env_1_gain = ptr->env_1_gain;
   new_ptr->env_1_frequency = ptr->env_1_frequency;
 
-  memcpy(&(new_ptr->env_1_sends[0]), &(ptr->env_1_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(new_ptr->env_1_sends[0]), &(ptr->env_1_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   ags_stream_free(new_ptr->env_1_buffer);
 
@@ -218,7 +218,7 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->lfo_0_depth = new_ptr->lfo_0_depth;
   new_ptr->lfo_0_tuning = new_ptr->lfo_0_tuning;
 
-  memcpy(&(new_ptr->lfo_0_sends[0]), &(ptr->lfo_0_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(new_ptr->lfo_0_sends[0]), &(ptr->lfo_0_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   ags_stream_free(new_ptr->lfo_0_buffer);
 
@@ -234,7 +234,7 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->lfo_1_depth = new_ptr->lfo_1_depth;
   new_ptr->lfo_1_tuning = new_ptr->lfo_1_tuning;
 
-  memcpy(&(new_ptr->lfo_1_sends[0]), &(ptr->lfo_1_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(new_ptr->lfo_1_sends[0]), &(ptr->lfo_1_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   ags_stream_free(new_ptr->lfo_1_buffer);
 
@@ -248,7 +248,7 @@ ags_modular_synth_util_copy(AgsModularSynthUtil *ptr)
   new_ptr->noise_frequency = ptr->noise_frequency;
   new_ptr->noise_gain = ptr->noise_gain;
 
-  memcpy(&(new_ptr->noise_sends[0]), &(ptr->noise_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(new_ptr->noise_sends[0]), &(ptr->noise_sends[0]), AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
   ags_stream_free(new_ptr->noise_buffer);
 
@@ -1337,7 +1337,7 @@ ags_modular_synth_util_set_env_0_frequency(AgsModularSynthUtil *modular_synth_ut
  * 
  * Since: 8.2.0
  */
-gint*
+gint64*
 ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
 				       guint *env_0_sends_count)
 {
@@ -1364,14 +1364,14 @@ ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_env_0_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint *env_0_sends,
+				       gint64 *env_0_sends,
 				       guint env_0_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  memcpy(&(modular_synth_util->env_0_sends[0]), env_0_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(modular_synth_util->env_0_sends[0]), env_0_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 }
 
 /**
@@ -1627,7 +1627,7 @@ ags_modular_synth_util_set_env_1_frequency(AgsModularSynthUtil *modular_synth_ut
  * 
  * Since: 8.2.0
  */
-gint*
+gint64*
 ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
 				       guint *env_1_sends_count)
 {
@@ -1653,14 +1653,14 @@ ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_env_1_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint *env_1_sends,
+				       gint64 *env_1_sends,
 				       guint env_1_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  memcpy(&(modular_synth_util->env_1_sends[0]), env_1_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(modular_synth_util->env_1_sends[0]), env_1_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 }
 
 /**
@@ -1836,7 +1836,7 @@ ags_modular_synth_util_set_lfo_0_tuning(AgsModularSynthUtil *modular_synth_util,
  * 
  * Since: 8.2.0
  */
-gint*
+gint64*
 ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
 				       guint *lfo_0_sends_count)
 {
@@ -1862,14 +1862,14 @@ ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint *lfo_0_sends,
+				       gint64 *lfo_0_sends,
 				       guint lfo_0_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  memcpy(&(modular_synth_util->lfo_0_sends[0]), lfo_0_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(modular_synth_util->lfo_0_sends[0]), lfo_0_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 }
 
 /**
@@ -2045,7 +2045,7 @@ ags_modular_synth_util_set_lfo_1_tuning(AgsModularSynthUtil *modular_synth_util,
  * 
  * Since: 8.2.0
  */
-gint*
+gint64*
 ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
 				       guint *lfo_1_sends_count)
 {
@@ -2071,14 +2071,14 @@ ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint *lfo_1_sends,
+				       gint64 *lfo_1_sends,
 				       guint lfo_1_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
 
-  memcpy(&(modular_synth_util->lfo_1_sends[0]), lfo_1_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(modular_synth_util->lfo_1_sends[0]), lfo_1_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 }
 
 /**
@@ -2171,7 +2171,7 @@ ags_modular_synth_util_set_noise_gain(AgsModularSynthUtil *modular_synth_util,
  * 
  * Since: 8.2.0
  */
-gint*
+gint64*
 ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
 				       guint *noise_sends_count)
 {
@@ -2197,14 +2197,14 @@ ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
  */
 void
 ags_modular_synth_util_set_noise_sends(AgsModularSynthUtil *modular_synth_util,
-				       gint *noise_sends,
+				       gint64 *noise_sends,
 				       guint noise_sends_count)
 {
   if(modular_synth_util == NULL){
     return;
   }
   
-  memcpy(&(modular_synth_util->noise_sends[0]), noise_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+  memcpy(&(modular_synth_util->noise_sends[0]), noise_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 }
 
 /**
@@ -2369,7 +2369,7 @@ ags_modular_synth_util_set_offset_256th(AgsModularSynthUtil *modular_synth_util,
 
 gboolean
 ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-						gint *sends,
+						gint64 *sends,
 						AgsModularSynthSends modular_synth_sends)
 {
   guint i;
@@ -2394,7 +2394,7 @@ ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_syn
 
 gboolean
 ags_modular_synth_util_osc_0_phase_receives(AgsModularSynthUtil *modular_synth_util,
-					    gint *sends,
+					    gint64 *sends,
 					    AgsModularSynthSends modular_synth_sends)
 {
   guint i;
@@ -2419,7 +2419,7 @@ ags_modular_synth_util_osc_0_phase_receives(AgsModularSynthUtil *modular_synth_u
 
 gboolean
 ags_modular_synth_util_osc_0_volume_receives(AgsModularSynthUtil *modular_synth_util,
-					     gint *sends,
+					     gint64 *sends,
 					     AgsModularSynthSends modular_synth_sends)
 {
   guint i;
@@ -2444,7 +2444,7 @@ ags_modular_synth_util_osc_0_volume_receives(AgsModularSynthUtil *modular_synth_
 
 gboolean
 ags_modular_synth_util_osc_1_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-						gint *sends,
+						gint64 *sends,
 						AgsModularSynthSends modular_synth_sends)
 {
   guint i;
@@ -2469,7 +2469,7 @@ ags_modular_synth_util_osc_1_frequency_receives(AgsModularSynthUtil *modular_syn
 
 gboolean
 ags_modular_synth_util_osc_1_phase_receives(AgsModularSynthUtil *modular_synth_util,
-					    gint *sends,
+					    gint64 *sends,
 					    AgsModularSynthSends modular_synth_sends)
 {
   guint i;
@@ -2494,7 +2494,7 @@ ags_modular_synth_util_osc_1_phase_receives(AgsModularSynthUtil *modular_synth_u
 
 gboolean
 ags_modular_synth_util_osc_1_volume_receives(AgsModularSynthUtil *modular_synth_util,
-					     gint *sends,
+					     gint64 *sends,
 					     AgsModularSynthSends modular_synth_sends)
 {
   guint i;
@@ -2519,7 +2519,7 @@ ags_modular_synth_util_osc_1_volume_receives(AgsModularSynthUtil *modular_synth_
 
 gboolean
 ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modular_synth_util,
-					     gint *sends,
+					     gint64 *sends,
 					     AgsModularSynthSends modular_synth_sends)
 {
   guint i;
@@ -2544,7 +2544,7 @@ ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modular_synth_
 
 gboolean
 ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
-				       gint *sends,
+				       gint64 *sends,
 				       AgsModularSynthSends modular_synth_sends)
 {
   guint i;

@@ -1128,6 +1128,182 @@ ags_modular_synth_lfo_1_tuning_callback(AgsDial *dial, AgsModularSynth *modular_
 }
 
 void
+ags_modular_synth_modulation_matrix_callback(AgsModulationMatrix *modulation_matrix,
+					     gint x, gint y,
+					     AgsModularSynth *modular_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  double lfo_1_tuning;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  lfo_1_tuning = ags_dial_get_value(modular_synth->lfo_1_tuning);
+
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT], *port_sends;
+    
+    port = NULL;
+    
+    if(y == 0){ /* env-0 */
+      g_object_get(recall->data,
+		   "synth-0-env-0-sends", &port,
+		   NULL);
+    }else if(y == 1){ /* env-1 */
+      g_object_get(recall->data,
+		   "synth-0-env-1-sends", &port,
+		   NULL);
+    }else if(y == 2){ /* lfo-0 */
+      g_object_get(recall->data,
+		   "synth-0-lfo-0-sends", &port,
+		   NULL);
+    }else if(y == 3){ /* lfo-1 */
+      g_object_get(recall->data,
+		   "synth-0-lfo-1-sends", &port,
+		   NULL);
+    }else if(y == 4){ /* noise */
+      g_object_get(recall->data,
+		   "synth-0-noise-sends", &port,
+		   NULL);
+    }
+
+    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+
+    port_sends = NULL;
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_POINTER);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      port_sends = g_value_get_pointer(&value);
+
+      g_object_unref(port);
+    }
+
+    if(port_sends != NULL){
+      gint n_sends;
+      guint i, j;
+      gboolean is_on;      
+      gboolean success;
+
+      n_sends = 0;
+
+      is_on == FALSE;
+      
+      for(i = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+	success = FALSE;
+
+	if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY){
+	  success = TRUE;
+	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE){
+	  success = TRUE;
+	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME){
+	  success = TRUE;
+	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY){
+	  success = TRUE;
+	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE){
+	  success = TRUE;
+	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME){
+	  success = TRUE;
+	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING){
+	  success = TRUE;
+	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_VOLUME){
+	  success = TRUE;
+	}
+
+	if(port_sends[i] == (1L << x)){
+	  is_on = TRUE;
+	}
+	
+	if(success){
+	  n_sends++;
+	}else{
+	  break;
+	}
+      }
+
+      //NOTE:JK: we fill sends
+      // memcpy(&(sends[0]), port_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
+	
+      if(!is_on){
+	for(i = 0, j = 0; i < n_sends + 1; i++){
+	  if(i != x){
+	    sends[i] = port_sends[j];
+	    
+	    j++;
+	  }else{
+	    sends[i] = (1L << x);
+	  }
+	}
+	
+	if(port != NULL){
+	  GValue value = G_VALUE_INIT;
+
+	  g_value_init(&value,
+		       G_TYPE_POINTER);
+	  
+	  g_value_set_pointer(&value,
+			      (gpointer) sends);
+
+	  ags_port_safe_write(port,
+			      &value);
+
+	  g_object_unref(port);
+	}
+      }else{
+	for(i = 0; i < n_sends - 1; i++){
+	  if(i != x){
+	    sends[i] = port_sends[i];
+	  }else{	    
+	    i++;
+	  }
+	}
+	
+	if(port != NULL){
+	  GValue value = G_VALUE_INIT;
+
+	  g_value_init(&value,
+		       G_TYPE_POINTER);
+
+	  g_value_set_pointer(&value,
+			      (gpointer) sends);
+
+	  ags_port_safe_write(port,
+			      &value);
+
+	  g_object_unref(port);
+	}
+      }
+    }    
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
 ags_modular_synth_noise_frequency_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
   AgsAudio *audio;
@@ -1904,97 +2080,836 @@ ags_modular_synth_volume_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 void
 ags_modular_synth_low_pass_0_cut_off_frequency_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-0-cut-off-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_low_pass_0_filter_gain_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-0-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_low_pass_0_no_clip_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-0-no-clip", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_amplifier_0_amp_0_gain_callback(GtkRange *range, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = gtk_range_get_value(range);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-0-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_amplifier_0_amp_1_gain_callback(GtkRange *range, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = gtk_range_get_value(range);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-1-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_amplifier_0_amp_2_gain_callback(GtkRange *range, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = gtk_range_get_value(range);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-2-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_amplifier_0_amp_3_gain_callback(GtkRange *range, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = gtk_range_get_value(range);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-amp-3-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_amplifier_0_filter_gain_callback(GtkRange *range, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  volume = gtk_range_get_value(range);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "amplifier-0-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_chorus_enabled_callback(GtkButton *button, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble chorus_enabled;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  chorus_enabled = gtk_check_button_get_active((GtkCheckButton *) button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_enabled);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_chorus_input_volume_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble chorus_input_volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  chorus_input_volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-input-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_input_volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_chorus_output_volume_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble chorus_output_volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  chorus_output_volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-output-volume", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_output_volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_chorus_lfo_oscillator_callback(GObject *gobject,
-						 GParamSpec *pspec,
-						 AgsModularSynth *modular_synth)
+					       GParamSpec *pspec,
+					       AgsModularSynth *modular_synth)
 {
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
   //TODO:JK: implement me
 }
 
 void
 ags_modular_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
-}
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble chorus_lfo_frequency;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  chorus_lfo_frequency = gtk_spin_button_get_value(spin_button);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-lfo-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_lfo_frequency);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}  
 
 void
 ags_modular_synth_chorus_depth_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble chorus_depth;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  chorus_depth = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-depth", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_depth);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_chorus_mix_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble chorus_mix;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  chorus_mix = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-mix", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_mix);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
 ags_modular_synth_chorus_delay_callback(AgsDial *dial, AgsModularSynth *modular_synth)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble chorus_delay;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(modular_synth)->audio;
+
+  chorus_delay = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-delay", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_delay);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
