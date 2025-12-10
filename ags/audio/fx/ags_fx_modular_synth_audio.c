@@ -1199,7 +1199,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_0_oscillator = g_object_new(AGS_TYPE_PORT,
 								  "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								  "specifier", "./synth-0-osc-0-oscillator[0]",
-								  "control-port", "1/40",
+								  "control-port", "1/56",
 								  "port-value-is-pointer", FALSE,
 								  "port-value-type", G_TYPE_FLOAT,
 								  "port-value-size", sizeof(gfloat),
@@ -1221,7 +1221,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_0_octave = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-osc-0-octave[0]",
-							      "control-port", "2/40",
+							      "control-port", "2/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1243,7 +1243,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_0_key = g_object_new(AGS_TYPE_PORT,
 							   "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							   "specifier", "./synth-0-osc-0-key[0]",
-							   "control-port", "3/40",
+							   "control-port", "3/56",
 							   "port-value-is-pointer", FALSE,
 							   "port-value-type", G_TYPE_FLOAT,
 							   "port-value-size", sizeof(gfloat),
@@ -1265,7 +1265,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_0_phase = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-osc-0-phase[0]",
-							     "control-port", "4/40",
+							     "control-port", "4/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1287,7 +1287,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_0_volume = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-osc-0-volume[0]",
-							      "control-port", "5/40",
+							      "control-port", "5/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1309,7 +1309,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_1_oscillator = g_object_new(AGS_TYPE_PORT,
 								  "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								  "specifier", "./synth-0-osc-1-oscillator[0]",
-								  "control-port", "6/40",
+								  "control-port", "6/56",
 								  "port-value-is-pointer", FALSE,
 								  "port-value-type", G_TYPE_FLOAT,
 								  "port-value-size", sizeof(gfloat),
@@ -1331,7 +1331,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_1_octave = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-osc-1-octave[0]",
-							      "control-port", "7/40",
+							      "control-port", "7/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1353,7 +1353,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_1_key = g_object_new(AGS_TYPE_PORT,
 							   "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							   "specifier", "./synth-0-osc-1-key[0]",
-							   "control-port", "8/40",
+							   "control-port", "8/56",
 							   "port-value-is-pointer", FALSE,
 							   "port-value-type", G_TYPE_FLOAT,
 							   "port-value-size", sizeof(gfloat),
@@ -1375,7 +1375,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_1_phase = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-osc-1-phase[0]",
-							     "control-port", "9/40",
+							     "control-port", "9/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1397,7 +1397,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_osc_1_volume = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-osc-1-volume[0]",
-							      "control-port", "10/40",
+							      "control-port", "10/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1419,7 +1419,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_pitch_tuning = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./pitch-tuning[0]",
-							      "control-port", "11/40",
+							      "control-port", "11/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1441,7 +1441,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_volume = g_object_new(AGS_TYPE_PORT,
 							"plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							"specifier", "./volume[0]",
-							"control-port", "12/40",
+							"control-port", "12/56",
 							"port-value-is-pointer", FALSE,
 							"port-value-type", G_TYPE_FLOAT,
 							"port-value-size", sizeof(gfloat),
@@ -1463,7 +1463,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_0_attack = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-env-0-attack[0]",
-							      "control-port", "13/40",
+							      "control-port", "13/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1485,7 +1485,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_0_decay = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-env-0-decay[0]",
-							     "control-port", "14/40",
+							     "control-port", "14/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1507,7 +1507,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_0_sustain = g_object_new(AGS_TYPE_PORT,
 							       "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							       "specifier", "./synth-0-env-0-sustain[0]",
-							       "control-port", "15/40",
+							       "control-port", "15/56",
 							       "port-value-is-pointer", FALSE,
 							       "port-value-type", G_TYPE_FLOAT,
 							       "port-value-size", sizeof(gfloat),
@@ -1529,7 +1529,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_0_release = g_object_new(AGS_TYPE_PORT,
 							       "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							       "specifier", "./synth-0-env-0-release[0]",
-							       "control-port", "17/40",
+							       "control-port", "16/56",
 							       "port-value-is-pointer", FALSE,
 							       "port-value-type", G_TYPE_FLOAT,
 							       "port-value-size", sizeof(gfloat),
@@ -1551,7 +1551,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_0_gain = g_object_new(AGS_TYPE_PORT,
 							    "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							    "specifier", "./synth-0-env-0-gain[0]",
-							    "control-port", "18/40",
+							    "control-port", "17/56",
 							    "port-value-is-pointer", FALSE,
 							    "port-value-type", G_TYPE_FLOAT,
 							    "port-value-size", sizeof(gfloat),
@@ -1573,7 +1573,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_0_frequency = g_object_new(AGS_TYPE_PORT,
 								 "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								 "specifier", "./synth-0-env-0-frequency[0]",
-								 "control-port", "19/40",
+								 "control-port", "18/56",
 								 "port-value-is-pointer", FALSE,
 								 "port-value-type", G_TYPE_FLOAT,
 								 "port-value-size", sizeof(gfloat),
@@ -1595,7 +1595,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_0_sends = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-env-0-sends[0]",
-							     "control-port", "20/40",
+							     "control-port", "19/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1617,7 +1617,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_1_attack = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-env-1-attack[0]",
-							      "control-port", "21/40",
+							      "control-port", "20/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1639,7 +1639,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_1_decay = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-env-1-decay[0]",
-							     "control-port", "22/40",
+							     "control-port", "21/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1661,7 +1661,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_1_sustain = g_object_new(AGS_TYPE_PORT,
 							       "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							       "specifier", "./synth-0-env-1-sustain[0]",
-							       "control-port", "23/40",
+							       "control-port", "22/56",
 							       "port-value-is-pointer", FALSE,
 							       "port-value-type", G_TYPE_FLOAT,
 							       "port-value-size", sizeof(gfloat),
@@ -1683,7 +1683,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_1_release = g_object_new(AGS_TYPE_PORT,
 							       "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							       "specifier", "./synth-0-env-1-release[0]",
-							       "control-port", "24/40",
+							       "control-port", "23/56",
 							       "port-value-is-pointer", FALSE,
 							       "port-value-type", G_TYPE_FLOAT,
 							       "port-value-size", sizeof(gfloat),
@@ -1705,7 +1705,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_1_gain = g_object_new(AGS_TYPE_PORT,
 							    "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							    "specifier", "./synth-0-env-1-gain[0]",
-							    "control-port", "25/40",
+							    "control-port", "24/56",
 							    "port-value-is-pointer", FALSE,
 							    "port-value-type", G_TYPE_FLOAT,
 							    "port-value-size", sizeof(gfloat),
@@ -1727,7 +1727,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_1_frequency = g_object_new(AGS_TYPE_PORT,
 								 "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								 "specifier", "./synth-0-env-1-frequency[0]",
-								 "control-port", "26/40",
+								 "control-port", "25/56",
 								 "port-value-is-pointer", FALSE,
 								 "port-value-type", G_TYPE_FLOAT,
 								 "port-value-size", sizeof(gfloat),
@@ -1749,7 +1749,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_env_1_sends = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-env-1-sends[0]",
-							     "control-port", "27/40",
+							     "control-port", "26/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1771,7 +1771,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_0_oscillator = g_object_new(AGS_TYPE_PORT,
 								  "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								  "specifier", "./synth-0-lfo-0-oscillator[0]",
-								  "control-port", "28/40",
+								  "control-port", "27/56",
 								  "port-value-is-pointer", FALSE,
 								  "port-value-type", G_TYPE_FLOAT,
 								  "port-value-size", sizeof(gfloat),
@@ -1793,7 +1793,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_0_frequency = g_object_new(AGS_TYPE_PORT,
 								 "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								 "specifier", "./synth-0-lfo-0-frequency[0]",
-								 "control-port", "29/40",
+								 "control-port", "28/56",
 								 "port-value-is-pointer", FALSE,
 								 "port-value-type", G_TYPE_FLOAT,
 								 "port-value-size", sizeof(gfloat),
@@ -1815,7 +1815,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_0_depth = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-lfo-0-depth[0]",
-							     "control-port", "30/40",
+							     "control-port", "29/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1837,7 +1837,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_0_tuning = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-lfo-0-tuning[0]",
-							      "control-port", "31/40",
+							      "control-port", "30/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1859,7 +1859,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_0_sends = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-lfo-0-sends[0]",
-							     "control-port", "32/40",
+							     "control-port", "31/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1881,7 +1881,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_1_oscillator = g_object_new(AGS_TYPE_PORT,
 								  "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								  "specifier", "./synth-0-lfo-1-oscillator[0]",
-								  "control-port", "33/40",
+								  "control-port", "32/56",
 								  "port-value-is-pointer", FALSE,
 								  "port-value-type", G_TYPE_FLOAT,
 								  "port-value-size", sizeof(gfloat),
@@ -1903,7 +1903,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_1_frequency = g_object_new(AGS_TYPE_PORT,
 								 "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								 "specifier", "./synth-0-lfo-1-frequency[0]",
-								 "control-port", "34/40",
+								 "control-port", "33/56",
 								 "port-value-is-pointer", FALSE,
 								 "port-value-type", G_TYPE_FLOAT,
 								 "port-value-size", sizeof(gfloat),
@@ -1925,7 +1925,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_1_depth = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-lfo-1-depth[0]",
-							     "control-port", "35/40",
+							     "control-port", "34/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1947,7 +1947,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_1_tuning = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./synth-0-lfo-1-tuning[0]",
-							      "control-port", "36/40",
+							      "control-port", "35/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -1969,7 +1969,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_lfo_1_sends = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./synth-0-lfo-1-sends[0]",
-							     "control-port", "37/40",
+							     "control-port", "36/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -1991,7 +1991,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_noise_frequency = g_object_new(AGS_TYPE_PORT,
 								 "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								 "specifier", "./noise-frequency[0]",
-								 "control-port", "38/40",
+								 "control-port", "37/56",
 								 "port-value-is-pointer", FALSE,
 								 "port-value-type", G_TYPE_FLOAT,
 								 "port-value-size", sizeof(gfloat),
@@ -2013,7 +2013,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_noise_gain = g_object_new(AGS_TYPE_PORT,
 							    "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							    "specifier", "./noise-gain[0]",
-							    "control-port", "39/40",
+							    "control-port", "38/56",
 							    "port-value-is-pointer", FALSE,
 							    "port-value-type", G_TYPE_FLOAT,
 							    "port-value-size", sizeof(gfloat),
@@ -2035,7 +2035,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->synth_0_noise_sends = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./noise-sends[0]",
-							     "control-port", "40/40",
+							     "control-port", "39/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -2057,7 +2057,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->low_pass_0_cut_off_frequency = g_object_new(AGS_TYPE_PORT,
 								      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								      "specifier", "./low-pass-0-cut-off-frequency[0]",
-								      "control-port", "89/121",
+								      "control-port", "40/56",
 								      "port-value-is-pointer", FALSE,
 								      "port-value-type", G_TYPE_FLOAT,
 								      "port-value-size", sizeof(gfloat),
@@ -2079,7 +2079,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->low_pass_0_filter_gain = g_object_new(AGS_TYPE_PORT,
 								"plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								"specifier", "./low-pass-0-filter-gain[0]",
-								"control-port", "90/121",
+								"control-port", "41/56",
 								"port-value-is-pointer", FALSE,
 								"port-value-type", G_TYPE_FLOAT,
 								"port-value-size", sizeof(gfloat),
@@ -2101,7 +2101,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->low_pass_0_no_clip = g_object_new(AGS_TYPE_PORT,
 							    "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							    "specifier", "./low-pass-0-no-clip[0]",
-							    "control-port", "91/121",
+							    "control-port", "42/56",
 							    "port-value-is-pointer", FALSE,
 							    "port-value-type", G_TYPE_FLOAT,
 							    "port-value-size", sizeof(gfloat),
@@ -2123,7 +2123,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->amplifier_0_amp_0_gain = g_object_new(AGS_TYPE_PORT,
 								"plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								"specifier", "./amplifier-0-amp-0-gain[0]",
-								"control-port", "95/121",
+								"control-port", "43/56",
 								"port-value-is-pointer", FALSE,
 								"port-value-type", G_TYPE_FLOAT,
 								"port-value-size", sizeof(gfloat),
@@ -2145,7 +2145,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->amplifier_0_amp_1_gain = g_object_new(AGS_TYPE_PORT,
 								"plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								"specifier", "./amplifier-0-amp-1-gain[0]",
-								"control-port", "96/121",
+								"control-port", "44/56",
 								"port-value-is-pointer", FALSE,
 								"port-value-type", G_TYPE_FLOAT,
 								"port-value-size", sizeof(gfloat),
@@ -2167,7 +2167,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->amplifier_0_amp_2_gain = g_object_new(AGS_TYPE_PORT,
 								"plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								"specifier", "./amplifier-0-amp-2-gain[0]",
-								"control-port", "97/121",
+								"control-port", "45/56",
 								"port-value-is-pointer", FALSE,
 								"port-value-type", G_TYPE_FLOAT,
 								"port-value-size", sizeof(gfloat),
@@ -2189,7 +2189,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->amplifier_0_amp_3_gain = g_object_new(AGS_TYPE_PORT,
 								"plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								"specifier", "./amplifier-0-amp-3-gain[0]",
-								"control-port", "98/121",
+								"control-port", "46/56",
 								"port-value-is-pointer", FALSE,
 								"port-value-type", G_TYPE_FLOAT,
 								"port-value-size", sizeof(gfloat),
@@ -2211,7 +2211,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->amplifier_0_filter_gain = g_object_new(AGS_TYPE_PORT,
 								 "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 								 "specifier", "./amplifier-0-filter-gain[0]",
-								 "control-port", "99/121",
+								 "control-port", "47/56",
 								 "port-value-is-pointer", FALSE,
 								 "port-value-type", G_TYPE_FLOAT,
 								 "port-value-size", sizeof(gfloat),
@@ -2233,7 +2233,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_enabled = g_object_new(AGS_TYPE_PORT,
 							"plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							"specifier", "./chorus-enabled[0]",
-							"control-port", "108/121",
+							"control-port", "48/56",
 							"port-value-is-pointer", FALSE,
 							"port-value-type", G_TYPE_FLOAT,
 							"port-value-size", sizeof(gfloat),
@@ -2255,7 +2255,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_pitch_type = g_object_new(AGS_TYPE_PORT,
 							   "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							   "specifier", "./chorus-pitch-type[0]",
-							   "control-port", "109/121",
+							   "control-port", "49/56",
 							   "port-value-is-pointer", FALSE,
 							   "port-value-type", G_TYPE_FLOAT,
 							   "port-value-size", sizeof(gfloat),
@@ -2277,7 +2277,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_input_volume = g_object_new(AGS_TYPE_PORT,
 							     "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							     "specifier", "./chorus-input-volume[0]",
-							     "control-port", "110/121",
+							     "control-port", "50/56",
 							     "port-value-is-pointer", FALSE,
 							     "port-value-type", G_TYPE_FLOAT,
 							     "port-value-size", sizeof(gfloat),
@@ -2299,7 +2299,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_output_volume = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./chorus-output-volume[0]",
-							      "control-port", "111/121",
+							      "control-port", "51/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -2321,7 +2321,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
 							       "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							       "specifier", "./chorus-lfo-oscillator[0]",
-							       "control-port", "112/121",
+							       "control-port", "52/56",
 							       "port-value-is-pointer", FALSE,
 							       "port-value-type", G_TYPE_FLOAT,
 							       "port-value-size", sizeof(gfloat),
@@ -2343,7 +2343,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_lfo_frequency = g_object_new(AGS_TYPE_PORT,
 							      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 							      "specifier", "./chorus-lfo-frequency[0]",
-							      "control-port", "113/121",
+							      "control-port", "53/56",
 							      "port-value-is-pointer", FALSE,
 							      "port-value-type", G_TYPE_FLOAT,
 							      "port-value-size", sizeof(gfloat),
@@ -2365,7 +2365,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_depth = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 						      "specifier", "./chorus-depth[0]",
-						      "control-port", "114/121",
+						      "control-port", "54/56",
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
@@ -2387,7 +2387,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_mix = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 						    "specifier", "./chorus-mix[0]",
-						    "control-port", "115/121",
+						    "control-port", "55/56",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -2409,7 +2409,7 @@ ags_fx_modular_synth_audio_init(AgsFxModularSynthAudio *fx_modular_synth_audio)
   fx_modular_synth_audio->chorus_delay = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_fx_modular_synth_audio_plugin_name,
 						      "specifier", "./chorus-delay[0]",
-						      "control-port", "116/121",
+						      "control-port", "56/56",
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
@@ -3456,6 +3456,465 @@ ags_fx_modular_synth_audio_set_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
+  case PROP_LOW_PASS_0_CUT_OFF_FREQUENCY:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->low_pass_0_cut_off_frequency){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->low_pass_0_cut_off_frequency != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->low_pass_0_cut_off_frequency));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->low_pass_0_cut_off_frequency = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_0_FILTER_GAIN:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->low_pass_0_filter_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->low_pass_0_filter_gain != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->low_pass_0_filter_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->low_pass_0_filter_gain = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_0_NO_CLIP:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->low_pass_0_no_clip){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->low_pass_0_no_clip != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->low_pass_0_no_clip));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->low_pass_0_no_clip = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_0_GAIN:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->amplifier_0_amp_0_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->amplifier_0_amp_0_gain != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->amplifier_0_amp_0_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->amplifier_0_amp_0_gain = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_1_GAIN:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->amplifier_0_amp_1_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->amplifier_0_amp_1_gain != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->amplifier_0_amp_1_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->amplifier_0_amp_1_gain = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_2_GAIN:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->amplifier_0_amp_2_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->amplifier_0_amp_2_gain != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->amplifier_0_amp_2_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->amplifier_0_amp_2_gain = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_3_GAIN:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->amplifier_0_amp_3_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->amplifier_0_amp_3_gain != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->amplifier_0_amp_3_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->amplifier_0_amp_3_gain = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_FILTER_GAIN:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->amplifier_0_filter_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->amplifier_0_filter_gain != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->amplifier_0_filter_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->amplifier_0_filter_gain = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_ENABLED:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_enabled){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_enabled != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_enabled));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_enabled = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_PITCH_TYPE:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_pitch_type){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_pitch_type != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_pitch_type));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_pitch_type = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_INPUT_VOLUME:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_input_volume){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_input_volume != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_input_volume));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_input_volume = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_OUTPUT_VOLUME:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_output_volume){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_output_volume != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_output_volume));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_output_volume = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_LFO_OSCILLATOR:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_lfo_oscillator){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_lfo_oscillator != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_lfo_oscillator));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_lfo_oscillator = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_LFO_FREQUENCY:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_lfo_frequency){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_lfo_frequency != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_lfo_frequency));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_lfo_frequency = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_DEPTH:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_depth){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_depth != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_depth));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_depth = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_MIX:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_mix){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_mix != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_mix));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_mix = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_DELAY:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_modular_synth_audio->chorus_delay){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_modular_synth_audio->chorus_delay != NULL){
+	g_object_unref(G_OBJECT(fx_modular_synth_audio->chorus_delay));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_modular_synth_audio->chorus_delay = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -3811,6 +4270,159 @@ ags_fx_modular_synth_audio_get_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
+  case PROP_LOW_PASS_0_CUT_OFF_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->low_pass_0_cut_off_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_0_FILTER_GAIN:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->low_pass_0_filter_gain);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_0_NO_CLIP:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->low_pass_0_no_clip);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_0_GAIN:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->amplifier_0_amp_0_gain);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_1_GAIN:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->amplifier_0_amp_1_gain);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_2_GAIN:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->amplifier_0_amp_2_gain);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_AMP_3_GAIN:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->amplifier_0_amp_3_gain);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_AMPLIFIER_0_FILTER_GAIN:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->amplifier_0_filter_gain);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_ENABLED:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_enabled);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_PITCH_TYPE:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_pitch_type);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_INPUT_VOLUME:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_input_volume);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_OUTPUT_VOLUME:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_output_volume);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_LFO_OSCILLATOR:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_lfo_oscillator);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_LFO_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_lfo_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_DEPTH:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_depth);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_MIX:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_mix);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_CHORUS_DELAY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_modular_synth_audio->chorus_delay);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -3927,12 +4539,12 @@ ags_fx_modular_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	modular_synth_util_0 = channel_data->modular_synth_util_0;
 
 	/* synth buffer */
-	ags_stream_free(channel_data->synth_0_buffer);
+	ags_stream_free(channel_data->synth_buffer_0);
 
-	channel_data->synth_0_buffer = NULL;
+	channel_data->synth_buffer_0 = NULL;
 
 	if(buffer_size > 0){
-	  channel_data->synth_0_buffer = ags_stream_alloc(buffer_size,
+	  channel_data->synth_buffer_0 = ags_stream_alloc(buffer_size,
 							  format);
 	}
 	
@@ -3999,12 +4611,12 @@ ags_fx_modular_synth_audio_notify_format_callback(GObject *gobject,
 					  format);
 
 	/* synth buffer */
-	ags_stream_free(channel_data->synth_0_buffer);
+	ags_stream_free(channel_data->synth_buffer_0);
 
-	channel_data->synth_0_buffer = NULL;
+	channel_data->synth_buffer_0 = NULL;
 
 	if(buffer_size > 0){
-	  channel_data->synth_0_buffer = ags_stream_alloc(buffer_size,
+	  channel_data->synth_buffer_0 = ags_stream_alloc(buffer_size,
 							  format);
 	}
       }
@@ -4137,7 +4749,7 @@ ags_fx_modular_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 
 	  modular_synth_util_0 = channel_data->modular_synth_util_0;
 
-	  channel_data->synth_0_buffer = ags_stream_alloc(buffer_size,
+	  channel_data->synth_buffer_0 = ags_stream_alloc(buffer_size,
 							  format);
 
 	  ags_modular_synth_util_set_buffer_length(modular_synth_util_0,
@@ -4237,7 +4849,7 @@ ags_fx_modular_synth_audio_channel_data_alloc()
 
   channel_data->parent = NULL;
 
-  channel_data->synth_0_buffer = NULL;
+  channel_data->synth_buffer_0 = NULL;
 
   /* modular synth util */
   channel_data->modular_synth_util_0 = ags_modular_synth_util_alloc();

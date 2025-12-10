@@ -166,7 +166,7 @@ struct _AgsFxModularSynthAudioChannelData
   
   gpointer parent;
 
-  gpointer synth_0_buffer;
+  gpointer synth_buffer_0;
   
   AgsModularSynthUtil *modular_synth_util_0;
 
