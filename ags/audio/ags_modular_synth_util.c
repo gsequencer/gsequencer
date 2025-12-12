@@ -3051,17 +3051,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
       
     /* env-0 to osc-0 phase */
@@ -3069,17 +3069,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-0 to osc-0 volume */
@@ -3087,17 +3087,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* env-1 to osc-0 frequency */
@@ -3105,17 +3105,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
 
     /* env-1 to osc-0 phase */
@@ -3123,17 +3123,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-1 to osc-0 volume */
@@ -3141,17 +3141,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* lfo-0 to osc-0 frequency */
@@ -3159,17 +3159,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
       
     /* lfo-0 to osc-0 phase */
@@ -3177,17 +3177,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-0 to osc-0 volume */
@@ -3195,17 +3195,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* lfo-1 to osc-0 frequency */
@@ -3213,17 +3213,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* lfo-1 to osc-0 phase */
@@ -3231,17 +3231,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-1 to osc-0 volume */
@@ -3249,17 +3249,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* noise to osc-0 frequency */
@@ -3267,17 +3267,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* noise to osc-0 phase */
@@ -3285,17 +3285,17 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* noise to osc-0 volume */
@@ -3303,82 +3303,82 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
- 	((fmod(((gdouble) (offset + i) + v_osc_0_phase[0]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_0_phase[1]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_0_phase[2]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_0_phase[3]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_0_phase[4]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_0_phase[5]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_0_phase[6]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_0_phase[7]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
+ 	((fmod(((gdouble) (offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_0_volume);
@@ -3411,118 +3411,118 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
    /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint8) ((gint16) (source[0]) + (gint16) (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
+      source[0] = (gint8) ((gint16) (source[0]) + (gint16) (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint8) ((gint16) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
+      source[0] = (gint8) ((gint16) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint8) ((gint16) (source[0]) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
+      source[0] = (gint8) ((gint16) (source[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint8) ((gint16) (source[0]) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint8) ((gint16) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint8) ((gint16) (source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint8) ((gint16) (source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }
 
     source += source_stride;
@@ -3610,14 +3610,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -3628,14 +3628,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -3646,14 +3646,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -3664,14 +3664,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -3682,14 +3682,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -3700,14 +3700,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -3718,14 +3718,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -3736,14 +3736,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -3754,14 +3754,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -3772,14 +3772,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -3790,14 +3790,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -3808,14 +3808,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -3826,14 +3826,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -3844,14 +3844,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -3862,14 +3862,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0),
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7],
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -3878,66 +3878,66 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_1_phase[0]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_1_phase[1]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_1_phase[2]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_1_phase[3]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_1_phase[4]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_1_phase[5]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_1_phase[6]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_1_phase[7]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_1_volume);
@@ -3970,118 +3970,118 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
    /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint8) ((gint16) (source[0]) + (gint16) (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
+      source[0] = (gint8) ((gint16) (source[0]) + (gint16) (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint8) ((gint16) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
+      source[0] = (gint8) ((gint16) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint8) ((gint16) (source[0]) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
+      source[0] = (gint8) ((gint16) (source[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint8) ((gint16) (source[0]) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint8) ((gint16) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint8) ((gint16) (source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint8) ((gint16) (source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }
 
     source += source_stride;
@@ -4135,35 +4135,35 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -4214,35 +4214,35 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -4300,37 +4300,37 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
     
     /* env-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
-						    modular_synth_util->env_1_sends,
-						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+					      modular_synth_util->env_1_sends,
+					      AGS_MODULAR_SYNTH_SENDS_VOLUME)){
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
-						    modular_synth_util->env_0_sends,
-						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+					      modular_synth_util->env_0_sends,
+					      AGS_MODULAR_SYNTH_SENDS_VOLUME)){
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
-						    modular_synth_util->lfo_0_sends,
-						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+					      modular_synth_util->lfo_0_sends,
+					      AGS_MODULAR_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
-						    modular_synth_util->lfo_1_sends,
-						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+					      modular_synth_util->lfo_1_sends,
+					      AGS_MODULAR_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
-						    modular_synth_util->noise_sends,
-						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+					      modular_synth_util->noise_sends,
+					      AGS_MODULAR_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
@@ -4844,17 +4844,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("env-0 to osc-0 frequency");
       
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
       
     /* env-0 to osc-0 phase */
@@ -4864,17 +4864,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("env-0 to osc-0 phase");
       
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-0 to osc-0 volume */
@@ -4884,17 +4884,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("env-0 to osc-0 volume");
       
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* env-1 to osc-0 frequency */
@@ -4904,17 +4904,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("env-1 to osc-0 frequency");
       
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
 
     /* env-1 to osc-0 phase */
@@ -4924,17 +4924,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("env-1 to osc-0 phase");
       
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-1 to osc-0 volume */
@@ -4944,17 +4944,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("env-1 to osc-0 volume");
       
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* lfo-0 to osc-0 frequency */
@@ -4964,17 +4964,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("lfo-0 to osc-0 frequency");
 
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
       
     /* lfo-0 to osc-0 phase */
@@ -4984,17 +4984,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       g_message("lfo-0 to osc-0 phase");
 
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-0 to osc-0 volume */
@@ -5004,17 +5004,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("lfo-0 to osc-0 volume");
 
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* lfo-1 to osc-0 frequency */
@@ -5024,17 +5024,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("lfo-1 to osc-0 frequency");
 
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* lfo-1 to osc-0 phase */
@@ -5044,17 +5044,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("lfo-1 to osc-0 phase");
 
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-1 to osc-0 volume */
@@ -5064,17 +5064,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       //      g_message("lfo-1 to osc-0 volume");
 
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* noise to osc-0 frequency */
@@ -5082,17 +5082,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* noise to osc-0 phase */
@@ -5100,17 +5100,17 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* noise to osc-0 volume */
@@ -5118,82 +5118,82 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_0_phase[0]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_0_phase[1]), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_0_phase[2]), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_0_phase[3]), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_0_phase[4]), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_0_phase[5]), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_0_phase[6]), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_0_phase[7]), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_0_volume);
@@ -5226,118 +5226,118 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
    /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint16) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
+      source[0] = (gint16) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint16) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
+      source[0] = (gint16) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint16) ((gint32) (source[0]) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
+      source[0] = (gint16) ((gint32) (source[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint16) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint16) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint16) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint16) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }
 
     source += source_stride;
@@ -5425,14 +5425,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -5443,14 +5443,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -5461,14 +5461,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -5479,14 +5479,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -5497,14 +5497,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -5515,14 +5515,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -5533,14 +5533,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -5551,14 +5551,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -5569,14 +5569,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -5587,14 +5587,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -5605,14 +5605,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -5623,14 +5623,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -5641,14 +5641,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -5659,14 +5659,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -5677,14 +5677,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0),
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7],
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -5693,66 +5693,66 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_1_phase[0]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_1_phase[1]), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_1_phase[2]), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_1_phase[3]), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_1_phase[4]), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_1_phase[5]), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_1_phase[6]), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_1_phase[7]), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_1_volume);
@@ -5785,118 +5785,118 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint16) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
+      source[0] = (gint16) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint16) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
+      source[0] = (gint16) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint16) ((gint32) (source[0]) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
+      source[0] = (gint16) ((gint32) (source[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint16) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint16) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint16) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint16) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }
 
     source += source_stride;
@@ -5950,35 +5950,35 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -6029,35 +6029,35 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -6117,35 +6117,35 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
@@ -6647,17 +6647,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
       
     /* env-0 to osc-0 phase */
@@ -6665,17 +6665,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-0 to osc-0 volume */
@@ -6683,17 +6683,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* env-1 to osc-0 frequency */
@@ -6701,17 +6701,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
 
     /* env-1 to osc-0 phase */
@@ -6719,17 +6719,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-1 to osc-0 volume */
@@ -6737,17 +6737,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* lfo-0 to osc-0 frequency */
@@ -6755,17 +6755,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
       
     /* lfo-0 to osc-0 phase */
@@ -6773,17 +6773,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-0 to osc-0 volume */
@@ -6791,17 +6791,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* lfo-1 to osc-0 frequency */
@@ -6809,17 +6809,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* lfo-1 to osc-0 phase */
@@ -6827,17 +6827,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-1 to osc-0 volume */
@@ -6845,17 +6845,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* noise to osc-0 frequency */
@@ -6863,17 +6863,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* noise to osc-0 phase */
@@ -6881,17 +6881,17 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* noise to osc-0 volume */
@@ -6899,82 +6899,82 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_0_phase[0]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_0_phase[1]), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_0_phase[2]), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_0_phase[3]), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_0_phase[4]), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_0_phase[5]), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_0_phase[6]), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_0_phase[7]), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_0_volume);
@@ -7007,118 +7007,118 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint32) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
+      source[0] = (gint32) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint32) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
+      source[0] = (gint32) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint32) ((gint32) (source[0]) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
+      source[0] = (gint32) ((gint32) (source[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint32) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint32) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint32) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint32) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }
 
     source += source_stride;
@@ -7206,14 +7206,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -7224,14 +7224,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -7242,14 +7242,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -7260,14 +7260,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -7278,14 +7278,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -7296,14 +7296,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -7314,14 +7314,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -7332,14 +7332,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -7350,14 +7350,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -7368,14 +7368,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -7386,14 +7386,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -7404,14 +7404,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -7422,14 +7422,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -7440,14 +7440,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -7458,14 +7458,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0),
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7],
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -7474,66 +7474,66 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_1_phase[0]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_1_phase[1]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_1_phase[2]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_1_phase[3]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_1_phase[4]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_1_phase[5]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_1_phase[6]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_1_phase[7]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_1_volume);
@@ -7566,118 +7566,118 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint32) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
+      source[0] = (gint32) ((gint32) (source[0]) + (gint32) (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint32) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
+      source[0] = (gint32) ((gint32) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint32) ((gint32) (source[0]) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
+      source[0] = (gint32) ((gint32) (source[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint32) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint32) ((gint32) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint32) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint32) ((gint32) (source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }
 
     source += source_stride;
@@ -7731,35 +7731,35 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -7810,35 +7810,35 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -7898,35 +7898,35 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
@@ -8428,17 +8428,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
       
     /* env-0 to osc-0 phase */
@@ -8446,17 +8446,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-0 to osc-0 volume */
@@ -8464,17 +8464,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* env-1 to osc-0 frequency */
@@ -8482,17 +8482,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
 
     /* env-1 to osc-0 phase */
@@ -8500,17 +8500,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-1 to osc-0 volume */
@@ -8518,17 +8518,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* lfo-0 to osc-0 frequency */
@@ -8536,17 +8536,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
       
     /* lfo-0 to osc-0 phase */
@@ -8554,17 +8554,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-0 to osc-0 volume */
@@ -8572,17 +8572,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* lfo-1 to osc-0 frequency */
@@ -8590,17 +8590,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* lfo-1 to osc-0 phase */
@@ -8608,17 +8608,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-1 to osc-0 volume */
@@ -8626,17 +8626,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* noise to osc-0 frequency */
@@ -8644,17 +8644,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* noise to osc-0 phase */
@@ -8662,17 +8662,17 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* noise to osc-0 volume */
@@ -8680,82 +8680,82 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_0_volume);;
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_0_phase[0]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_0_phase[1]), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_0_phase[2]), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_0_phase[3]), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_0_phase[4]), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_0_phase[5]), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_0_phase[6]), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_0_phase[7]), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_0_volume);
@@ -8788,118 +8788,118 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint32) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
+      source[0] = (gint32) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint32) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
+      source[0] = (gint32) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint32) ((gint64) (source[0]) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
+      source[0] = (gint32) ((gint64) (source[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint32) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint32) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint32) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint32) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }
 
     source += source_stride;
@@ -8987,14 +8987,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -9005,14 +9005,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -9023,14 +9023,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -9041,14 +9041,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -9059,14 +9059,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -9077,14 +9077,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -9095,14 +9095,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -9113,14 +9113,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -9131,14 +9131,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -9149,14 +9149,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -9167,14 +9167,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -9185,14 +9185,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -9203,14 +9203,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -9221,14 +9221,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -9239,14 +9239,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0),
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7],
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -9255,66 +9255,66 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_1_phase[0]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_1_phase[1]), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_1_phase[2]), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_1_phase[3]), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_1_phase[4]), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_1_phase[5]), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_1_phase[6]), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_1_phase[7]), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_1_volume);
@@ -9347,118 +9347,118 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint32) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
+      source[0] = (gint32) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint32) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
+      source[0] = (gint32) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint32) ((gint64) (source[0]) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
+      source[0] = (gint32) ((gint64) (source[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint32) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint32) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint32) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint32) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }
 
     source += source_stride;
@@ -9512,35 +9512,35 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -9591,35 +9591,35 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -9679,35 +9679,35 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
@@ -10209,17 +10209,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
       
     /* env-0 to osc-0 phase */
@@ -10227,17 +10227,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-0 to osc-0 volume */
@@ -10245,17 +10245,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* env-1 to osc-0 frequency */
@@ -10263,17 +10263,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
 
     /* env-1 to osc-0 phase */
@@ -10281,17 +10281,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-1 to osc-0 volume */
@@ -10299,17 +10299,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* lfo-0 to osc-0 frequency */
@@ -10317,17 +10317,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
       
     /* lfo-0 to osc-0 phase */
@@ -10335,17 +10335,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-0 to osc-0 volume */
@@ -10353,17 +10353,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* lfo-1 to osc-0 frequency */
@@ -10371,17 +10371,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* lfo-1 to osc-0 phase */
@@ -10389,17 +10389,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-1 to osc-0 volume */
@@ -10407,17 +10407,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* noise to osc-0 frequency */
@@ -10425,17 +10425,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* noise to osc-0 phase */
@@ -10443,17 +10443,17 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* noise to osc-0 volume */
@@ -10461,82 +10461,82 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_0_phase[0]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_0_phase[1]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_0_phase[2]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_0_phase[3]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_0_phase[4]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_0_phase[5]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_0_phase[6]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_0_phase[7]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_0_volume);
@@ -10569,118 +10569,118 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint64) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
+      source[0] = (gint64) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint64) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
+      source[0] = (gint64) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint64) ((gint64) (source[0]) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
+      source[0] = (gint64) ((gint64) (source[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint64) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint64) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint64) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
+      source[0] = (gint64) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_0_volume);
     }
 
     source += source_stride;
@@ -10768,14 +10768,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -10786,14 +10786,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -10804,14 +10804,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -10822,14 +10822,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -10840,14 +10840,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -10858,14 +10858,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -10876,14 +10876,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -10894,14 +10894,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -10912,14 +10912,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -10930,14 +10930,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -10948,14 +10948,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -10966,14 +10966,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -10984,14 +10984,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -11002,14 +11002,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -11020,14 +11020,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0),
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7],
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -11036,66 +11036,66 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_1_phase[0]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_1_phase[1]), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_1_phase[2]), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_1_phase[3]), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_1_phase[4]), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_1_phase[5]), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_1_phase[6]), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_1_phase[7]), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * scale * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * scale * v_osc_1_volume);
@@ -11128,118 +11128,118 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gint64) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
+      source[0] = (gint64) ((gint64) (source[0]) + (gint64) (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gint64) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
+      source[0] = (gint64) ((gint64) (source[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gint64) ((gint64) (source[0]) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
+      source[0] = (gint64) ((gint64) (source[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * scale * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gint64) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint64) ((gint64) (source[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gint64) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
+      source[0] = (gint64) ((gint64) (source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * scale * osc_1_volume);
     }
 
     source += source_stride;
@@ -11293,35 +11293,35 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -11372,35 +11372,35 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -11460,35 +11460,35 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
@@ -11988,17 +11988,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
       
     /* env-0 to osc-0 phase */
@@ -12006,17 +12006,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-0 to osc-0 volume */
@@ -12024,17 +12024,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* env-1 to osc-0 frequency */
@@ -12042,17 +12042,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
 
     /* env-1 to osc-0 phase */
@@ -12060,17 +12060,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-1 to osc-0 volume */
@@ -12078,17 +12078,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* lfo-0 to osc-0 frequency */
@@ -12096,17 +12096,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
       
     /* lfo-0 to osc-0 phase */
@@ -12114,17 +12114,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-0 to osc-0 volume */
@@ -12132,17 +12132,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* lfo-1 to osc-0 frequency */
@@ -12150,17 +12150,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* lfo-1 to osc-0 phase */
@@ -12168,17 +12168,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-1 to osc-0 volume */
@@ -12186,17 +12186,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* noise to osc-0 frequency */
@@ -12204,17 +12204,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* noise to osc-0 phase */
@@ -12222,17 +12222,17 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* noise to osc-0 volume */
@@ -12240,82 +12240,82 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_0_phase[0]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_0_phase[1]), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_0_phase[2]), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_0_phase[3]), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_0_phase[4]), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_0_phase[5]), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_0_phase[6]), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_0_phase[7]), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * v_osc_0_volume);
@@ -12348,118 +12348,118 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * osc_0_volume));
+      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gfloat) ((source[0]) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * osc_0_volume);
+      source[0] = (gfloat) ((source[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gfloat) ((source[0]) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_0_volume));
+      source[0] = (gfloat) ((source[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gfloat) ((source[0]) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_0_volume);
+      source[0] = (gfloat) ((source[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_0_volume);
+      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_0_volume);
     }
 
     source += source_stride;
@@ -12547,14 +12547,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -12565,14 +12565,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -12583,14 +12583,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -12601,14 +12601,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -12619,14 +12619,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -12637,14 +12637,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -12655,14 +12655,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -12673,14 +12673,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -12691,14 +12691,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -12709,14 +12709,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -12727,14 +12727,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -12745,14 +12745,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -12763,14 +12763,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -12781,14 +12781,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -12799,14 +12799,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0),
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7],
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -12815,66 +12815,66 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_1_phase[0]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_1_phase[1]), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_1_phase[2]), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_1_phase[3]), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_1_phase[4]), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_1_phase[5]), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_1_phase[6]), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_1_phase[7]), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))), (samplerate / v_osc_1_frequency[1])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))), (samplerate / v_osc_1_frequency[2])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))), (samplerate / v_osc_1_frequency[3])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))), (samplerate / v_osc_1_frequency[4])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))), (samplerate / v_osc_1_frequency[5])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))), (samplerate / v_osc_1_frequency[6])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))), (samplerate / v_osc_1_frequency[7])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * v_osc_1_volume);
@@ -12907,118 +12907,118 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * osc_1_volume));
+      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gfloat) ((source[0]) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * osc_1_volume);
+      source[0] = (gfloat) ((source[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gfloat) ((source[0]) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_1_volume));
+      source[0] = (gfloat) ((source[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gfloat) ((source[0]) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_1_volume);
+      source[0] = (gfloat) ((source[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_1_volume);
+      source[0] = (gfloat) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_1_volume);
     }
 
     source += source_stride;
@@ -13072,35 +13072,35 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -13151,35 +13151,35 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -13239,35 +13239,35 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
@@ -13769,17 +13769,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
       
     /* env-0 to osc-0 phase */
@@ -13787,17 +13787,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-0 to osc-0 volume */
@@ -13805,17 +13805,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* env-1 to osc-0 frequency */
@@ -13823,17 +13823,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = tmp_v_osc_0_frequency * v_osc_0_frequency;
     }
 
     /* env-1 to osc-0 phase */
@@ -13841,17 +13841,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = (tmp_v_osc_0_phase * 2.0 * M_PI) + v_osc_0_phase;
     }
 
     /* env-1 to osc-0 volume */
@@ -13859,17 +13859,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = tmp_v_osc_0_volume * v_osc_0_volume;
     }
 
     /* lfo-0 to osc-0 frequency */
@@ -13877,17 +13877,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
       
     /* lfo-0 to osc-0 phase */
@@ -13895,17 +13895,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-0 to osc-0 volume */
@@ -13913,17 +13913,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* lfo-1 to osc-0 frequency */
@@ -13931,17 +13931,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* lfo-1 to osc-0 phase */
@@ -13949,17 +13949,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* lfo-1 to osc-0 volume */
@@ -13967,17 +13967,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* noise to osc-0 frequency */
@@ -13985,17 +13985,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
       tmp_v_osc_0_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_frequency = tmp_v_osc_0_frequency + v_osc_0_frequency;
+      v_osc_0_frequency = ((tmp_v_osc_0_frequency + 1.0) / 2.0) * v_osc_0_frequency;
     }
 
     /* noise to osc-0 phase */
@@ -14003,17 +14003,17 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
       tmp_v_osc_0_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_phase = tmp_v_osc_0_phase + v_osc_0_phase;
+      v_osc_0_phase = ((tmp_v_osc_0_phase + 1.0) * M_PI) + v_osc_0_phase;
     }
 
     /* noise to osc-0 volume */
@@ -14021,82 +14021,82 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
       tmp_v_osc_0_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
-      v_osc_0_volume = tmp_v_osc_0_volume + v_osc_0_volume;
+      v_osc_0_volume = ((tmp_v_osc_0_volume + 1.0) / 2.0) * v_osc_0_volume;
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_0_phase[0]), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_0_phase[1]), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_0_phase[2]), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_0_phase[3]), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_0_phase[4]), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_0_phase[5]), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_0_phase[6]), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_0_phase[7]), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))), (samplerate / v_osc_0_frequency[0])) * 2.0 * v_osc_0_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))), (samplerate / v_osc_0_frequency[1])) * 2.0 * v_osc_0_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))), (samplerate / v_osc_0_frequency[2])) * 2.0 * v_osc_0_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))), (samplerate / v_osc_0_frequency[3])) * 2.0 * v_osc_0_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))), (samplerate / v_osc_0_frequency[4])) * 2.0 * v_osc_0_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))), (samplerate / v_osc_0_frequency[5])) * 2.0 * v_osc_0_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))), (samplerate / v_osc_0_frequency[6])) * 2.0 * v_osc_0_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))), (samplerate / v_osc_0_frequency[7])) * 2.0 * v_osc_0_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_0_phase[0]) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_0_phase[1]) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_0_phase[2]) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_0_phase[3]) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_0_phase[4]) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_0_phase[5]) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_0_phase[6]) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_0_phase[7]) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * v_osc_0_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * v_osc_0_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * v_osc_0_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * v_osc_0_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * v_osc_0_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * v_osc_0_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * v_osc_0_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * v_osc_0_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * v_osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_0_phase[0]) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_0_phase[1]) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_0_phase[2]) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_0_phase[3]) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_0_phase[4]) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_0_phase[5]) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_0_phase[6]) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_0_phase[7]) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_0_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[0]))) * 2.0 * M_PI * v_osc_0_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_0_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[1]))) * 2.0 * M_PI * v_osc_0_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_0_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[2]))) * 2.0 * M_PI * v_osc_0_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_0_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[3]))) * 2.0 * M_PI * v_osc_0_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_0_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[4]))) * 2.0 * M_PI * v_osc_0_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_0_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[5]))) * 2.0 * M_PI * v_osc_0_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_0_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[6]))) * 2.0 * M_PI * v_osc_0_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_0_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_0_frequency[7]))) * 2.0 * M_PI * v_osc_0_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * v_osc_0_volume);
@@ -14129,118 +14129,118 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * osc_0_volume));
+      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gdouble) ((source[0]) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * osc_0_volume);
+      source[0] = (gdouble) ((source[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gdouble) ((source[0]) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_0_volume));
+      source[0] = (gdouble) ((source[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gdouble) ((source[0]) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_0_volume);
+      source[0] = (gdouble) ((source[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_0_volume);
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_0_volume);
+      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_0_volume);
     }
 
     source += source_stride;
@@ -14328,14 +14328,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -14346,14 +14346,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -14364,14 +14364,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->env_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->env_0_buffer)[i],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -14382,14 +14382,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -14400,14 +14400,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -14418,14 +14418,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->env_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->env_1_buffer)[i],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->env_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -14436,14 +14436,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -14454,14 +14454,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -14472,14 +14472,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 1]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 2]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 3]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 4]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 5]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 6]) / 100.0),
-	(gdouble) ((((double *) modular_synth_util->lfo_0_buffer)[i + 7]) / 100.0)
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_0_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -14490,14 +14490,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -14508,14 +14508,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -14526,14 +14526,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->lfo_1_buffer)[i + 7] / 100.0)
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 1],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 2],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 3],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 4],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 5],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 6],
+	((gdouble *) modular_synth_util->lfo_1_buffer)[i + 7]
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -14544,14 +14544,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
       tmp_v_osc_1_frequency = (ags_v8double) {
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 1] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 2] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 3] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 4] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 5] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 6] - 0.5) / 100.0) * 12.0)),
-	(gdouble) (2.0 * (((((double *) modular_synth_util->noise_buffer)[i + 7] - 0.5) / 100.0) * 12.0))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_frequency = tmp_v_osc_1_frequency + v_osc_1_frequency;
@@ -14562,14 +14562,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
       tmp_v_osc_1_phase = (ags_v8double) {
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0) * (2.0 * M_PI)),
-	(gdouble) ((((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0) * (2.0 * M_PI))
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7]
       };
 
       v_osc_1_phase = tmp_v_osc_1_phase + v_osc_1_phase;
@@ -14580,14 +14580,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
       tmp_v_osc_1_volume = (ags_v8double) {
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 1] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 2] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 3] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 4] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 5] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 6] / 100.0),
-	(gdouble) (((double *) modular_synth_util->noise_buffer)[i + 7] / 100.0),
+	((gdouble *) modular_synth_util->noise_buffer)[i],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 1],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 2],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 3],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 4],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 5],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 6],
+	((gdouble *) modular_synth_util->noise_buffer)[i + 7],
       };
 
       v_osc_1_volume = tmp_v_osc_1_volume + v_osc_1_volume;
@@ -14596,66 +14596,66 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       v_sine = (ags_v8double) {
-	(gdouble) (sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
-	(gdouble) (sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate))
       };
     
       v_buffer += (v_sine * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
-	((fmod(((gdouble) (offset + i) + v_osc_1_phase[0]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 1) + v_osc_1_phase[1]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 2) + v_osc_1_phase[2]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 3) + v_osc_1_phase[3]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 4) + v_osc_1_phase[4]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 5) + v_osc_1_phase[5]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 6) + v_osc_1_phase[6]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
-	((fmod(((gdouble) (offset + i + 7) + v_osc_1_phase[7]), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
+	((fmod(((gdouble) (offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))), (samplerate / v_osc_1_frequency[0])) * 2.0 * v_osc_1_frequency[7] / samplerate) - 1.0)
       };
     
       v_buffer += (v_sawtooth * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
-	(((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + v_osc_1_phase[0]) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + v_osc_1_phase[1]) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + v_osc_1_phase[2]) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + v_osc_1_phase[3]) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + v_osc_1_phase[4]) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + v_osc_1_phase[5]) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + v_osc_1_phase[6]) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
-	(((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + v_osc_1_phase[7]) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * v_osc_1_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * v_osc_1_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * v_osc_1_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * v_osc_1_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * v_osc_1_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * v_osc_1_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * v_osc_1_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * v_osc_1_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
       v_buffer += (v_triangle * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
-	((sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
-	((sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
       v_buffer += (v_square * v_osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
-	(sin((gdouble) ((offset + i) + v_osc_1_phase[0]) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 1) + v_osc_1_phase[1]) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 2) + v_osc_1_phase[2]) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 3) + v_osc_1_phase[3]) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 4) + v_osc_1_phase[4]) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 5) + v_osc_1_phase[5]) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 6) + v_osc_1_phase[6]) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
-	(sin((gdouble) ((offset + i + 7) + v_osc_1_phase[7]) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+	(sin((gdouble) ((offset + i) + (v_osc_1_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[0]))) * 2.0 * M_PI * v_osc_1_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_1_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[1]))) * 2.0 * M_PI * v_osc_1_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_1_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[2]))) * 2.0 * M_PI * v_osc_1_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_1_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[3]))) * 2.0 * M_PI * v_osc_1_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_1_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[4]))) * 2.0 * M_PI * v_osc_1_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_1_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[5]))) * 2.0 * M_PI * v_osc_1_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_1_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[6]))) * 2.0 * M_PI * v_osc_1_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_1_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_1_frequency[7]))) * 2.0 * M_PI * v_osc_1_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
       v_buffer += (v_impulse * v_osc_1_volume);
@@ -14688,118 +14688,118 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
-      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * osc_1_volume));
+      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
-      source[0] = (gdouble) ((source[0]) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * osc_1_volume);
+      source[0] = (gdouble) ((source[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
-      source[0] = (gdouble) ((source[0]) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_1_volume));
+      source[0] = (gdouble) ((source[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
-      source[0] = (gdouble) ((source[0]) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_1_volume);
+      source[0] = (gdouble) ((source[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_1_volume);
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
-      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_1_volume);
+      source[0] = (gdouble) ((source[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_1_volume);
     }
 
     source += source_stride;
@@ -14853,35 +14853,35 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -14932,35 +14932,35 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -15020,35 +15020,35 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
@@ -15491,123 +15491,123 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_0_volume);
     }
 
     /* env-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_0_frequency);
     }
 
     /* env-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
     }
 
     /* env-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (modular_synth_util->osc_0_volume);
     }
 
     /* lfo-0 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-0 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-0 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* lfo-1 to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* lfo-1 to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* lfo-1 to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
     }
 
     /* noise to osc-0 frequency */
     if(ags_modular_synth_util_osc_0_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY)){
-      osc_0_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_0_frequency);
+      osc_0_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
     }
 
     /* noise to osc-0 phase */
     if(ags_modular_synth_util_osc_0_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE)){
-      osc_0_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_0_phase);
+      osc_0_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
     }
 
     /* noise to osc-0 volume */
     if(ags_modular_synth_util_osc_0_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME)){
-      osc_0_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_0_volume);
+      osc_0_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
    /* compute osc-0 */
     if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       ags_complex_set(source,
-		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate))));
+		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate))));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       ags_complex_set(source,
-		      (ags_complex_get(source) + ((fmod(((gdouble) (offset + i) + osc_0_phase), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0)));
+		      (ags_complex_get(source) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0)));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       ags_complex_set(source,
-		      (ags_complex_get(source) + (((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_0_phase) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0))));
+		      (ags_complex_get(source) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0))));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       ags_complex_set(source,
-		      (ags_complex_get(source) + ((sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_0_volume));
+		      (ags_complex_get(source) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_0_volume));
     }else if(modular_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       ags_complex_set(source,
-		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + osc_0_phase) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_0_volume));
+		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_0_volume));
     }
 
     source += source_stride;
@@ -15638,123 +15638,123 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (osc_1_volume);
     }
 
     /* env-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->env_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->env_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = (2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[i] - 1.0) * (osc_1_frequency);
     }
 
     /* env-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->env_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->env_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = (((gdouble *) modular_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
     }
 
     /* env-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (osc_1_volume);
     }
 
     /* lfo-0 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_0_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_0_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-0 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_0_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_0_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-0 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
 
     /* lfo-1 to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->lfo_1_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->lfo_1_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* lfo-1 to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->lfo_1_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* lfo-1 to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
     }
     
     /* noise to osc-1 frequency */
     if(ags_modular_synth_util_osc_1_frequency_receives(modular_synth_util,
 						       modular_synth_util->noise_sends,
 						       AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY)){
-      osc_1_frequency = (2.0 * (((((double *) modular_synth_util->noise_buffer)[i] - 0.5) / 100.0) * 12.0)) + (osc_1_frequency);
+      osc_1_frequency = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
     }
 
     /* noise to osc-1 phase */
     if(ags_modular_synth_util_osc_1_phase_receives(modular_synth_util,
 						   modular_synth_util->noise_sends,
 						   AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE)){
-      osc_1_phase = ((((double *) modular_synth_util->noise_buffer)[i] / 100.0) * (2.0 * M_PI)) + (osc_1_phase);
+      osc_1_phase = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
     }
 
     /* noise to osc-1 volume */
     if(ags_modular_synth_util_osc_1_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME)){
-      osc_1_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (modular_synth_util->osc_1_volume);
+      osc_1_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (modular_synth_util->osc_0_volume);
     }
 
     /* compute osc-1 */
     if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
       ags_complex_set(source,
-		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate)) * osc_1_volume));
+		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate)) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       ags_complex_set(source,
-		      (ags_complex_get(source) + ((fmod(((gdouble) (offset + i) + osc_1_phase), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * osc_1_volume));
+		      (ags_complex_get(source) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       ags_complex_set(source,
-		      (ags_complex_get(source) + (((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + osc_1_phase) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * osc_1_volume));
+		      (ags_complex_get(source) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0)) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       ags_complex_set(source,
-		      (ags_complex_get(source) + ((sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_1_volume));
+		      (ags_complex_get(source) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_1_volume));
     }else if(modular_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       ags_complex_set(source,
-		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + osc_1_phase) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_1_volume));
+		      (ags_complex_get(source) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_1_volume));
     }
     
     source += source_stride;
@@ -15808,35 +15808,35 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -15887,35 +15887,35 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->env_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* env-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->env_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = (((2.0 * ((gdouble *) modular_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-0 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = ((((double *) modular_synth_util->lfo_0_buffer)[dsp_i]) * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     /* lfo-1 to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->lfo_1_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((gdouble *) modular_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
     
     /* noise to pitch tuning */
     if(ags_modular_synth_util_pitch_tuning_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING)){
-      main_pitch_tuning = (((double *) modular_synth_util->noise_buffer)[dsp_i] * 1200.0) + (main_pitch_tuning);
+      main_pitch_tuning = ((((double *) modular_synth_util->noise_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
     }
 
     phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
@@ -15976,35 +15976,35 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->env_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_1_buffer)[i] * (main_volume);
     }
 
     /* env-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->env_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->env_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((gdouble *) modular_synth_util->env_0_buffer)[i] * (main_volume);
     }
 
     /* lfo-0 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_0_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = ((((double *) modular_synth_util->lfo_0_buffer)[i]) / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* lfo-1 to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->lfo_1_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->lfo_1_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
     
     /* noise to volume */
     if(ags_modular_synth_util_volume_receives(modular_synth_util,
 						    modular_synth_util->noise_sends,
 						    AGS_MODULAR_SYNTH_SENDS_VOLUME)){
-      main_volume = (((double *) modular_synth_util->noise_buffer)[i] / 100.0) + (main_volume);
+      main_volume = ((((gdouble *) modular_synth_util->noise_buffer)[i] + 1.0) / 2.0) * (main_volume);
     }
 
     /* volume */
