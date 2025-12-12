@@ -74,16 +74,16 @@ struct _AgsModularSynth
   AgsRecallContainer *buffer_recall_container;
 
   AgsDial *env_0_attack;
-  AgsDial *env_0_sustain;
   AgsDial *env_0_decay;
+  AgsDial *env_0_sustain;
   AgsDial *env_0_release;
 
   AgsDial *env_0_gain;
   AgsDial *env_0_frequency;
 
   AgsDial *env_1_attack;
-  AgsDial *env_1_sustain;
   AgsDial *env_1_decay;
+  AgsDial *env_1_sustain;
   AgsDial *env_1_release;
 
   AgsDial *env_1_gain;

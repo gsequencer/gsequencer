@@ -405,26 +405,18 @@ void
 ags_amplifier_util_set_buffer_length(AgsAmplifierUtil *amplifier_util,
 				     guint buffer_length)
 {
-  if(amplifier_util == NULL){
+  if(amplifier_util == NULL ||
+     amplifier_util->buffer_length == buffer_length){
     return;
   }
 
-  if(buffer_length == 0){
-    ags_stream_free(amplifier_util->mix_buffer);
+  ags_stream_free(amplifier_util->mix_buffer);
 
-    amplifier_util->mix_buffer = NULL;
-  }
+  amplifier_util->mix_buffer = NULL;
 
   if(buffer_length > 0){
-    if(amplifier_util->mix_buffer == NULL){
-      amplifier_util->mix_buffer = ags_stream_alloc(buffer_length,
-						    amplifier_util->format);
-    }else{
-      ags_stream_free(amplifier_util->mix_buffer);
-
-      amplifier_util->mix_buffer = ags_stream_alloc(buffer_length,
-						    amplifier_util->format);
-    }
+    amplifier_util->mix_buffer = ags_stream_alloc(buffer_length,
+						  amplifier_util->format);
   }
   
   amplifier_util->buffer_length = buffer_length;

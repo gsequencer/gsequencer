@@ -1137,7 +1137,7 @@ ags_modular_synth_modulation_matrix_callback(AgsModulationMatrix *modulation_mat
   GList *start_play, *start_recall, *recall;
 
   double lfo_1_tuning;
-
+  
   if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(modular_synth)->flags)) != 0){
     return;
   }
@@ -1155,7 +1155,9 @@ ags_modular_synth_modulation_matrix_callback(AgsModulationMatrix *modulation_mat
   while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
-    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT], *port_sends;
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT], port_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint i, j;
     
     port = NULL;
     
@@ -1181,9 +1183,8 @@ ags_modular_synth_modulation_matrix_callback(AgsModulationMatrix *modulation_mat
 		   NULL);
     }
 
-    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
-
-    port_sends = NULL;
+    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(port_sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
 
     if(port != NULL){
       GValue value = G_VALUE_INIT;
@@ -1191,109 +1192,41 @@ ags_modular_synth_modulation_matrix_callback(AgsModulationMatrix *modulation_mat
       g_value_init(&value,
 		   G_TYPE_POINTER);
 
-      ags_port_safe_write(port,
-			  &value);
+      g_value_set_pointer(&value,
+			  &(port_sends[0]));
 
-      port_sends = g_value_get_pointer(&value);
-
-      g_object_unref(port);
+      ags_port_safe_read(port,
+			 &value);
     }
-
-    if(port_sends != NULL){
-      gint n_sends;
-      guint i, j;
-      gboolean is_on;      
-      gboolean success;
-
-      n_sends = 0;
-
-      is_on == FALSE;
       
-      for(i = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
-	success = FALSE;
-
-	if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_0_FREQUENCY){
-	  success = TRUE;
-	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_0_PHASE){
-	  success = TRUE;
-	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_0_VOLUME){
-	  success = TRUE;
-	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_1_FREQUENCY){
-	  success = TRUE;
-	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_1_PHASE){
-	  success = TRUE;
-	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_OSC_1_VOLUME){
-	  success = TRUE;
-	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_PITCH_TUNING){
-	  success = TRUE;
-	}else if(port_sends[i] == AGS_MODULAR_SYNTH_SENDS_VOLUME){
-	  success = TRUE;
-	}
-
-	if(port_sends[i] == (1L << x)){
-	  is_on = TRUE;
-	}
-	
-	if(success){
-	  n_sends++;
-	}else{
-	  break;
-	}
-      }
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
 
       //NOTE:JK: we fill sends
       // memcpy(&(sends[0]), port_sends, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint));
-	
-      if(!is_on){
-	for(i = 0, j = 0; i < n_sends + 1; i++){
-	  if(i != x){
-	    sends[i] = port_sends[j];
-	    
-	    j++;
-	  }else{
-	    sends[i] = (1L << x);
-	  }
-	}
-	
-	if(port != NULL){
-	  GValue value = G_VALUE_INIT;
 
-	  g_value_init(&value,
-		       G_TYPE_POINTER);
+      for(i = 0, j = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+	if(ags_modulation_matrix_get_enabled(modular_synth->modulation_matrix,
+					     i, y)){
+	  sends[j] = (1L << i);
 	  
-	  g_value_set_pointer(&value,
-			      (gpointer) sends);
-
-	  ags_port_safe_write(port,
-			      &value);
-
-	  g_object_unref(port);
-	}
-      }else{
-	for(i = 0; i < n_sends - 1; i++){
-	  if(i != x){
-	    sends[i] = port_sends[i];
-	  }else{	    
-	    i++;
-	  }
-	}
-	
-	if(port != NULL){
-	  GValue value = G_VALUE_INIT;
-
-	  g_value_init(&value,
-		       G_TYPE_POINTER);
-
-	  g_value_set_pointer(&value,
-			      (gpointer) sends);
-
-	  ags_port_safe_write(port,
-			      &value);
-
-	  g_object_unref(port);
+	  j++;
 	}
       }
-    }    
+	
+      g_value_init(&value,
+		   G_TYPE_POINTER);
+	  
+      g_value_set_pointer(&value,
+			  (gpointer) &(sends[0]));
+
+      ags_port_safe_write(port,
+			  &value);
+    }
+    
+    if(port != NULL){
+      g_object_unref(port);
+    }
     
     /* iterate */
     recall = recall->next;

@@ -652,15 +652,15 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 		 "synth-0-env-0-sends", &port,
 		 NULL);
 
-    g_value_init(&value, G_TYPE_FLOAT);
-    
+    g_value_init(&value, G_TYPE_POINTER);
+
     if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_modular_synth_util_get_env_0_sends(channel_data->modular_synth_util_0,
+								 NULL));
+    
       ags_port_safe_read(port,
 			 &value);
-
-      ags_modular_synth_util_set_env_0_sends(channel_data->modular_synth_util_0,
-					     (gint64 *) g_value_get_pointer(&value),
-					     AGS_MODULAR_SYNTH_SENDS_COUNT);
       
       g_object_unref(port);
     }
@@ -786,22 +786,212 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 		 "synth-0-env-1-sends", &port,
 		 NULL);
 
-    g_value_init(&value, G_TYPE_FLOAT);
+    g_value_init(&value, G_TYPE_POINTER);
     
     if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_modular_synth_util_get_env_1_sends(channel_data->modular_synth_util_0,
+								 NULL));
+    
       ags_port_safe_read(port,
 			 &value);
-
-      ags_modular_synth_util_set_env_1_sends(channel_data->modular_synth_util_0,
-					     (gint64 *) g_value_get_pointer(&value),
-					     AGS_MODULAR_SYNTH_SENDS_COUNT);
       
       g_object_unref(port);
     }
 
     g_value_unset(&value);
 
-    //TODO:JK: implement me
+    /* synth-0 lfo-0 oscillator */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-0-oscillator", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_0_oscillator(channel_data->modular_synth_util_0,
+						  (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-0 frequency */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-0-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_0_frequency(channel_data->modular_synth_util_0,
+						 (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-0 depth */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-0-depth", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_0_depth(channel_data->modular_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-0 tuning */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-0-tuning", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_0_tuning(channel_data->modular_synth_util_0,
+					      (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-0 sends */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-0-sends", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_POINTER);
+    
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_modular_synth_util_get_lfo_0_sends(channel_data->modular_synth_util_0,
+								 NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 oscillator */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-1-oscillator", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_1_oscillator(channel_data->modular_synth_util_0,
+						  (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 frequency */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-1-frequency", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_1_frequency(channel_data->modular_synth_util_0,
+						 (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 depth */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-1-depth", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_1_depth(channel_data->modular_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 tuning */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-1-tuning", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_modular_synth_util_set_lfo_1_tuning(channel_data->modular_synth_util_0,
+					      (gdouble) g_value_get_float(&value));
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 sends */    
+    g_object_get(fx_modular_synth_audio,
+		 "synth-0-lfo-1-sends", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_POINTER);
+    
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_modular_synth_util_get_lfo_1_sends(channel_data->modular_synth_util_0,
+								 NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
     
     /* noise frequency */    
     g_object_get(fx_modular_synth_audio,
@@ -846,15 +1036,15 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 		 "synth-0-noise-sends", &port,
 		 NULL);
 
-    g_value_init(&value, G_TYPE_FLOAT);
+    g_value_init(&value, G_TYPE_POINTER);
     
     if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_modular_synth_util_get_noise_sends(channel_data->modular_synth_util_0,
+								 NULL));
+    
       ags_port_safe_read(port,
 			 &value);
-
-      ags_modular_synth_util_set_noise_sends(channel_data->modular_synth_util_0,
-					     (gint64 *) g_value_get_pointer(&value),
-					     AGS_MODULAR_SYNTH_SENDS_COUNT);
       
       g_object_unref(port);
     }
@@ -1314,7 +1504,8 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
     g_rec_mutex_unlock(source_stream_mutex);
 
     /* chorus */
-    if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
+    if(FALSE &&
+       ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
        chorus_enabled){
       ags_chorus_util_set_source(channel_data->chorus_util,
 				 source->stream_current->data);

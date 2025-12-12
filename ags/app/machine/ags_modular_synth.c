@@ -525,7 +525,7 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   6.0);
   ags_dial_set_radius(modular_synth->env_0_frequency,
 		      12);
   
@@ -720,7 +720,7 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   6.0);
   ags_dial_set_radius(modular_synth->env_1_frequency,
 		      12);
   
@@ -1193,15 +1193,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   adjustment = ags_dial_get_adjustment(modular_synth->osc_0_volume);
 
   gtk_adjustment_set_lower(adjustment,
-			   -12.0);
+			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   12.0);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   0.333);
   ags_dial_set_radius(modular_synth->osc_0_volume,
 		      12);
 
@@ -1347,13 +1347,13 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   gtk_adjustment_set_lower(adjustment,
 			   0.0);
   gtk_adjustment_set_upper(adjustment,
-			   2.0 * M_PI);
+			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   0.333);
   ags_dial_set_radius(modular_synth->osc_1_volume,
 		      12);
 
