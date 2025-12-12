@@ -10150,6 +10150,8 @@ ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *n
 {
   xmlChar *str;
 
+  guint i;
+  
   /* env-0 attack */
   str = xmlGetProp(node,
 		   "env-0-attack");
@@ -10246,6 +10248,43 @@ ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *n
     xmlFree(str);
   }
 
+  /* env-0 sends */
+  str = xmlGetProp(node,
+		   "env-0-sends");
+
+  if(str != NULL){
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint x;
+    
+    ags_file_util_get_csv_row_as_int64(simple_file->file_util,
+				       str,
+				       ' ',
+				       &(sends[0]),
+				       AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    for(i = 0, x = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT && x < AGS_MODULAR_SYNTH_SENDS_COUNT;){
+      if(sends[i] == 0){
+	break;
+      }
+      
+      if(sends[i] == (1L << x)){
+	ags_modulation_matrix_set_enabled(modular_synth->modulation_matrix,
+					  x, 0,
+					  TRUE);
+
+	ags_modulation_matrix_toggled(modular_synth->modulation_matrix,
+				      x, 0);
+
+	i++;
+      }
+      
+      x++;
+    }
+          
+    xmlFree(str);
+  }
+  
   /* env-1 attack */
   str = xmlGetProp(node,
 		   "env-1-attack");
@@ -10342,6 +10381,43 @@ ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *n
     xmlFree(str);
   }
 
+  /* env-1 sends */
+  str = xmlGetProp(node,
+		   "env-1-sends");
+
+  if(str != NULL){
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint x;
+    
+    ags_file_util_get_csv_row_as_int64(simple_file->file_util,
+				       str,
+				       ' ',
+				       &(sends[0]),
+				       AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    for(i = 0, x = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT && x < AGS_MODULAR_SYNTH_SENDS_COUNT;){
+      if(sends[i] == 0){
+	break;
+      }
+      
+      if(sends[i] == (1L << x)){
+	ags_modulation_matrix_set_enabled(modular_synth->modulation_matrix,
+					  x, 1,
+					  TRUE);
+
+	ags_modulation_matrix_toggled(modular_synth->modulation_matrix,
+				      x, 1);
+
+	i++;
+      }
+      
+      x++;
+    }
+          
+    xmlFree(str);
+  }
+
   /* lfo-0 */
   str = xmlGetProp(node,
 		   "lfo-0-oscillator");
@@ -10401,6 +10477,43 @@ ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *n
     ags_dial_set_value(modular_synth->lfo_0_tuning,
 		       tuning);
       
+    xmlFree(str);
+  }
+
+  /* lfo-0 sends */
+  str = xmlGetProp(node,
+		   "lfo-0-sends");
+
+  if(str != NULL){
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint x;
+    
+    ags_file_util_get_csv_row_as_int64(simple_file->file_util,
+				       str,
+				       ' ',
+				       &(sends[0]),
+				       AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    for(i = 0, x = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT && x < AGS_MODULAR_SYNTH_SENDS_COUNT;){
+      if(sends[i] == 0){
+	break;
+      }
+      
+      if(sends[i] == (1L << x)){
+	ags_modulation_matrix_set_enabled(modular_synth->modulation_matrix,
+					  x, 2,
+					  TRUE);
+
+	ags_modulation_matrix_toggled(modular_synth->modulation_matrix,
+				      x, 2);
+
+	i++;
+      }
+      
+      x++;
+    }
+          
     xmlFree(str);
   }
 
@@ -10466,6 +10579,43 @@ ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *n
     xmlFree(str);
   }
 
+  /* lfo-1 sends */
+  str = xmlGetProp(node,
+		   "lfo-1-sends");
+
+  if(str != NULL){
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint x;
+    
+    ags_file_util_get_csv_row_as_int64(simple_file->file_util,
+				       str,
+				       ' ',
+				       &(sends[0]),
+				       AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    for(i = 0, x = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT && x < AGS_MODULAR_SYNTH_SENDS_COUNT;){
+      if(sends[i] == 0){
+	break;
+      }
+      
+      if(sends[i] == (1L << x)){
+	ags_modulation_matrix_set_enabled(modular_synth->modulation_matrix,
+					  x, 3,
+					  TRUE);
+
+	ags_modulation_matrix_toggled(modular_synth->modulation_matrix,
+				      x, 3);
+
+	i++;
+      }
+      
+      x++;
+    }
+          
+    xmlFree(str);
+  }
+
   /* noise */
   str = xmlGetProp(node,
 		   "noise-frequency");
@@ -10496,6 +10646,46 @@ ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *n
       
     xmlFree(str);
   }
+
+  /* noise sends */
+  str = xmlGetProp(node,
+		   "noise-sends");
+
+  if(str != NULL){
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint x;
+    
+    ags_file_util_get_csv_row_as_int64(simple_file->file_util,
+				       str,
+				       ' ',
+				       &(sends[0]),
+				       AGS_MODULAR_SYNTH_SENDS_COUNT);
+    
+    for(i = 0, x = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT && x < AGS_MODULAR_SYNTH_SENDS_COUNT;){
+      if(sends[i] == 0){
+	break;
+      }
+      
+      if(sends[i] == (1L << x)){
+	ags_modulation_matrix_set_enabled(modular_synth->modulation_matrix,
+					  x, 4,
+					  TRUE);
+
+	ags_modulation_matrix_toggled(modular_synth->modulation_matrix,
+				      x, 4);
+
+	i++;
+      }
+      
+      x++;
+    }
+          
+    xmlFree(str);
+  }
+
+  /* modulation matrix */
+  gtk_widget_queue_draw((GtkWidget *) modular_synth->modulation_matrix);
   
   /* osc-0 */
   str = xmlGetProp(node,
@@ -13657,6 +13847,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   guint i, j;
 
   application_context = ags_application_context_get_instance();
+
+  ags_connectable_connect(AGS_CONNECTABLE(machine));
 
   /* start threads */
   audio_loop = (AgsAudioLoop *) ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -23155,8 +23347,12 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }else if(AGS_IS_MODULAR_SYNTH(machine)){
     AgsModularSynth *modular_synth;
 
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    
+    guint i, j;
+    
     modular_synth = (AgsModularSynth *) machine;
-
+    
     /* env-0 */
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(modular_synth->env_0_attack));
@@ -23208,6 +23404,28 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "env-0-frequency",
+	       str);
+
+    g_free(str);    
+
+    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    
+    for(i = 0, j = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      if(ags_modulation_matrix_get_enabled(modular_synth->modulation_matrix,
+					   i, 0)){
+	sends[j] = (1L << i);
+
+	j++;
+      }
+    }
+    
+    str = ags_file_util_put_csv_row_as_int64(simple_file->file_util,
+					     ' ',
+					     &(sends[0]),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    xmlNewProp(node,
+	       "env-0-sends",
 	       str);
 
     g_free(str);    
@@ -23267,6 +23485,28 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     g_free(str);    
 
+    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    
+    for(i = 0, j = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      if(ags_modulation_matrix_get_enabled(modular_synth->modulation_matrix,
+					   i, 1)){
+	sends[j] = (1L << i);
+
+	j++;
+      }
+    }
+    
+    str = ags_file_util_put_csv_row_as_int64(simple_file->file_util,
+					     ' ',
+					     &(sends[0]),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    xmlNewProp(node,
+	       "env-1-sends",
+	       str);
+
+    g_free(str);    
+
     /* lfo-0 */
     str = g_strdup_printf("%d", gtk_drop_down_get_selected(modular_synth->lfo_0_oscillator));
     
@@ -23299,6 +23539,28 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "lfo-0-tuning",
+	       str);
+
+    g_free(str);    
+
+    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    
+    for(i = 0, j = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      if(ags_modulation_matrix_get_enabled(modular_synth->modulation_matrix,
+					   i, 2)){
+	sends[j] = (1L << i);
+
+	j++;
+      }
+    }
+    
+    str = ags_file_util_put_csv_row_as_int64(simple_file->file_util,
+					     ' ',
+					     &(sends[0]),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    xmlNewProp(node,
+	       "lfo-0-sends",
 	       str);
 
     g_free(str);    
@@ -23338,6 +23600,28 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	       str);
 
     g_free(str);    
+
+    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    
+    for(i = 0, j = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      if(ags_modulation_matrix_get_enabled(modular_synth->modulation_matrix,
+					   i, 3)){
+	sends[j] = (1L << i);
+
+	j++;
+      }
+    }
+    
+    str = ags_file_util_put_csv_row_as_int64(simple_file->file_util,
+					     ' ',
+					     &(sends[0]),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    xmlNewProp(node,
+	       "lfo-1-sends",
+	       str);
+
+    g_free(str);    
     
     /* noise */
     str = g_strdup_printf("%lf",
@@ -23354,6 +23638,28 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "noise-gain",
+	       str);
+
+    g_free(str);    
+
+    memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    
+    for(i = 0, j = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      if(ags_modulation_matrix_get_enabled(modular_synth->modulation_matrix,
+					   i, 4)){
+	sends[j] = (1L << i);
+
+	j++;
+      }
+    }
+    
+    str = ags_file_util_put_csv_row_as_int64(simple_file->file_util,
+					     ' ',
+					     &(sends[0]),
+					     AGS_MODULAR_SYNTH_SENDS_COUNT);
+
+    xmlNewProp(node,
+	       "noise-sends",
 	       str);
 
     g_free(str);    

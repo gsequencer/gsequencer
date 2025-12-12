@@ -5831,6 +5831,12 @@ ags_fx_modular_synth_audio_get_synth_0_env_0_sends_plugin_port()
   g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
+    static gint64 sends_default[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
     plugin_port = ags_plugin_port_new();
     g_object_ref(plugin_port);
     
@@ -5839,20 +5845,28 @@ ags_fx_modular_synth_audio_get_synth_0_env_0_sends_plugin_port()
 
     plugin_port->port_index = 0;
 
+    memset(&(sends_default[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
     /* range */
     g_value_init(plugin_port->default_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->lower_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->upper_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
 
-    g_value_set_float(plugin_port->default_value,
-		      0.0);
-    g_value_set_float(plugin_port->lower_value,
-		      0.0);
-    g_value_set_float(plugin_port->upper_value,
-		      (gfloat) 0xff);
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
   }
 
   g_mutex_unlock(&mutex);
@@ -6104,6 +6118,12 @@ ags_fx_modular_synth_audio_get_synth_0_env_1_sends_plugin_port()
   g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
+    static gint64 sends_default[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
     plugin_port = ags_plugin_port_new();
     g_object_ref(plugin_port);
     
@@ -6112,20 +6132,29 @@ ags_fx_modular_synth_audio_get_synth_0_env_1_sends_plugin_port()
 
     plugin_port->port_index = 0;
 
+    memset(&(sends_default[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
     /* range */
     g_value_init(plugin_port->default_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->lower_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->upper_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
 
-    g_value_set_float(plugin_port->default_value,
-		      0.0);
-    g_value_set_float(plugin_port->lower_value,
-		      0.0);
-    g_value_set_float(plugin_port->upper_value,
-		      (gfloat) 0xff);
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
   }
 
   g_mutex_unlock(&mutex);
@@ -6299,6 +6328,12 @@ ags_fx_modular_synth_audio_get_synth_0_lfo_0_sends_plugin_port()
   g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
+    static gint64 sends_default[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
     plugin_port = ags_plugin_port_new();
     g_object_ref(plugin_port);
     
@@ -6307,20 +6342,29 @@ ags_fx_modular_synth_audio_get_synth_0_lfo_0_sends_plugin_port()
 
     plugin_port->port_index = 0;
 
+    memset(&(sends_default[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
     /* range */
     g_value_init(plugin_port->default_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->lower_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->upper_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
 
-    g_value_set_float(plugin_port->default_value,
-		      0.0);
-    g_value_set_float(plugin_port->lower_value,
-		      0.0);
-    g_value_set_float(plugin_port->upper_value,
-		      (gfloat) 0xff);
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
   }
 
   g_mutex_unlock(&mutex);
@@ -6494,6 +6538,12 @@ ags_fx_modular_synth_audio_get_synth_0_lfo_1_sends_plugin_port()
   g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
+    static gint64 sends_default[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
     plugin_port = ags_plugin_port_new();
     g_object_ref(plugin_port);
     
@@ -6502,20 +6552,29 @@ ags_fx_modular_synth_audio_get_synth_0_lfo_1_sends_plugin_port()
 
     plugin_port->port_index = 0;
 
+    memset(&(sends_default[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
     /* range */
     g_value_init(plugin_port->default_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->lower_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->upper_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
 
-    g_value_set_float(plugin_port->default_value,
-		      0.0);
-    g_value_set_float(plugin_port->lower_value,
-		      0.0);
-    g_value_set_float(plugin_port->upper_value,
-		      (gfloat) 0xff);
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
   }
 
   g_mutex_unlock(&mutex);
@@ -6611,6 +6670,12 @@ ags_fx_modular_synth_audio_get_synth_0_noise_sends_plugin_port()
   g_mutex_lock(&mutex);
   
   if(plugin_port == NULL){
+    static gint64 sends_default[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_MODULAR_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
     plugin_port = ags_plugin_port_new();
     g_object_ref(plugin_port);
     
@@ -6619,20 +6684,29 @@ ags_fx_modular_synth_audio_get_synth_0_noise_sends_plugin_port()
 
     plugin_port->port_index = 0;
 
+    memset(&(sends_default[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
     /* range */
     g_value_init(plugin_port->default_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->lower_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
     g_value_init(plugin_port->upper_value,
-		 G_TYPE_FLOAT);
+		 G_TYPE_POINTER);
 
-    g_value_set_float(plugin_port->default_value,
-		      0.0);
-    g_value_set_float(plugin_port->lower_value,
-		      0.0);
-    g_value_set_float(plugin_port->upper_value,
-		      (gfloat) 0xff);
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
   }
 
   g_mutex_unlock(&mutex);

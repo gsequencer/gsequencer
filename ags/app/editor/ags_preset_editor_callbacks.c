@@ -131,7 +131,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 		     G_TYPE_FLOAT);
 
 	ags_port_safe_read(port->data,
-			    &port_value);
+			   &port_value);
 
 	gtk_list_store_append(list_store, &iter);
 	gtk_list_store_set(list_store, &iter,

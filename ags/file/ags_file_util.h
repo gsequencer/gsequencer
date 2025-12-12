@@ -116,6 +116,16 @@ gchar* ags_file_util_put_string(AgsFileUtil *file_util,
 				gchar *str,
 				gint length);
 
+void ags_file_util_get_csv_row_as_int64(AgsFileUtil *file_util,
+					gchar *str,
+					gchar csv_separator,
+					gint64 *csv_row,
+					guint column_count);
+gchar* ags_file_util_put_csv_row_as_int64(AgsFileUtil *file_util,
+					  gchar csv_separator,
+					  gint64 *csv_row,
+					  guint column_count);
+
 G_END_DECLS
 
 #endif /*__AGS_FILE_UTIL_H__*/
