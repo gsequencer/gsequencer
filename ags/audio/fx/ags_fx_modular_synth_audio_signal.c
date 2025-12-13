@@ -1421,7 +1421,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       g_rec_mutex_unlock(fx_modular_synth_audio_processor_mutex);
 
       ags_modular_synth_util_set_frame_count(channel_data->modular_synth_util_0,
-					     (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
+					     (guint) floor((double) ((x1_256th - x0_256th) / 16.0) * delay * (double) buffer_size));
 
       ags_modular_synth_util_set_offset(channel_data->modular_synth_util_0,
 					(guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
@@ -1504,8 +1504,7 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
     g_rec_mutex_unlock(source_stream_mutex);
 
     /* chorus */
-    if(FALSE &&
-       ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
+    if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&
        chorus_enabled){
       ags_chorus_util_set_source(channel_data->chorus_util,
 				 source->stream_current->data);

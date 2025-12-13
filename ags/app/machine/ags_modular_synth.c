@@ -2872,6 +2872,18 @@ ags_modular_synth_refresh_port(AgsMachine *machine)
   
   GList *start_play, *start_recall, *recall;
 
+  guint nth_sends;
+  guint i, j;
+
+  const gchar const * sends_strv[] = {
+    "synth-0-env-0-sends",
+    "synth-0-env-1-sends",
+    "synth-0-lfo-0-sends",
+    "synth-0-lfo-1-sends",
+    "synth-0-noise-sends",
+    NULL
+  };
+  
   modular_synth = (AgsModularSynth *) machine;
   
   start_play = ags_audio_get_play(machine->audio);
@@ -2885,6 +2897,8 @@ ags_modular_synth_refresh_port(AgsMachine *machine)
   if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_MODULAR_SYNTH_AUDIO)) != NULL){
     AgsPort *port;
 
+    gint64 sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+    
     /* synth-0 OSC-0 oscillator */
     port = NULL;
 
@@ -3107,6 +3121,65 @@ ags_modular_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* modulation matrix */    
+    for(nth_sends = 0; nth_sends < 5; nth_sends++){
+      memset(&(sends[0]), 0, AGS_MODULAR_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+      port = NULL;
+
+      g_object_get(recall->data,
+		   sends_strv[nth_sends], &port,
+		   NULL);
+
+      if(port != NULL){
+	GValue value = G_VALUE_INIT;
+
+	g_value_init(&value,
+		     G_TYPE_POINTER);
+
+	g_value_set_pointer(&value,
+			    (gpointer) &(sends));
+      
+	ags_port_safe_read(port,
+			   &value);
+
+	g_object_unref(port);
+      }
+
+      for(i = 0, j = 0; i < AGS_MODULAR_SYNTH_SENDS_COUNT; i++){
+	gboolean sends_is_enabled;
+	gboolean matrix_is_enabled;
+
+	sends_is_enabled = (((1L << i) & (sends[j])) != 0) ? TRUE: FALSE;
+	matrix_is_enabled = ags_modulation_matrix_get_enabled(modular_synth->modulation_matrix,
+							      i, nth_sends);
+						     
+	if(sends_is_enabled){
+	  if(!matrix_is_enabled){
+	    ags_modulation_matrix_set_enabled(modular_synth->modulation_matrix,
+					      i, nth_sends,
+					      TRUE);
+
+	    ags_modulation_matrix_toggled(modular_synth->modulation_matrix,
+					  i, nth_sends);
+	  }
+	
+	  j++;
+	}else{
+	  if(matrix_is_enabled){
+	    ags_modulation_matrix_set_enabled(modular_synth->modulation_matrix,
+					      i, nth_sends,
+					      FALSE);
+
+	    ags_modulation_matrix_toggled(modular_synth->modulation_matrix,
+					  i, nth_sends);
+	  }
+	}
+      }
+    }
+
+    gtk_widget_queue_draw((GtkWidget *) modular_synth->modulation_matrix->drawing_area);
+    
     /* synth-0 env-0 attack */
     port = NULL;
 

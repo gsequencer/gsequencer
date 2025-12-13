@@ -2607,8 +2607,11 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
 
@@ -2654,6 +2657,10 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
 
@@ -2667,21 +2674,108 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -2690,28 +2784,7 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -2722,7 +2795,7 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -2738,6 +2811,10 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
 
@@ -2751,21 +2828,108 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -2775,27 +2939,6 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -2806,7 +2949,7 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -4388,8 +4531,11 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
 
@@ -4435,7 +4581,9 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
-    //    g_message("env-0 sends");
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
     
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
@@ -4450,21 +4598,119 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      //      g_message("env-0 sends");    
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      //      g_message("compute frame count -> %d\noffset -> %d\ntmp_offset -> %d", compute_frame_count, offset, tmp_offset);      
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -4473,28 +4719,7 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -4505,7 +4730,7 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -4521,7 +4746,9 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
-    //    g_message("env-1 sends");
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
     
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
@@ -4536,21 +4763,119 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      //      g_message("env-1 sends");
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      //      g_message("compute frame count -> %d\noffset -> %d\ntmp_offset -> %d", compute_frame_count, offset, tmp_offset);      
+      
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -4560,27 +4885,6 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -4591,7 +4895,7 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -6203,8 +6507,11 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
 
@@ -6250,6 +6557,10 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
 
@@ -6263,21 +6574,108 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -6286,28 +6684,7 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -6318,7 +6695,7 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -6334,6 +6711,10 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
 
@@ -6347,21 +6728,108 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -6371,27 +6839,6 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -6402,7 +6849,7 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -7984,8 +8431,11 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
 
@@ -8031,6 +8481,10 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
 
@@ -8044,21 +8498,108 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -8067,28 +8608,7 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -8099,7 +8619,7 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -8115,6 +8635,10 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
 
@@ -8128,21 +8652,108 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -8152,27 +8763,6 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -8183,7 +8773,7 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -9765,8 +10355,11 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
 
@@ -9812,6 +10405,10 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
 
@@ -9825,21 +10422,108 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -9848,28 +10532,7 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -9880,7 +10543,7 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -9896,6 +10559,10 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
 
@@ -9909,21 +10576,108 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -9933,27 +10687,6 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -9964,7 +10697,7 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -11546,8 +12279,11 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
   
@@ -11591,6 +12327,10 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
 
@@ -11604,21 +12344,108 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -11627,28 +12454,7 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -11659,7 +12465,7 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -11675,6 +12481,10 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
 
@@ -11688,21 +12498,108 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -11712,27 +12609,6 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -11743,7 +12619,7 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -13325,8 +14201,11 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
 
@@ -13372,6 +14251,10 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
 
@@ -13385,21 +14268,108 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -13408,28 +14378,7 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -13440,7 +14389,7 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -13456,6 +14405,10 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
 
@@ -13469,21 +14422,108 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -13493,27 +14533,6 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -13524,7 +14543,7 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -15106,8 +16125,11 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
   gdouble main_volume;
 
   gdouble volume;
+  gdouble tmp_volume, end_volume;
 
-  guint offset, tmp_offset;
+  guint offset;
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
   guint frame_count;
   guint i, i_stop;
   
@@ -15151,6 +16173,10 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_0_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				 modular_synth_util->env_0_buffer);
 
@@ -15164,21 +16190,108 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
-    
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_0_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_0_util,
 				   ((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
@@ -15187,28 +16300,7 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 					((gdouble *) modular_synth_util->env_0_buffer) + (tmp_offset - offset));
 
       ags_envelope_util_set_offset(modular_synth_util->env_0_util,
-				   tmp_offset);
-
-      env_amount = 1.0;
-      env_volume = 1.0;
-      
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_0_attack - modular_synth_util->env_0_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_0_decay - modular_synth_util->env_0_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_0_sustain - modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_0_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_0_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
+				   0);
 
       ags_envelope_util_set_volume(modular_synth_util->env_0_util,
 				   env_volume);
@@ -15219,7 +16311,7 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_0_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 
@@ -15235,6 +16327,10 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
   }
 
   if(env_1_has_sends){
+    for(i = 0; i < modular_synth_util->buffer_length; i++){
+      ((gdouble *) modular_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
     ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				 modular_synth_util->env_1_buffer);
 
@@ -15248,21 +16344,108 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 				 AGS_SOUNDCARD_DOUBLE);
 
     tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
     
-    while(tmp_offset < frame_count && (tmp_offset - offset) < modular_synth_util->buffer_length){
-      if(tmp_offset > 0){
-	if(tmp_offset - offset < modular_synth_util->buffer_length){
-	  if(modular_synth_util->buffer_length < frame_count - offset){
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						modular_synth_util->buffer_length - (tmp_offset - offset));
-	  }else{
-	    ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
-						(frame_count - offset) - (tmp_offset - offset));
-	  }
+    while(tmp_offset < frame_count){
+      /* env-1 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = modular_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = modular_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
 	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = modular_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = modular_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = modular_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = modular_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = modular_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > modular_synth_util->buffer_length){
+	compute_frame_count = modular_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= modular_synth_util->buffer_length){
 	  break;
 	}
       }
+
+      ags_envelope_util_set_buffer_length(modular_synth_util->env_1_util,
+					  compute_frame_count);
 
       ags_envelope_util_set_source(modular_synth_util->env_1_util,
 				   ((gdouble *) modular_synth_util->env_1_buffer) + (tmp_offset - offset));
@@ -15272,27 +16455,6 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 
       ags_envelope_util_set_offset(modular_synth_util->env_1_util,
 				   tmp_offset);
-      
-      env_amount = 1.0;
-      env_volume = 1.0;
-
-      if((double) tmp_offset >= 0.0 &&
-	 (double) tmp_offset < (double) frame_count / 4.0){
-	env_amount = (modular_synth_util->env_1_attack - modular_synth_util->env_1_decay) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_attack + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
-	       (double) tmp_offset < (double) frame_count / 2.0){
-	env_amount = (modular_synth_util->env_1_decay - modular_synth_util->env_1_sustain) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_decay + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
-	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
-	env_amount = (modular_synth_util->env_1_sustain - modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_sustain + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0 &&
-	       (double) tmp_offset < (double) frame_count){
-	env_amount = (modular_synth_util->env_1_release) * ((double) frame_count / 4.0);
-	env_volume = modular_synth_util->env_1_release + (env_amount * (tmp_offset % (gint) ((double) frame_count / 4.0)));
-      }
 
       ags_envelope_util_set_volume(modular_synth_util->env_1_util,
 				   env_volume);
@@ -15303,7 +16465,7 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
       ags_envelope_util_compute(modular_synth_util->env_1_util);
 
       /* iterate */
-      tmp_offset += (guint) ((double) frame_count / 4.0);
+      tmp_offset += (guint) compute_frame_count;
     }
   }
 

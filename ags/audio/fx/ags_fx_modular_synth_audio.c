@@ -4677,9 +4677,6 @@ ags_fx_modular_synth_audio_notify_buffer_size_callback(GObject *gobject,
 					NULL);
 
 	/* alloc chorus destination */
-	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
-					  buffer_size);
-	
 	if(buffer_size > 0){
 	  destination = ags_stream_alloc(buffer_size,
 					 ags_chorus_util_get_format(channel_data->chorus_util));
@@ -4688,6 +4685,9 @@ ags_fx_modular_synth_audio_notify_buffer_size_callback(GObject *gobject,
 					  destination);
 	}
 	
+	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
+					  buffer_size);
+		
 	/* set buffer length */
 	ags_modular_synth_util_set_buffer_length(modular_synth_util_0,
 						 buffer_size);
@@ -4775,9 +4775,6 @@ ags_fx_modular_synth_audio_notify_format_callback(GObject *gobject,
 					NULL);
 
 	/* alloc chorus destination */
-	ags_chorus_util_set_format(channel_data->chorus_util,
-				   format);
-	
 	if(buffer_size > 0){
 	  destination = ags_stream_alloc(buffer_size,
 					 format);
@@ -4785,6 +4782,9 @@ ags_fx_modular_synth_audio_notify_format_callback(GObject *gobject,
 	  ags_chorus_util_set_destination(channel_data->chorus_util,
 					  destination);
 	}
+	
+	ags_chorus_util_set_format(channel_data->chorus_util,
+				   format);	
       }
     }
   }
@@ -4934,6 +4934,34 @@ ags_fx_modular_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  ags_modular_synth_util_set_samplerate(channel_data->modular_synth_util_0,
 						samplerate);
 
+	  ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util_0,
+						     buffer_size);
+	  ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util_0,
+					      format);
+	  ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util_0,
+						  samplerate);
+
+	  ags_amplifier_util_set_buffer_length(channel_data->amplifier_util_0,
+					       buffer_size);
+	  ags_amplifier_util_set_format(channel_data->amplifier_util_0,
+					format);
+	  ags_amplifier_util_set_samplerate(channel_data->amplifier_util_0,
+					    samplerate);
+
+	  ags_chorus_util_set_buffer_length(channel_data->chorus_util,
+					    buffer_size);
+	  ags_chorus_util_set_format(channel_data->chorus_util,
+				     format);
+	  ags_chorus_util_set_samplerate(channel_data->chorus_util,
+					 samplerate);
+
+	  /* alloc chorus destination */
+	  destination = ags_stream_alloc(buffer_size,
+					 format);
+
+	  ags_chorus_util_set_destination(channel_data->chorus_util,
+					  destination);	  
+
 	  for(k = 0; k < AGS_SEQUENCER_MAX_MIDI_KEYS; k++){
 	    AgsFxModularSynthAudioInputData *input_data;
 
@@ -5067,6 +5095,15 @@ ags_fx_modular_synth_audio_channel_data_free(AgsFxModularSynthAudioChannelData *
   /* modular synth util */
   ags_modular_synth_util_free(channel_data->modular_synth_util_0);
   
+  /* low_pass_filter util */
+  ags_low_pass_filter_util_free(channel_data->low_pass_filter_util_0);
+  
+  /* amplifier util */
+  ags_amplifier_util_free(channel_data->amplifier_util_0);
+  
+  /* chorus util */
+  ags_chorus_util_free(channel_data->chorus_util);
+
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     ags_fx_modular_synth_audio_input_data_free(channel_data->input_data[i]);
   }

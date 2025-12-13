@@ -10685,7 +10685,7 @@ ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *n
   }
 
   /* modulation matrix */
-  gtk_widget_queue_draw((GtkWidget *) modular_synth->modulation_matrix);
+  gtk_widget_queue_draw((GtkWidget *) modular_synth->modulation_matrix->drawing_area);
   
   /* osc-0 */
   str = xmlGetProp(node,
