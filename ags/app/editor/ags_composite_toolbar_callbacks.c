@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2025 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -339,6 +339,13 @@ ags_composite_toolbar_menu_tool_popup_notation_position_cursor_callback(GAction 
 									AgsCompositeToolbar *composite_toolbar)
 {
   gtk_popover_popup(composite_toolbar->notation_position_cursor);
+}
+
+void
+ags_composite_toolbar_menu_tool_popup_notation_import_smf_callback(GAction *action, GVariant *parameter,
+								   AgsCompositeToolbar *composite_toolbar)
+{
+  gtk_popover_popup(composite_toolbar->notation_import_smf);
 }
 
 void

@@ -178,6 +178,13 @@
 #include <ags/audio/fx/ags_fx_raven_synth_recycling.h>
 #include <ags/audio/fx/ags_fx_raven_synth_audio_signal.h>
 
+#include <ags/audio/fx/ags_fx_modular_synth_audio.h>
+#include <ags/audio/fx/ags_fx_modular_synth_audio_processor.h>
+#include <ags/audio/fx/ags_fx_modular_synth_channel.h>
+#include <ags/audio/fx/ags_fx_modular_synth_channel_processor.h>
+#include <ags/audio/fx/ags_fx_modular_synth_recycling.h>
+#include <ags/audio/fx/ags_fx_modular_synth_audio_signal.h>
+
 #include <ags/audio/fx/ags_fx_ladspa_audio.h>
 #include <ags/audio/fx/ags_fx_ladspa_audio_processor.h>
 #include <ags/audio/fx/ags_fx_ladspa_channel.h>
@@ -453,6 +460,16 @@ GList* ags_fx_factory_create_raven_synth(AgsAudio *audio,
 					 guint start_pad, guint stop_pad,
 					 gint position,
 					 guint create_flags, AgsRecallFlags recall_flags);
+
+GList* ags_fx_factory_create_modular_synth(AgsAudio *audio,
+					   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					   gchar *plugin_name,
+					   gchar *filename,
+					   gchar *effect,
+					   guint start_audio_channel, guint stop_audio_channel,
+					   guint start_pad, guint stop_pad,
+					   gint position,
+					   guint create_flags, AgsRecallFlags recall_flags);
 
 GList* ags_fx_factory_create_ladspa(AgsAudio *audio,
 				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
@@ -10231,6 +10248,458 @@ ags_fx_factory_create_raven_synth(AgsAudio *audio,
 }
 
 GList*
+ags_fx_factory_create_modular_synth(AgsAudio *audio,
+				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				    gchar *plugin_name,
+				    gchar *filename,
+				    gchar *effect,
+				    guint start_audio_channel, guint stop_audio_channel,
+				    guint start_pad, guint stop_pad,
+				    gint position,
+				    guint create_flags, AgsRecallFlags recall_flags)
+{
+  AgsChannel *start_input, *start_output;
+  AgsChannel *channel, *next_channel;
+
+  AgsFxModularSynthAudio *fx_modular_synth_audio;
+  AgsFxModularSynthAudioProcessor *fx_modular_synth_audio_processor;
+  AgsFxModularSynthChannel *fx_modular_synth_channel;
+  AgsFxModularSynthChannelProcessor *fx_modular_synth_channel_processor;
+
+  GObject *output_soundcard;
+  GObject *input_sequencer;  
+  
+  GList *start_recall;
+
+  gint channel_position;
+  guint audio_channels;
+  guint i, j;
+  
+  if(!AGS_IS_RECALL_CONTAINER(play_container) ||
+     !AGS_IS_RECALL_CONTAINER(recall_container)){
+    g_warning("ags-fx-modular-synth recall container not provided");
+    
+    return(NULL);
+  }
+  
+  start_recall = NULL;
+
+  start_output = NULL;
+
+  start_input = NULL;
+  
+  g_object_get(audio,
+	       "output-soundcard", &output_soundcard,
+	       "input-sequencer", &input_sequencer,
+	       "output", &start_output,
+	       "input", &start_input,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  channel_position = 0;
+  
+  if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+    channel_position = ags_fx_factory_get_output_position(audio,
+							  position);
+  }else{
+    channel_position = ags_fx_factory_get_input_position(audio,
+							 position);
+  }
+
+  /* audio - play context */
+  fx_modular_synth_audio = NULL;
+  fx_modular_synth_audio_processor = NULL;
+  
+  if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
+    /* AgsFxModularSynthAudio */
+    fx_modular_synth_audio = (AgsFxModularSynthAudio *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_AUDIO,
+								     "filename", filename,
+								     "effect", effect,						    
+								     "output-soundcard", output_soundcard,
+								     "audio", audio,
+								     "recall-container", play_container,
+								     NULL);
+    ags_recall_set_flags((AgsRecall *) fx_modular_synth_audio,
+			 (AGS_RECALL_TEMPLATE));
+    ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_audio,
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
+				  AGS_SOUND_ABILITY_MIDI));
+    ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_audio,
+				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+    ags_audio_insert_recall(audio, (GObject *) fx_modular_synth_audio,
+			    TRUE,
+			    position);
+    ags_recall_container_add(play_container,
+			     (AgsRecall *) fx_modular_synth_audio);
+
+    start_recall = g_list_prepend(start_recall,
+				  fx_modular_synth_audio);
+
+    ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_audio));
+    
+    /* AgsFxModularSynthAudioProcessor */
+    fx_modular_synth_audio_processor = (AgsFxModularSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_AUDIO_PROCESSOR,
+											"filename", filename,
+											"effect", effect,						    
+											"output-soundcard", output_soundcard,
+											"audio", audio,
+											"recall-audio", fx_modular_synth_audio,
+											"recall-container", play_container,
+											NULL);
+    ags_recall_set_flags((AgsRecall *) fx_modular_synth_audio_processor,
+			 (AGS_RECALL_TEMPLATE));
+    ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_audio_processor,
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
+				  AGS_SOUND_ABILITY_MIDI));
+    ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_audio_processor,
+				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+    ags_audio_insert_recall(audio, (GObject *) fx_modular_synth_audio_processor,
+			    TRUE,
+			    position);
+    ags_recall_container_add(play_container,
+			     (AgsRecall *) fx_modular_synth_audio_processor);
+    
+    start_recall = g_list_prepend(start_recall,
+				  fx_modular_synth_audio_processor);
+
+    ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_audio_processor));
+  }else{
+    GList *start_recall_audio_run, *recall_audio_run;
+    
+    fx_modular_synth_audio = (AgsFxModularSynthAudio *) ags_recall_container_get_recall_audio(play_container);
+
+    if(fx_modular_synth_audio != NULL){
+      g_object_ref(fx_modular_synth_audio);
+    }
+
+    start_recall_audio_run = ags_recall_container_get_recall_audio_run(play_container);
+
+    if((recall_audio_run = ags_recall_find_template(start_recall_audio_run)) != NULL){
+      fx_modular_synth_audio_processor = recall_audio_run->data;
+      g_object_ref(fx_modular_synth_audio_processor);
+    }
+  }
+
+  /* channel - play context */
+  for(i = 0; i < stop_pad - start_pad; i++){
+    if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+      channel = ags_channel_pad_nth(start_output,
+				    start_pad + i);
+    }else{
+      channel = ags_channel_pad_nth(start_input,
+				    start_pad + i);
+    }
+
+    next_channel = ags_channel_nth(channel,
+				   start_audio_channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
+    channel = next_channel;
+      
+    for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) play_container);
+	
+      /* AgsFxModularSynthChannel */
+      fx_modular_synth_channel = (AgsFxModularSynthChannel *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_CHANNEL,
+									   "filename", filename,
+									   "effect", effect,						    
+									   "output-soundcard", output_soundcard,
+									   "source", channel,
+									   "recall-audio", fx_modular_synth_audio,
+									   "recall-container", play_container,
+									   NULL);
+      ags_recall_set_flags((AgsRecall *) fx_modular_synth_channel,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_channel,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_MIDI));
+      ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_channel,
+				     (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_channel_insert_recall(channel, (GObject *) fx_modular_synth_channel,
+				TRUE,
+				channel_position);
+      ags_recall_container_add(play_container,
+			       (AgsRecall *) fx_modular_synth_channel);
+
+      start_recall = g_list_prepend(start_recall,
+				    fx_modular_synth_channel);
+
+      ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_channel));
+
+      /* AgsFxModularSynthChannelProcessor */
+      fx_modular_synth_channel_processor = (AgsFxModularSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_CHANNEL_PROCESSOR,
+											      "filename", filename,
+											      "effect", effect,						    
+											      "output-soundcard", output_soundcard,
+											      "source", channel,
+											      "recall-audio", fx_modular_synth_audio,
+											      "recall-audio-run", fx_modular_synth_audio_processor,
+											      "recall-channel", fx_modular_synth_channel,
+											      "recall-container", play_container,
+											      NULL);
+      ags_recall_set_flags((AgsRecall *) fx_modular_synth_channel_processor,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_channel_processor,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_MIDI));
+      ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_channel_processor,
+				     (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_channel_insert_recall(channel, (GObject *) fx_modular_synth_channel_processor,
+				TRUE,
+				channel_position);
+      ags_recall_container_add(play_container,
+			       (AgsRecall *) fx_modular_synth_channel_processor);
+
+      start_recall = g_list_prepend(start_recall,
+				    fx_modular_synth_channel_processor);
+
+      ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_channel_processor));
+
+      /* iterate */
+      next_channel = ags_channel_next(channel);
+
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+  }
+
+  if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
+    if(fx_modular_synth_audio != NULL){
+      g_object_unref(fx_modular_synth_audio);
+    }
+    
+    if(fx_modular_synth_audio_processor != NULL){
+      g_object_unref(fx_modular_synth_audio_processor);
+    }
+  }
+  
+  /* audio - recall context */
+  fx_modular_synth_audio = NULL;
+  fx_modular_synth_audio_processor = NULL;
+  
+  if((AGS_FX_FACTORY_REMAP & (create_flags)) == 0){
+    /* AgsFxModularSynthAudio */
+    fx_modular_synth_audio = (AgsFxModularSynthAudio *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_AUDIO,
+								     "filename", filename,
+								     "effect", effect,						    
+								     "output-soundcard", output_soundcard,
+								     "audio", audio,
+								     "recall-container", recall_container,
+								     NULL);
+    ags_recall_set_flags((AgsRecall *) fx_modular_synth_audio,
+			 (AGS_RECALL_TEMPLATE));
+    ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_audio,
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
+				  AGS_SOUND_ABILITY_MIDI));
+    ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_audio,
+				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+    ags_audio_insert_recall(audio, (GObject *) fx_modular_synth_audio,
+			    FALSE,
+			    position);
+    ags_recall_container_add(recall_container,
+			     (AgsRecall *) fx_modular_synth_audio);
+
+    start_recall = g_list_prepend(start_recall,
+				  fx_modular_synth_audio);
+
+    ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_audio));
+    
+    /* AgsFxModularSynthAudioProcessor */
+    fx_modular_synth_audio_processor = (AgsFxModularSynthAudioProcessor *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_AUDIO_PROCESSOR,
+											"filename", filename,
+											"effect", effect,						    
+											"output-soundcard", output_soundcard,
+											"audio", audio,
+											"recall-audio", fx_modular_synth_audio,
+											"recall-container", recall_container,
+											NULL);
+    ags_recall_set_flags((AgsRecall *) fx_modular_synth_audio_processor,
+			 (AGS_RECALL_TEMPLATE));
+    ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_audio_processor,
+				 (AGS_SOUND_ABILITY_PLAYBACK |
+				  AGS_SOUND_ABILITY_NOTATION |
+				  AGS_SOUND_ABILITY_MIDI));
+    ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_audio_processor,
+				   (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+    ags_audio_insert_recall(audio, (GObject *) fx_modular_synth_audio_processor,
+			    FALSE,
+			    position);
+    ags_recall_container_add(recall_container,
+			     (AgsRecall *) fx_modular_synth_audio_processor);
+
+    start_recall = g_list_prepend(start_recall,
+				  fx_modular_synth_audio_processor);
+
+    ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_audio_processor));
+  }else{
+    GList *start_recall_audio_run, *recall_audio_run;
+    
+    fx_modular_synth_audio = (AgsFxModularSynthAudio *) ags_recall_container_get_recall_audio(recall_container);
+
+    if(fx_modular_synth_audio != NULL){
+      g_object_ref(fx_modular_synth_audio);
+    }
+
+    start_recall_audio_run = ags_recall_container_get_recall_audio_run(recall_container);
+
+    if((recall_audio_run = ags_recall_find_template(start_recall_audio_run)) != NULL){
+      fx_modular_synth_audio_processor = recall_audio_run->data;
+      g_object_ref(fx_modular_synth_audio_processor);
+    }
+  }
+
+  /* channel - recall context */  
+  for(i = 0; i < stop_pad - start_pad; i++){
+    if((AGS_FX_FACTORY_OUTPUT & create_flags) != 0){
+      channel = ags_channel_pad_nth(start_output,
+				    start_pad + i);
+    }else{
+      channel = ags_channel_pad_nth(start_input,
+				    start_pad + i);
+    }
+
+    next_channel = ags_channel_nth(channel,
+				   start_audio_channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
+    channel = next_channel;
+      
+    for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      /* add recall container */
+      ags_channel_add_recall_container(channel,
+				       (GObject *) recall_container);
+
+      /* AgsFxModularSynthChannel */
+      fx_modular_synth_channel = (AgsFxModularSynthChannel *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_CHANNEL,
+									   "filename", filename,
+									   "effect", effect,						    
+									   "output-soundcard", output_soundcard,
+									   "source", channel,
+									   "recall-audio", fx_modular_synth_audio,
+									   "recall-container", recall_container,
+									   NULL);
+      ags_recall_set_flags((AgsRecall *) fx_modular_synth_channel,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_channel,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_MIDI));
+      ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_channel,
+				     (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_channel_insert_recall(channel, (GObject *) fx_modular_synth_channel,
+				FALSE,
+				channel_position);
+      ags_recall_container_add(recall_container,
+			       (AgsRecall *)   fx_modular_synth_channel);
+      
+      start_recall = g_list_prepend(start_recall,
+				    fx_modular_synth_channel);
+
+      ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_channel));
+
+      /* AgsFxModularSynthChannelProcessor */
+      fx_modular_synth_channel_processor = (AgsFxModularSynthChannelProcessor *) g_object_new(AGS_TYPE_FX_MODULAR_SYNTH_CHANNEL_PROCESSOR,
+											      "filename", filename,
+											      "effect", effect,						    
+											      "output-soundcard", output_soundcard,
+											      "source", channel,
+											      "recall-audio", fx_modular_synth_audio,
+											      "recall-audio-run", fx_modular_synth_audio_processor,
+											      "recall-channel", fx_modular_synth_channel,
+											      "recall-container", recall_container,
+											      NULL);
+      ags_recall_set_flags((AgsRecall *) fx_modular_synth_channel_processor,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags((AgsRecall *) fx_modular_synth_channel_processor,
+				   (AGS_SOUND_ABILITY_PLAYBACK |
+				    AGS_SOUND_ABILITY_NOTATION |
+				    AGS_SOUND_ABILITY_MIDI));
+      ags_recall_set_behaviour_flags((AgsRecall *) fx_modular_synth_channel_processor,
+				     (((AGS_FX_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_channel_insert_recall(channel, (GObject *) fx_modular_synth_channel_processor,
+				FALSE,
+				channel_position);
+      ags_recall_container_add(recall_container,
+			       (AgsRecall *)   fx_modular_synth_channel_processor);
+
+      start_recall = g_list_prepend(start_recall,
+				    fx_modular_synth_channel_processor);
+
+      ags_connectable_connect(AGS_CONNECTABLE(fx_modular_synth_channel_processor));
+
+      /* iterate */
+      next_channel = ags_channel_next(channel);
+
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+  }
+
+  if((AGS_FX_FACTORY_REMAP & (create_flags)) != 0){
+    if(fx_modular_synth_audio != NULL){
+      g_object_unref(fx_modular_synth_audio);
+    }
+    
+    if(fx_modular_synth_audio_processor != NULL){
+      g_object_unref(fx_modular_synth_audio_processor);
+    }
+  }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
+  if(input_sequencer != NULL){
+    g_object_unref(input_sequencer);
+  }
+  
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+  
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  g_list_foreach(start_recall,
+		 (GFunc) g_object_ref,
+		 NULL);
+
+  return(start_recall);
+}
+
+GList*
 ags_fx_factory_create_ladspa(AgsAudio *audio,
 			     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 			     gchar *plugin_name,
@@ -10616,7 +11085,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 				FALSE,
 				channel_position);
       ags_recall_container_add(recall_container,
-			     (AgsRecall *)   fx_ladspa_channel);
+			       (AgsRecall *)   fx_ladspa_channel);
 
       start_recall = g_list_prepend(start_recall,
 				    fx_ladspa_channel);
@@ -10649,7 +11118,7 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
 				FALSE,
 				channel_position);
       ags_recall_container_add(recall_container,
-			     (AgsRecall *)   fx_ladspa_channel_processor);
+			       (AgsRecall *)   fx_ladspa_channel_processor);
 
       start_recall = g_list_prepend(start_recall,
 				    fx_ladspa_channel_processor);
@@ -13224,6 +13693,18 @@ ags_fx_factory_create(AgsAudio *audio,
 						     start_pad, stop_pad,
 						     position,
 						     create_flags, recall_flags);
+  }else if(!g_ascii_strncasecmp(plugin_name,
+				"ags-fx-modular-synth",
+				21)){
+    start_recall = ags_fx_factory_create_modular_synth(audio,
+						       play_container, recall_container,
+						       plugin_name,
+						       filename,
+						       effect,
+						       start_audio_channel, stop_audio_channel,
+						       start_pad, stop_pad,
+						       position,
+						       create_flags, recall_flags);    
   }else if(!g_ascii_strncasecmp(plugin_name,
 				"ags-fx-ladspa",
 				14)){

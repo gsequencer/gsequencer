@@ -1,0 +1,727 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2025 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <ags/app/machine/ags_modulation_matrix.h>
+#include <ags/app/machine/ags_modulation_matrix_callbacks.h>
+
+#include <ags/app/ags_ui_provider.h>
+#include <ags/app/ags_window.h>
+#include <ags/app/ags_composite_editor.h>
+#include <ags/app/ags_machine.h>
+#include <ags/app/ags_pad.h>
+#include <ags/app/ags_line.h>
+
+#include <string.h>
+#include <math.h>
+
+#include <pango/pango.h>
+
+#ifndef __APPLE__
+#include <pango/pangofc-fontmap.h>
+#endif
+
+#include <gdk/gdkkeysyms.h>
+
+#include <ags/ags_api_config.h>
+
+#include <ags/i18n.h>
+
+void ags_modulation_matrix_class_init(AgsModulationMatrixClass *modulation_matrix);
+void ags_modulation_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix);
+void ags_modulation_matrix_finalize(GObject *gobject);
+
+gboolean ags_modulation_matrix_is_connected(AgsConnectable *connectable);
+void ags_modulation_matrix_connect(AgsConnectable *connectable);
+void ags_modulation_matrix_disconnect(AgsConnectable *connectable);
+
+void ags_modulation_matrix_show(GtkWidget *widget);
+
+/**
+ * SECTION:ags_modulation_matrix
+ * @short_description: modular synth
+ * @title: AgsModulationMatrix
+ * @section_id:
+ * @include: ags/app/machine/ags_modulation_matrix.h
+ *
+ * The #AgsModulationMatrix is a composite widget to act as modular synth.
+ */
+
+enum{
+  TOGGLED,
+  LAST_SIGNAL,
+};
+
+static gpointer ags_modulation_matrix_parent_class = NULL;
+static AgsConnectableInterface *ags_modulation_matrix_parent_connectable_interface;
+
+static guint modulation_matrix_signals[LAST_SIGNAL];
+
+GType
+ags_modulation_matrix_get_type(void)
+{
+  static gsize g_define_type_id__static = 0;
+
+  if(g_once_init_enter(&g_define_type_id__static)){
+    GType ags_type_modulation_matrix = 0;
+
+    static const GTypeInfo ags_modulation_matrix_info = {
+      sizeof(AgsModulationMatrixClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_modulation_matrix_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof(AgsModulationMatrix),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_modulation_matrix_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_modulation_matrix_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+    
+    ags_type_modulation_matrix = g_type_register_static(GTK_TYPE_BOX,
+							"AgsModulationMatrix", &ags_modulation_matrix_info,
+							0);
+    
+    g_type_add_interface_static(ags_type_modulation_matrix,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__static, ags_type_modulation_matrix);
+  }
+
+  return(g_define_type_id__static);
+}
+
+void
+ags_modulation_matrix_class_init(AgsModulationMatrixClass *modulation_matrix)
+{
+  GObjectClass *gobject;
+
+  ags_modulation_matrix_parent_class = g_type_class_peek_parent(modulation_matrix);
+
+  /* GObjectClass */
+  gobject = (GObjectClass *) modulation_matrix;
+
+  gobject->finalize = ags_modulation_matrix_finalize;
+
+  /* AgsModulationMatrixClass */
+  modulation_matrix->toggled = NULL;
+
+  /* signals */
+  /**
+   * AgsModulationMatrix::toggled:
+   * @modulation_matrix: the #AgsModulationMatrix
+   *
+   * The ::toggled signal notifies matrix modified.
+   *
+   * Since: 8.2.0
+   */
+  modulation_matrix_signals[TOGGLED] =
+    g_signal_new("toggled",
+		 G_TYPE_FROM_CLASS(modulation_matrix),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsModulationMatrixClass, toggled),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+}
+
+void
+ags_modulation_matrix_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->get_uuid = NULL;
+  connectable->has_resource = NULL;
+
+  connectable->is_ready = NULL;
+  connectable->add_to_registry = NULL;
+  connectable->remove_from_registry = NULL;
+
+  connectable->list_resource = NULL;
+  connectable->xml_compose = NULL;
+  connectable->xml_parse = NULL;
+
+  connectable->is_connected = ags_modulation_matrix_is_connected;
+
+  connectable->connect = ags_modulation_matrix_connect;
+  connectable->disconnect = ags_modulation_matrix_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
+}
+
+void
+ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix)
+{
+  GtkEventController *event_controller;
+
+  GStrvBuilder *strv_builder;
+
+  modulation_matrix->flags = 0;
+  modulation_matrix->connectable_flags = 0;
+  
+  modulation_matrix->key_mask = 0;
+
+  modulation_matrix->font_size = 11;
+
+  modulation_matrix->cell_width = AGS_MODULATION_MATRIX_DEFAULT_CELL_WIDTH;
+  modulation_matrix->cell_height = AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT;
+  
+  modulation_matrix->n_cols = 8;
+  modulation_matrix->n_rows = 5;
+
+  modulation_matrix->cursor_x = 0;
+  modulation_matrix->cursor_y = 0;
+
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add_many(strv_builder,
+			  "osc-0 - frequency",
+			  "osc-0 - phase",
+			  "osc-0 - volume",
+			  "osc-1 - frequency",
+			  "osc-1 - phase",
+			  "osc-1 - volume",
+			  "pitch tuning",
+			  "volume",
+			  NULL);
+
+  modulation_matrix->label_x = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_add_many(strv_builder,
+			  "env-0",
+			  "env-1",
+			  "lfo-0",
+			  "lfo-1",
+			  "noise",
+			  NULL);
+
+  modulation_matrix->label_y = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_unref(strv_builder);
+
+  modulation_matrix->matrix_enabled = g_malloc(AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * sizeof(guint64));
+
+  memset(modulation_matrix->matrix_enabled, 0, AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * sizeof(guint64));
+    
+  modulation_matrix->grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign((GtkWidget *) modulation_matrix->grid,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) modulation_matrix->grid,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) modulation_matrix->grid,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) modulation_matrix->grid,
+			 TRUE);
+
+  gtk_box_append((GtkBox *) modulation_matrix,
+		 (GtkWidget *) modulation_matrix->grid);
+
+  modulation_matrix->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
+
+  gtk_widget_set_can_focus((GtkWidget *) modulation_matrix->drawing_area,
+			   TRUE);
+  gtk_widget_set_focusable((GtkWidget *) modulation_matrix->drawing_area,
+			   TRUE);
+
+  gtk_widget_set_size_request(GTK_WIDGET(modulation_matrix->drawing_area),
+			      (AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * modulation_matrix->cell_width) + 2),
+			      (AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * modulation_matrix->cell_height) + 2));
+
+  gtk_widget_set_halign((GtkWidget *) modulation_matrix->drawing_area,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) modulation_matrix->drawing_area,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_hexpand((GtkWidget *) modulation_matrix->drawing_area,
+			 TRUE);
+  gtk_widget_set_vexpand((GtkWidget *) modulation_matrix->drawing_area,
+			 TRUE);
+
+  gtk_grid_attach((GtkGrid *) modulation_matrix->grid,
+		  (GtkWidget *) modulation_matrix->drawing_area,
+		  0, 0,
+		  1, 1);
+  
+  /* event controller */
+  event_controller = gtk_event_controller_key_new();
+  gtk_widget_add_controller((GtkWidget *) modulation_matrix->drawing_area,
+			    event_controller);
+
+  g_signal_connect(event_controller, "key-pressed",
+		   G_CALLBACK(ags_modulation_matrix_key_pressed_callback), modulation_matrix);
+  
+  g_signal_connect(event_controller, "key-released",
+		   G_CALLBACK(ags_modulation_matrix_key_released_callback), modulation_matrix);
+
+  g_signal_connect(event_controller, "modifiers",
+		   G_CALLBACK(ags_modulation_matrix_modifiers_callback), modulation_matrix);
+
+  event_controller = (GtkEventController *) gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) modulation_matrix,
+			    event_controller);
+
+  g_signal_connect(event_controller, "pressed",
+		   G_CALLBACK(ags_modulation_matrix_gesture_click_pressed_callback), modulation_matrix);
+
+  g_signal_connect(event_controller, "released",
+		   G_CALLBACK(ags_modulation_matrix_gesture_click_released_callback), modulation_matrix);
+
+  //TODO:JK: implement me
+  
+}
+
+void
+ags_modulation_matrix_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_modulation_matrix_parent_class)->finalize(gobject);
+}
+
+gboolean
+ags_modulation_matrix_is_connected(AgsConnectable *connectable)
+{
+  AgsModulationMatrix *modulation_matrix;
+
+  gboolean is_connected;
+  
+  /* AgsModulationMatrix */
+  modulation_matrix = AGS_MODULATION_MATRIX(connectable);
+
+  is_connected = ((AGS_CONNECTABLE_CONNECTED & (modulation_matrix->connectable_flags)) != 0) ? TRUE: FALSE;
+
+  return(is_connected);
+}
+
+void
+ags_modulation_matrix_connect(AgsConnectable *connectable)
+{
+  AgsModulationMatrix *modulation_matrix;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  /* AgsModulationMatrix */
+  modulation_matrix = AGS_MODULATION_MATRIX(connectable);
+
+  /* drawing area */
+  gtk_drawing_area_set_draw_func(modulation_matrix->drawing_area,
+				 (GtkDrawingAreaDrawFunc) ags_modulation_matrix_draw_callback,
+				 modulation_matrix,
+				 NULL);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_modulation_matrix_disconnect(AgsConnectable *connectable)
+{
+  AgsModulationMatrix *modulation_matrix;
+  
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  /* AgsModulationMatrix */
+  modulation_matrix = AGS_MODULATION_MATRIX(connectable);
+
+  /* drawing area */
+  gtk_drawing_area_set_draw_func(modulation_matrix->drawing_area,
+				 NULL,
+				 NULL,
+				 NULL);
+
+  //TODO:JK: implement me
+}
+
+void
+ags_modulation_matrix_set_enabled(AgsModulationMatrix *modulation_matrix,
+				  gint x, gint y,
+				  gboolean enabled)
+{
+  guint64 val;
+  guint64 toggle_val;
+  
+  if(!AGS_IS_MODULATION_MATRIX(modulation_matrix) ||
+     !(x >= 0 &&
+       x < modulation_matrix->n_cols) ||
+     !(y >= 0 &&
+       y < modulation_matrix->n_rows)){
+    return;
+  }
+
+  val = modulation_matrix->matrix_enabled[((y * (guint) ceil(modulation_matrix->n_cols / 64.0)) + (guint) floor(x / 64.0))];
+  
+  toggle_val = 1L << (x % 64);
+  
+  if(enabled){
+    //    g_message("set");
+    
+    modulation_matrix->matrix_enabled[(y * (guint) ceil(modulation_matrix->n_cols / 64.0)) + (guint) floor(x / 64.0)] = (val | toggle_val);
+  }else{
+    //    g_message("unset");
+    
+    modulation_matrix->matrix_enabled[(y * (guint) ceil(modulation_matrix->n_cols / 64.0)) + (guint) floor(x / 64.0)] = (val & (~toggle_val));
+  }
+}
+
+gboolean
+ags_modulation_matrix_get_enabled(AgsModulationMatrix *modulation_matrix,
+				  gint x, gint y)
+{
+  guint64 val;
+  guint64 test_val;
+  
+  gboolean enabled;
+  
+  if(!AGS_IS_MODULATION_MATRIX(modulation_matrix) ||
+     !(x >= 0 &&
+       x < modulation_matrix->n_cols) ||
+     !(y >= 0 &&
+       y < modulation_matrix->n_rows)){
+    return(FALSE);
+  }
+
+  val = modulation_matrix->matrix_enabled[((y * ((guint) ceil(modulation_matrix->n_cols / 64.0))) + (guint) floor(x / 64.0))];
+
+  test_val = 1L << (x % 64);
+  
+  enabled = FALSE;
+
+  if((test_val & (val)) != 0L){
+    enabled = TRUE;
+  }
+  
+  return(enabled);
+}
+
+void
+ags_modulation_matrix_toggled(AgsModulationMatrix *modulation_matrix,
+			      gint x, gint y)
+{
+  g_return_if_fail(AGS_IS_MODULATION_MATRIX(modulation_matrix));
+
+  g_object_ref((GObject *) modulation_matrix);
+  g_signal_emit(G_OBJECT(modulation_matrix),
+		modulation_matrix_signals[TOGGLED], 0,
+		x, y);
+  g_object_unref((GObject *) modulation_matrix);  
+}
+
+void
+ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
+			   cairo_t *cr)
+{
+  GtkStyleContext *style_context;
+  GtkSettings *settings;
+
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  PangoRectangle ink_rect, logical_rect;
+
+  GtkAllocation allocation;
+
+  GdkRGBA fg_color;
+  GdkRGBA bg_color;
+  GdkRGBA shadow_color;
+  
+  gchar **sends_source_strv;
+  gchar **sends_sink_strv;
+
+  gchar *font_name;
+  gchar *text;
+
+  double width, height;
+  gdouble x_start, y_start;
+  guint i, j;
+  
+  gboolean dark_theme;
+  gboolean fg_success;
+  gboolean bg_success;
+  gboolean shadow_success;
+  
+  gtk_widget_get_allocation(GTK_WIDGET(modulation_matrix->drawing_area),
+			    &allocation);
+
+  width = (double) allocation.width;
+  height = (double) allocation.height;
+
+  /* style context */
+  style_context = gtk_widget_get_style_context((GtkWidget *) modulation_matrix->drawing_area);  
+
+  settings = gtk_settings_get_default();
+  
+  font_name = NULL;  
+
+  dark_theme = TRUE;
+  
+  g_object_get(settings,
+	       "gtk-font-name", &font_name,
+	       "gtk-application-prefer-dark-theme", &dark_theme,
+	       NULL);
+
+  /* colors */
+  fg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_fg_color",
+					      &fg_color);
+    
+  bg_success = gtk_style_context_lookup_color(style_context,
+					      "theme_bg_color",
+					      &bg_color);
+    
+  shadow_success = gtk_style_context_lookup_color(style_context,
+						  "theme_shadow_color",
+						  &shadow_color);
+
+  if(!fg_success ||
+     !bg_success ||
+     !shadow_success){
+    if(!dark_theme){
+      gdk_rgba_parse(&fg_color,
+		     "#101010");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#cbd5d9");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#ffffff40");
+    }else{
+      gdk_rgba_parse(&fg_color,
+		     "#eeeeec");
+      
+      gdk_rgba_parse(&bg_color,
+		     "#353535");
+      
+      gdk_rgba_parse(&shadow_color,
+		     "#202020");
+    }
+  }
+
+  /* push group */
+  cairo_push_group(cr);
+
+  /* clear with background color */
+  cairo_set_source_rgba(cr,
+			bg_color.red,
+			bg_color.green,
+			bg_color.blue,
+			bg_color.alpha);
+  cairo_rectangle(cr,
+		  0.0, 0.0,
+		  width, height);
+  cairo_fill(cr);
+
+  /* horizontal lines */
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.green,
+			fg_color.blue,
+			fg_color.alpha);
+
+  cairo_set_line_width(cr,
+		       1.0);
+
+  for(i = 0; i < 6; i++){
+    cairo_move_to(cr,
+		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH,
+		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_height));
+  
+    cairo_line_to(cr,
+		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * modulation_matrix->cell_width),
+		  2.0 + (double) AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (i * modulation_matrix->cell_height));
+
+  }
+  
+  cairo_stroke(cr);
+
+  /* vertical lines */
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.green,
+			fg_color.blue,
+			fg_color.alpha);
+
+  cairo_set_line_width(cr,
+		       1.0);
+
+  for(i = 0; i < 9; i++){
+    cairo_move_to(cr,
+		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_width),
+		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH);
+  
+    cairo_line_to(cr,
+		  AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_width),
+		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * modulation_matrix->cell_height));
+
+  }
+  
+  cairo_stroke(cr);
+
+  /* horizontal text */
+  sends_source_strv = modulation_matrix->label_y;
+  
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.green,
+			fg_color.blue,
+			fg_color.alpha);
+
+  x_start = 8.0;
+  y_start = 2.0;
+  
+  for(i = 0; i < 5; i++){
+    text = g_strdup_printf("%s",
+			   (sends_source_strv[i]));
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  text,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    modulation_matrix->font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+
+    cairo_move_to(cr,
+		  x_start,
+		  y_start + (double) AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_height) - 8.0 + ((double) logical_rect.height / (double) PANGO_SCALE) / 4.0);
+  
+    pango_cairo_show_layout(cr,
+			    layout);
+    
+    /* unref */
+    g_object_unref(layout);
+
+    g_free(text);
+  }
+
+  /* vertical text */
+  sends_sink_strv = modulation_matrix->label_x;
+
+  cairo_set_source_rgba(cr,
+			fg_color.red,
+			fg_color.green,
+			fg_color.blue,
+			fg_color.alpha);
+  x_start = 8.0;
+  y_start = 2.0;
+  
+  for(i = 0; i < 8; i++){
+    cairo_save(cr);
+
+    text = g_strdup_printf("%s",
+			   (sends_sink_strv[i]));
+
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  text,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    modulation_matrix->font_size * PANGO_SCALE);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			     &ink_rect,
+			     &logical_rect);
+    
+    cairo_move_to(cr,
+		  x_start + (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) ((i + 1) * modulation_matrix->cell_width) - 8.0,
+		  y_start + ((double) logical_rect.height / (double) PANGO_SCALE) / 4.0);
+    cairo_rotate(cr,
+		 2.0 * M_PI * -0.75);
+    
+    pango_cairo_show_layout(cr,
+			    layout);
+
+    cairo_restore(cr);    
+
+    /* unref */
+    g_object_unref(layout);
+
+    g_free(text);
+  }
+
+  double xc = 0.0;
+  double yc = 0.0;
+  double radius = ((double) AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT / 2.0) - 1.0;
+  double angle_0 = 0.0;
+  double angle_1 = 2.0 * M_PI;
+
+  for(i = 0; i < AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY; i++){
+    for(j = 0; j < AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY; j++){      
+      if(ags_modulation_matrix_get_enabled(modulation_matrix, j, i)){
+	//	g_message("enabled %d | %d", j, i);
+
+	xc = (double) x_start + (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (j * modulation_matrix->cell_width) - 8.0 + ((double) AGS_MODULATION_MATRIX_DEFAULT_CELL_WIDTH / 2.0);
+	yc = (double) y_start + (double) AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_height) - 8.0 + ((double) AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT);
+	
+	cairo_save (cr);
+
+	cairo_arc(cr, xc, yc, radius, angle_0, angle_1);
+	cairo_fill(cr);
+	
+	cairo_restore(cr);    
+      }
+    }
+  }
+  
+  /* complete */
+  cairo_pop_group_to_source(cr);
+
+  cairo_paint(cr);
+}
+
+/**
+ * ags_modulation_matrix_new:
+ *
+ * Create a new instance of #AgsModulationMatrix
+ *
+ * Returns: the new #AgsModulationMatrix
+ *
+ * Since: 8.2.0
+ */
+AgsModulationMatrix*
+ags_modulation_matrix_new()
+{
+  AgsModulationMatrix *modulation_matrix;
+
+  modulation_matrix = (AgsModulationMatrix *) g_object_new(AGS_TYPE_MODULATION_MATRIX,
+							   NULL);
+
+  return(modulation_matrix);
+}

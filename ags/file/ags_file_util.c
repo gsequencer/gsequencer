@@ -1080,3 +1080,105 @@ ags_file_util_put_string(AgsFileUtil *file_util,
   
   return(converted_string);
 }
+
+void
+ags_file_util_get_csv_row_as_int64(AgsFileUtil *file_util,
+				   gchar *str,
+				   gchar csv_separator,
+				   gint64 *csv_row,
+				   guint column_count)
+{
+  gchar *iter;
+  gchar *newline_iter;
+
+  size_t str_length;
+  guint i;
+
+  if(str == NULL){
+    return;
+  }
+  
+  str_length = strlen(str);
+
+  iter = str;
+
+  newline_iter = strchr(str,
+			'\n');
+  
+  for(i = 0; iter < str + str_length && i < column_count; i++){
+    gchar *separator_iter;
+    gchar *end_ptr;
+
+    gint64 current_value;
+
+    if(newline_iter != NULL &&
+       iter > newline_iter){
+      break;
+    }
+
+    separator_iter = strchr(iter,
+			    csv_separator);
+    
+    if((separator_iter != NULL &&
+	newline_iter != NULL &&
+	separator_iter > newline_iter) ||
+       (separator_iter != NULL &&
+	separator_iter > str + str_length)){
+      break;
+    }
+    
+    end_ptr = NULL;
+    current_value = g_ascii_strtoll(iter,
+				    &end_ptr,
+				    10);
+
+    csv_row[i] = current_value;
+    
+    if(separator_iter != NULL){
+      iter = separator_iter + 1;
+    }else{
+      iter = end_ptr + 1;
+    }
+  }
+}
+
+gchar*
+ags_file_util_put_csv_row_as_int64(AgsFileUtil *file_util,
+				   gchar csv_separator,
+				   gint64 *csv_row,
+				   guint column_count)
+{
+  gchar *str, *str_end;
+  gchar *iter;
+
+  guint i;
+
+  if(column_count == 0){
+    return(NULL);
+  }
+  
+  str = g_malloc(((column_count * 20) + (column_count - 1) + 1) * sizeof(gchar));
+  
+  memset(str, 0, ((column_count * 20) + (column_count - 1) + 1) * sizeof(gchar));
+
+  iter = str;
+
+  str_end = str + ((column_count * 20) + (column_count - 1) + 1);
+  
+  for(i = 0; i < column_count && iter < str_end; i++){
+    gint n_writes;
+    
+    n_writes = g_snprintf(iter,
+			  (str_end - iter),
+			  "%ld",
+			  csv_row[i]);
+
+    if(i + 1 < column_count){
+      iter[n_writes] = csv_separator;
+    }
+    
+    iter += (n_writes + 1);
+  }
+
+  return(str);
+}
