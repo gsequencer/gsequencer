@@ -63,6 +63,10 @@
         <attribute name="action">app.add_raven_synth</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">Modular Synth</attribute>
+        <attribute name="action">app.add_modular_synth</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">FPlayer</attribute>
         <attribute name="action">app.add_ffplayer</attribute>
       </item>

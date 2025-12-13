@@ -39,6 +39,7 @@
 #include <ags/app/machine/ags_stargazer_synth.h>
 #include <ags/app/machine/ags_quantum_synth.h>
 #include <ags/app/machine/ags_raven_synth.h>
+#include <ags/app/machine/ags_modular_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -820,6 +821,54 @@ ags_machine_util_new_raven_synth()
   gtk_widget_show((GtkWidget *) raven_synth);
 
   return((GtkWidget *) raven_synth);  
+}
+
+/**
+ * ags_machine_util_new_modular_synth:
+ * 
+ * Create #AgsModularSynth.
+ * 
+ * returns: the newly instantiated #AgsModularSynth
+ * 
+ * Since: 8.2.0
+ */
+GtkWidget*
+ags_machine_util_new_modular_synth()
+{
+  AgsWindow *window;
+  AgsModularSynth *modular_synth;
+
+  AgsApplicationContext *application_context;
+  
+  GObject *default_soundcard;
+  
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  /* create modular_synth */
+  modular_synth = ags_modular_synth_new(G_OBJECT(default_soundcard));
+
+  ags_window_add_machine(window,
+			 AGS_MACHINE(modular_synth));
+
+  ags_connectable_connect(AGS_CONNECTABLE(modular_synth));
+
+  ags_audio_set_audio_channels(AGS_MACHINE(modular_synth)->audio,
+			       1, 0);
+  
+  ags_audio_set_pads(AGS_MACHINE(modular_synth)->audio,
+		     AGS_TYPE_INPUT,
+		     128, 0);
+  ags_audio_set_pads(AGS_MACHINE(modular_synth)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  gtk_widget_show((GtkWidget *) modular_synth);
+
+  return((GtkWidget *) modular_synth);  
 }
 
 /**
@@ -2109,6 +2158,10 @@ ags_machine_util_new_by_type_name(gchar *machine_type_name,
 				"AgsRavenSynth",
 				13)){
     machine = ags_machine_util_new_raven_synth();
+  }else if(!g_ascii_strncasecmp(machine_type_name,
+				"AgsModularSynth",
+				15)){
+    machine = ags_machine_util_new_modular_synth();
   }else if(!g_ascii_strncasecmp(machine_type_name,
 				"AgsFFPlayer",
 				11)){

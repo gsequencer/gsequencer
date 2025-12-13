@@ -34,7 +34,35 @@
 
 G_BEGIN_DECLS
 
-//TODO:JK: implement me
+void ags_modulation_matrix_draw_callback(GtkWidget *drawing_area,
+					 cairo_t *cr,
+					 int width, int height,
+					 AgsModulationMatrix *modulation_matrix);
+
+gboolean ags_modulation_matrix_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							      gint n_press,
+							      gdouble x,
+							      gdouble y,
+							      AgsModulationMatrix *modulation_matrix);
+gboolean ags_modulation_matrix_gesture_click_released_callback(GtkGestureClick *event_controller,
+							       gint n_press,
+							       gdouble x,
+							       gdouble y,
+							       AgsModulationMatrix *modulation_matrix);
+
+gboolean ags_modulation_matrix_key_pressed_callback(GtkEventControllerKey *event_controller,
+						    guint keyval,
+						    guint keycode,
+						    GdkModifierType state,
+						    AgsModulationMatrix *modulation_matrix);
+gboolean ags_modulation_matrix_key_released_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsModulationMatrix *modulation_matrix);
+gboolean ags_modulation_matrix_modifiers_callback(GtkEventControllerKey *event_controller,
+						  GdkModifierType keyval,
+						  AgsModulationMatrix *modulation_matrix);
 
 G_END_DECLS
 

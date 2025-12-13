@@ -204,6 +204,17 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) vbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) vbox,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) vbox,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) vbox,
+			 TRUE);
+  
   gtk_popover_set_child((GtkPopover *) import_notation_smf_popover,
 			(GtkWidget *) vbox);
 
@@ -277,11 +288,37 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
   /* file widget - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_valign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) hbox,
+			 TRUE);
+  gtk_widget_set_hexpand((GtkWidget *) hbox,
+			 TRUE);
+
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
   /* file widget */
   import_notation_smf_popover->file_widget = ags_file_widget_new();
+
+  gtk_widget_set_valign((GtkWidget *) import_notation_smf_popover->file_widget,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_halign((GtkWidget *) import_notation_smf_popover->file_widget,
+			GTK_ALIGN_FILL);
+
+  gtk_widget_set_vexpand((GtkWidget *) import_notation_smf_popover->file_widget,
+			 TRUE);  
+  gtk_widget_set_hexpand((GtkWidget *) import_notation_smf_popover->file_widget,
+			 TRUE);  
+
+  gtk_widget_set_size_request(GTK_WIDGET(import_notation_smf_popover->file_widget),
+  			      AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_WIDTH, AGS_UI_PROVIDER_DEFAULT_OPEN_DIALOG_HEIGHT);
+
+
   gtk_box_append(hbox,
 		 (GtkWidget *) import_notation_smf_popover->file_widget);
 

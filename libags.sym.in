@@ -637,6 +637,8 @@ ags_file_util_get_complex
 ags_file_util_put_complex
 ags_file_util_get_string
 ags_file_util_put_string
+ags_file_util_get_csv_row_as_int64
+ags_file_util_put_csv_row_as_int64
 ags_file_launch_get_type
 ags_file_launch_start
 ags_file_launch_new

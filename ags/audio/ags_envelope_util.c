@@ -26,7 +26,6 @@
 #include <Accelerate/Accelerate.h>
 
 #define AGS_VECTORIZED_BUILTIN_FUNCTIONS 1
-#define AGS_VECTOR_256_FUNCTIONS 1
 #endif
 
 //FIXME:JK: disabled because of unstable code

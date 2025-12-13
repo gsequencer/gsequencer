@@ -164,7 +164,7 @@ struct _AgsModularSynthUtil
   gdouble env_0_gain;
   gdouble env_0_frequency;
 
-  gint env_0_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+  gint64 env_0_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
 
   gpointer env_0_buffer;
   
@@ -177,7 +177,7 @@ struct _AgsModularSynthUtil
   gdouble env_1_gain;
   gdouble env_1_frequency;
 
-  gint env_1_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+  gint64 env_1_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
 
   gpointer env_1_buffer;
   
@@ -188,7 +188,7 @@ struct _AgsModularSynthUtil
   gdouble lfo_0_depth;
   gdouble lfo_0_tuning;
 
-  gint lfo_0_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+  gint64 lfo_0_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
   
   gpointer lfo_0_buffer;
 
@@ -199,7 +199,7 @@ struct _AgsModularSynthUtil
   gdouble lfo_1_depth;
   gdouble lfo_1_tuning;
 
-  gint lfo_1_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+  gint64 lfo_1_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
   
   gpointer lfo_1_buffer;
   
@@ -208,7 +208,7 @@ struct _AgsModularSynthUtil
   gdouble noise_frequency;
   gdouble noise_gain;
 
-  gint noise_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
+  gint64 noise_sends[AGS_MODULAR_SYNTH_SENDS_COUNT];
   
   gpointer noise_buffer;
 
@@ -311,10 +311,10 @@ gdouble ags_modular_synth_util_get_env_0_frequency(AgsModularSynthUtil *modular_
 void ags_modular_synth_util_set_env_0_frequency(AgsModularSynthUtil *modular_synth_util,
 						gdouble env_0_frequency);
 
-gint* ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
-					     guint *env_0_sends_count);
+gint64* ags_modular_synth_util_get_env_0_sends(AgsModularSynthUtil *modular_synth_util,
+					       guint *env_0_sends_count);
 void ags_modular_synth_util_set_env_0_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint *env_0_sends,
+					    gint64 *env_0_sends,
 					    guint env_0_sends_count);
 
 gdouble ags_modular_synth_util_get_env_1_attack(AgsModularSynthUtil *modular_synth_util);
@@ -341,10 +341,10 @@ gdouble ags_modular_synth_util_get_env_1_frequency(AgsModularSynthUtil *modular_
 void ags_modular_synth_util_set_env_1_frequency(AgsModularSynthUtil *modular_synth_util,
 						gdouble env_1_frequency);
 
-gint* ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
-					     guint *env_1_sends_count);
+gint64* ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
+					       guint *env_1_sends_count);
 void ags_modular_synth_util_set_env_1_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint *env_1_sends,
+					    gint64 *env_1_sends,
 					    guint env_1_sends_count);
 
 AgsSynthOscillatorMode ags_modular_synth_util_get_lfo_0_oscillator(AgsModularSynthUtil *modular_synth_util);
@@ -363,10 +363,10 @@ gdouble ags_modular_synth_util_get_lfo_0_tuning(AgsModularSynthUtil *modular_syn
 void ags_modular_synth_util_set_lfo_0_tuning(AgsModularSynthUtil *modular_synth_util,
 					     gdouble lfo_0_tuning);
 
-gint* ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
-					     guint *lfo_0_sends_count);
+gint64* ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
+					       guint *lfo_0_sends_count);
 void ags_modular_synth_util_set_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint *lfo_0_sends,
+					    gint64 *lfo_0_sends,
 					    guint lfo_0_sends_count);
 
 AgsSynthOscillatorMode ags_modular_synth_util_get_lfo_1_oscillator(AgsModularSynthUtil *modular_synth_util);
@@ -385,10 +385,10 @@ gdouble ags_modular_synth_util_get_lfo_1_tuning(AgsModularSynthUtil *modular_syn
 void ags_modular_synth_util_set_lfo_1_tuning(AgsModularSynthUtil *modular_synth_util,
 					     gdouble lfo_1_tuning);
 
-gint* ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
-					     guint *lfo_1_sends_count);
+gint64* ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
+					       guint *lfo_1_sends_count);
 void ags_modular_synth_util_set_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint *lfo_1_sends,
+					    gint64 *lfo_1_sends,
 					    guint lfo_1_sends_count);
 
 gdouble ags_modular_synth_util_get_noise_frequency(AgsModularSynthUtil *modular_synth_util);
@@ -399,10 +399,10 @@ gdouble ags_modular_synth_util_get_noise_gain(AgsModularSynthUtil *modular_synth
 void ags_modular_synth_util_set_noise_gain(AgsModularSynthUtil *modular_synth_util,
 					   gdouble noise_gain);
 
-gint* ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
-					     guint *noise_sends_count);
+gint64* ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
+					       guint *noise_sends_count);
 void ags_modular_synth_util_set_noise_sends(AgsModularSynthUtil *modular_synth_util,
-					    gint *noise_sends,
+					    gint64 *noise_sends,
 					    guint noise_sends_count);
 
 guint ags_modular_synth_util_get_frame_count(AgsModularSynthUtil *modular_synth_util);

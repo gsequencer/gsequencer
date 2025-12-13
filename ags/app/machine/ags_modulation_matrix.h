@@ -39,8 +39,11 @@ G_BEGIN_DECLS
 #define AGS_IS_MODULATION_MATRIX_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_MODULATION_MATRIX))
 #define AGS_MODULATION_MATRIX_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_MODULATION_MATRIX, AgsModulationMatrixClass))
 
-#define AGS_MODULATION_MATRIX_DEFAULT_MODULATION_WIDTH   (12)
-#define AGS_MODULATION_MATRIX_DEFAULT_MODULATION_HEIGHT  (10)
+#define AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH   (96)
+#define AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH   (128)
+
+#define AGS_MODULATION_MATRIX_DEFAULT_CELL_WIDTH   (24)
+#define AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT  (16)
 
 #define AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY (8)
 #define AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY (5)
@@ -75,6 +78,8 @@ struct _AgsModulationMatrix
   
   guint key_mask;
   
+  guint font_size;
+
   guint cell_width;
   guint cell_height;
   
@@ -86,6 +91,8 @@ struct _AgsModulationMatrix
 
   gchar **label_x;
   gchar **label_y;
+
+  guint64 *matrix_enabled;
   
   GtkGrid *grid;
 
@@ -98,6 +105,9 @@ struct _AgsModulationMatrix
 struct _AgsModulationMatrixClass
 {
   GtkBoxClass box;
+
+  void (*toggled)(AgsModulationMatrix *modulation_matrix,
+		  gint x, gint y);
 };
 
 GType ags_modulation_matrix_get_type(void);
@@ -105,6 +115,14 @@ GType ags_modulation_matrix_get_type(void);
 void ags_modulation_matrix_set_enabled(AgsModulationMatrix *modulation_matrix,
 				       gint x, gint y,
 				       gboolean enabled);
+gboolean ags_modulation_matrix_get_enabled(AgsModulationMatrix *modulation_matrix,
+					   gint x, gint y);
+
+void ags_modulation_matrix_toggled(AgsModulationMatrix *modulation_matrix,
+				   gint x, gint y);
+
+void ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
+				cairo_t *cr);
 
 AgsModulationMatrix* ags_modulation_matrix_new();
 
