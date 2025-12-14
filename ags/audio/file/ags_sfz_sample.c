@@ -1987,6 +1987,8 @@ ags_sfz_sample_set_region(AgsSFZSample *sfz_sample,
 gint
 ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
 {
+  SF_INSTRUMENT inst;
+  
   gchar *group_key, *region_key;
   
   gint midi_key;
@@ -2041,6 +2043,10 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
     g_free(region_key);
   }
 
+  if(sf_command(sfz_sample->file, SFC_GET_INSTRUMENT, &inst, sizeof(inst))){
+    midi_key = inst.basenote;
+  }
+  
   return(midi_key);
 }
 
@@ -2057,6 +2063,8 @@ ags_sfz_sample_get_key(AgsSFZSample *sfz_sample)
 gint
 ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
 {
+  SF_INSTRUMENT inst;
+  
   gchar *group_key, *region_key;
 
   gint hikey;
@@ -2113,6 +2121,10 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
     g_free(region_key);
   }
 
+  if(sf_command(sfz_sample->file, SFC_GET_INSTRUMENT, &inst, sizeof(inst))){
+    hikey = inst.key_hi;
+  }
+  
   return(hikey);
 }
 
@@ -2129,6 +2141,8 @@ ags_sfz_sample_get_hikey(AgsSFZSample *sfz_sample)
 gint
 ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
 {
+  SF_INSTRUMENT inst;
+  
   gchar *group_key, *region_key;
 
   gint lokey;
@@ -2185,6 +2199,10 @@ ags_sfz_sample_get_lokey(AgsSFZSample *sfz_sample)
     g_free(region_key);
   }
 
+  if(sf_command(sfz_sample->file, SFC_GET_INSTRUMENT, &inst, sizeof(inst))){
+    lokey = inst.key_lo;
+  }
+  
   return(lokey);
 }
 
@@ -2256,7 +2274,7 @@ ags_sfz_sample_get_pitch_keycenter(AgsSFZSample *sfz_sample)
 
     g_free(region_key);
   }
-
+  
   return(pitch_keycenter);
 }
 
@@ -2294,13 +2312,6 @@ ags_sfz_sample_get_loop_mode(AgsSFZSample *sfz_sample)
 
     if(retval > 0){
       loop_mode = current_loop_mode;
-    }else{
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_loop_mode);
-
-      if(retval > 0){
-	loop_mode = current_loop_mode;
-      }
     }
 
     g_free(group_key);
@@ -2317,13 +2328,6 @@ ags_sfz_sample_get_loop_mode(AgsSFZSample *sfz_sample)
 
     if(retval > 0){
       loop_mode = current_loop_mode;
-    }else{
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_loop_mode);
-      
-      if(retval > 0){
-	loop_mode = current_loop_mode;
-      }
     }
 
     g_free(region_key);
@@ -2345,6 +2349,8 @@ ags_sfz_sample_get_loop_mode(AgsSFZSample *sfz_sample)
 guint
 ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample)
 {
+  SF_INSTRUMENT inst;
+  
   gchar *group_key, *region_key;
 
   guint loop_start;
@@ -2366,13 +2372,6 @@ ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample)
 
     if(retval > 0){
       loop_start = current_loop_start;
-    }else{
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_loop_start);
-
-      if(retval > 0){
-	loop_start = current_loop_start;
-      }
     }
 
     g_free(group_key);
@@ -2389,18 +2388,17 @@ ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample)
 
     if(retval > 0){
       loop_start = current_loop_start;
-    }else{
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_loop_start);
-      
-      if(retval > 0){
-	loop_start = current_loop_start;
-      }
     }
 
     g_free(region_key);
   }
 
+  if(sf_command(sfz_sample->file, SFC_GET_INSTRUMENT, &inst, sizeof(inst))){
+    if(inst.loop_count > 0){
+      loop_start = inst.loops[0].start;
+    }
+  }
+  
   return(loop_start);
 }
 
@@ -2417,6 +2415,8 @@ ags_sfz_sample_get_loop_start(AgsSFZSample *sfz_sample)
 guint
 ags_sfz_sample_get_loop_end(AgsSFZSample *sfz_sample)
 {
+  SF_INSTRUMENT inst;
+  
   gchar *group_key, *region_key;
 
   guint loop_end;
@@ -2438,13 +2438,6 @@ ags_sfz_sample_get_loop_end(AgsSFZSample *sfz_sample)
 
     if(retval > 0){
       loop_end = current_loop_end;
-    }else{
-      retval = ags_diatonic_scale_note_to_midi_key(group_key,
-						   &current_loop_end);
-
-      if(retval > 0){
-	loop_end = current_loop_end;
-      }
     }
 
     g_free(group_key);
@@ -2461,18 +2454,17 @@ ags_sfz_sample_get_loop_end(AgsSFZSample *sfz_sample)
 
     if(retval > 0){
       loop_end = current_loop_end;
-    }else{
-      retval = ags_diatonic_scale_note_to_midi_key(region_key,
-						   &current_loop_end);
-      
-      if(retval > 0){
-	loop_end = current_loop_end;
-      }
     }
 
     g_free(region_key);
   }
 
+  if(sf_command(sfz_sample->file, SFC_GET_INSTRUMENT, &inst, sizeof(inst))){
+    if(inst.loop_count > 0){
+      loop_end = inst.loops[0].end;
+    }
+  }
+  
   return(loop_end);
 }
 

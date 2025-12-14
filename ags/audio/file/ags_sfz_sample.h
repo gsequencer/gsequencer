@@ -91,7 +91,7 @@ struct _AgsSFZSample
 
   guint loop_start;
   guint loop_end;
-  
+
   guint offset;
   guint64 buffer_offset;
 
@@ -108,7 +108,7 @@ struct _AgsSFZSample
   GObject *group;
   GObject *region;
 
-  AgsAudioBufferUtil *audio_buffer_util;
+  AgsAudioBufferUtil *audio_buffer_util;  
 };
 
 struct _AgsSFZSampleClass
