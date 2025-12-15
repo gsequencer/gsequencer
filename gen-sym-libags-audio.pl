@@ -10,10 +10,23 @@ my $location;
 my @plugin_arr;
 my @audio_arr;
 
+my @plugin_exclude_arr = ("ags/plugin/ags_vst3_manager.h" "ags/plugin/ags_vst3_conversion.h" "ags/plugin/ags_vst3_plugin.h");
+my @audio_exclude_arr = ("ags/audio/file/ags_audio_toolbox.h" "ags/audio/file/ags_gstreamer_file.h" "ags/audio/wasapi/ags_w32_midiin.h" "ags/audio/task/ags_instantiate_vst3_plugin.h" "ags/audio/task/ags_write_vst3_port.h" "ags/audio/fx/ags_fx_vst3_channel.h" "ags/audio/fx/ags_fx_vst3_recycling.h" "ags/audio/fx/ags_fx_vst3_audio_signal.h" "ags/audio/fx/ags_fx_vst3_audio.h" "ags/audio/fx/ags_fx_vst3_audio_processor.h" "" "ags/audio/fx/ags_fx_vst3_channel_processor.h" "ags_alsa_hda_control_util.h" "ags/audio/audio-unit/ags_audio_unit_client.h" "ags/audio/audio-unit/ags_audio_unit_server.h" "ags/audio/audio-unit/ags_audio_unit_devout.h" "ags/audio/audio-unit/ags_audio_unit_devin.h" "ags/audio/audio-unit/ags_audio_unit_port.h" "ags/audio/midi/ags_midi_ci_1_1_port.h" "ags/audio/midi/ags_midi_clip.h");
+
 sub find_plugin_header {
     my $F = $File::Find::name;
-
-    if($F =~ /.h$/){
+    my $is_excluded = 0;
+    
+    foreach my $excluded (@plugin_exclude_arr) {
+	if($F =~ /\Q$excluded\E$/){
+	    $is_excluded = 1;
+	    
+	    last;
+	}
+    }
+    
+    if($F =~ /.h$/ &&
+       !is_excluded){
         print "$F\n";
 	push(@plugin_arr, "$F");
     }
@@ -21,8 +34,18 @@ sub find_plugin_header {
 
 sub find_audio_header {
     my $F = $File::Find::name;
+    my $is_excluded = 0;
 
-    if($F =~ /.h$/){
+    foreach my $excluded (@audio_exclude_arr) {
+	if($F =~ /\Q$excluded\E$/){
+	    $is_excluded = 1;
+	    
+	    last;
+	}
+    }
+    
+    if($F =~ /.h$/ &&
+       !is_excluded){
         print "$F\n";
 	push(@audio_arr, "$F");
     }

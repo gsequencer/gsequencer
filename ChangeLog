@@ -1,3 +1,9 @@
+ags (8.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsSFZSample to read acid from WAV like files
+	* fixed AgsSFZSynth pitch type selected callback
+
 ags (8.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

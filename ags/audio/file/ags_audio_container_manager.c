@@ -210,6 +210,12 @@ ags_audio_container_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_audio_container_manager_parent_class)->finalize(gobject);
 }
 
+GRecMutex*
+ags_audio_container_manager_get_obj_mutex(AgsAudioContainerManager *audio_container_manager)
+{
+  return(&(audio_container_manager->obj_mutex));
+}
+
 /**
  * ags_audio_container_manager_add_audio_container:
  * @audio_container_manager: the #AgsAudioContainerManager
