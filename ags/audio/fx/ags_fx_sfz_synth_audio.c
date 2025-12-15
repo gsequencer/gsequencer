@@ -2206,6 +2206,8 @@ ags_fx_sfz_synth_audio_synth_pitch_type_callback(AgsPort *port, GValue *value,
 
   GRecMutex *recall_mutex;
 
+  //  g_message("SFZ synth pitch type callback");
+  
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_sfz_synth_audio);
 

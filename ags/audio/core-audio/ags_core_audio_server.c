@@ -2038,6 +2038,12 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 		   g_object_unref);
 }
 
+void
+ags_core_audio_server_start_poll(AgsCoreAudioServer *core_audio_server)
+{
+  //NOTE:JK: not implemented
+}
+
 /**
  * ags_core_audio_server_new:
  * @url: the URL as string

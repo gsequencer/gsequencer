@@ -43,6 +43,10 @@ void ags_program_insert_native_level_from_clipboard(AgsProgram *program,
 						    gboolean reset_x_offset, guint x_offset,
 						    gboolean do_replace);
 
+//TODO:JK: remove this functions
+gint ags_program_port_compare_func(gconstpointer a,
+				   gconstpointer b);
+
 /**
  * SECTION:ags_program
  * @short_description: Program class supporting selection and clipboard
@@ -576,6 +580,26 @@ ags_program_unset_flags(AgsProgram *program, AgsProgramFlags flags)
   program->flags &= (~flags);
   
   g_rec_mutex_unlock(program_mutex);
+}
+
+//TODO:JK: remove this functions
+gint
+ags_program_port_compare_func(gconstpointer a,
+			      gconstpointer b)
+{
+  if(AGS_PROGRAM(a)->port == (GObject *) b){
+    return(0);
+  }
+  
+  return(1);
+}
+
+//TODO:JK: remove this functions
+GList*
+ags_program_find_port(GList *program,
+		      GObject *port)
+{
+  return(g_list_find_custom(program, port, (GCompareFunc) ags_program_port_compare_func));
 }
 
 /**
@@ -2938,6 +2962,17 @@ ags_program_find_control_name(GList *program,
   }
 
   return(program);
+}
+
+guint
+ags_program_get_value(AgsProgram *program,
+		      guint x, guint x_end,
+		      gboolean use_prev_on_failure,
+		      GValue *value)
+{
+  //TODO:JK: implement me
+  
+  return(G_MAXUINT);
 }
 
 /**
