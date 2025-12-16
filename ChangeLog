@@ -1,3 +1,8 @@
+ags (8.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation edit drawing bug
+
 ags (8.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
