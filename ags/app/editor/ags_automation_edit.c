@@ -4305,7 +4305,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   AgsAcceleration *last_acceleration;
   
   AgsTimestamp *timestamp;
-  AgsTimestamp *current_timestamp;    
+  AgsTimestamp *automation_timestamp;    
   
   AgsApplicationContext *application_context;
 
@@ -4319,9 +4319,12 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   gdouble opacity;
   guint x0, x1;
   guint offset;
+  guint automation_offset;
+  guint acceleration_offset;
   guint line;
   gint i, i_stop;
   gboolean initial_play_port;
+  gboolean is_first_drawn;
   
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -4416,13 +4419,13 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     AgsAcceleration *first_match;
     AgsAcceleration *last_match;
 
-    GList *start_list, *list;
-    GList *first_drawn;
-    GList *last_drawn;
-    GList *first_start_acceleration, *first_acceleration;
-    GList *last_start_acceleration, *last_acceleration;
     GList *start_play_port, *play_port;
     GList *start_recall_port, *recall_port;
+    GList *start_list, *list;
+    GList *next_list;
+    GList *next_link;
+    GList *first_drawn;
+    GList *start_acceleration, *acceleration;
     
   ags_automation_edit_draw_automation_LOOP:      
 
@@ -4584,200 +4587,87 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     if(play_port != NULL){
       start_list = ags_port_get_automation(play_port->data);
     }
+
+    list = start_list;
+
+    first_drawn = NULL;
+
+    is_first_drawn = FALSE;
+
+    while((list = ags_automation_find_specifier_with_type_and_line(list,
+								   automation_edit->control_name,
+								   automation_edit->channel_type,
+								   i)) != NULL){
+      automation_timestamp = ags_automation_get_timestamp(list->data);
     
-    first_drawn = ags_automation_edit_find_first_drawn_func(automation_edit,
-							    start_list);
+      automation_offset = ags_timestamp_get_ags_offset(automation_timestamp);
 
-    last_drawn = ags_automation_edit_find_last_drawn_func(automation_edit,
-							  start_list);
-
-    list = ags_automation_find_near_timestamp(start_list, i,
-					      timestamp);
-    
-    first_match = NULL;
-    
-    first_acceleration =
-      first_start_acceleration = NULL;
-    
-    if(first_drawn != NULL){
-      first_acceleration =
-	first_start_acceleration = ags_automation_get_acceleration(first_drawn->data);
-    }
-
-    if(first_acceleration != NULL){
-      first_match = first_acceleration->data;
-    }
-    
-    while(first_acceleration != NULL){
-      if(ags_acceleration_get_x(first_acceleration->data) >= x0){
-	goto ags_automation_edit_draw_automation_LOOP_FIRST_END;
-      }
-      
-      first_match = first_acceleration->data;
-
-      first_acceleration = first_acceleration->next;
-    }
-
-  ags_automation_edit_draw_automation_LOOP_FIRST_END:
-
-    if(first_acceleration != NULL){
-      first_acceleration = first_acceleration->next;
-    }
-    
-    last_match = NULL;
-    
-    last_acceleration =
-      last_start_acceleration = NULL;
-
-    if(last_drawn != NULL){
-      last_acceleration =
-	last_start_acceleration = ags_automation_get_acceleration(last_drawn->data);
-    }
-
-    if(last_acceleration != NULL){
-      last_match = last_acceleration->data;
-    }
-    
-    while(last_acceleration != NULL){
-      if(ags_acceleration_get_x(last_acceleration->data) >= x1){
-	goto ags_automation_edit_draw_automation_LOOP_LAST_END;
-      }
-      
-      last_match = last_acceleration->data;
-
-      last_acceleration = last_acceleration->next;
-    }
-
-  ags_automation_edit_draw_automation_LOOP_LAST_END:
-
-    if(first_match != NULL &&
-       first_match != last_match){
-      GList *start_next_acceleration;
-      GList *next_link;
-
-      next_link = first_acceleration;
-      start_next_acceleration = NULL;
-      
-      if(next_link == NULL &&
-	 first_drawn != NULL){
-	GList *tmp_list;
-
-	tmp_list = first_drawn->next;
-
-	if(tmp_list != NULL){
-	  start_next_acceleration = ags_automation_get_acceleration(tmp_list->data);
-	  next_link = start_next_acceleration;
-	}
+      if(automation_offset >= x1){
+	break;
       }
 
-      ags_automation_edit_draw_acceleration(automation_edit,
-					    first_match, ((next_link != NULL) ? next_link->data: NULL),
-					    cr,
-					    opacity);
-      
-      g_list_free_full(start_next_acceleration,
-		       g_object_unref);
-    }
-    
-    while(list != NULL){
-      AgsAutomation *automation;
+      acceleration =
+	start_acceleration = ags_automation_get_acceleration(list->data);
 
-      GList *start_list_acceleration, *list_acceleration;
-      
-      automation = AGS_AUTOMATION(list->data);
+      while(acceleration != NULL){
+	acceleration_offset = ags_acceleration_get_x(acceleration->data);
 
-      current_timestamp = NULL;
-      
-      g_object_get(automation,
-		   "timestamp", &current_timestamp,
-		   NULL);
+	if(acceleration_offset < x0){
+	  first_drawn = acceleration;
+	}else{
+	  if(!is_first_drawn){
+	    is_first_drawn = TRUE;
 
-      start_list_acceleration = NULL;
-
-      if(ags_timestamp_get_ags_offset(current_timestamp) >= x1){
-	goto ags_automation_edit_draw_automation_INNER_LOOP_END;
-      }
-      
-      list_acceleration =
-	start_list_acceleration = ags_automation_get_acceleration(automation);
-
-      while(list_acceleration != NULL){
-	GList *start_next_acceleration;
-	GList *next_link;
-
-	start_next_acceleration = NULL;
-	next_link = list_acceleration->next;
-
-	if(next_link == NULL){
-	  GList *tmp_list;
-
-	  tmp_list = list->next;
-	  
-	  if(tmp_list != NULL){
-	    start_next_acceleration = ags_automation_get_acceleration(tmp_list->data);
-	    next_link = start_next_acceleration;
+	    if(first_drawn != NULL &&
+	       first_drawn != acceleration){
+	      ags_automation_edit_draw_acceleration(automation_edit,
+						    first_drawn->data, acceleration->data,
+						    cr,
+						    opacity);
+	    }
 	  }
-	}
+	
+	  next_link = acceleration->next;
+
+	  if(next_link == NULL){
+	    next_list = ags_automation_find_specifier_with_type_and_line(list->next,
+									 automation_edit->control_name,
+									 automation_edit->channel_type,
+									 i);
+
+	    if(next_list != NULL){
+	      next_link = ags_automation_get_acceleration(next_list->data);
+	    }
+	  }
 
 #if 0
-	g_message("found accel[%d] @ line = %d", AGS_ACCELERATION(list_acceleration->data)->x, automation->line);
+	  g_message("found accel[%d] @ line = %d", AGS_ACCELERATION(acceleration->data)->x, automation->line);
 #endif
 	
-	if(list_acceleration->data != first_match &&
-	   list_acceleration->data != last_match &&
-	   next_link != NULL){
+	  
 	  ags_automation_edit_draw_acceleration(automation_edit,
-						list_acceleration->data, next_link->data,
+						acceleration->data, ((next_link != NULL) ? next_link->data: NULL),
 						cr,
 						opacity);
-	}
+	}      
 
-	g_list_free_full(start_next_acceleration,
-			 g_object_unref);
-	
 	/* iterate */
-	list_acceleration = list_acceleration->next;
+	acceleration = acceleration->next;
       }
-      
-    ags_automation_edit_draw_automation_INNER_LOOP_END:
-
-      g_object_unref(current_timestamp);
-      
-      g_list_free_full(start_list_acceleration,
-		       g_object_unref);
 
       /* iterate */
       list = list->next;
     }
 
-  ags_automation_edit_draw_automation_LOOP_END:
+    if(!is_first_drawn){
+      is_first_drawn = TRUE;
 
-    if(last_match != NULL){
-      GList *start_next_acceleration;
-      GList *next_link;
-
-      next_link = last_acceleration;
-      start_next_acceleration = NULL;
-      
-      if(next_link == NULL &&
-	 list != NULL){
-	GList *tmp_list;
-
-	tmp_list = list->next;
-
-	if(tmp_list != NULL){	    
-	  start_next_acceleration = ags_automation_get_acceleration(tmp_list->data);
-	  next_link = start_next_acceleration;
-	}
+      if(first_drawn != NULL){
+	ags_automation_edit_draw_acceleration(automation_edit,
+					      first_drawn->data, NULL,
+					      cr,
+					      opacity);
       }
-      
-      ags_automation_edit_draw_acceleration(automation_edit,
-					    last_match, ((next_link != NULL) ? next_link->data: NULL),
-					    cr,
-					    opacity);
-
-      g_list_free_full(start_next_acceleration,
-		       g_object_unref);
     }
     
     g_list_free_full(start_list,
@@ -4790,7 +4680,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     }
   }
   
-  g_object_unref(timestamp);  
+  g_object_unref(timestamp);
 }
 
 void
