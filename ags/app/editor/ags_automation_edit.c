@@ -4610,6 +4610,17 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	start_acceleration = ags_automation_get_acceleration(list->data);
 
       while(acceleration != NULL){
+	if((automation_offset + (guint64) AGS_AUTOMATION_DEFAULT_OFFSET < x0){
+	    acceleration = g_list_last(start_acceleration);
+
+	    first_drawn = acceleration;
+	    
+	    /* iterate */
+	    acceleration = NULL;
+
+	    continue;
+	}
+	
 	acceleration_offset = ags_acceleration_get_x(acceleration->data);
 
 	if(acceleration_offset < x0){
