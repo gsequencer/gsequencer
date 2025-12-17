@@ -966,6 +966,14 @@ ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
   
   gtk_widget_grab_focus((GtkWidget *) wave_edit->drawing_area);
 
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
+
   if(machine != NULL &&
      (AGS_WAVE_EDIT_BUTTON_1 & (wave_edit->button_mask)) != 0){
     if(wave_edit->mode == AGS_WAVE_EDIT_POSITION_CURSOR){
@@ -1198,6 +1206,14 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   composite_editor->wave_edit->focused_edit = (GtkWidget *) wave_edit;
   
   gtk_widget_grab_focus((GtkWidget *) wave_edit->drawing_area);
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
   
   if(machine != NULL){    
     wave_edit->button_mask |= AGS_WAVE_EDIT_BUTTON_1;
@@ -1362,6 +1378,14 @@ ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
     
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
   selected_select = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->select) ? TRUE: FALSE;
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
   
   if(machine != NULL){
     wave_edit->button_mask &= (~AGS_WAVE_EDIT_BUTTON_1);

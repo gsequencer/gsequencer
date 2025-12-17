@@ -9,7 +9,7 @@ project('gsequencer', 'c', 'cpp',
         license: 'GPL3',
         default_options: [ 'buildtype=release', 'c_std=gnu11'],
         meson_version: '>=0.53.0',
-        version: '8.2.3')
+        version: '8.2.4')
 
 #note:jk: specify --buildtype=debug if needed
 gsequencer_debug = get_option('buildtype').contains('debug')

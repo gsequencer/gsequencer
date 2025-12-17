@@ -143,10 +143,10 @@ struct _AgsAutomationEdit
 
   guint selected_acceleration_border;
 
-  guint selection_x0;
-  guint selection_x1;
-  guint selection_y0;
-  guint selection_y1;
+  gint selection_x0;
+  gint selection_x1;
+  gint selection_y0;
+  gint selection_y1;
 
   AgsAcceleration *current_acceleration;
   

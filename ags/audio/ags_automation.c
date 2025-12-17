@@ -2451,8 +2451,7 @@ ags_automation_add_acceleration(AgsAutomation *automation,
       current->x = acceleration->x;
       current->y = acceleration->y;
     }else{
-      if(g_list_find(automation->selection, acceleration) == NULL &&
-	 ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE) == NULL){
+      if(g_list_find(automation->selection, acceleration) == NULL){
 	g_object_ref(acceleration);
       
 	automation->selection = g_list_insert_sorted(automation->selection,

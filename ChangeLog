@@ -1,3 +1,13 @@
+ags (8.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved automation edit drawing
+	* fixed automation edit copy and paste by using timestamp to iterate automation
+	* fixed notation edit selection potential pixel overflow
+	* fixed automation edit selection potential pixel overflow
+	* fixed wave edit selection potential pixel overflow
+	* fixed tempo edit selection potential pixel overflow
+
 ags (8.2.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
