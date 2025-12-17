@@ -1,3 +1,10 @@
+ags (8.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved automation edit drawing
+	* improved gen-sym-libags-gui.pl exclude files
+	* fixed gen-sym-libags-audio.pl exclude files
+
 ags (8.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

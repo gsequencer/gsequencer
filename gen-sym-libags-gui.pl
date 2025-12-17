@@ -10,10 +10,22 @@ my $location;
 my @gui_arr;
 my @gui_marshal_arr;
 
+my @gui_exclude_arr = ("ags_button.h" );
+
 sub find_gui_header {
     my $F = $File::Find::name;
+    my $F_is_excluded = 0;
 
-    if($F =~ /.h$/){
+    foreach my $current_excluded (@gui_exclude_arr) {
+	if(index($F, $current_excluded) != -1){
+	    $F_is_excluded = 1;
+	    print "exclude $F - $current_excluded\n";
+	    
+	    last;
+	}
+    }
+    
+    if($F =~ /.h$/ && $F_is_excluded == 0){
         print "$F\n";
 	push(@gui_arr, "$F");
     }

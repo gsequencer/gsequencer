@@ -190,17 +190,6 @@ void ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit);
 
 /*  */
-gint ags_automation_edit_compare_x_offset_func(gconstpointer a,
-					       gconstpointer b,
-					       AgsAutomationEdit *automation_edit,
-					       gdouble x_offset);
-
-GList* ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
-						 GList *automation);
-GList* ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
-						GList *automation);
-
-/*  */
 void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr);
 void ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *cr);
 
