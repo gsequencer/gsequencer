@@ -1588,6 +1588,14 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
   
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
 
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
+  
   if(machine != NULL &&
      (AGS_AUTOMATION_EDIT_BUTTON_1 & (automation_edit->button_mask)) != 0){
     if(automation_edit->mode == AGS_AUTOMATION_EDIT_POSITION_CURSOR){
@@ -2000,7 +2008,8 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
 
   replace_notebook = (AGS_COMPOSITE_EDITOR(editor)->automation_edit->focused_edit != (GtkWidget *) automation_edit) ? TRUE: FALSE;
 
-  if(editor->automation_edit->focused_edit != NULL){
+  if(editor->automation_edit->focused_edit != NULL &&
+     editor->automation_edit->focused_edit != automation_edit){
     AGS_AUTOMATION_EDIT(editor->automation_edit->focused_edit)->render_mode = AGS_AUTOMATION_EDIT_RENDER_VIEW;
   }
   
@@ -2060,6 +2069,14 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
   gtk_widget_queue_draw((GtkWidget *) automation_edit);
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
 
   if(machine != NULL){    
     automation_edit->button_mask |= AGS_AUTOMATION_EDIT_BUTTON_1;
@@ -2489,7 +2506,7 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   
   /* region */
   x0 = (guint) automation_edit->selection_x0;
-
+  
   lower = automation_edit->lower;
   upper = automation_edit->upper;
 
@@ -2527,8 +2544,8 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
     
   /* select region */
   ags_composite_editor_select_region((AgsCompositeEditor *) editor,
-				     x0, y0,
-				     x1, y1);
+				     ((x0 >= 0) ? x0: 0), ((y0 >= lower) ? y0: lower),
+				     ((x1 >= 0) ? x1: 0), ((y1 >= lower) ? y1: lower));
 }
 
 gboolean
@@ -2558,6 +2575,14 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
   composite_toolbar = composite_editor->toolbar;
 
   machine = composite_editor->selected_machine;
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
   
   if(machine != NULL){
     automation_edit->button_mask &= (~AGS_AUTOMATION_EDIT_BUTTON_1);
@@ -3849,8 +3874,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     double selected_x, selected_y;
     double selected_width, selected_height;
 
-    selected_x = x - automation_edit->selected_acceleration_border;
-    selected_y = y - automation_edit->selected_acceleration_border;
+    selected_x = ((x - automation_edit->selected_acceleration_border) > 0) ? (x - automation_edit->selected_acceleration_border): 0;
+    selected_y = ((y - automation_edit->selected_acceleration_border) > 0) ? (y - automation_edit->selected_acceleration_border): 0;
 
     selected_width = width + (2.0 * (double) automation_edit->selected_acceleration_border);
     selected_height = height + (2.0 * (double) automation_edit->selected_acceleration_border);
@@ -3889,8 +3914,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
     /* draw selected acceleration - area */
     cairo_rectangle(cr,
-		    selected_x, selected_y,
-		    selected_width, selected_height);
+		    x, y,
+		    width, height);
     cairo_fill(cr);
   }
 }
@@ -4222,7 +4247,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	  /* iterate */
 	  acceleration = NULL;
 	  
-	  continue;
+	  break;
 	}
 	
 	acceleration_offset = ags_acceleration_get_x(acceleration->data);
@@ -4233,6 +4258,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	  if(!is_first_drawn){
 	    is_first_drawn = TRUE;
 
+	    if(first_drawn == NULL){
+	      first_drawn = acceleration;
+	    }
+	    
 	    if(first_drawn != NULL &&
 	       first_drawn != acceleration){
 	      ags_automation_edit_draw_acceleration(automation_edit,

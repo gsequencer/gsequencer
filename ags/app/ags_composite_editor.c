@@ -4032,6 +4032,8 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     //TODO:JK: implement me
   }else if(composite_editor->selected_edit == composite_editor->automation_edit){
     AgsNotebook *notebook;
+
+    AgsTimestamp *timestamp;
   
     xmlDoc *clipboard;
     xmlNode *audio_node, *automation_list_node, *automation_node;
@@ -4073,6 +4075,13 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
       i = ags_notebook_next_active_tab(notebook,
 				       i);
     }
+
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+    timestamp->timer.ags_offset.offset = 0;
     
     goto ags_composite_editor_copy_LOOP;
 
@@ -4085,12 +4094,15 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
       /* copy */
       while((automation = ags_automation_find_near_timestamp_extended(automation, i,
 								      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
-								      NULL)) != NULL){
+								      timestamp)) != NULL){
 	automation_node = ags_automation_copy_selection(AGS_AUTOMATION(automation->data));
 	xmlAddChild(automation_list_node,
 		    automation_node);
 	
+	/* iterate */
 	automation = automation->next;
+
+	timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
       }
       
       i++;
@@ -4098,6 +4110,8 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     
     g_list_free_full(start_automation,
 		     g_object_unref);
+
+    g_object_unref(timestamp);
           
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
@@ -4390,7 +4404,9 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     //TODO:JK: implement me
   }else if(composite_editor->selected_edit == composite_editor->automation_edit){    
     AgsNotebook *notebook;
-  
+
+    AgsTimestamp *timestamp;
+    
     xmlDoc *clipboard;
     xmlNode *audio_node;
     xmlNode *automation_list_node, *automation_node;
@@ -4432,6 +4448,13 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 				       i);
     }
 
+    timestamp = ags_timestamp_new();
+
+    timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+    timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+    
+    timestamp->timer.ags_offset.offset = 0;
+    
     goto ags_composite_editor_cut_AUTOMATION_LOOP;
       
     while(notebook != NULL &&
@@ -4443,7 +4466,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
       /* cut */
       while((automation = ags_automation_find_near_timestamp_extended(automation, i,
 								      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name,
-								      NULL)) != NULL){
+								      timestamp)) != NULL){
 	automation_node = ags_automation_cut_selection(AGS_AUTOMATION(automation->data));
 	xmlAddChild(automation_list_node,
 		    automation_node);
@@ -4451,8 +4474,11 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 	ags_audio_remove_all_empty_automation(machine->audio,
 					      i,
 					      AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->channel_type, AGS_AUTOMATION_EDIT(composite_editor->automation_edit->focused_edit)->control_name);
-	
+
+	/* iterate */
 	automation = automation->next;
+
+	timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
       }
       
       if(notebook == NULL){
@@ -4465,6 +4491,8 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     g_list_free_full(start_automation,
 		     g_object_unref);
 
+    g_object_unref(timestamp);
+    
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
 
