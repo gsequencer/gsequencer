@@ -3776,9 +3776,13 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
   a_x = (gdouble) ags_acceleration_get_x(acceleration_a);
   a_y = ags_acceleration_get_y(acceleration_a);
- 
-  x = a_x - viewport_x;
 
+  if(a_x - viewport_x >= 0.0){
+    x = a_x - viewport_x;
+  }else{
+    x = 0.0;
+  }
+  
   lower = automation_edit->lower;
   upper = automation_edit->upper;
 
@@ -3796,7 +3800,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
   width = (zoom_factor * (double) allocation_width);
 
-  if(viewport_x + width - a_x > 0.0){
+  if(viewport_x + width - a_x >= 0.0){
     width = viewport_x + width - a_x;
   }else{
     //NOTE:JK: overflow not-visible greater
@@ -3816,6 +3820,11 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     }
     
     width = (gdouble) (b_x - a_x);
+    
+    //NOTE:JK: overflow visible smaller
+    if(a_x - viewport_x < 0.0){
+      width = b_x - viewport_x;
+    }
   }
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
@@ -4055,16 +4064,16 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 					   i)) != -1)){
     AgsChannel *start_output, *start_input;
     AgsChannel *nth_channel;
+    AgsAutomation *first_automation;
+    AgsAcceleration *first_drawn;
     AgsAcceleration *first_match;
     AgsAcceleration *last_match;
 
     GList *start_play_port, *play_port;
     GList *start_recall_port, *recall_port;
     GList *start_list, *list;
-    GList *first_automation;
     GList *next_list;
     GList *next_link;
-    GList *first_drawn;
     GList *start_acceleration, *acceleration;
     
   ags_automation_edit_draw_automation_LOOP:      
@@ -4233,6 +4242,9 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     first_automation = NULL;
     
     first_drawn = NULL;
+    
+    first_match = NULL;
+    last_match = NULL;
 
     is_first_drawn = FALSE;
 
@@ -4251,22 +4263,29 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
       acceleration =
 	start_acceleration = ags_automation_get_acceleration(list->data);
 
-      while(acceleration != NULL) {
-	if(automation_offset + (guint64) AGS_AUTOMATION_DEFAULT_OFFSET < x0){
-	  acceleration = g_list_last(start_acceleration);
-	  
-	  first_drawn = acceleration;
-	  
-	  /* iterate */
-	  acceleration = NULL;
-	  
-	  break;
-	}
+      if(automation_offset + (guint64) AGS_AUTOMATION_DEFAULT_OFFSET < x0){
+	GList *tmp_list;
 	
+	tmp_list = g_list_last(start_acceleration);
+
+	if(tmp_list != NULL){
+	  first_drawn = tmp_list->data;
+	}
+
+	g_list_free_full(start_acceleration,
+			 (GDestroyNotify) g_object_unref);
+	
+	/* iterate */
+	list = list->next;
+	
+	continue;	
+      }
+      
+      while(acceleration != NULL) {
 	acceleration_offset = (double) ags_acceleration_get_x(acceleration->data);
 
 	if(acceleration_offset < x0){
-	  first_drawn = acceleration;
+	  first_drawn = acceleration->data;
 
 	  /* iterate */
 	  acceleration = acceleration->next;
@@ -4308,6 +4327,12 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	   AGS_ACCELERATION(acceleration->data)->x >= AGS_ACCELERATION(next_link->data)->x){
 	  next_link = NULL;
 	}
+
+	if(first_match == NULL){
+	  first_match = acceleration->data;
+	}
+	
+	last_match = acceleration->data;
 	
 #if 0
 	if(next_link != NULL &&
@@ -4327,6 +4352,9 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 	acceleration = acceleration->next;
       }
 
+      g_list_free_full(start_acceleration,
+		       (GDestroyNotify) g_object_unref);
+      
       /* iterate */
       list = list->next;
     }
@@ -4334,45 +4362,19 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     if(!is_first_drawn &&
        first_drawn != NULL){
       is_first_drawn = TRUE;
-
-      next_link = first_drawn->next;
-
-      if(next_link == NULL){
-	next_list = g_list_find(start_list,
-				first_automation);
-
-	if(next_list != NULL){
-	  next_list = next_list->next;
-	}
-	
-	while((next_list = ags_automation_find_specifier_with_type_and_line(next_list,
-									    automation_edit->control_name,
-									    automation_edit->channel_type,
-									    i)) != NULL){
-	  if(next_list != NULL){
-	    if(AGS_AUTOMATION(next_list->data)->acceleration != NULL){
-	      next_link = AGS_AUTOMATION(next_list->data)->acceleration;
-
-	      break;
-	    }
-	  }
-
-	  next_list = next_list->next;
-	}
-      }
       
-      if(first_drawn != next_link){
+      if(first_drawn != first_match){
 	ags_automation_edit_draw_acceleration(automation_edit,
-					      first_drawn->data, ((next_link != NULL) ? next_link->data: NULL),
+					      first_drawn, first_match,
 					      cr,
 					      opacity);
 
 	
 #if 0
-	if(next_link != NULL){
-	  g_message("draw first[%d] @ x = %d next[%d] @ x = %d", i, AGS_ACCELERATION(first_drawn->data)->x, i, AGS_ACCELERATION(next_link->data)->x);
+	if(first_match != NULL){
+	  g_message("draw first[%d] @ x = %d next[%d] @ x = %d", i, first_drawn->x, i, first_match->x);
 	}else{
-	  g_message("draw first[%d] @ x = %d next = (null)", i, AGS_ACCELERATION(first_drawn->data)->x);
+	  g_message("draw first[%d] @ x = %d next = (null)", i, first_drawn->x);
 	}
 #endif	
       }
