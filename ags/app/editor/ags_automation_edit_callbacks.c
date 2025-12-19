@@ -118,20 +118,18 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
   GtkAdjustment *external_adjustment;
   GtkAdjustment *edit_control_adjustment;
 
-  GtkAllocation allocation;
-  GtkAllocation scrolled_window_allocation;
-
   GList *start_list, *list;
 
   guint list_length;
   
   guint key_count;
   double varea_height;
+  gint scrolled_window_width, scrolled_window_height;
 
   gdouble gui_scale_factor;
   double zoom_factor, zoom;
   double zoom_correction;
-  guint map_width;
+  gdouble map_width;
   
   application_context = ags_application_context_get_instance();
 
@@ -168,18 +166,15 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
   
     if(list != NULL){
       /* adjustment and allocation */
-      gtk_widget_get_allocation(GTK_WIDGET(AGS_AUTOMATION_EDIT(list->data)->drawing_area),
-				&allocation);
-
       external_adjustment = gtk_scrollbar_get_adjustment(composite_edit->hscrollbar);
 
       gtk_adjustment_set_upper(external_adjustment,
-			       (map_width - allocation.width > 0.0) ? (gdouble) map_width - allocation.width: 0.0);
+			       (map_width - width > 0.0) ? (gdouble) map_width - width: 0.0);
 
-      if(map_width - allocation.width > 0){
+      if(map_width - width > 0){
 	if(gtk_adjustment_get_value(external_adjustment) > gtk_adjustment_get_upper(external_adjustment)){
 	  gtk_adjustment_set_value(external_adjustment,
-				   map_width - allocation.width);
+				   map_width - width);
 	}
       }else{
 	gtk_adjustment_set_value(external_adjustment,
@@ -206,9 +201,9 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
     }
     
     if(list != NULL){
-      /* adjustment and allocation */
-      gtk_widget_get_allocation(GTK_WIDGET(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window),
-				&scrolled_window_allocation);
+      /* adjustment and allocation */      
+      scrolled_window_width = gtk_widget_get_width(GTK_WIDGET(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window));
+      scrolled_window_height = gtk_widget_get_height(GTK_WIDGET(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window));
 
       adjustment = gtk_scrolled_window_get_vadjustment(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_edit->edit)->scrolled_window);
 
@@ -219,7 +214,7 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
       gtk_adjustment_configure(adjustment,
 			       gtk_adjustment_get_value(adjustment),
 			       0.0,
-			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 0.0,
+			       (varea_height - scrolled_window_height > 0) ? (gdouble) varea_height - scrolled_window_height: 0.0,
 			       1.0,
 			       (gdouble) automation_edit->control_height,
 			       0.0);
@@ -227,7 +222,7 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
       gtk_adjustment_configure(external_adjustment,
 			       gtk_adjustment_get_value(external_adjustment),
 			       0.0,
-			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 0.0,
+			       (varea_height - scrolled_window_height > 0) ? (gdouble) varea_height - scrolled_window_height: 0.0,
 			       1.0,
 			       (gdouble) automation_edit->control_height,
 			       0.0);
@@ -235,7 +230,7 @@ ags_automation_edit_drawing_area_resize_callback(GtkWidget *drawing_area,
       gtk_adjustment_configure(edit_control_adjustment,
 			       gtk_adjustment_get_value(adjustment),
 			       0.0,
-			       (varea_height - scrolled_window_allocation.height > 0) ? (gdouble) varea_height - scrolled_window_allocation.height: 0.0,
+			       (varea_height - scrolled_window_height > 0) ? (gdouble) varea_height - scrolled_window_height: 0.0,
 			       1.0,
 			       (gdouble) automation_edit->control_height,
 			       0.0);

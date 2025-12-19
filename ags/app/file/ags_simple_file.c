@@ -3387,10 +3387,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	      ags_audio_add_automation(gobject->audio,
 				       (GObject *) matched_automation);
 	    }
-	      
-	    ags_automation_add_acceleration(matched_automation,
-					    acceleration->data,
-					    FALSE);
+
+	    if(ags_automation_find_point(matched_automation, AGS_ACCELERATION(acceleration->data)->x, AGS_ACCELERATION(acceleration->data)->y, FALSE) == NULL){
+	      ags_automation_add_acceleration(matched_automation,
+					      acceleration->data,
+					      FALSE);
+	    }
 	    
 	    acceleration = acceleration->next;
 	  }

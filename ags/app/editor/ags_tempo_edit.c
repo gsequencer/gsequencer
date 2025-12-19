@@ -282,36 +282,21 @@ ags_tempo_edit_init(AgsTempoEdit *tempo_edit)
 
   application_context = ags_application_context_get_instance();
 
-  event_controller = gtk_event_controller_key_new();
+  event_controller =
+    tempo_edit->key_event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) tempo_edit,
 			    event_controller);
 
-  g_signal_connect(event_controller, "key-pressed",
-		   G_CALLBACK(ags_tempo_edit_key_pressed_callback), tempo_edit);
+  event_controller = 
+    tempo_edit->gesture_click_event_controller = (GtkEventController *) gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) tempo_edit,
+			    event_controller);
+
+  event_controller = 
+    tempo_edit->motion_event_controller = gtk_event_controller_motion_new();
+  gtk_widget_add_controller((GtkWidget *) tempo_edit,
+			    event_controller);
   
-  g_signal_connect(event_controller, "key-released",
-		   G_CALLBACK(ags_tempo_edit_key_released_callback), tempo_edit);
-
-  g_signal_connect(event_controller, "modifiers",
-		   G_CALLBACK(ags_tempo_edit_modifiers_callback), tempo_edit);
-
-  event_controller = (GtkEventController *) gtk_gesture_click_new();
-  gtk_widget_add_controller((GtkWidget *) tempo_edit,
-			    event_controller);
-
-  g_signal_connect(event_controller, "pressed",
-		   G_CALLBACK(ags_tempo_edit_gesture_click_pressed_callback), tempo_edit);
-
-  g_signal_connect(event_controller, "released",
-		   G_CALLBACK(ags_tempo_edit_gesture_click_released_callback), tempo_edit);
-
-  event_controller = gtk_event_controller_motion_new();
-  gtk_widget_add_controller((GtkWidget *) tempo_edit,
-			    event_controller);
-
-  g_signal_connect(event_controller, "motion",
-		   G_CALLBACK(ags_tempo_edit_motion_callback), tempo_edit);
-
   tempo_edit->flags = 0;
   tempo_edit->connectable_flags = 0;
   tempo_edit->mode = AGS_TEMPO_EDIT_NO_EDIT_MODE;
@@ -515,6 +500,25 @@ ags_tempo_edit_connect(AgsConnectable *connectable)
   
   tempo_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
+  /* event controller */
+  g_signal_connect(tempo_edit->key_event_controller, "key-pressed",
+		   G_CALLBACK(ags_tempo_edit_key_pressed_callback), tempo_edit);
+  
+  g_signal_connect(tempo_edit->key_event_controller, "key-released",
+		   G_CALLBACK(ags_tempo_edit_key_released_callback), tempo_edit);
+
+  g_signal_connect(tempo_edit->key_event_controller, "modifiers",
+		   G_CALLBACK(ags_tempo_edit_modifiers_callback), tempo_edit);
+
+  g_signal_connect(tempo_edit->gesture_click_event_controller, "pressed",
+		   G_CALLBACK(ags_tempo_edit_gesture_click_pressed_callback), tempo_edit);
+
+  g_signal_connect(tempo_edit->gesture_click_event_controller, "released",
+		   G_CALLBACK(ags_tempo_edit_gesture_click_released_callback), tempo_edit);
+
+  g_signal_connect(tempo_edit->motion_event_controller, "motion",
+		   G_CALLBACK(ags_tempo_edit_motion_callback), tempo_edit);
+
   /* drawing area */
   gtk_drawing_area_set_draw_func(tempo_edit->drawing_area,
 				 (GtkDrawingAreaDrawFunc) ags_tempo_edit_draw_callback,
@@ -545,6 +549,43 @@ ags_tempo_edit_disconnect(AgsConnectable *connectable)
   
   tempo_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
   
+  /* event controller */
+  g_object_disconnect(tempo_edit->key_event_controller,
+		      "any_signal::key-pressed",
+		      G_CALLBACK(ags_tempo_edit_key_pressed_callback),
+		      tempo_edit,
+		      NULL);
+  
+  g_object_disconnect(tempo_edit->key_event_controller,
+		      "any_signal::key-released",
+		      G_CALLBACK(ags_tempo_edit_key_released_callback),
+		      tempo_edit,
+		      NULL);
+
+  g_object_disconnect(tempo_edit->key_event_controller,
+		      "any_signal::modifiers",
+		      G_CALLBACK(ags_tempo_edit_modifiers_callback),
+		      tempo_edit,
+		      NULL);
+
+  g_object_disconnect(tempo_edit->gesture_click_event_controller,
+		      "any_signal::pressed",
+		      G_CALLBACK(ags_tempo_edit_gesture_click_pressed_callback),
+		      tempo_edit,
+		      NULL);
+
+  g_object_disconnect(tempo_edit->gesture_click_event_controller,
+		      "any_signal::released",
+		      G_CALLBACK(ags_tempo_edit_gesture_click_released_callback),
+		      tempo_edit,
+		      NULL);
+
+  g_object_disconnect(tempo_edit->motion_event_controller,
+		      "any_signal::motion",
+		      G_CALLBACK(ags_tempo_edit_motion_callback),
+		      tempo_edit,
+		      NULL);
+
   /* drawing area */
   gtk_drawing_area_set_draw_func(tempo_edit->drawing_area,
 				 NULL,
@@ -578,11 +619,15 @@ ags_tempo_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
 				    GdkModifierType state,
 				    AgsTempoEdit *tempo_edit)
 {  
-  GtkWidget *editor;
+  AgsCompositeEditor *editor;
+
+  AgsApplicationContext *application_context;
 
   guint l_control_key, r_control_key;  
   gboolean key_handled;
 
+  application_context = ags_application_context_get_instance();
+  
   if(keyval == GDK_KEY_Tab ||
      keyval == GDK_KEY_ISO_Left_Tab ||
      keyval == GDK_KEY_Shift_L ||
@@ -597,10 +642,9 @@ ags_tempo_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
   }else{
     key_handled = TRUE;
   }
-  
-  editor = gtk_widget_get_ancestor(GTK_WIDGET(tempo_edit),
-				   AGS_TYPE_COMPOSITE_EDITOR);
 
+  editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
+  
 #if defined(AGS_OSXAPI)
   l_control_key = AGS_TEMPO_EDIT_KEY_L_META;
   r_control_key = AGS_TEMPO_EDIT_KEY_R_META;
@@ -656,6 +700,8 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
 {  
   AgsCompositeEditor *composite_editor;
   
+  AgsApplicationContext *application_context;
+  
   GtkAllocation allocation;
 
   guint l_control_key, r_control_key;  
@@ -664,6 +710,8 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
   gboolean do_feedback;
   gboolean key_handled;
 
+  application_context = ags_application_context_get_instance();
+  
   if(keyval == GDK_KEY_Tab ||
      keyval == GDK_KEY_ISO_Left_Tab ||
      keyval == GDK_KEY_Shift_L ||
@@ -679,8 +727,7 @@ ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
     key_handled = TRUE;
   }
   
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(composite_editor->toolbar)->zoom));
 
@@ -868,15 +915,18 @@ ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
   AgsCompositeToolbar *composite_toolbar;
   AgsCompositeEditor *composite_editor;
   
+  AgsApplicationContext *application_context;
+  
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
+
+  application_context = ags_application_context_get_instance();
 
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
   selected_select = FALSE;
     
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 
@@ -1208,15 +1258,18 @@ ags_tempo_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   AgsCompositeToolbar *composite_toolbar;
   AgsCompositeEditor *composite_editor;
   
+  AgsApplicationContext *application_context;
+  
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
 
+  application_context = ags_application_context_get_instance();
+  
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
   selected_select = FALSE;
-      
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
   composite_toolbar = composite_editor->toolbar;
     
@@ -1282,15 +1335,18 @@ ags_tempo_edit_gesture_click_released_callback(GtkGestureClick *event_controller
   AgsCompositeToolbar *composite_toolbar;
   AgsCompositeEditor *composite_editor;
   
+  AgsApplicationContext *application_context;
+  
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
+  
+  application_context = ags_application_context_get_instance();
   
   selected_position_cursor = FALSE;
   selected_edit = FALSE;
   selected_clear = FALSE;
   selected_select = FALSE;
     
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
   composite_toolbar = composite_editor->toolbar;
     
@@ -1464,6 +1520,8 @@ ags_tempo_edit_reset_vscrollbar(AgsTempoEdit *tempo_edit)
 {
   AgsCompositeEdit *composite_edit;
   GtkAdjustment *adjustment;
+  
+  AgsApplicationContext *application_context;
 
   GtkAllocation allocation;
   
@@ -1475,6 +1533,8 @@ ags_tempo_edit_reset_vscrollbar(AgsTempoEdit *tempo_edit)
     return;
   }
 
+  application_context = ags_application_context_get_instance();
+  
   tempo_edit->flags |= AGS_TEMPO_EDIT_BLOCK_RESET_VSCROLLBAR;
 
   composite_edit = (AgsCompositeEdit *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
@@ -1546,8 +1606,7 @@ ags_tempo_edit_reset_hscrollbar(AgsTempoEdit *tempo_edit)
   adjustment = gtk_scrollbar_get_adjustment(tempo_edit->hscrollbar);
 
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
@@ -1940,8 +1999,7 @@ ags_tempo_edit_draw_segment(AgsTempoEdit *tempo_edit, cairo_t *cr)
   gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
 			    &allocation);
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   toolbar = composite_editor->toolbar;
 
@@ -2225,6 +2283,8 @@ ags_tempo_edit_draw_cursor(AgsTempoEdit *tempo_edit, cairo_t *cr)
 
   GtkStyleContext *style_context;
   GtkSettings *settings;
+  
+  AgsApplicationContext *application_context;
 
   GtkAllocation allocation;
   
@@ -2242,6 +2302,8 @@ ags_tempo_edit_draw_cursor(AgsTempoEdit *tempo_edit, cairo_t *cr)
     return;
   }
 
+  application_context = ags_application_context_get_instance();
+  
   gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
 			    &allocation);
 
@@ -2267,8 +2329,7 @@ ags_tempo_edit_draw_cursor(AgsTempoEdit *tempo_edit, cairo_t *cr)
   }
   
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   toolbar = composite_editor->toolbar;
 
@@ -2495,8 +2556,7 @@ ags_tempo_edit_draw_marker(AgsTempoEdit *tempo_edit,
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
@@ -2731,9 +2791,8 @@ ags_tempo_edit_draw_tempo(AgsTempoEdit *tempo_edit, cairo_t *cr)
   gtk_widget_get_allocation(GTK_WIDGET(tempo_edit->drawing_area),
 			    &allocation);
     
-  /* zoom */  
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) tempo_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  /* zoom */
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   composite_toolbar = composite_editor->toolbar;
 

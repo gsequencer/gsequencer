@@ -289,6 +289,8 @@ ags_automation_edit_box_remove_automation_edit(AgsAutomationEditBox *automation_
 			G_CALLBACK(ags_automation_edit_box_notify_height_request_callback),
 			automation_edit_box,
 			NULL);
+
+    ags_connectable_disconnect(AGS_CONNECTABLE(automation_edit));
     
     automation_edit_box->automation_edit = g_list_remove(automation_edit_box->automation_edit,
 							 automation_edit);

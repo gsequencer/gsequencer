@@ -813,6 +813,8 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
 {
   AgsCompositeEditor *composite_editor;
 
+  AgsApplicationContext *application_context;
+
   GList *start_tab, *tab;
   
   guint length;
@@ -822,8 +824,9 @@ ags_composite_edit_set_channel_selector_mode(AgsCompositeEdit *composite_edit, g
     return;
   }
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) composite_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  application_context = ags_application_context_get_instance();
+  
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
   
   /* channel selector - remove tabs */
   tab =

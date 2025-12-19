@@ -101,13 +101,17 @@ struct _AgsTempoEdit
 {
   GtkGrid grid;
 
-  guint flags;
-  guint connectable_flags;
-  guint mode;
+  AgsTempoEditFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsTempoEditMode mode;
 
-  guint button_mask;
-  guint key_mask;
+  AgsTempoEditButtonMask button_mask;
+  AgsTempoEditKeyMask key_mask;
 
+  GtkEventController *key_event_controller;
+  GtkEventController *gesture_click_event_controller;
+  GtkEventController *motion_event_controller;
+  
   guint note_offset;
   guint note_offset_absolute;
 
@@ -139,10 +143,6 @@ struct _AgsTempoEdit
 
   GtkScrollbar *vscrollbar;
   GtkScrollbar *hscrollbar;
-
-  GtkEventController *key_controller;
-  GtkEventController *gesture_controller;
-  GtkEventController *motion_controller;
 
   guint note_offset_256th;
   guint note_offset_256th_absolute;

@@ -955,7 +955,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 			(gpointer) composite_editor,
 			NULL);
   }
-
+  
   composite_toolbar = composite_editor->toolbar;
   
   /* selected machine */
@@ -1003,6 +1003,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
 
   g_list_free(start_tab);
   
+  composite_editor->notation_edit->focused_edit = NULL;
+  
   /* automation edit notebook - remove tabs */
   tab = 
     start_tab = ags_notebook_get_tab(composite_editor->automation_edit->channel_selector);
@@ -1030,6 +1032,8 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   }
 
   g_list_free(start_tab);
+  
+  composite_editor->wave_edit->focused_edit = NULL;
   
   /* check pattern mode */
   if(AGS_IS_DRUM(machine) ||
@@ -2001,8 +2005,12 @@ ags_composite_editor_remove_automation_port(AgsCompositeEditor *composite_editor
     nth++;
       
     if(AGS_AUTOMATION_EDIT(list->data)->channel_type == channel_type &&
-       !g_strcmp0(AGS_AUTOMATION_EDIT(list->data)->control_name,
-		  control_name)){
+       (!g_strcmp0(AGS_AUTOMATION_EDIT(list->data)->control_name,
+		   control_name)) == TRUE){
+      if(composite_editor->automation_edit->focused_edit == list->data){
+	composite_editor->automation_edit->focused_edit = NULL;
+      }
+      
       ags_automation_edit_box_remove_automation_edit(AGS_AUTOMATION_EDIT_BOX(AGS_SCROLLED_AUTOMATION_EDIT_BOX(composite_editor->automation_edit->edit)->automation_edit_box),
 						     list->data);
 

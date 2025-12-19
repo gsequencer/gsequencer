@@ -116,32 +116,37 @@ struct _AgsAutomationEdit
 {
   GtkGrid grid;
 
-  guint flags;
-  guint connectable_flags;
-  guint mode;
+  AgsAutomationEditFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsAutomationEditMode mode;
 
-  guint render_mode;
+  AgsAutomationEditRenderMode render_mode;
   
-  guint button_mask;
-  guint key_mask;
+  AgsAutomationEditButtonMask button_mask;
+  AgsAutomationEditKeyMask key_mask;
+
+  GtkEventController *key_event_controller;
+  GtkEventController *gesture_click_event_controller;
+  GtkEventController *motion_event_controller;
+  GtkEventController *gesture_swipe_event_controller;
   
   guint note_offset;
   guint note_offset_absolute;
 
-  guint point_radius;
+  gdouble point_radius;
   
-  guint scan_width;
-  guint scan_height;
+  gdouble scan_width;
+  gdouble scan_height;
 
-  guint control_width;
-  guint control_height;
+  gdouble control_width;
+  gdouble control_height;
 
-  guint step_count;
+  gdouble step_count;
   
-  guint cursor_position_x;
+  gint cursor_position_x;
   gdouble cursor_position_y;
 
-  guint selected_acceleration_border;
+  gint selected_acceleration_border;
 
   gint selection_x0;
   gint selection_x1;
