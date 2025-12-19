@@ -72,8 +72,8 @@ struct _AgsCompositeEdit
   GtkBox box;
 
   guint flags;
-  guint connectable_flags;
-  guint scrollbar;
+  AgsConnectableFlags connectable_flags;
+  AgsCompositeEditScrollbar scrollbar;
 
   gchar *version;
   gchar *build_id;
@@ -93,8 +93,8 @@ struct _AgsCompositeEdit
   guint channel_selector_mode;
   AgsNotebook *channel_selector;
 
-  guint edit_mode;
-  guint paste_flags;
+  AgsCompositeEditEditMode edit_mode;
+  AgsCompositeEditPasteFlags paste_flags;
   
   GtkBox *edit_box;
   
