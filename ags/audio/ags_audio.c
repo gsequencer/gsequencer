@@ -11561,7 +11561,9 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
   GRecMutex *audio_mutex;
 
   if(!AGS_IS_AUDIO(audio) ||
-     !AGS_IS_AUTOMATION(automation)){
+     !AGS_IS_AUTOMATION(automation) ||
+     AGS_AUTOMATION(automation)->timestamp == NULL ||
+     AGS_AUTOMATION(automation)->control_name == NULL){
     return;
   }
 
@@ -11599,12 +11601,13 @@ ags_audio_add_automation(AgsAudio *audio, GObject *automation)
     cmp_control_name = ags_automation_get_control_name((AgsAutomation *) list->data);
   }
   
-  if(list == NULL ||
-     ags_timestamp_get_ags_offset(timestamp) != ags_timestamp_get_ags_offset(cmp_timestamp) ||
-     line != cmp_line ||
-     channel_type != cmp_channel_type ||
-     (!g_strcmp0(control_name,
-		 cmp_control_name)) == FALSE){
+  if(g_list_find(audio->automation, automation) == NULL &&
+     (list == NULL ||
+      ags_timestamp_get_ags_offset(timestamp) != ags_timestamp_get_ags_offset(cmp_timestamp) ||
+      line != cmp_line ||
+      channel_type != cmp_channel_type ||
+      (!g_strcmp0(control_name,
+		  cmp_control_name)) == FALSE)){
     success = TRUE;
 
     g_object_ref(automation);
