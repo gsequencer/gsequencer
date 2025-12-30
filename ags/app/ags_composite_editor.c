@@ -972,20 +972,28 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     data_format = AGS_LEVEL_PCM_S8;
+    break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     data_format = AGS_LEVEL_PCM_S16;
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     data_format = AGS_LEVEL_PCM_S24;
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     data_format = AGS_LEVEL_PCM_S32;
+    break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     data_format = AGS_LEVEL_PCM_S64;
+    break;
   case AGS_SOUNDCARD_FLOAT:
     data_format = AGS_LEVEL_PCM_FLOAT;
+    break;
   case AGS_SOUNDCARD_DOUBLE:
     data_format = AGS_LEVEL_PCM_DOUBLE;
+    break;
   case AGS_SOUNDCARD_COMPLEX:
     data_format = AGS_LEVEL_PCM_COMPLEX;
+    break;
   default:
     data_format = AGS_LEVEL_PCM_S16;
   }
