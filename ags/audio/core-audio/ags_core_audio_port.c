@@ -1884,6 +1884,8 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   in_buffer = in->mBuffers;
 
   if(is_recording){
+    // g_message("record");
+    
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
     
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
