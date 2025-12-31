@@ -1652,7 +1652,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     out_buffer->mData, 1,
-				     out_buffer->mNumberChannels * (out_buffer->mDataByteSize / sizeof(float)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+				     (out_buffer->mDataByteSize / sizeof(float)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
   if(!is_starting &&
      is_playing){
@@ -1676,7 +1676,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
     //TODO:JK: improve misconfigured hw
-    if(out_buffer->mDataByteSize / sizeof(float) >= buffer_size &&
+    if(out_buffer->mDataByteSize / sizeof(float) / out_buffer->mNumberChannels >= buffer_size &&
        out_buffer->mNumberChannels >= pcm_channels){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
@@ -1690,7 +1690,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
-    }else if(out_buffer->mDataByteSize / sizeof(float) >= buffer_size){
+    }else if(out_buffer->mDataByteSize / sizeof(float) / out_buffer->mNumberChannels >= buffer_size){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
   
@@ -1711,7 +1711,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 						    out_buffer->mData, out_buffer->mNumberChannels, i,
 						    buffer, pcm_channels, i,
-						    out_buffer->mDataByteSize / sizeof(float), copy_mode);
+						    out_buffer->mDataByteSize / sizeof(float) / out_buffer->mNumberChannels, copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
@@ -1884,6 +1884,8 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   in_buffer = in->mBuffers;
 
   if(is_recording){
+    // g_message("record");
+    
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
     
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -1904,7 +1906,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
     buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(soundcard));
 
     //TODO:JK: improve misconfigured hw
-    if(in_buffer->mDataByteSize / sizeof(gfloat) >= buffer_size &&
+    if(in_buffer->mDataByteSize / sizeof(gfloat) / in_buffer->mNumberChannels >= buffer_size &&
        in_buffer->mNumberChannels >= pcm_channels){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
@@ -1918,7 +1920,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
 				  buffer);
-    }else if(in_buffer->mDataByteSize / sizeof(gfloat) >= buffer_size){
+    }else if(in_buffer->mDataByteSize / sizeof(gfloat) / in_buffer->mNumberChannels >= buffer_size){
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(soundcard),
 				buffer);
 
@@ -1939,7 +1941,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
 	ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_port->audio_buffer_util,
 						    buffer, pcm_channels, i,
 						    in_buffer->mData, in_buffer->mNumberChannels, i,
-						    in_buffer->mDataByteSize / sizeof(gfloat), copy_mode);
+						    in_buffer->mDataByteSize / sizeof(gfloat) / in_buffer->mNumberChannels, copy_mode);
       }
       
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(soundcard),
@@ -1951,7 +1953,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
   
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     in_buffer->mData, 1,
-				     in_buffer->mNumberChannels * (in_buffer->mDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+				     (in_buffer->mDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
   
   /* signal finish */ 
   if(!no_event){

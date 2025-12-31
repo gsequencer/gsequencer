@@ -4139,6 +4139,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   }
   
   core_audio_devout->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  memset(core_audio_devout->app_buffer[0], 0, pcm_channels * buffer_size * word_size);
   
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_1 */
   if(core_audio_devout->app_buffer[1] != NULL){
@@ -4147,12 +4149,16 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
 
   core_audio_devout->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
+  memset(core_audio_devout->app_buffer[1], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_2 */
   if(core_audio_devout->app_buffer[2] != NULL){
     g_free(core_audio_devout->app_buffer[2]);
   }
 
   core_audio_devout->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+  
+  memset(core_audio_devout->app_buffer[2], 0, pcm_channels * buffer_size * word_size);
   
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_3 */
   if(core_audio_devout->app_buffer[3] != NULL){
@@ -4161,6 +4167,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[3], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_4 */
   if(core_audio_devout->app_buffer[4] != NULL){
     g_free(core_audio_devout->app_buffer[4]);
@@ -4168,6 +4176,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[4] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[4], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_5 */
   if(core_audio_devout->app_buffer[5] != NULL){
     g_free(core_audio_devout->app_buffer[5]);
@@ -4175,6 +4185,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[5] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[5], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_6 */
   if(core_audio_devout->app_buffer[6] != NULL){
     g_free(core_audio_devout->app_buffer[6]);
@@ -4182,12 +4194,16 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[6] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[6], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_7 */
   if(core_audio_devout->app_buffer[7] != NULL){
     g_free(core_audio_devout->app_buffer[7]);
   }
   
   core_audio_devout->app_buffer[7] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  memset(core_audio_devout->app_buffer[7], 0, pcm_channels * buffer_size * word_size);  
 }
 
 /**
