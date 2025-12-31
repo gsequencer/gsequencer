@@ -254,8 +254,8 @@ ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio)
   gdouble bpm;
   gdouble delay;
 
-  g_signal_connect(fx_notation_audio, "notify::output-soundcard",
-		   G_CALLBACK(ags_fx_notation_audio_notify_output_soundcard_callback), NULL);
+  g_signal_connect_after(fx_notation_audio, "notify::output-soundcard",
+			 G_CALLBACK(ags_fx_notation_audio_notify_output_soundcard_callback), NULL);
 
   AGS_RECALL(fx_notation_audio)->name = "ags-fx-notation";
   AGS_RECALL(fx_notation_audio)->version = AGS_RECALL_DEFAULT_VERSION;
