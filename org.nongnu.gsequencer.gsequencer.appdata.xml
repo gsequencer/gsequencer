@@ -50,6 +50,22 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="8.2.0" date="2025-12-13">
+      <description>
+	<p>
+	  Implemented modular synth.
+	</p>
+      </description>
+    </release>
+
+    <release version="8.1.3" date="2025-08-24">
+      <description>
+	<p>
+	  Implemented Audio Unit support.
+	</p>
+      </description>
+    </release>
+
     <release version="8.0.0" date="2025-06-30">
       <description>
 	<p>
