@@ -315,7 +315,7 @@ ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port)
 				 i18n_pspec("The precision to use for a frame"),
 				 1,
 				 G_MAXUINT,
-				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 AGS_SOUNDCARD_FLOAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
@@ -583,6 +583,16 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
       core_audio_port->cache[1] = (void *) malloc(core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gint32));
       core_audio_port->cache[2] = (void *) malloc(core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gint32));
       core_audio_port->cache[3] = (void *) malloc(core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gint32));
+
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      core_audio_port->cache[0] = (void *) malloc(core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
+      core_audio_port->cache[1] = (void *) malloc(core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
+      core_audio_port->cache[2] = (void *) malloc(core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
+      core_audio_port->cache[3] = (void *) malloc(core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
 
       word_size = sizeof(gint32);
     }
@@ -1567,8 +1577,6 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   
   if(core_audio_devout != NULL){
     soundcard = (GObject *) core_audio_devout;
-  }else if(core_audio_devin != NULL){
-    soundcard = (GObject *) core_audio_devin;
   }
 
   is_playing = FALSE;
@@ -1660,7 +1668,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
     
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     
-    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+    format = AGS_SOUNDCARD_FLOAT;
     
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      &pcm_channels,
@@ -1890,7 +1898,7 @@ ags_core_audio_port_hw_input_callback(AudioObjectID device,
     
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
     
-    format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+    format = AGS_SOUNDCARD_FLOAT;
 
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      &pcm_channels,
@@ -2185,6 +2193,16 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	  word_size = sizeof(gint64);
 	}
 	break;
+      case AGS_SOUNDCARD_FLOAT:
+	{
+	  word_size = sizeof(gfloat);
+	}
+	break;
+      case AGS_SOUNDCARD_DOUBLE:
+	{
+	  word_size = sizeof(gdouble);
+	}
+	break;
       default:
 	g_message("core audio - unsupported word size");
       }
@@ -2330,6 +2348,16 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
 	  word_size = sizeof(gint64);
+	}
+	break;
+      case AGS_SOUNDCARD_FLOAT:
+	{
+	  word_size = sizeof(gfloat);
+	}
+	break;
+      case AGS_SOUNDCARD_DOUBLE:
+	{
+	  word_size = sizeof(gdouble);
 	}
 	break;
       default:
@@ -2892,7 +2920,7 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     in_buffer->mAudioData, 1,
-				     (in_buffer->mAudioDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_S16);
+				     (in_buffer->mAudioDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
   if(audio_loop == NULL){
     ags_atomic_int_decrement(&(core_audio_port->queued));
@@ -2939,6 +2967,16 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
     }
     break;
   default:
@@ -3039,6 +3077,16 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
       word_size = sizeof(gint64);
     }
     break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
+    }
+    break;
   default:
     empty_run = TRUE;
   }
@@ -3052,7 +3100,7 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
 		     FALSE);
 
     copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(core_audio_port->audio_buffer_util,
-								AGS_AUDIO_BUFFER_UTIL_S16,
+								AGS_AUDIO_BUFFER_UTIL_FLOAT,
 								ags_audio_buffer_util_format_from_soundcard(core_audio_port->audio_buffer_util,
 													    core_audio_devout->format));
 
@@ -3169,6 +3217,8 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
 
   empty_run = FALSE;
   
+  word_size = sizeof(gfloat);
+  
   switch(core_audio_port->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -3193,6 +3243,16 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
     }
     break;
   default:
@@ -3267,7 +3327,7 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
     empty_run = TRUE;
   }
 
-  word_size = 0;
+  word_size = sizeof(gfloat);
   
   switch(core_audio_port->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -3293,6 +3353,16 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      word_size = sizeof(gdouble);
     }
     break;
   default:
@@ -3333,7 +3403,7 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     in_buffer->mAudioData, 1,
-				     (in_buffer->mAudioDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_S16);
+				     (in_buffer->mAudioDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
   AudioQueueEnqueueBuffer(core_audio_port->record_aq_ref,
 			  in_buffer,
 			  0,
@@ -3422,6 +3492,30 @@ ags_core_audio_port_set_cache_buffer_size(AgsCoreAudioPort *core_audio_port,
 						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gint32));
       core_audio_port->cache[3] = (void *) realloc(core_audio_port->cache[3],
 						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gint32));
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      core_audio_port->cache[0] = (void *) realloc(core_audio_port->cache[0],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
+      core_audio_port->cache[1] = (void *) realloc(core_audio_port->cache[1],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
+      core_audio_port->cache[2] = (void *) realloc(core_audio_port->cache[2],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
+      core_audio_port->cache[3] = (void *) realloc(core_audio_port->cache[3],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gfloat));
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      core_audio_port->cache[0] = (void *) realloc(core_audio_port->cache[0],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gdouble));
+      core_audio_port->cache[1] = (void *) realloc(core_audio_port->cache[1],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gdouble));
+      core_audio_port->cache[2] = (void *) realloc(core_audio_port->cache[2],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gdouble));
+      core_audio_port->cache[3] = (void *) realloc(core_audio_port->cache[3],
+						   core_audio_port->pcm_channels * core_audio_port->cache_buffer_size * sizeof(gdouble));
     }
     break;
   default:

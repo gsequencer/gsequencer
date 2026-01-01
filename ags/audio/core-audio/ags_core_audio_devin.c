@@ -356,7 +356,7 @@ ags_core_audio_devin_class_init(AgsCoreAudioDevinClass *core_audio_devin)
 				 i18n_pspec("The precision to use for a frame"),
 				 1,
 				 G_MAXUINT,
-				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 AGS_SOUNDCARD_FLOAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
@@ -638,7 +638,7 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
 
   core_audio_devin->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   core_audio_devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  core_audio_devin->format = ags_soundcard_helper_config_get_format(config);
+  core_audio_devin->format = AGS_SOUNDCARD_FLOAT;
 
   /* buffer */
   core_audio_devin->app_buffer_mode = AGS_CORE_AUDIO_DEVIN_APP_BUFFER_0;
@@ -3652,6 +3652,7 @@ ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin)
   guint buffer_size;
   AgsSoundcardFormat format;
   guint word_size;
+  gboolean is_float;
 
   GRecMutex *core_audio_devin_mutex;  
 
@@ -3672,6 +3673,8 @@ ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin)
   
   g_rec_mutex_unlock(core_audio_devin_mutex);
 
+  is_float = FALSE;
+
   switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
@@ -3691,17 +3694,24 @@ ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin)
   case AGS_SOUNDCARD_FLOAT:
     {
       word_size = sizeof(gfloat);
+
+      is_float = TRUE;
     }
     break;
   case AGS_SOUNDCARD_DOUBLE:
     {
       word_size = sizeof(gdouble);
+
+      is_float = TRUE;
     }
     break;
   default:
     g_warning("ags_core_audio_devin_realloc_buffer(): unsupported word size");
+    
     return;
   }
+
+  g_message("allocating soundcard buffer - is_float %d and word_size %d", is_float, word_size);
   
   /* AGS_CORE_AUDIO_DEVIN_APP_BUFFER_0 */
   if(core_audio_devin->app_buffer[0] != NULL){

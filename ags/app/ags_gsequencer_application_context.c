@@ -4162,7 +4162,8 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
 
 	g_list_free_full(start_port,
 			 g_object_unref);
-      }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+      }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard) ||
+	       AGS_IS_CORE_AUDIO_DEVIN(soundcard)){
 	GList *start_port, *port;
 
 	g_object_get(soundcard,
