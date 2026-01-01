@@ -943,7 +943,7 @@ ags_audio_buffer_util_clear_float(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit;){
       buffer[0] = 0.0;
       buffer[channels] = 0.0;
       buffer[2 * channels] = 0.0;
@@ -954,6 +954,7 @@ ags_audio_buffer_util_clear_float(AgsAudioBufferUtil *audio_buffer_util,
       buffer[7 * channels] = 0.0;
 
       buffer += (8 * channels);
+      i += 8;
     }
   }
 
@@ -995,7 +996,7 @@ ags_audio_buffer_util_clear_float32(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit;){
       buffer[0] = 0.0;
       buffer[channels] = 0.0;
       buffer[2 * channels] = (Float32) 0.0;
@@ -1006,6 +1007,7 @@ ags_audio_buffer_util_clear_float32(AgsAudioBufferUtil *audio_buffer_util,
       buffer[7 * channels] = (Float32) 0.0;
 
       buffer += (8 * channels);
+      i += 8;
     }
   }
 
@@ -1047,7 +1049,7 @@ ags_audio_buffer_util_clear_double(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit;){
       buffer[0] = 0.0;
       buffer[channels] = 0.0;
       buffer[2 * channels] = 0.0;
@@ -1058,6 +1060,7 @@ ags_audio_buffer_util_clear_double(AgsAudioBufferUtil *audio_buffer_util,
       buffer[7 * channels] = 0.0;
 
       buffer += (8 * channels);
+      i += 8;
     }
   }
 
@@ -1098,7 +1101,7 @@ ags_audio_buffer_util_clear_complex(AgsAudioBufferUtil *audio_buffer_util,
   if(count > 8){
     limit = count - (count % 8);
   
-    for(; i < limit; i += 8){
+    for(; i < limit;){
       current_channel = 0;
 
       buffer[0].real = 0.0;
@@ -1126,6 +1129,7 @@ ags_audio_buffer_util_clear_complex(AgsAudioBufferUtil *audio_buffer_util,
       buffer[(current_channel)].imag = 0.0;
 
       buffer += (current_channel + channels);
+      i += 8;
     }
   }
 
