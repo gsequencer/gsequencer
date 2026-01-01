@@ -395,6 +395,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 {
   AgsAudioBufferUtil *audio_buffer_util;
   
+  AgsConfig *config;
+  
   GList *start_list;
 
   void *target_data, *data;
@@ -412,6 +414,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     return(NULL);
   }
 
+  config = ags_config_get_instance();
+  
   audio_buffer_util = ags_audio_buffer_util_alloc();
 
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
@@ -428,20 +432,16 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 	       "format", &format,
 	       NULL);
 
+  target_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  target_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  target_format = ags_soundcard_helper_config_get_format(config);
+  
   if(AGS_IS_SOUNDCARD(soundcard)){
     ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
 			      NULL,
 			      &target_samplerate,
 			      &target_buffer_size,
 			      &target_format);
-  }else{
-    AgsConfig *config;
-
-    config = ags_config_get_instance();
-
-    target_samplerate = ags_soundcard_helper_config_get_samplerate(config);
-    target_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-    target_format = ags_soundcard_helper_config_get_format(config);
   }
   
   start_list = NULL;
@@ -520,20 +520,10 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
 	allocated_buffer_length = MAX(buffer_size, 4096);
 
-	if(format == AGS_SOUNDCARD_DOUBLE){
-	  ags_audio_buffer_util_clear_double(audio_buffer_util,
-					     data, 1,
-					     buffer_size);
-	}else if(format == AGS_SOUNDCARD_FLOAT){
-	  ags_audio_buffer_util_clear_float(audio_buffer_util,
-					    data, 1,
-					    buffer_size);
-	}else{
-	  ags_audio_buffer_util_clear_buffer(audio_buffer_util,
-					     data, 1,
-					     buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
-												      format));
-	}
+	ags_audio_buffer_util_clear_buffer(audio_buffer_util,
+					   data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_buffer_util,
+												    format));
 	
 	ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 				data, 1,
@@ -550,7 +540,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 	ags_resample_util_set_format(&resample_util,
 				     format);
 	ags_resample_util_set_buffer_length(&resample_util,
-					    MAX(buffer_size, 4096));
+					    buffer_size);
 	ags_resample_util_set_samplerate(&resample_util,
 					 samplerate);
 	ags_resample_util_set_target_samplerate(&resample_util,

@@ -829,7 +829,7 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   
   buffer->buffer_size = buffer_size;
 
-  if(old_buffer_size == buffer->buffer_size){
+  if(old_buffer_size == buffer_size){
     g_rec_mutex_unlock(buffer_mutex);    
 
     return;

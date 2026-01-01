@@ -16,6 +16,8 @@ main(int argc, char **argv)
 
   AudioObjectPropertyAddress devices_property_address;
   AudioObjectPropertyAddress streams_property_address;
+  
+  struct AudioStreamBasicDescription stream_desc;
 
   int device_count;
   int stream_count;
@@ -41,7 +43,7 @@ main(int argc, char **argv)
     error = AudioObjectGetPropertyData(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size, audio_devices);
     
     if(error == noErr) {
-      for(i = 1; i <= device_count; i++){
+      for(i = 0; i < device_count; i++){
 	NSString *current_manufacturer, *current_name, *current_uid;
 	
 	prop_size = sizeof(CFStringRef);
@@ -50,21 +52,27 @@ main(int argc, char **argv)
 	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_manufacturer);
 	
 	if(error != noErr){
-	  continue;
+	  current_manufacturer = @"";
+	  
+	  //	  continue;
 	}
 	
 	devices_property_address.mSelector = kAudioDevicePropertyDeviceNameCFString;
 	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_name);
 	
 	if(error != noErr){
-	  continue;
+	  current_name = @"";
+
+	  //	  continue;
 	}
 	
 	devices_property_address.mSelector = kAudioDevicePropertyDeviceUID;
 	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_uid);
 	
 	if(error != noErr){
-	  continue;
+	  current_uid = @"";
+	  
+	  //	  continue;
 	}
 	
 	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
@@ -86,6 +94,34 @@ main(int argc, char **argv)
 	}
 
 	printf("found %s device: %s - %s <%s>\n", (!is_mic ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
+
+	stream_desc = (struct AudioStreamBasicDescription) {0};
+	
+	prop_size = sizeof(struct AudioStreamBasicDescription);
+	
+	error = AudioDeviceGetProperty(audio_devices[i],
+				       0,
+				       is_mic,
+				       kAudioDevicePropertyStreamFormat,
+				       &prop_size,
+				       &stream_desc);
+	
+	if(error != noErr){
+	  continue;
+	}
+
+	if((stream_desc.mFormatFlags & kLinearPCMFormatFlagIsFloat) != 0){
+	  printf("format: float\n");
+	}else{
+	  printf("format: integer\n");
+	}
+
+	printf("bytes_per_packet: %d\n", stream_desc.mBytesPerPacket);
+	printf("frames_per_packet: %d\n", stream_desc.mFramesPerPacket);
+	printf("bytes_per_frame: %d\n", stream_desc.mBytesPerFrame);
+	printf("channels_per_frame: %d\n", stream_desc.mChannelsPerFrame);
+	printf("bits_per_channel: %d\n", stream_desc.mBitsPerChannel);
+	
       }
     }
     
