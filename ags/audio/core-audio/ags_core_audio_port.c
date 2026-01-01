@@ -450,46 +450,46 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   /* output */
   core_audio_port->output_samplerate_property_address = (AudioObjectPropertyAddress) {0,};
 
-  core_audio_port->output_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
-  core_audio_port->output_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->output_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
+  core_audio_port->output_samplerate_property_address.mSelector = kAudioDevicePropertyNominalSampleRate;
+  core_audio_port->output_samplerate_property_address.mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->output_samplerate_property_address.mScope = kAudioObjectPropertyScopeGlobal;
   
   core_audio_port->output_buffer_size_property_address = (AudioObjectPropertyAddress) {0,};
 
-  core_audio_port->output_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
-  core_audio_port->output_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->output_buffer_size_property_address->mScope = kAudioObjectPropertyScopeGlobal;
+  core_audio_port->output_buffer_size_property_address.mSelector = kAudioDevicePropertyBufferSize;
+  core_audio_port->output_buffer_size_property_address.mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->output_buffer_size_property_address.mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->output_format = (AudioStreamBasicDescription) {0,};
   
   core_audio_port->output_property_address = (AudioObjectPropertyAddress) {0,};
 
-  core_audio_port->output_property_address->mSelector = kAudioHardwarePropertyDefaultOutputDevice;
-  core_audio_port->output_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->output_property_address->mScope = kAudioObjectPropertyScopeGlobal;
+  core_audio_port->output_property_address.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+  core_audio_port->output_property_address.mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->output_property_address.mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->output_device = 0;
 
   /* input */
   core_audio_port->input_samplerate_property_address = (AudioObjectPropertyAddress) {0,};
 
-  core_audio_port->input_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
-  core_audio_port->input_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->input_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
+  core_audio_port->input_samplerate_property_address.mSelector = kAudioDevicePropertyNominalSampleRate;
+  core_audio_port->input_samplerate_property_address.mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->input_samplerate_property_address.mScope = kAudioObjectPropertyScopeGlobal;
   
   core_audio_port->input_buffer_size_property_address = (AudioObjectPropertyAddress) {0,};
   
-  core_audio_port->input_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
-  core_audio_port->input_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->input_buffer_size_property_address->mScope = kAudioObjectPropertyScopeGlobal;
+  core_audio_port->input_buffer_size_property_address.mSelector = kAudioDevicePropertyBufferSize;
+  core_audio_port->input_buffer_size_property_address.mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->input_buffer_size_property_address.mScope = kAudioObjectPropertyScopeGlobal;
   
   core_audio_port->input_format = (AudioStreamBasicDescription) {0,};
   
   core_audio_port->input_property_address = (AudioObjectPropertyAddress) {0,};
 
-  core_audio_port->input_property_address->mSelector = kAudioHardwarePropertyDefaultInputDevice;
-  core_audio_port->input_property_address->mElement = kAudioObjectPropertyElementMain;
-  core_audio_port->input_property_address->mScope = kAudioObjectPropertyScopeGlobal;
+  core_audio_port->input_property_address.mSelector = kAudioHardwarePropertyDefaultInputDevice;
+  core_audio_port->input_property_address.mElement = kAudioObjectPropertyElementMain;
+  core_audio_port->input_property_address.mScope = kAudioObjectPropertyScopeGlobal;
 
   core_audio_port->input_device = 0;  
 #else
@@ -2117,13 +2117,13 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
       AudioObjectGetPropertyDataSize(kAudioObjectSystemObject,
-				     core_audio_port->output_property_address,
+				     &(core_audio_port->output_property_address),
 				     0,
 				     NULL,
 				     &property_size);
 	
       AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				 core_audio_port->output_property_address,
+				 &(core_audio_port->output_property_address),
 				 0, 
 				 NULL, 
 				 &property_size, 
@@ -2132,7 +2132,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       output_samplerate = (Float64) core_audio_port->samplerate;
 
       AudioObjectSetPropertyData(core_audio_port->output_device,
-				 core_audio_port->output_samplerate_property_address,
+				 &(core_audio_port->output_samplerate_property_address),
 				 0,
 				 NULL,
 				 sizeof(output_samplerate),
@@ -2141,7 +2141,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       output_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
 
       AudioObjectSetPropertyData(core_audio_port->output_device,
-				 core_audio_port->output_buffer_size_property_address,
+				 &(core_audio_port->output_buffer_size_property_address),
 				 0,
 				 NULL,
 				 sizeof(output_buffer_size_bytes),
@@ -2274,13 +2274,13 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
       AudioObjectGetPropertyDataSize(kAudioObjectSystemObject,
-				     core_audio_port->input_property_address,
+				     &(core_audio_port->input_property_address),
 				     0,
 				     NULL,
 				     &property_size);
 	
       AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				 core_audio_port->input_property_address,
+				 &(core_audio_port->input_property_address),
 				 0, 
 				 NULL, 
 				 &property_size, 
@@ -2289,7 +2289,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       input_samplerate = (Float64) core_audio_port->samplerate;
       
       AudioObjectSetPropertyData(core_audio_port->input_device,
-				 core_audio_port->input_samplerate_property_address,
+				 &(core_audio_port->input_samplerate_property_address),
 				 0,
 				 NULL,
 				 sizeof(input_samplerate),
@@ -2298,7 +2298,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       input_buffer_size_bytes = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gfloat);
 
       AudioObjectSetPropertyData(core_audio_port->input_device,
-				 core_audio_port->input_buffer_size_property_address,
+				 &(core_audio_port->input_buffer_size_property_address),
 				 0,
 				 NULL,
 				 sizeof(input_buffer_size_bytes),

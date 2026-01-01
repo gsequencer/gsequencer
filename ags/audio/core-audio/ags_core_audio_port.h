@@ -156,19 +156,19 @@ struct _AgsCoreAudioPort
   AudioObjectID input_device; 
   AudioDeviceIOProcID input_proc_id;
 #else
-  gpointer output_samplerate_property_address;
-  gpointer output_buffer_size_property_address;
-  gpointer output_stream_format_property_address;
+  guint32 output_samplerate_property_address[3];
+  guint32 output_buffer_size_property_address[3];
+  guint32 output_stream_format_property_address[3];
   
-  gpointer output_property_address;
+  guint32 output_property_address[3];
   gint64 output_device;
   gint64 output_proc_id;
 
-  gpointer input_samplerate_property_address;
-  gpointer input_buffer_size_property_address;
-  gpointer input_stream_format_property_address;
+  guint32 input_samplerate_property_address[3];
+  guint32 input_buffer_size_property_address[3];
+  guint32 input_stream_format_property_address[3];
   
-  gpointer input_property_address;
+  guint32 input_property_address[3];
   gint64 input_device;
   gint64 input_proc_id;
 #endif

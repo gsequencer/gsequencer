@@ -20743,8 +20743,8 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16:
     {
       ags_audio_buffer_util_copy_s16_to_s16(audio_buffer_util,
-					    (((gint16 *) destination) + doffset, destination_stride,
-					    (((gint16 *) source) + soffset, source_stride,
+					    ((gint16 *) destination) + doffset, destination_stride,
+					    ((gint16 *) source) + soffset, source_stride,
 					    count);
     }
     break;
@@ -21200,7 +21200,7 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
     {
       ags_audio_buffer_util_copy_s16_to_float32(audio_buffer_util,
 						((Float32 *) destination) + doffset, destination_stride,
-						(((gint16 *) source) + soffset, source_stride,
+						((gint16 *) source) + soffset, source_stride,
 						count);
     }
     break;
