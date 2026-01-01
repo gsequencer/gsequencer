@@ -136,23 +136,23 @@ struct _AgsCoreAudioPort
   _Atomic guint queued;
 
 #ifdef AGS_WITH_CORE_AUDIO
-  AudioObjectPropertyAddress *output_samplerate_property_address;
-  AudioObjectPropertyAddress *output_buffer_size_property_address;
-  AudioObjectPropertyAddress *output_stream_format_property_address;
+  AudioObjectPropertyAddress output_samplerate_property_address;
+  AudioObjectPropertyAddress output_buffer_size_property_address;
+  AudioObjectPropertyAddress output_stream_format_property_address;
 
   AudioStreamBasicDescription output_format;
   
-  AudioObjectPropertyAddress *output_property_address;
+  AudioObjectPropertyAddress output_property_address;
   AudioObjectID output_device;
   AudioDeviceIOProcID output_proc_id;
   
-  AudioObjectPropertyAddress *input_samplerate_property_address;
-  AudioObjectPropertyAddress *input_buffer_size_property_address;
-  AudioObjectPropertyAddress *input_stream_format_property_address;
+  AudioObjectPropertyAddress input_samplerate_property_address;
+  AudioObjectPropertyAddress input_buffer_size_property_address;
+  AudioObjectPropertyAddress input_stream_format_property_address;
 
   AudioStreamBasicDescription input_format;
   
-  AudioObjectPropertyAddress *input_property_address;
+  AudioObjectPropertyAddress input_property_address;
   AudioObjectID input_device; 
   AudioDeviceIOProcID input_proc_id;
 #else

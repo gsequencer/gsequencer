@@ -448,15 +448,13 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   /* Audio */
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
   /* output */
-  core_audio_port->output_samplerate_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
-  memset(core_audio_port->output_samplerate_property_address, 0, sizeof(AudioObjectPropertyAddress));
+  core_audio_port->output_samplerate_property_address = (AudioObjectPropertyAddress) {0,};
 
   core_audio_port->output_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
   core_audio_port->output_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
   core_audio_port->output_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
   
-  core_audio_port->output_buffer_size_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
-  memset(core_audio_port->output_buffer_size_property_address, 0, sizeof(AudioObjectPropertyAddress));
+  core_audio_port->output_buffer_size_property_address = (AudioObjectPropertyAddress) {0,};
 
   core_audio_port->output_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
   core_audio_port->output_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
@@ -464,8 +462,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
 
   core_audio_port->output_format = (AudioStreamBasicDescription) {0,};
   
-  core_audio_port->output_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
-  memset(core_audio_port->output_property_address, 0, sizeof(AudioObjectPropertyAddress));
+  core_audio_port->output_property_address = (AudioObjectPropertyAddress) {0,};
 
   core_audio_port->output_property_address->mSelector = kAudioHardwarePropertyDefaultOutputDevice;
   core_audio_port->output_property_address->mElement = kAudioObjectPropertyElementMain;
@@ -474,15 +471,13 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->output_device = 0;
 
   /* input */
-  core_audio_port->input_samplerate_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
-  memset(core_audio_port->input_samplerate_property_address, 0, sizeof(AudioObjectPropertyAddress));
+  core_audio_port->input_samplerate_property_address = (AudioObjectPropertyAddress) {0,};
 
   core_audio_port->input_samplerate_property_address->mSelector = kAudioDevicePropertyNominalSampleRate;
   core_audio_port->input_samplerate_property_address->mElement = kAudioObjectPropertyElementMain;
   core_audio_port->input_samplerate_property_address->mScope = kAudioObjectPropertyScopeGlobal;
   
-  core_audio_port->input_buffer_size_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
-  memset(core_audio_port->input_buffer_size_property_address, 0, sizeof(AudioObjectPropertyAddress));
+  core_audio_port->input_buffer_size_property_address = (AudioObjectPropertyAddress) {0,};
   
   core_audio_port->input_buffer_size_property_address->mSelector = kAudioDevicePropertyBufferSize;
   core_audio_port->input_buffer_size_property_address->mElement = kAudioObjectPropertyElementMain;
@@ -490,8 +485,7 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   
   core_audio_port->input_format = (AudioStreamBasicDescription) {0,};
   
-  core_audio_port->input_property_address = (AudioObjectPropertyAddress *) malloc(sizeof(AudioObjectPropertyAddress));
-  memset(core_audio_port->input_property_address, 0, sizeof(AudioObjectPropertyAddress));
+  core_audio_port->input_property_address = (AudioObjectPropertyAddress) {0,};
 
   core_audio_port->input_property_address->mSelector = kAudioHardwarePropertyDefaultInputDevice;
   core_audio_port->input_property_address->mElement = kAudioObjectPropertyElementMain;

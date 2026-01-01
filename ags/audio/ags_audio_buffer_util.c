@@ -20670,64 +20670,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8:
     {
       ags_audio_buffer_util_copy_s8_to_s8(audio_buffer_util,
-					  (gint8 *) destination + doffset, destination_stride,
-					  (gint8 *) source + soffset, source_stride,
+					  ((gint8 *) destination) + doffset, destination_stride,
+					  ((gint8 *) source) + soffset, source_stride,
 					  count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16:
     {
       ags_audio_buffer_util_copy_s8_to_s16(audio_buffer_util,
-					   (gint16 *) destination + doffset, destination_stride,
-					   (gint8 *) source + soffset, source_stride,
+					   ((gint16 *) destination) + doffset, destination_stride,
+					   ((gint8 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24:
     {
       ags_audio_buffer_util_copy_s8_to_s24(audio_buffer_util,
-					   (gint32 *) destination + doffset, destination_stride,
-					   (gint8 *) source + soffset, source_stride,
+					   ((gint32 *) destination) + doffset, destination_stride,
+					   ((gint8 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32:
     {
       ags_audio_buffer_util_copy_s8_to_s32(audio_buffer_util,
-					   (gint32 *) destination + doffset, destination_stride,
-					   (gint8 *) source + soffset, source_stride,
+					   ((gint32 *) destination) + doffset, destination_stride,
+					   ((gint8 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64:
     {
       ags_audio_buffer_util_copy_s8_to_s64(audio_buffer_util,
-					   (gint64 *) destination + doffset, destination_stride,
-					   (gint8 *) source + soffset, source_stride,
+					   ((gint64 *) destination) + doffset, destination_stride,
+					   ((gint8 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_s8_to_float(audio_buffer_util,
-					     (gfloat *) destination + doffset, destination_stride,
-					     (gint8 *) source + soffset, source_stride,
+					     ((gfloat *) destination) + doffset, destination_stride,
+					     ((gint8 *) source) + soffset, source_stride,
 					     count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_s8_to_double(audio_buffer_util,
-					      (gdouble *) destination + doffset, destination_stride,
-					      (gint8 *) source + soffset, source_stride,
+					      ((gdouble *) destination) + doffset, destination_stride,
+					      ((gint8 *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_s8_to_complex(audio_buffer_util,
-					       (AgsComplex *) destination + doffset, destination_stride,
-					       (gint8 *) source + soffset, source_stride,
+					       ((AgsComplex *) destination) + doffset, destination_stride,
+					       ((gint8 *) source) + soffset, source_stride,
 					       count);
     }
     break;
@@ -20735,64 +20735,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8:
     {
       ags_audio_buffer_util_copy_s16_to_s8(audio_buffer_util,
-					   (gint8 *) destination + doffset, destination_stride,
-					   (gint16 *) source + soffset, source_stride,
+					   ((gint8 *) destination) + doffset, destination_stride,
+					   ((gint16 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16:
     {
       ags_audio_buffer_util_copy_s16_to_s16(audio_buffer_util,
-					    ((gint16 *) destination) + doffset, destination_stride,
-					    ((gint16 *) source) + soffset, source_stride,
+					    (((gint16 *) destination) + doffset, destination_stride,
+					    (((gint16 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24:
     {
       ags_audio_buffer_util_copy_s16_to_s24(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint16 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint16 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32:
     {
       ags_audio_buffer_util_copy_s16_to_s32(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint16 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint16 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64:
     {
       ags_audio_buffer_util_copy_s16_to_s64(audio_buffer_util,
-					    (gint64 *) destination + doffset, destination_stride,
-					    (gint16 *) source + soffset, source_stride,
+					    ((gint64 *) destination) + doffset, destination_stride,
+					    ((gint16 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_s16_to_float(audio_buffer_util,
-					      (gfloat *) destination + doffset, destination_stride,
-					      (gint16 *) source + soffset, source_stride,
+					      ((gfloat *) destination) + doffset, destination_stride,
+					      ((gint16 *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_s16_to_double(audio_buffer_util,
-					       (gdouble *) destination + doffset, destination_stride,
-					       (gint16 *) source + soffset, source_stride,
+					       ((gdouble *) destination) + doffset, destination_stride,
+					       ((gint16 *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_s16_to_complex(audio_buffer_util,
-						(AgsComplex *) destination + doffset, destination_stride,
-						(gint16 *) source + soffset, source_stride,
+						((AgsComplex *) destination) + doffset, destination_stride,
+						((gint16 *) source) + soffset, source_stride,
 						count);
     }
     break;
@@ -20800,64 +20800,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8:
     {
       ags_audio_buffer_util_copy_s24_to_s8(audio_buffer_util,
-					   (gint8 *) destination + doffset, destination_stride,
-					   (gint32 *) source + soffset, source_stride,
+					   ((gint8 *) destination) + doffset, destination_stride,
+					   ((gint32 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16:
     {
       ags_audio_buffer_util_copy_s24_to_s16(audio_buffer_util,
-					    (gint16 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint16 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24:
     {
       ags_audio_buffer_util_copy_s24_to_s24(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32:
     {
       ags_audio_buffer_util_copy_s24_to_s32(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64:
     {
       ags_audio_buffer_util_copy_s24_to_s64(audio_buffer_util,
-					    (gint64 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint64 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_s24_to_float(audio_buffer_util,
-					      (gfloat *) destination + doffset, destination_stride,
-					      (gint32 *) source + soffset, source_stride,
+					      ((gfloat *) destination) + doffset, destination_stride,
+					      ((gint32 *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_s24_to_double(audio_buffer_util,
-					       (gdouble *) destination + doffset, destination_stride,
-					       (gint32 *) source + soffset, source_stride,
+					       ((gdouble *) destination) + doffset, destination_stride,
+					       ((gint32 *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_s24_to_complex(audio_buffer_util,
-						(AgsComplex *) destination + doffset, destination_stride,
-						(gint32 *) source + soffset, source_stride,
+						((AgsComplex *) destination) + doffset, destination_stride,
+						((gint32 *) source) + soffset, source_stride,
 						count);
     }
     break;
@@ -20865,64 +20865,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8:
     {
       ags_audio_buffer_util_copy_s32_to_s8(audio_buffer_util,
-					   (gint8 *) destination + doffset, destination_stride,
-					   (gint32 *) source + soffset, source_stride,
+					   ((gint8 *) destination) + doffset, destination_stride,
+					   ((gint32 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16:
     {
       ags_audio_buffer_util_copy_s32_to_s16(audio_buffer_util,
-					    (gint16 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint16 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24:
     {
       ags_audio_buffer_util_copy_s32_to_s24(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32:
     {
       ags_audio_buffer_util_copy_s32_to_s32(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64:
     {
       ags_audio_buffer_util_copy_s32_to_s64(audio_buffer_util,
-					    (gint64 *) destination + doffset, destination_stride,
-					    (gint32 *) source + soffset, source_stride,
+					    ((gint64 *) destination) + doffset, destination_stride,
+					    ((gint32 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_s32_to_s8(audio_buffer_util,
-					   (gint8 *) destination + doffset, destination_stride,
-					   (gint32 *) source + soffset, source_stride,
+					   ((gint8 *) destination) + doffset, destination_stride,
+					   ((gint32 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_s32_to_double(audio_buffer_util,
-					       (gdouble *) destination + doffset, destination_stride,
-					       (gint32 *) source + soffset, source_stride,
+					       ((gdouble *) destination) + doffset, destination_stride,
+					       ((gint32 *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_s32_to_complex(audio_buffer_util,
-						(AgsComplex *) destination + doffset, destination_stride,
-						(gint32 *) source + soffset, source_stride,
+						((AgsComplex *) destination) + doffset, destination_stride,
+						((gint32 *) source) + soffset, source_stride,
 						count);
     }
     break;
@@ -20930,64 +20930,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8:
     {
       ags_audio_buffer_util_copy_s64_to_s8(audio_buffer_util,
-					   (gint8 *) destination + doffset, destination_stride,
-					   (gint64 *) source + soffset, source_stride,
+					   ((gint8 *) destination) + doffset, destination_stride,
+					   ((gint64 *) source) + soffset, source_stride,
 					   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16:
     {
       ags_audio_buffer_util_copy_s64_to_s16(audio_buffer_util,
-					    (gint16 *) destination + doffset, destination_stride,
-					    (gint64 *) source + soffset, source_stride,
+					    ((gint16 *) destination) + doffset, destination_stride,
+					    ((gint64 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24:
     {
       ags_audio_buffer_util_copy_s64_to_s24(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint64 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint64 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32:
     {
       ags_audio_buffer_util_copy_s64_to_s32(audio_buffer_util,
-					    (gint32 *) destination + doffset, destination_stride,
-					    (gint64 *) source + soffset, source_stride,
+					    ((gint32 *) destination) + doffset, destination_stride,
+					    ((gint64 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64:
     {
       ags_audio_buffer_util_copy_s64_to_s64(audio_buffer_util,
-					    (gint64 *) destination + doffset, destination_stride,
-					    (gint64 *) source + soffset, source_stride,
+					    ((gint64 *) destination) + doffset, destination_stride,
+					    ((gint64 *) source) + soffset, source_stride,
 					    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_s64_to_float(audio_buffer_util,
-					      (gfloat *) destination + doffset, destination_stride,
-					      (gint64 *) source + soffset, source_stride,
+					      ((gfloat *) destination) + doffset, destination_stride,
+					      ((gint64 *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_s64_to_double(audio_buffer_util,
-					       (gdouble *) destination + doffset, destination_stride,
-					       (gint64 *) source + soffset, source_stride,
+					       ((gdouble *) destination) + doffset, destination_stride,
+					       ((gint64 *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_s64_to_complex(audio_buffer_util,
-						(AgsComplex *) destination + doffset, destination_stride,
-						(gint64 *) source + soffset, source_stride,
+						((AgsComplex *) destination) + doffset, destination_stride,
+						((gint64 *) source) + soffset, source_stride,
 						count);
     }
     break;
@@ -20995,64 +20995,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8:
     {
       ags_audio_buffer_util_copy_float_to_s8(audio_buffer_util,
-					     (gint8 *) destination + doffset, destination_stride,
-					     (gfloat *) source + soffset, source_stride,
+					     ((gint8 *) destination) + doffset, destination_stride,
+					     ((gfloat *) source) + soffset, source_stride,
 					     count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16:
     {
       ags_audio_buffer_util_copy_float_to_s16(audio_buffer_util,
-					      (gint16 *) destination + doffset, destination_stride,
-					      (gfloat *) source + soffset, source_stride,
+					      ((gint16 *) destination) + doffset, destination_stride,
+					      ((gfloat *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24:
     {
       ags_audio_buffer_util_copy_float_to_s24(audio_buffer_util,
-					      (gint32 *) destination + doffset, destination_stride,
-					      (gfloat *) source + soffset, source_stride,
+					      ((gint32 *) destination) + doffset, destination_stride,
+					      ((gfloat *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32:
     {
       ags_audio_buffer_util_copy_float_to_s32(audio_buffer_util,
-					      (gint32 *) destination + doffset, destination_stride,
-					      (gfloat *) source + soffset, source_stride,
+					      ((gint32 *) destination) + doffset, destination_stride,
+					      ((gfloat *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64:
     {
       ags_audio_buffer_util_copy_float_to_s64(audio_buffer_util,
-					      (gint64 *) destination + doffset, destination_stride,
-					      (gfloat *) source + soffset, source_stride,
+					      ((gint64 *) destination) + doffset, destination_stride,
+					      ((gfloat *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_float_to_float(audio_buffer_util,
-						(gfloat *) destination + doffset, destination_stride,
-						(gfloat *) source + soffset, source_stride,
+						((gfloat *) destination) + doffset, destination_stride,
+						((gfloat *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_float_to_double(audio_buffer_util,
-						 (gdouble *) destination + doffset, destination_stride,
-						 (gfloat *) source + soffset, source_stride,
+						 ((gdouble *) destination) + doffset, destination_stride,
+						 ((gfloat *) source) + soffset, source_stride,
 						 count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_float_to_complex(audio_buffer_util,
-						  (AgsComplex *) destination + doffset, destination_stride,
-						  (gfloat *) source + soffset, source_stride,
+						  ((AgsComplex *) destination) + doffset, destination_stride,
+						  ((gfloat *) source) + soffset, source_stride,
 						  count);
     }
     break;
@@ -21060,64 +21060,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8:
     {
       ags_audio_buffer_util_copy_double_to_s8(audio_buffer_util,
-					      (gint8 *) destination + doffset, destination_stride,
-					      (gdouble *) source + soffset, source_stride,
+					      ((gint8 *) destination) + doffset, destination_stride,
+					      ((gdouble *) source) + soffset, source_stride,
 					      count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16:
     {
       ags_audio_buffer_util_copy_double_to_s16(audio_buffer_util,
-					       (gint16 *) destination + doffset, destination_stride,
-					       (gdouble *) source + soffset, source_stride,
+					       ((gint16 *) destination) + doffset, destination_stride,
+					       ((gdouble *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24:
     {
       ags_audio_buffer_util_copy_double_to_s24(audio_buffer_util,
-					       (gint32 *) destination + doffset, destination_stride,
-					       (gdouble *) source + soffset, source_stride,
+					       ((gint32 *) destination) + doffset, destination_stride,
+					       ((gdouble *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32:
     {
       ags_audio_buffer_util_copy_double_to_s32(audio_buffer_util,
-					       (gint32 *) destination + doffset, destination_stride,
-					       (gdouble *) source + soffset, source_stride,
+					       ((gint32 *) destination) + doffset, destination_stride,
+					       ((gdouble *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64:
     {
       ags_audio_buffer_util_copy_double_to_s64(audio_buffer_util,
-					       (gint64 *) destination + doffset, destination_stride,
-					       (gdouble *) source + soffset, source_stride,
+					       ((gint64 *) destination) + doffset, destination_stride,
+					       ((gdouble *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_double_to_float(audio_buffer_util,
-						 (gfloat *) destination + doffset, destination_stride,
-						 (gdouble *) source + soffset, source_stride,
+						 ((gfloat *) destination) + doffset, destination_stride,
+						 ((gdouble *) source) + soffset, source_stride,
 						 count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_double_to_double(audio_buffer_util,
-						  (gdouble *) destination + doffset, destination_stride,
-						  (gdouble *) source + soffset, source_stride,
+						  ((gdouble *) destination) + doffset, destination_stride,
+						  ((gdouble *) source) + soffset, source_stride,
 						  count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_double_to_complex(audio_buffer_util,
-						   (AgsComplex *) destination + doffset, destination_stride,
-						   (gdouble *) source + soffset, source_stride,
+						   ((AgsComplex *) destination) + doffset, destination_stride,
+						   ((gdouble *) source) + soffset, source_stride,
 						   count);
     }
     break;
@@ -21125,64 +21125,64 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S8:
     {
       ags_audio_buffer_util_copy_complex_to_s8(audio_buffer_util,
-					       (gint8 *) destination + doffset, destination_stride,
-					       (AgsComplex *) source + soffset, source_stride,
+					       ((gint8 *) destination) + doffset, destination_stride,
+					       ((AgsComplex *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S16:
     {
       ags_audio_buffer_util_copy_complex_to_s16(audio_buffer_util,
-						(gint16 *) destination + doffset, destination_stride,
-						(AgsComplex *) source + soffset, source_stride,
+						((gint16 *) destination) + doffset, destination_stride,
+						((AgsComplex *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S24:
     {
       ags_audio_buffer_util_copy_complex_to_s24(audio_buffer_util,
-						(gint32 *) destination + doffset, destination_stride,
-						(AgsComplex *) source + soffset, source_stride,
+						((gint32 *) destination) + doffset, destination_stride,
+						((AgsComplex *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S32:
     {
       ags_audio_buffer_util_copy_complex_to_s32(audio_buffer_util,
-						(gint32 *) destination + doffset, destination_stride,
-						(AgsComplex *) source + soffset, source_stride,
+						((gint32 *) destination) + doffset, destination_stride,
+						((AgsComplex *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_S64:
     {
       ags_audio_buffer_util_copy_complex_to_s64(audio_buffer_util,
-						(gint64 *) destination + doffset, destination_stride,
-						(AgsComplex *) source + soffset, source_stride,
+						((gint64 *) destination) + doffset, destination_stride,
+						((AgsComplex *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_complex_to_float(audio_buffer_util,
-						  (gfloat *) destination + doffset, destination_stride,
-						  (AgsComplex *) source + soffset, source_stride,
+						  ((gfloat *) destination) + doffset, destination_stride,
+						  ((AgsComplex *) source) + soffset, source_stride,
 						  count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_DOUBLE:
     {
       ags_audio_buffer_util_copy_complex_to_double(audio_buffer_util,
-						   (gdouble *) destination + doffset, destination_stride,
-						   (AgsComplex *) source + soffset, source_stride,
+						   ((gdouble *) destination) + doffset, destination_stride,
+						   ((AgsComplex *) source) + soffset, source_stride,
 						   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_complex_to_complex(audio_buffer_util,
-						    (AgsComplex *) destination + doffset, destination_stride,
-						    (AgsComplex *) source + soffset, source_stride,
+						    ((AgsComplex *) destination) + doffset, destination_stride,
+						    ((AgsComplex *) source) + soffset, source_stride,
 						    count);
     }
     break;
@@ -21191,72 +21191,72 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_s8_to_float32(audio_buffer_util,
-					       (Float32 *) destination + doffset, destination_stride,
-					       (gint8 *) source + soffset, source_stride,
+					       ((Float32 *) destination) + doffset, destination_stride,
+					       ((gint8 *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_s16_to_float32(audio_buffer_util,
-						(Float32 *) destination + doffset, destination_stride,
-						((gint16 *) source) + soffset, source_stride,
+						((Float32 *) destination) + doffset, destination_stride,
+						(((gint16 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_s24_to_float32(audio_buffer_util,
-						(Float32 *) destination + doffset, destination_stride,
-						(gint32 *) source + soffset, source_stride,
+						((Float32 *) destination) + doffset, destination_stride,
+						((gint32 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_s32_to_float32(audio_buffer_util,
-						(Float32 *) destination + doffset, destination_stride,
-						(gint32 *) source + soffset, source_stride,
+						((Float32 *) destination) + doffset, destination_stride,
+						((gint32 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_s64_to_float32(audio_buffer_util,
-						(Float32 *) destination + doffset, destination_stride,
-						(gint64 *) source + soffset, source_stride,
+						((Float32 *) destination) + doffset, destination_stride,
+						((gint64 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_float_to_float32(audio_buffer_util,
-						  (Float32 *) destination + doffset, destination_stride,
-						  (gfloat *) source + soffset, source_stride,
+						  ((Float32 *) destination) + doffset, destination_stride,
+						  ((gfloat *) source) + soffset, source_stride,
 						  count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_double_to_float32(audio_buffer_util,
-						   (Float32 *) destination + doffset, destination_stride,
-						   (gdouble *) source + soffset, source_stride,
+						   ((Float32 *) destination) + doffset, destination_stride,
+						   ((gdouble *) source) + soffset, source_stride,
 						   count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_float32_to_float32(audio_buffer_util,
-						    (Float32 *) destination + doffset, destination_stride,
-						    (Float32 *) source + soffset, source_stride,
+						    ((Float32 *) destination) + doffset, destination_stride,
+						    ((Float32 *) source) + soffset, source_stride,
 						    count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_COMPLEX_TO_FLOAT32:
     {
       ags_audio_buffer_util_copy_complex_to_float32(audio_buffer_util,
-						    (Float32 *) destination + doffset, destination_stride,
-						    (AgsComplex *) source + soffset, source_stride,
+						    ((Float32 *) destination) + doffset, destination_stride,
+						    ((AgsComplex *) source) + soffset, source_stride,
 						    count);
     }
     break;
@@ -21264,56 +21264,56 @@ ags_audio_buffer_util_copy_buffer_to_buffer(AgsAudioBufferUtil *audio_buffer_uti
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S8:
     {
       ags_audio_buffer_util_copy_float32_to_s8(audio_buffer_util,
-					       (gint8 *) destination + doffset, destination_stride,
-					       (Float32 *) source + soffset, source_stride,
+					       ((gint8 *) destination) + doffset, destination_stride,
+					       ((Float32 *) source) + soffset, source_stride,
 					       count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S16:
     {
       ags_audio_buffer_util_copy_float32_to_s16(audio_buffer_util,
-						(gint16 *) destination + doffset, destination_stride,
-						(Float32 *) source + soffset, source_stride,
+						((gint16 *) destination) + doffset, destination_stride,
+						((Float32 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S24:
     {
       ags_audio_buffer_util_copy_float32_to_s24(audio_buffer_util,
-						(gint32 *) destination + doffset, destination_stride,
-						(Float32 *) source + soffset, source_stride,
+						((gint32 *) destination) + doffset, destination_stride,
+						((Float32 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S32:
     {
       ags_audio_buffer_util_copy_float32_to_s32(audio_buffer_util,
-						(gint32 *) destination + doffset, destination_stride,
-						(Float32 *) source + soffset, source_stride,
+						((gint32 *) destination) + doffset, destination_stride,
+						((Float32 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_S64:
     {
       ags_audio_buffer_util_copy_float32_to_s64(audio_buffer_util,
-						(gint64 *) destination + doffset, destination_stride,
-						(Float32 *) source + soffset, source_stride,
+						((gint64 *) destination) + doffset, destination_stride,
+						((Float32 *) source) + soffset, source_stride,
 						count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_FLOAT:
     {
       ags_audio_buffer_util_copy_float32_to_float(audio_buffer_util,
-						  (gfloat *) destination + doffset, destination_stride,
-						  (Float32 *) source + soffset, source_stride,
+						  ((gfloat *) destination) + doffset, destination_stride,
+						  ((Float32 *) source) + soffset, source_stride,
 						  count);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT32_TO_COMPLEX:
     {
       ags_audio_buffer_util_copy_float32_to_complex(audio_buffer_util,
-						    (AgsComplex *) destination + doffset, destination_stride,
-						    (Float32 *) source + soffset, source_stride,
+						    ((AgsComplex *) destination) + doffset, destination_stride,
+						    ((Float32 *) source) + soffset, source_stride,
 						    count);
     }
     break;
