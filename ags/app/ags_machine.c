@@ -3166,10 +3166,8 @@ ags_machine_real_apply_preset(AgsMachine *machine,
 	    }
 	  }
 
-	  g_value_set_pointer(value,
+	  g_value_set_pointer(&port_value,
 			      data);
-
-	  //TODO:JK: implement me
 	}
 
 	if(success){

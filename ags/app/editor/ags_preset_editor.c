@@ -535,9 +535,7 @@ ags_preset_editor_open_preset(AgsPresetEditor *preset_editor,
 				   1, g_strdup("0"),
 				   2, g_strdup(specifier),
 				   3, range,
-				   4, g_strdup_printf("%f",
-						      g_strtod(value,
-							       NULL)),
+				   4, value,
 				   5, value_type,
 				   -1);
 	      }
