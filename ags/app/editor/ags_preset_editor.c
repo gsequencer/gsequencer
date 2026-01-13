@@ -515,6 +515,13 @@ ags_preset_editor_open_preset(AgsPresetEditor *preset_editor,
 					    g_value_get_double(plugin_port->lower_value), g_value_get_double(plugin_port->upper_value));
 
 		    value_type = G_TYPE_DOUBLE;
+		  }else if(G_VALUE_HOLDS_POINTER(plugin_port->default_value)){
+		    if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
+		      range = g_strdup_printf("array count %d",
+					      AGS_PORT(tmp_port->data)->port_value_length);
+		    
+		      value_type = AGS_PORT(tmp_port->data)->port_value_type;
+		    }
 		  }
 		}
 
@@ -591,6 +598,13 @@ ags_preset_editor_open_preset(AgsPresetEditor *preset_editor,
 					    g_value_get_double(plugin_port->lower_value), g_value_get_double(plugin_port->upper_value));
 
 		    value_type = G_TYPE_DOUBLE;
+		  }else if(G_VALUE_HOLDS_POINTER(plugin_port->default_value)){
+		    if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
+		      range = g_strdup_printf("array count %d",
+					      AGS_PORT(tmp_port->data)->port_value_length);
+		    
+		      value_type = AGS_PORT(tmp_port->data)->port_value_type;
+		    }
 		  }
 		}
 
@@ -672,6 +686,13 @@ ags_preset_editor_open_preset(AgsPresetEditor *preset_editor,
 					    g_value_get_double(plugin_port->lower_value), g_value_get_double(plugin_port->upper_value));
 
 		    value_type = G_TYPE_DOUBLE;
+		  }else if(G_VALUE_HOLDS_POINTER(plugin_port->default_value)){
+		    if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
+		      range = g_strdup_printf("array count %d",
+					      AGS_PORT(tmp_port->data)->port_value_length);
+		    
+		      value_type = AGS_PORT(tmp_port->data)->port_value_type;
+		    }
 		  }
 		}
 
@@ -843,7 +864,7 @@ ags_preset_editor_save_preset(AgsPresetEditor *preset_editor)
  * ags_preset_editor_apply_preset:
  * @preset_editor: the #AgsPresetEditor
  *
- * Save @preset_editor
+ * Apply @preset_editor
  *
  * Since: 4.1.0
  */
