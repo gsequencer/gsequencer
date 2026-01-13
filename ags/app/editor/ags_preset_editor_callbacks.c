@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -166,7 +166,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
 	  gpointer data;
 
-	  gchar *str, *iter;
+	  gchar *str, *str_iter;
 
 	  guint current_length;
 	  guint value_length;
@@ -213,22 +213,24 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	    	    
 	    memset(str, 0, current_length * sizeof(gchar));
 
-	    iter = str;
+	    str_iter = str;
 
 	    for(i = 0; i < AGS_PORT(port->data)->port_value_length; i++){
+	      retval = 0;
+	      
 	      if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
-		retval = sprintf(iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
+		retval = sprintf(str_iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
 	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
-		retval = sprintf(iter, "%li", ((gint64 *) data)[i]);
+		retval = sprintf(str_iter, "%li", ((gint64 *) data)[i]);
 	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
-		retval = sprintf(iter, "%lu", ((guint64 *) data)[i]);
+		retval = sprintf(str_iter, "%lu", ((guint64 *) data)[i]);
 	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
-		retval = sprintf(iter, "%f", ((gfloat *) data)[i]);
+		retval = sprintf(str_iter, "%f", ((gfloat *) data)[i]);
 	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
-		retval = sprintf(iter, "%lf", ((gdouble *) data)[i]);
+		retval = sprintf(str_iter, "%lf", ((gdouble *) data)[i]);
 	      }
 
-	      if(iter + retval + 1 + value_length + 1 >= str + current_length){
+	      if(str_iter + retval + 1 + value_length + 1 >= str + current_length){
 		str = g_realloc(str,
 				(current_length + 2048) * sizeof(gchar));
 
@@ -237,12 +239,12 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 		current_length += 2048;
 	      }
 	      
-	      iter += retval;
+	      str_iter += retval;
 
 	      if(i + 1 < AGS_PORT(port->data)->port_value_length){
-		iter[0] = ' ';
+		str_iter[0] = ' ';
 		
-		iter++;
+		str_iter++;
 	      }
 	    }
 
@@ -395,7 +397,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	  if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
 	    gpointer data;
 
-	    gchar *str, *iter;
+	    gchar *str, *str_iter;
 
 	    guint current_length;
 	    guint value_length;
@@ -442,22 +444,24 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	    	    
 	      memset(str, 0, current_length * sizeof(gchar));
 
-	      iter = str;
+	      str_iter = str;
 
 	      for(i = 0; i < AGS_PORT(port->data)->port_value_length; i++){
+		retval = 0;
+	      
 		if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
-		  retval = sprintf(iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
+		  retval = sprintf(str_iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
-		  retval = sprintf(iter, "%li", ((gint64 *) data)[i]);
+		  retval = sprintf(str_iter, "%li", ((gint64 *) data)[i]);
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
-		  retval = sprintf(iter, "%lu", ((guint64 *) data)[i]);
+		  retval = sprintf(str_iter, "%lu", ((guint64 *) data)[i]);
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
-		  retval = sprintf(iter, "%f", ((gfloat *) data)[i]);
+		  retval = sprintf(str_iter, "%f", ((gfloat *) data)[i]);
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
-		  retval = sprintf(iter, "%lf", ((gdouble *) data)[i]);
+		  retval = sprintf(str_iter, "%lf", ((gdouble *) data)[i]);
 		}
 
-		if(iter + retval + 1 + value_length + 1 >= str + current_length){
+		if(str_iter + retval + 1 + value_length + 1 >= str + current_length){
 		  str = g_realloc(str,
 				  (current_length + 2048) * sizeof(gchar));
 
@@ -466,12 +470,12 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 		  current_length += 2048;
 		}
 	      
-		iter += retval;
+		str_iter += retval;
 
 		if(i + 1 < AGS_PORT(port->data)->port_value_length){
-		  iter[0] = ' ';
+		  str_iter[0] = ' ';
 		
-		  iter++;
+		  str_iter++;
 		}
 	      }
 
@@ -634,7 +638,7 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	  if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
 	    gpointer data;
 
-	    gchar *str, *iter;
+	    gchar *str, *str_iter;
 
 	    guint current_length;
 	    guint value_length;
@@ -681,22 +685,24 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 	    	    
 	      memset(str, 0, current_length * sizeof(gchar));
 
-	      iter = str;
+	      str_iter = str;
 
 	      for(i = 0; i < AGS_PORT(port->data)->port_value_length; i++){
+		retval = 0;
+	      
 		if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
-		  retval = sprintf(iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
+		  retval = sprintf(str_iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
-		  retval = sprintf(iter, "%li", ((gint64 *) data)[i]);
+		  retval = sprintf(str_iter, "%li", ((gint64 *) data)[i]);
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
-		  retval = sprintf(iter, "%lu", ((guint64 *) data)[i]);
+		  retval = sprintf(str_iter, "%lu", ((guint64 *) data)[i]);
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
-		  retval = sprintf(iter, "%f", ((gfloat *) data)[i]);
+		  retval = sprintf(str_iter, "%f", ((gfloat *) data)[i]);
 		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
-		  retval = sprintf(iter, "%lf", ((gdouble *) data)[i]);
+		  retval = sprintf(str_iter, "%lf", ((gdouble *) data)[i]);
 		}
 
-		if(iter + retval + 1 + value_length + 1 >= str + current_length){
+		if(str_iter + retval + 1 + value_length + 1 >= str + current_length){
 		  str = g_realloc(str,
 				  (current_length + 2048) * sizeof(gchar));
 
@@ -705,12 +711,12 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 		  current_length += 2048;
 		}
 	      
-		iter += retval;
+		str_iter += retval;
 
 		if(i + 1 < AGS_PORT(port->data)->port_value_length){
-		  iter[0] = ' ';
+		  str_iter[0] = ' ';
 		
-		  iter++;
+		  str_iter++;
 		}
 	      }
 
