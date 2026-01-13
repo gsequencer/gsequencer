@@ -113,10 +113,12 @@
       AgsRecycling associated with the appropriate AgsChannel.
     </para>
 
-    <imagedata fileref="../images/AGS_linking.png" format="PNG" />
+    <imagedata width="100%" scalefit="1" fileref="../images/AGS_linking.png" format="PNG" />
     <table>
       <title>AGS network layer table</title>
       <tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	<colspec colnum="1" colname="col1" colwidth="1*"/>
+	<colspec colnum="2" colname="col2" colwidth="2*"/>
 	<thead>
 	  <row>
 	    <entry>object</entry>

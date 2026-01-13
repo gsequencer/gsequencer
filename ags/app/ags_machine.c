@@ -2995,8 +2995,16 @@ ags_machine_real_apply_preset(AgsMachine *machine,
 					    specifier)) != NULL){
 	GValue port_value = G_VALUE_INIT;
 
+	gpointer data;
+
+	gchar *iter, *endptr;
+	
+	guint value_length;
+	guint i;
 	gboolean success;  
 
+	data = NULL;
+	
 	success = FALSE;
 	
 	if(!(AGS_PORT(port->data)->port_value_is_pointer)){
@@ -3019,12 +3027,155 @@ ags_machine_real_apply_preset(AgsMachine *machine,
 			       g_strtod(value,
 					NULL));
 	  }
+	}else{
+	  success = TRUE;
+	  
+	  g_value_init(&port_value,
+		       G_TYPE_POINTER);
+
+	  if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gboolean));
+
+	    value_length = AGS_PORT_BOOLEAN_BUF_SIZE;
+
+	    iter = value;
+		    
+	    for(i = 0; i < AGS_PORT(port->data)->port_value_length && iter != NULL; i++){
+	      endptr = NULL;
+	    
+	      ((gboolean *) data)[i] = (!g_ascii_strncasecmp(iter, "true", 5) == TRUE) ? TRUE: FALSE;
+
+	      endptr += 4;
+
+	      if(!((gboolean *) data)[i]){
+		endptr++;
+	      }
+	      
+	      iter = endptr;
+
+	      if(iter != NULL &&
+		 iter[0] != '\0'){
+		iter++;
+	      }
+
+	      if(iter != NULL &&
+		 iter[0] == '\0'){
+		iter = NULL;
+	      }
+	    }
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gint64));
+
+	    value_length = AGS_PORT_INT64_BUF_SIZE;
+
+	    iter = value;
+		    
+	    for(i = 0; i < AGS_PORT(port->data)->port_value_length && iter != NULL; i++){
+	      endptr = NULL;
+	    
+	      ((gint64 *) data)[i] = (gint64) g_ascii_strtoll(iter,
+							      &endptr,
+							      10);
+
+	      iter = endptr;
+
+	      if(iter != NULL &&
+		 iter[0] != '\0'){
+		iter++;
+	      }
+
+	      if(iter != NULL &&
+		 iter[0] == '\0'){
+		iter = NULL;
+	      }
+	    }
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(guint64));
+
+	    value_length = AGS_PORT_UINT64_BUF_SIZE;
+
+	    iter = value;
+
+	    for(i = 0; i < AGS_PORT(port->data)->port_value_length && iter != NULL; i++){
+	      endptr = NULL;
+	    
+	      ((guint64 *) data)[i] = (guint64) g_ascii_strtoull(iter,
+								 &endptr,
+								 10);
+	      
+	      iter = endptr;
+
+	      if(iter != NULL &&
+		 iter[0] != '\0'){
+		iter++;
+	      }
+
+	      if(iter != NULL &&
+		 iter[0] == '\0'){
+		iter = NULL;
+	      }
+	    }	    
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gfloat));
+
+	    value_length = AGS_PORT_FLOAT_BUF_SIZE;
+
+	    iter = value;
+
+	    for(i = 0; i < AGS_PORT(port->data)->port_value_length && iter != NULL; i++){
+	      endptr = NULL;
+	    
+	      ((gfloat *) data)[i] = (gfloat) g_strtod(iter,
+						       &endptr);
+
+	      iter = endptr;
+
+	      if(iter != NULL &&
+		 iter[0] != '\0'){
+		iter++;
+	      }
+
+	      if(iter[0] == '\0'){
+		iter = NULL;
+	      }
+	    }
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gdouble));
+
+	    value_length = AGS_PORT_DOUBLE_BUF_SIZE;
+	    
+	    iter = value;
+
+	    for(i = 0; i < AGS_PORT(port->data)->port_value_length && iter != NULL; i++){
+	      endptr = NULL;
+	    
+	      ((gdouble *) data)[i] = g_strtod(iter,
+					       &endptr);
+
+	      iter = endptr;
+
+	      if(iter != NULL &&
+		 iter[0] != '\0'){
+		iter++;
+	      }
+
+	      if(iter != NULL &&
+		 iter[0] == '\0'){
+		iter = NULL;
+	      }
+	    }
+	  }
+
+	  g_value_set_pointer(&port_value,
+			      data);
 	}
 
 	if(success){
 	  ags_port_safe_write(port->data,
 			      &port_value);
 	}
+
+	g_free(data);
       
 	port = port->next;
       }
