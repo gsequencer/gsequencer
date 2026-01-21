@@ -3713,10 +3713,10 @@ libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
 gsequencer.1: gsequencer.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 --xinclude -o $(top_builddir) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/gsequencer.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 --xinclude -o $(top_builddir) $(MANPAGES_XSL) $(top_srcdir)/gsequencer.1.xml
 
 midi2xml.1: midi2xml.1.xml
-	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 --xinclude -o $(top_builddir)/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $(top_srcdir)/midi2xml.1.xml
+	xsltproc --nonet --param make.year.ranges 1 --param make.single.year.ranges 1 --param man.charmap.use.subset 0 --xinclude -o $(top_builddir)/ $(MANPAGES_XSL) $(top_srcdir)/midi2xml.1.xml
 
 gsequencer.desktop: gsequencer.desktop.in
 	$(AM_V_GEN)sed -e 's,\@datadir\@,$(datadir),g' $(top_srcdir)/gsequencer.desktop.in > $(top_builddir)/gsequencer.desktop
