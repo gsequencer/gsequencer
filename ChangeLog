@@ -1,3 +1,8 @@
+ags (8.2.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented audio buffer clear of signed integer types
+
 ags (8.2.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

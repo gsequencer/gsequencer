@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -398,6 +398,26 @@ AgsAudioBufferUtilCopyMode ags_audio_buffer_util_get_copy_mode_from_format(AgsAu
 									   AgsAudioBufferUtilFormat source_format);
 
 /* clear */
+void ags_audio_buffer_util_clear_s8(AgsAudioBufferUtil *audio_buffer_util,
+				    gint8 *buffer, guint channels,
+				    guint count);
+
+void ags_audio_buffer_util_clear_s16(AgsAudioBufferUtil *audio_buffer_util,
+				     gint16 *buffer, guint channels,
+				     guint count);
+
+void ags_audio_buffer_util_clear_s24(AgsAudioBufferUtil *audio_buffer_util,
+				     gint32 *buffer, guint channels,
+				     guint count);
+
+void ags_audio_buffer_util_clear_s32(AgsAudioBufferUtil *audio_buffer_util,
+				     gint32 *buffer, guint channels,
+				     guint count);
+
+void ags_audio_buffer_util_clear_s64(AgsAudioBufferUtil *audio_buffer_util,
+				     gint64 *buffer, guint channels,
+				     guint count);
+
 void ags_audio_buffer_util_clear_float(AgsAudioBufferUtil *audio_buffer_util,
 				       gfloat *buffer, guint channels,
 				       guint count);
