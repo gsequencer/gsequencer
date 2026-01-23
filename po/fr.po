@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-01-22 14:30+0100\n"
+"POT-Creation-Date: 2026-01-23 21:20+0100\n"
 "PO-Revision-Date: 2021-01-11 21:07+0100\n"
 "Last-Translator: Joël Krähemann <jkraehemann@gmail.com>\n"
 "Language-Team: français <jkraehemann@gmail.com>\n"
@@ -325,7 +325,7 @@ msgstr "maximal précision de threads [Hz]"
 msgid "update UI timeout[s]"
 msgstr ""
 
-#: ags/app/ags_bulk_member.c:889 ags/app/machine/ags_dssi_bridge.c:419
+#: ags/app/ags_bulk_member.c:899 ags/app/machine/ags_dssi_bridge.c:419
 #: ags/app/machine/ags_live_dssi_bridge.c:422
 #: ags/app/machine/ags_live_vst3_bridge.c:479
 #: ags/app/machine/ags_vst3_bridge.c:459
