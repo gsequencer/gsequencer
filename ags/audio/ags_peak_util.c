@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,8 @@
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
 #include <Accelerate/Accelerate.h>
 #endif
+
+#include <math.h>
 
 /**
  * SECTION:ags_peak_util
@@ -494,86 +496,49 @@ ags_peak_util_compute_s8(AgsPeakUtil *peak_util)
 
     source += peak_util->source_stride;
 
-    v_zero = (ags_v8double) {
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    };
-    
     v_buffer = (1.0 / (gdouble) G_MAXUINT8 * peak_util->pressure_factor) * v_buffer;
 
-    v_zero = v_buffer == v_zero;
-
-    if(v_zero[0] != 0.0){
+    if(v_buffer[0] == 0.0 ||
+       isnan(v_buffer[0])){
       v_buffer[0] = 1.0;
     }
 
-    if(v_zero[1] != 0.0){
+    if(v_buffer[1] == 0.0 ||
+       isnan(v_buffer[1])){
       v_buffer[1] = 1.0;
     }
 
-    if(v_zero[2] != 0.0){
+    if(v_buffer[2] == 0.0 ||
+       isnan(v_buffer[2])){
       v_buffer[2] = 1.0;
     }
 
-    if(v_zero[3] != 0.0){
+    if(v_buffer[3] == 0.0 ||
+       isnan(v_buffer[3])){
       v_buffer[3] = 1.0;
     }
 
-    if(v_zero[4] != 0.0){
+    if(v_buffer[4] == 0.0 ||
+       isnan(v_buffer[4])){
       v_buffer[4] = 1.0;
     }
 
-    if(v_zero[5] != 0.0){
+    if(v_buffer[5] == 0.0 ||
+       isnan(v_buffer[5])){
       v_buffer[5] = 1.0;
     }
 
-    if(v_zero[6] != 0.0){
+    if(v_buffer[6] == 0.0 ||
+       isnan(v_buffer[6])){
       v_buffer[6] = 1.0;
     }
 
-    if(v_zero[7] != 0.0){
+    if(v_buffer[7] == 0.0 ||
+       isnan(v_buffer[7])){
       v_buffer[7] = 1.0;
     }
-      
+    
     v_buffer = 1.0 / v_buffer;
-
-    if(v_zero[0] != 0.0){
-      v_buffer[0] = 0.0;
-    }
-
-    if(v_zero[1] != 0.0){
-      v_buffer[1] = 0.0;
-    }
-
-    if(v_zero[2] != 0.0){
-      v_buffer[2] = 0.0;
-    }
-
-    if(v_zero[3] != 0.0){
-      v_buffer[3] = 0.0;
-    }
-
-    if(v_zero[4] != 0.0){
-      v_buffer[4] = 0.0;
-    }
-
-    if(v_zero[5] != 0.0){
-      v_buffer[5] = 0.0;
-    }
-
-    if(v_zero[6] != 0.0){
-      v_buffer[6] = 0.0;
-    }
-
-    if(v_zero[7] != 0.0){
-      v_buffer[7] = 0.0;
-    }
       
     current_peak += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -807,86 +772,50 @@ ags_peak_util_compute_s16(AgsPeakUtil *peak_util)
 
     source += peak_util->source_stride;
 
-    v_zero = (ags_v8double) {
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    };
-    
     v_buffer = (1.0 / (gdouble) G_MAXUINT16 * peak_util->pressure_factor) * v_buffer;
 
-    v_zero = v_buffer == v_zero;
 
-    if(v_zero[0] != 0.0){
+    if(v_buffer[0] == 0.0 ||
+       isnan(v_buffer[0])){
       v_buffer[0] = 1.0;
     }
 
-    if(v_zero[1] != 0.0){
+    if(v_buffer[1] == 0.0 ||
+       isnan(v_buffer[1])){
       v_buffer[1] = 1.0;
     }
 
-    if(v_zero[2] != 0.0){
+    if(v_buffer[2] == 0.0 ||
+       isnan(v_buffer[2])){
       v_buffer[2] = 1.0;
     }
 
-    if(v_zero[3] != 0.0){
+    if(v_buffer[3] == 0.0 ||
+       isnan(v_buffer[3])){
       v_buffer[3] = 1.0;
     }
 
-    if(v_zero[4] != 0.0){
+    if(v_buffer[4] == 0.0 ||
+       isnan(v_buffer[4])){
       v_buffer[4] = 1.0;
     }
 
-    if(v_zero[5] != 0.0){
+    if(v_buffer[5] == 0.0 ||
+       isnan(v_buffer[5])){
       v_buffer[5] = 1.0;
     }
 
-    if(v_zero[6] != 0.0){
+    if(v_buffer[6] == 0.0 ||
+       isnan(v_buffer[6])){
       v_buffer[6] = 1.0;
     }
 
-    if(v_zero[7] != 0.0){
+    if(v_buffer[7] == 0.0 ||
+       isnan(v_buffer[7])){
       v_buffer[7] = 1.0;
     }
-      
+    
     v_buffer = 1.0 / v_buffer;
-
-    if(v_zero[0] != 0.0){
-      v_buffer[0] = 0.0;
-    }
-
-    if(v_zero[1] != 0.0){
-      v_buffer[1] = 0.0;
-    }
-
-    if(v_zero[2] != 0.0){
-      v_buffer[2] = 0.0;
-    }
-
-    if(v_zero[3] != 0.0){
-      v_buffer[3] = 0.0;
-    }
-
-    if(v_zero[4] != 0.0){
-      v_buffer[4] = 0.0;
-    }
-
-    if(v_zero[5] != 0.0){
-      v_buffer[5] = 0.0;
-    }
-
-    if(v_zero[6] != 0.0){
-      v_buffer[6] = 0.0;
-    }
-
-    if(v_zero[7] != 0.0){
-      v_buffer[7] = 0.0;
-    }
       
     current_peak += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -1120,86 +1049,50 @@ ags_peak_util_compute_s24(AgsPeakUtil *peak_util)
 
     source += peak_util->source_stride;
 
-    v_zero = (ags_v8double) {
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    };
-    
     v_buffer = (1.0 / (gdouble) 0xffffffff * peak_util->pressure_factor) * v_buffer;
 
-    v_zero = v_buffer == v_zero;
 
-    if(v_zero[0] != 0.0){
+    if(v_buffer[0] == 0.0 ||
+       isnan(v_buffer[0])){
       v_buffer[0] = 1.0;
     }
 
-    if(v_zero[1] != 0.0){
+    if(v_buffer[1] == 0.0 ||
+       isnan(v_buffer[1])){
       v_buffer[1] = 1.0;
     }
 
-    if(v_zero[2] != 0.0){
+    if(v_buffer[2] == 0.0 ||
+       isnan(v_buffer[2])){
       v_buffer[2] = 1.0;
     }
 
-    if(v_zero[3] != 0.0){
+    if(v_buffer[3] == 0.0 ||
+       isnan(v_buffer[3])){
       v_buffer[3] = 1.0;
     }
 
-    if(v_zero[4] != 0.0){
+    if(v_buffer[4] == 0.0 ||
+       isnan(v_buffer[4])){
       v_buffer[4] = 1.0;
     }
 
-    if(v_zero[5] != 0.0){
+    if(v_buffer[5] == 0.0 ||
+       isnan(v_buffer[5])){
       v_buffer[5] = 1.0;
     }
 
-    if(v_zero[6] != 0.0){
+    if(v_buffer[6] == 0.0 ||
+       isnan(v_buffer[6])){
       v_buffer[6] = 1.0;
     }
 
-    if(v_zero[7] != 0.0){
+    if(v_buffer[7] == 0.0 ||
+       isnan(v_buffer[7])){
       v_buffer[7] = 1.0;
     }
-      
+    
     v_buffer = 1.0 / v_buffer;
-
-    if(v_zero[0] != 0.0){
-      v_buffer[0] = 0.0;
-    }
-
-    if(v_zero[1] != 0.0){
-      v_buffer[1] = 0.0;
-    }
-
-    if(v_zero[2] != 0.0){
-      v_buffer[2] = 0.0;
-    }
-
-    if(v_zero[3] != 0.0){
-      v_buffer[3] = 0.0;
-    }
-
-    if(v_zero[4] != 0.0){
-      v_buffer[4] = 0.0;
-    }
-
-    if(v_zero[5] != 0.0){
-      v_buffer[5] = 0.0;
-    }
-
-    if(v_zero[6] != 0.0){
-      v_buffer[6] = 0.0;
-    }
-
-    if(v_zero[7] != 0.0){
-      v_buffer[7] = 0.0;
-    }
       
     current_peak += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -1433,86 +1326,50 @@ ags_peak_util_compute_s32(AgsPeakUtil *peak_util)
 
     source += peak_util->source_stride;
 
-    v_zero = (ags_v8double) {
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    };
-    
     v_buffer = (1.0 / (gdouble) G_MAXUINT32 * peak_util->pressure_factor) * v_buffer;
 
-    v_zero = v_buffer == v_zero;
 
-    if(v_zero[0] != 0.0){
+    if(v_buffer[0] == 0.0 ||
+       isnan(v_buffer[0])){
       v_buffer[0] = 1.0;
     }
 
-    if(v_zero[1] != 0.0){
+    if(v_buffer[1] == 0.0 ||
+       isnan(v_buffer[1])){
       v_buffer[1] = 1.0;
     }
 
-    if(v_zero[2] != 0.0){
+    if(v_buffer[2] == 0.0 ||
+       isnan(v_buffer[2])){
       v_buffer[2] = 1.0;
     }
 
-    if(v_zero[3] != 0.0){
+    if(v_buffer[3] == 0.0 ||
+       isnan(v_buffer[3])){
       v_buffer[3] = 1.0;
     }
 
-    if(v_zero[4] != 0.0){
+    if(v_buffer[4] == 0.0 ||
+       isnan(v_buffer[4])){
       v_buffer[4] = 1.0;
     }
 
-    if(v_zero[5] != 0.0){
+    if(v_buffer[5] == 0.0 ||
+       isnan(v_buffer[5])){
       v_buffer[5] = 1.0;
     }
 
-    if(v_zero[6] != 0.0){
+    if(v_buffer[6] == 0.0 ||
+       isnan(v_buffer[6])){
       v_buffer[6] = 1.0;
     }
 
-    if(v_zero[7] != 0.0){
+    if(v_buffer[7] == 0.0 ||
+       isnan(v_buffer[7])){
       v_buffer[7] = 1.0;
     }
-      
+    
     v_buffer = 1.0 / v_buffer;
-
-    if(v_zero[0] != 0.0){
-      v_buffer[0] = 0.0;
-    }
-
-    if(v_zero[1] != 0.0){
-      v_buffer[1] = 0.0;
-    }
-
-    if(v_zero[2] != 0.0){
-      v_buffer[2] = 0.0;
-    }
-
-    if(v_zero[3] != 0.0){
-      v_buffer[3] = 0.0;
-    }
-
-    if(v_zero[4] != 0.0){
-      v_buffer[4] = 0.0;
-    }
-
-    if(v_zero[5] != 0.0){
-      v_buffer[5] = 0.0;
-    }
-
-    if(v_zero[6] != 0.0){
-      v_buffer[6] = 0.0;
-    }
-
-    if(v_zero[7] != 0.0){
-      v_buffer[7] = 0.0;
-    }
       
     current_peak += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -1746,86 +1603,50 @@ ags_peak_util_compute_s64(AgsPeakUtil *peak_util)
 
     source += peak_util->source_stride;
 
-    v_zero = (ags_v8double) {
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    };
-    
     v_buffer = (1.0 / (gdouble) G_MAXUINT64 * peak_util->pressure_factor) * v_buffer;
 
-    v_zero = v_buffer == v_zero;
 
-    if(v_zero[0] != 0.0){
+    if(v_buffer[0] == 0.0 ||
+       isnan(v_buffer[0])){
       v_buffer[0] = 1.0;
     }
 
-    if(v_zero[1] != 0.0){
+    if(v_buffer[1] == 0.0 ||
+       isnan(v_buffer[1])){
       v_buffer[1] = 1.0;
     }
 
-    if(v_zero[2] != 0.0){
+    if(v_buffer[2] == 0.0 ||
+       isnan(v_buffer[2])){
       v_buffer[2] = 1.0;
     }
 
-    if(v_zero[3] != 0.0){
+    if(v_buffer[3] == 0.0 ||
+       isnan(v_buffer[3])){
       v_buffer[3] = 1.0;
     }
 
-    if(v_zero[4] != 0.0){
+    if(v_buffer[4] == 0.0 ||
+       isnan(v_buffer[4])){
       v_buffer[4] = 1.0;
     }
 
-    if(v_zero[5] != 0.0){
+    if(v_buffer[5] == 0.0 ||
+       isnan(v_buffer[5])){
       v_buffer[5] = 1.0;
     }
 
-    if(v_zero[6] != 0.0){
+    if(v_buffer[6] == 0.0 ||
+       isnan(v_buffer[6])){
       v_buffer[6] = 1.0;
     }
 
-    if(v_zero[7] != 0.0){
+    if(v_buffer[7] == 0.0 ||
+       isnan(v_buffer[7])){
       v_buffer[7] = 1.0;
     }
-      
+    
     v_buffer = 1.0 / v_buffer;
-
-    if(v_zero[0] != 0.0){
-      v_buffer[0] = 0.0;
-    }
-
-    if(v_zero[1] != 0.0){
-      v_buffer[1] = 0.0;
-    }
-
-    if(v_zero[2] != 0.0){
-      v_buffer[2] = 0.0;
-    }
-
-    if(v_zero[3] != 0.0){
-      v_buffer[3] = 0.0;
-    }
-
-    if(v_zero[4] != 0.0){
-      v_buffer[4] = 0.0;
-    }
-
-    if(v_zero[5] != 0.0){
-      v_buffer[5] = 0.0;
-    }
-
-    if(v_zero[6] != 0.0){
-      v_buffer[6] = 0.0;
-    }
-
-    if(v_zero[7] != 0.0){
-      v_buffer[7] = 0.0;
-    }
       
     current_peak += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -2059,86 +1880,49 @@ ags_peak_util_compute_float(AgsPeakUtil *peak_util)
 
     source += peak_util->source_stride;
 
-    v_zero = (ags_v8double) {
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    };
-    
     v_buffer = (1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * v_buffer;
 
-    v_zero = v_buffer == v_zero;
-
-    if(v_zero[0] != 0.0){
+    if(v_buffer[0] == 0.0 ||
+       isnan(v_buffer[0])){
       v_buffer[0] = 1.0;
     }
 
-    if(v_zero[1] != 0.0){
+    if(v_buffer[1] == 0.0 ||
+       isnan(v_buffer[1])){
       v_buffer[1] = 1.0;
     }
 
-    if(v_zero[2] != 0.0){
+    if(v_buffer[2] == 0.0 ||
+       isnan(v_buffer[2])){
       v_buffer[2] = 1.0;
     }
 
-    if(v_zero[3] != 0.0){
+    if(v_buffer[3] == 0.0 ||
+       isnan(v_buffer[3])){
       v_buffer[3] = 1.0;
     }
 
-    if(v_zero[4] != 0.0){
+    if(v_buffer[4] == 0.0 ||
+       isnan(v_buffer[4])){
       v_buffer[4] = 1.0;
     }
 
-    if(v_zero[5] != 0.0){
+    if(v_buffer[5] == 0.0 ||
+       isnan(v_buffer[5])){
       v_buffer[5] = 1.0;
     }
 
-    if(v_zero[6] != 0.0){
+    if(v_buffer[6] == 0.0 ||
+       isnan(v_buffer[6])){
       v_buffer[6] = 1.0;
     }
 
-    if(v_zero[7] != 0.0){
+    if(v_buffer[7] == 0.0 ||
+       isnan(v_buffer[7])){
       v_buffer[7] = 1.0;
     }
       
     v_buffer = 1.0 / v_buffer;
-
-    if(v_zero[0] != 0.0){
-      v_buffer[0] = 0.0;
-    }
-
-    if(v_zero[1] != 0.0){
-      v_buffer[1] = 0.0;
-    }
-
-    if(v_zero[2] != 0.0){
-      v_buffer[2] = 0.0;
-    }
-
-    if(v_zero[3] != 0.0){
-      v_buffer[3] = 0.0;
-    }
-
-    if(v_zero[4] != 0.0){
-      v_buffer[4] = 0.0;
-    }
-
-    if(v_zero[5] != 0.0){
-      v_buffer[5] = 0.0;
-    }
-
-    if(v_zero[6] != 0.0){
-      v_buffer[6] = 0.0;
-    }
-
-    if(v_zero[7] != 0.0){
-      v_buffer[7] = 0.0;
-    }
       
     current_peak += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -2372,86 +2156,49 @@ ags_peak_util_compute_double(AgsPeakUtil *peak_util)
 
     source += peak_util->source_stride;
 
-    v_zero = (ags_v8double) {
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0
-    };
-    
     v_buffer = (1.0 / (gdouble) 0.5 * peak_util->pressure_factor) * v_buffer;
 
-    v_zero = v_buffer == v_zero;
-
-    if(v_zero[0] != 0.0){
+    if(v_buffer[0] == 0.0 ||
+       isnan(v_buffer[0])){
       v_buffer[0] = 1.0;
     }
 
-    if(v_zero[1] != 0.0){
+    if(v_buffer[1] == 0.0 ||
+       isnan(v_buffer[1])){
       v_buffer[1] = 1.0;
     }
 
-    if(v_zero[2] != 0.0){
+    if(v_buffer[2] == 0.0 ||
+       isnan(v_buffer[2])){
       v_buffer[2] = 1.0;
     }
 
-    if(v_zero[3] != 0.0){
+    if(v_buffer[3] == 0.0 ||
+       isnan(v_buffer[3])){
       v_buffer[3] = 1.0;
     }
 
-    if(v_zero[4] != 0.0){
+    if(v_buffer[4] == 0.0 ||
+       isnan(v_buffer[4])){
       v_buffer[4] = 1.0;
     }
 
-    if(v_zero[5] != 0.0){
+    if(v_buffer[5] == 0.0 ||
+       isnan(v_buffer[5])){
       v_buffer[5] = 1.0;
     }
 
-    if(v_zero[6] != 0.0){
+    if(v_buffer[6] == 0.0 ||
+       isnan(v_buffer[6])){
       v_buffer[6] = 1.0;
     }
 
-    if(v_zero[7] != 0.0){
+    if(v_buffer[7] == 0.0 ||
+       isnan(v_buffer[7])){
       v_buffer[7] = 1.0;
     }
-      
+    
     v_buffer = 1.0 / v_buffer;
-
-    if(v_zero[0] != 0.0){
-      v_buffer[0] = 0.0;
-    }
-
-    if(v_zero[1] != 0.0){
-      v_buffer[1] = 0.0;
-    }
-
-    if(v_zero[2] != 0.0){
-      v_buffer[2] = 0.0;
-    }
-
-    if(v_zero[3] != 0.0){
-      v_buffer[3] = 0.0;
-    }
-
-    if(v_zero[4] != 0.0){
-      v_buffer[4] = 0.0;
-    }
-
-    if(v_zero[5] != 0.0){
-      v_buffer[5] = 0.0;
-    }
-
-    if(v_zero[6] != 0.0){
-      v_buffer[6] = 0.0;
-    }
-
-    if(v_zero[7] != 0.0){
-      v_buffer[7] = 0.0;
-    }
       
     current_peak += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
