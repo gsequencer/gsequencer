@@ -432,8 +432,11 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
 		   NULL);      
 
       value = x;
-      step =
-	retval = (step_count - 1) * log(value / lower) / log(upper / lower);
+
+      if(lower != 0.0){
+	step =
+	  retval = (step_count - 1) * log(value / lower) / log(upper / lower);
+      }
     }
   }else{
     if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
@@ -444,8 +447,11 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
 		   NULL);      
 
       step = x;
-      value = 
-	retval = lower * pow(upper / lower, step / (step_count - 1));
+
+      if(lower != 0.0){
+	value = 
+	  retval = lower * pow(upper / lower, step / (step_count - 1));
+      }
     }
   }
   

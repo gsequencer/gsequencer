@@ -480,8 +480,10 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
       g_object_get(ladspa_conversion,
 		   "samplerate", &samplerate,
 		   NULL);
-      
-      retval = x / samplerate;
+
+      if(samplerate != 0){
+	retval = x / samplerate;
+      }
     }
 
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_LOGARITHMIC)){
@@ -492,8 +494,11 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
 		   NULL);      
 
       value = x;
-      step =
-	retval = (step_count - 1) * log(value / lower) / log(upper / lower);
+
+      if(lower != 0.0){
+	step =
+	  retval = (step_count - 1) * log(value / lower) / log(upper / lower);
+      }
     }
   }else{
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_SAMPLERATE)){
@@ -503,7 +508,9 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
 		   "samplerate", &samplerate,
 		   NULL);
 
-      value = x * samplerate;
+      if(samplerate != 0){
+	value = x * samplerate;
+      }
     }
 
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_LOGARITHMIC)){
@@ -514,8 +521,11 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
 		   NULL);      
 
       step = x;
-      value = 
-	retval = lower * pow(upper / lower, step / (step_count - 1));
+
+      if(lower != 0.0){
+	value = 
+	  retval = lower * pow(upper / lower, step / (step_count - 1));
+      }
     }
   }
   

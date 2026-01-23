@@ -28,6 +28,8 @@
 #include <ags/app/ags_pad.h>
 #include <ags/app/ags_line_member.h>
 
+#include <math.h>
+
 void
 ags_line_update_ui_callback(GObject *ui_provider,
 			    AgsLine *line)
@@ -61,6 +63,12 @@ ags_line_update_ui_callback(GObject *ui_provider,
 
     child_widget = queued_refresh->data;
 
+    if(!GTK_IS_WIDGET(child_widget)){
+      queued_refresh = queued_refresh->next;
+
+      continue;
+    }
+    
     line_member = (AgsLineMember *) gtk_widget_get_ancestor(child_widget,
 							    AGS_TYPE_LINE_MEMBER);
 
@@ -208,9 +216,14 @@ ags_line_update_ui_callback(GObject *ui_provider,
 		   NULL);
 
       //	  g_message("%f", average_peak);
-	  
-      gtk_adjustment_set_value(adjustment,
-			       10.0 * average_peak);
+
+      if(!isnan(average_peak)){
+	gtk_adjustment_set_value(adjustment,
+				 10.0 * average_peak);
+      }else{
+	gtk_adjustment_set_value(adjustment,
+				 10.0);
+      }
     }
 
     g_object_unref(plugin_port);

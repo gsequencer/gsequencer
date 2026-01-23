@@ -637,6 +637,16 @@ ags_line_member_set_property(GObject *gobject,
       if(widget_type != G_TYPE_NONE){
 	new_child = (GtkWidget *) g_object_new(widget_type,
 					       NULL);
+
+	if(widget_type == AGS_TYPE_DIAL){
+	  GtkAdjustment *adjustment;
+
+	  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+
+	  g_object_set(new_child,
+		       "adjustment", adjustment,
+		       NULL);
+	}
       }
       
       /* scale factor */
