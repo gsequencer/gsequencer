@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -517,7 +517,7 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   adjustment = ags_dial_get_adjustment(modular_synth->env_0_frequency);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   0.01);
   gtk_adjustment_set_upper(adjustment,
 			   16.0);
 
@@ -712,7 +712,7 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   adjustment = ags_dial_get_adjustment(modular_synth->env_1_frequency);
 
   gtk_adjustment_set_lower(adjustment,
-			   0.0);
+			   0.01);
   gtk_adjustment_set_upper(adjustment,
 			   16.0);
 
