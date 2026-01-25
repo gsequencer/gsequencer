@@ -1002,7 +1002,7 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 				    1.0);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   220.0);
   ags_dial_set_radius(modular_synth->noise_frequency,
 		      12);
 
