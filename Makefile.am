@@ -893,7 +893,7 @@ libags_audio-$(DLL_VERSION).def: libags_audio.la
 defexec_DATA += libags_audio-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
-libags_audio_la_CPPFLAGS += -DAGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS=1 -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
+libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
 libags_audio_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
 else
 libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_VECTOR_256_FUNCTIONS=1 -DAGS_LIBRARY_SUFFIX=\".so\" -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized

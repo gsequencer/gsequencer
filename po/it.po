@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-01-22 14:30+0100\n"
+"POT-Creation-Date: 2026-01-25 15:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -310,7 +310,7 @@ msgstr ""
 msgid "update UI timeout[s]"
 msgstr ""
 
-#: ags/app/ags_bulk_member.c:889 ags/app/machine/ags_dssi_bridge.c:419
+#: ags/app/ags_bulk_member.c:899 ags/app/machine/ags_dssi_bridge.c:419
 #: ags/app/machine/ags_live_dssi_bridge.c:422
 #: ags/app/machine/ags_live_vst3_bridge.c:479
 #: ags/app/machine/ags_vst3_bridge.c:459

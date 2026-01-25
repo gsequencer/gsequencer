@@ -1,3 +1,17 @@
+ags (8.2.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved modular synth util check division by zero
+	* improved modular synth env-0 and env-1 frequency lower
+	* improved modular synth noise frequency default
+
+ags (8.2.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved line and bulk member and related with update-ui callback
+	* improved peak util check NaN
+	* improved use AGS_VECTORIZED_BUILTIN_FUNCTIONS conditional code on macOS
+
 ags (8.2.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
