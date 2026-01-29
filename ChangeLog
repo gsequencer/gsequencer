@@ -1,3 +1,9 @@
+ags (8.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: improved Core Audio configuration
+	* TODO:JK: refactor VST3 support
+
 ags (8.2.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
