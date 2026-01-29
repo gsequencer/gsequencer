@@ -19,6 +19,8 @@
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 
+#include <ags/config.h>
+
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_soundcard_util.h>
 
@@ -47,7 +49,6 @@
 #include <math.h>
 #include <time.h>
 
-#include <ags/config.h>
 #include <ags/i18n.h>
 
 #define AGS_CORE_AUDIO_PORT_USE_HW (1)
@@ -791,6 +792,12 @@ ags_core_audio_devout_init(AgsCoreAudioDevout *core_audio_devout)
   }else{
     core_audio_devout->note_256th_offset_last = (guint) floor(1.0 / core_audio_devout->note_256th_delay);
   }
+
+  /* audio device */
+  core_audio_devout->device_id = NULL;
+  core_audio_devout->device_name = NULL;
+
+  core_audio_devout->audio_device = 0;
 }
 
 void
@@ -1609,16 +1616,31 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 				 gchar *device)
 {
   AgsCoreAudioDevout *core_audio_devout;
+  
+#if defined(AGS_WITH_CORE_AUDIO)
+  AudioDeviceID *audio_devices;
+  
+  NSString *device_uid = @"";
 
-  GList *core_audio_port, *core_audio_port_start;
+  AudioObjectPropertyAddress devices_property_address;
+  AudioObjectPropertyAddress streams_property_address;
+  
+  struct AudioStreamBasicDescription stream_desc;
+#endif
+  
+  GList *core_audio_port, *start_core_audio_port;
 
   gchar *str;
-
-  guint pcm_channels;
-  int ret;
-  guint nth_card;
-  guint i;
   
+#if defined(AGS_WITH_CORE_AUDIO)
+  int device_count;
+  int stream_count;
+  int is_mic;
+  UInt32 prop_size;
+  int i;
+  OSStatus error;
+#endif
+
   GRecMutex *core_audio_devout_mutex;
 
   core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard);
@@ -1629,56 +1651,133 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
   /* check device */
   g_rec_mutex_lock(core_audio_devout_mutex);
 
-  if(core_audio_devout->card_uri == device ||
-     (core_audio_devout->card_uri != NULL &&
-      !g_ascii_strcasecmp(core_audio_devout->card_uri,
+  if(core_audio_devout->device_name == device ||
+     (core_audio_devout->device_name != NULL &&
+      !g_ascii_strcasecmp(core_audio_devout->device_name,
 			  device))){
     g_rec_mutex_unlock(core_audio_devout_mutex);
   
     return;
   }
 
-  if(!g_str_has_prefix(device,
-		       "ags-core-audio-devout-")){
-    g_rec_mutex_unlock(core_audio_devout_mutex);
+  g_free(core_audio_devout->device_name);
 
-    g_warning("invalid core_audioaudio device prefix");
+  core_audio_devout->device_name = NULL;
 
-    return;
+  g_free(core_audio_devout->device_id);
+
+  core_audio_devout->device_id = NULL;
+  
+#if defined(AGS_WITH_CORE_AUDIO)
+  devices_property_address.mSelector = kAudioHardwarePropertyDevices;
+  devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
+  devices_property_address.mElement = kAudioObjectPropertyElementMaster;
+
+  streams_property_address.mSelector = kAudioDevicePropertyStreams;
+  streams_property_address.mScope = kAudioDevicePropertyScopeInput;
+
+  error = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size);
+  
+  if(error == noErr){
+    device_count = prop_size / sizeof(AudioDeviceID);
+    
+    audio_devices = (AudioDeviceID *) malloc(prop_size);
+    
+    error = AudioObjectGetPropertyData(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size, audio_devices);
+    
+    if(error == noErr) {
+      for(i = 0; i < device_count; i++){
+	NSString *current_manufacturer, *current_name, *current_uid;
+	
+	prop_size = sizeof(CFStringRef);
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceManufacturerCFString;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_manufacturer);
+	
+	if(error != noErr){
+	  current_manufacturer = @"";
+	  
+	  //	  continue;
+	}
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceNameCFString;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_name);
+	
+	if(error != noErr){
+	  current_name = @"";
+
+	  //	  continue;
+	}
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceUID;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_uid);
+	
+	if(error != noErr){
+	  current_uid = @"";
+	  
+	  //	  continue;
+	}
+	
+	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
+	  device_uid = current_uid;
+	}
+
+	is_mic = 0;
+
+	error = AudioObjectGetPropertyDataSize(audio_devices[i], 
+					       &streams_property_address, 
+					       0, 
+					       NULL, 
+					       &prop_size);
+	
+	stream_count = prop_size / sizeof(AudioStreamID);
+
+	if(stream_count > 0){
+	  is_mic = YES;
+	}
+
+	str = g_strdup_printf("%s - %s",
+			      [current_manufacturer UTF8String],
+			      [current_name UTF8String]);
+
+	if(!is_mic &&
+	   !g_ascii_strncasemp(str, device, strlen(str))){
+	  core_audio_devout->device_name = g_strdup(device);
+	  
+	  core_audio_devout->device_id = g_strdup([current_uid UTF8String]);
+
+	  core_audio_devout->audio_device = audio_devices[i];
+
+	  g_free(str);
+	  
+	  break;
+	}
+
+	g_free(str);
+      }
+    }
+    
+    free(audio_devices);
   }
-
-  ret = sscanf(device,
-	       "ags-core-audio-devout-%u",
-	       &nth_card);
-
-  if(ret != 1){
-    g_rec_mutex_unlock(core_audio_devout_mutex);
-
-    g_warning("invalid core_audioaudio device specifier");
-
-    return;
-  }
-
-  g_free(core_audio_devout->card_uri);
-  core_audio_devout->card_uri = g_strdup(device);
-
+#endif
+  
   /* apply name to port */
   g_rec_mutex_lock(core_audio_devout_mutex);
 
-  core_audio_port_start = 
+  start_core_audio_port = 
     core_audio_port = g_list_copy(core_audio_devout->core_audio_port);
 
   g_rec_mutex_unlock(core_audio_devout_mutex);
   
-  str = g_strdup_printf("ags-soundcard%d",
-			nth_card);
+  str = g_strdup_printf("out<%s>", core_audio_devout->device_id);
     
   g_object_set(core_audio_port->data,
 	       "port-name", str,
 	       NULL);
-  g_free(str);
 
-  g_list_free(core_audio_port_start);
+  g_list_free(start_core_audio_port);
+
+  g_free(str);
 }
 
 gchar*
@@ -1700,7 +1799,7 @@ ags_core_audio_devout_get_device(AgsSoundcard *soundcard)
   /* get device */
   g_rec_mutex_lock(core_audio_devout_mutex);
 
-  device = g_strdup(core_audio_devout->card_uri);
+  device = g_strdup(core_audio_devout->device_name);
 
   g_rec_mutex_unlock(core_audio_devout_mutex);
   
