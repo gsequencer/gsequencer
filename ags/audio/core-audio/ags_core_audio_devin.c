@@ -811,11 +811,8 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       device = (char *) g_value_get_string(value);
 
-      g_rec_mutex_lock(core_audio_devin_mutex);
-
-      core_audio_devin->device_name = g_strdup(device);
-
-      g_rec_mutex_unlock(core_audio_devin_mutex);
+      ags_soundcard_set_device(AGS_SOUNDCARD(core_audio_devin),
+			       device);
     }
     break;
   case PROP_DSP_CHANNELS:
@@ -1623,6 +1620,8 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
     return;
   }
 
+  g_message("input set device - %s", device);
+  
   /* get some fields */
   g_rec_mutex_lock(core_audio_devin_mutex);
 
@@ -1739,7 +1738,7 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
 #endif
   
   /* apply name to port */
-  str = g_strdup_printf("in-%s", core_audio_devin->device_id);
+  str = g_strdup(core_audio_devin->device_id);
   
   if(start_core_audio_port != NULL){
     g_object_set(start_core_audio_port->data,
@@ -1955,7 +1954,7 @@ ags_core_audio_devin_list_cards(AgsSoundcard *soundcard,
 	  is_mic = YES;
 	}
 
-	g_message("found %s device: %s - %s <%s>", (!is_mic ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
+	//	g_message("found %s device: %s - %s <%s>", (!is_mic ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
 
 	if(is_mic){
 	  *card_id = g_list_prepend(*card_id,
@@ -2031,15 +2030,8 @@ ags_core_audio_devin_is_starting(AgsSoundcard *soundcard)
   
   core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
 
-  /* get core audio devin mutex */
-  core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
-
   /* check is starting */
-  g_rec_mutex_lock(core_audio_devin_mutex);
-
-  is_starting = ((AGS_CORE_AUDIO_DEVIN_START_RECORD & (core_audio_devin->flags)) != 0) ? TRUE: FALSE;
-
-  g_rec_mutex_unlock(core_audio_devin_mutex);
+  is_starting = ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_START_RECORD);
   
   return(is_starting);
 }
@@ -2049,23 +2041,14 @@ ags_core_audio_devin_is_recording(AgsSoundcard *soundcard)
 {
   AgsCoreAudioDevin *core_audio_devin;
 
-  gboolean is_playing;
+  gboolean is_recording;
   
-  GRecMutex *core_audio_devin_mutex;
-
   core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
   
-  /* get core audio devin mutex */
-  core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
+  /* check is recording */
+  is_recording = ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_RECORD);
 
-  /* check is starting */
-  g_rec_mutex_lock(core_audio_devin_mutex);
-
-  is_playing = ((AGS_CORE_AUDIO_DEVIN_RECORD & (core_audio_devin->flags)) != 0) ? TRUE: FALSE;
-
-  g_rec_mutex_unlock(core_audio_devin_mutex);
-
-  return(is_playing);
+  return(is_recording);
 }
 
 gchar*

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1200,7 +1200,7 @@ ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioPor
   /* set flags */
   g_rec_mutex_lock(core_audio_port_mutex);
 
-  core_audio_port->flags |= flags;
+  core_audio_port->flags = (flags | (core_audio_port->flags));
   
   g_rec_mutex_unlock(core_audio_port_mutex);
 }
@@ -1231,7 +1231,7 @@ ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, AgsCoreAudioP
   /* unset flags */
   g_rec_mutex_lock(core_audio_port_mutex);
 
-  core_audio_port->flags &= (~flags);
+  core_audio_port->flags = ((~flags) & (core_audio_port->flags));
   
   g_rec_mutex_unlock(core_audio_port_mutex);
 }
@@ -1515,7 +1515,7 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
 				       const AudioBufferList* in,
 				       const AudioTimeStamp* in_time,
 				       AudioBufferList* out,
-				       const AudioTimeStamp* out_tim,
+				       const AudioTimeStamp* out_time,
 				       AgsCoreAudioPort *core_audio_port)
 {
   AgsCoreAudioDevout *core_audio_devout;
@@ -1542,11 +1542,15 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   GRecMutex *core_audio_port_mutex;
   GMutex *callback_mutex;
   GMutex *callback_finish_mutex;
+
+  //  g_message("output hw callback");
   
   if(core_audio_port == NULL){
     return(-1);
   }
 
+  //  g_message(" `- run");
+  
   /* get core audio port mutex */
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
 
@@ -1559,12 +1563,16 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   }
   
   /*  */
+  //  g_message("lock port");
+  
   g_rec_mutex_lock(core_audio_port_mutex);
 
   core_audio_devout = (AgsCoreAudioDevout *) core_audio_port->core_audio_device;
   
   g_rec_mutex_unlock(core_audio_port_mutex);
 
+  //  g_message("unlock port");
+  
   core_audio_devin = NULL;
   
   soundcard = NULL;
@@ -1578,9 +1586,16 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   is_starting = FALSE;
   
   /* wait callback */
-  is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(core_audio_devout));
+  //  g_message("test is playing");
+  
+  is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard));
 
-  is_starting = ags_soundcard_is_starting(AGS_SOUNDCARD(core_audio_devout));
+  //  g_message("test is starting");
+  
+  is_starting = ags_soundcard_is_starting(AGS_SOUNDCARD(soundcard));
+
+  //  g_message("is_starting -> %d", is_starting);
+  //  g_message("is_playing -> %d", is_playing);
   
   if(is_playing){
     ags_atomic_int_and(&(core_audio_devout->sync_flags),
@@ -1650,11 +1665,13 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   }
   
   // g_message("p %d", played_cache);
+  //  g_message("output hw callback - clear");
+  
   out_buffer = out->mBuffers;
   
   ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 				     out_buffer->mData, 1,
-				     (out_buffer->mDataByteSize / sizeof(float)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
+				     (out_buffer->mDataByteSize / sizeof(gfloat)), AGS_AUDIO_BUFFER_UTIL_FLOAT);
 
   if(!is_starting &&
      is_playing){
@@ -1746,6 +1763,8 @@ ags_core_audio_port_hw_output_callback(AudioObjectID device,
   }
     
   ags_atomic_int_decrement(&(core_audio_port->queued));
+
+  //  g_message("output hw callback - fin");
   
   return(noErr);
 }
@@ -2040,6 +2059,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   int device_count;
   int stream_count;
   int is_mic;
+  int is_speaker;
   UInt32 prop_size;
   OSStatus retval;
 #else
@@ -2055,6 +2075,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     return;
   }
 
+  core_audio_client = NULL;
+  
   g_object_get(core_audio_port,
 	       "core-audio-client", &core_audio_client,
 	       NULL);
@@ -2065,13 +2087,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     return;
   }
 
-  if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED)){
-    g_object_unref(core_audio_client);
-    
-    return;
-  }
-
   /* get core audio server and application context */
+  core_audio_server = NULL;
+  
   g_object_get(core_audio_client,
 	       "core-audio-server", &core_audio_server,
 	       NULL);
@@ -2111,7 +2129,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   /* get port name */
   g_rec_mutex_lock(core_audio_port_mutex);
 
-  port_name = g_strdup(core_audio_port->port_name);
+  core_audio_port->port_name = g_strdup(port_name);
 
   format = core_audio_port->format;
   
@@ -2134,7 +2152,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
       devices_property_address.mSelector = kAudioHardwarePropertyDevices;
       devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
-      devices_property_address.mElement = kAudioObjectPropertyElementMaster;
+      devices_property_address.mElement = kAudioObjectPropertyElementMain;
 
       streams_property_address.mSelector = kAudioDevicePropertyStreams;
       streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
@@ -2185,25 +2203,29 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	      device_uid = current_uid;
 	    }
 
-	    is_mic = 0;
+	    is_speaker = 0;
 
 	    retval = AudioObjectGetPropertyDataSize(audio_devices[i], 
-						   &streams_property_address, 
-						   0, 
-						   NULL, 
-						   &prop_size);
+						    &streams_property_address, 
+						    0, 
+						    NULL, 
+						    &prop_size);
 	
 	    stream_count = prop_size / sizeof(AudioStreamID);
 
 	    if(stream_count > 0){
-	      is_mic = YES;
+	      is_speaker = YES;
 	    }
 
 	    str = g_strdup_printf("out-%s",
 				  [current_uid UTF8String]);
 
-	    if(!is_mic &&
+	    //	    g_message("%s -> %s", port_name, str);
+
+	    if(is_speaker &&
 	       !g_ascii_strcasecmp(str, port_name)){
+	      //	      g_message("success: %s @ 0x%x", port_name, audio_devices[i]);
+	      
 	      core_audio_port->output_device = audio_devices[i];
 
 	      g_free(str);
@@ -2235,12 +2257,18 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 NULL,
 				 sizeof(output_buffer_size_bytes),
 				 &output_buffer_size_bytes);
-      
-      AudioDeviceCreateIOProcID(core_audio_port->output_device,
-				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_output_callback,
-				core_audio_port,
-				&(core_audio_port->output_proc_id));
 
+      //      g_message("create IOProcID 0x%x", core_audio_port->output_device);
+      
+      retval = AudioDeviceCreateIOProcID(core_audio_port->output_device,
+					 (OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_output_callback,
+					 core_audio_port,
+					 &(core_audio_port->output_proc_id));
+
+      if(retval != noErr){
+	g_warning("failed create IOProcID");
+      }
+      
       AudioDeviceStart(core_audio_port->output_device,
 		       core_audio_port->output_proc_id);
 #else
@@ -2364,7 +2392,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
       devices_property_address.mSelector = kAudioHardwarePropertyDevices;
       devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
-      devices_property_address.mElement = kAudioObjectPropertyElementMaster;
+      devices_property_address.mElement = kAudioObjectPropertyElementMain;
 
       streams_property_address.mSelector = kAudioDevicePropertyStreams;
       streams_property_address.mScope = kAudioDevicePropertyScopeInput;
@@ -2432,8 +2460,12 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	    str = g_strdup_printf("in-%s",
 				  [current_uid UTF8String]);
 
+	    //	    g_message("%s -> %s", port_name, str);
+	    
 	    if(is_mic &&
 	       !g_ascii_strcasecmp(str, port_name)){
+	      //	      g_message("success: %s @ 0x%x", port_name, audio_devices[i]);
+	      
 	      core_audio_port->input_device = audio_devices[i];
 
 	      g_free(str);
@@ -2466,11 +2498,17 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				 sizeof(input_buffer_size_bytes),
 				 &input_buffer_size_bytes);
       
-      AudioDeviceCreateIOProcID(core_audio_port->input_device,
-				(OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_input_callback,
-				core_audio_port,
-				&(core_audio_port->input_proc_id));
+      //      g_message("create IOProcID 0x%x", core_audio_port->input_device);
+      
+      retval = AudioDeviceCreateIOProcID(core_audio_port->input_device,
+					 (OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) ags_core_audio_port_hw_input_callback,
+					 core_audio_port,
+					 &(core_audio_port->input_proc_id));
 
+      if(retval != noErr){
+	g_warning("failed create IOProcID");
+      }
+      
       AudioDeviceStart(core_audio_port->input_device,
 		       core_audio_port->input_proc_id);
 #else
@@ -2807,8 +2845,6 @@ ags_core_audio_port_register_END:
   g_object_unref(core_audio_client);
 
   g_object_unref(core_audio_server);
-
-  g_free(port_name);
 }
 
 void

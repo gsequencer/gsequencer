@@ -19,7 +19,7 @@
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 
-#include <ags/config.h>
+#include <ags/ags_api_config.h>
 
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_soundcard_util.h>
@@ -822,11 +822,8 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
       device = (char *) g_value_get_string(value);
 
-      g_rec_mutex_lock(core_audio_devout_mutex);
-
-      core_audio_devout->device_name = g_strdup(device);
-
-      g_rec_mutex_unlock(core_audio_devout_mutex);
+      ags_soundcard_set_device(AGS_SOUNDCARD(core_audio_devout),
+			       device);
     }
     break;
   case PROP_DSP_CHANNELS:
@@ -1661,9 +1658,9 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
     return;
   }
 
+  g_message("output set device - %s", device);
+  
   /* get some fields */
-  g_rec_mutex_lock(core_audio_devout_mutex);
-
   start_core_audio_port = 
     core_audio_port = g_list_copy(core_audio_devout->core_audio_port);
 
@@ -1685,7 +1682,7 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 #if defined(AGS_WITH_CORE_AUDIO)
   devices_property_address.mSelector = kAudioHardwarePropertyDevices;
   devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
-  devices_property_address.mElement = kAudioObjectPropertyElementMaster;
+  devices_property_address.mElement = kAudioObjectPropertyElementMain;
 
   streams_property_address.mSelector = kAudioDevicePropertyStreams;
   streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
@@ -1754,8 +1751,12 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 			      [current_manufacturer UTF8String],
 			      [current_name UTF8String]);
 
+	//	g_message("test device %s - %s", device, str);
+	
 	if(is_speaker &&
 	   !g_ascii_strcasecmp(str, device)){
+	  //	  g_message(" `- success");
+	  
 	  core_audio_devout->device_name = g_strdup(device);
 	  
 	  core_audio_devout->device_id = g_strdup_printf("out-%s",
@@ -1777,8 +1778,7 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 #endif
   
   /* apply name to port */
-  str = g_strdup_printf("out-%s",
-			core_audio_devout->device_id);
+  str = g_strdup(core_audio_devout->device_id);
   
   if(start_core_audio_port != NULL){
     g_object_set(start_core_audio_port->data,
@@ -1919,7 +1919,7 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
 #if defined(AGS_WITH_CORE_AUDIO)
   devices_property_address.mSelector = kAudioHardwarePropertyDevices;
   devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
-  devices_property_address.mElement = kAudioObjectPropertyElementMaster;
+  devices_property_address.mElement = kAudioObjectPropertyElementMain;
 
   streams_property_address.mSelector = kAudioDevicePropertyStreams;
   streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
@@ -1984,7 +1984,7 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
 	  is_speaker = YES;
 	}
 
-	g_message("found %s device: %s - %s <%s>", (is_speaker ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
+	//	g_message("found %s device: %s - %s <%s>", (is_speaker ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
 
 	if(is_speaker){
 	  *card_id = g_list_prepend(*card_id,
@@ -2055,20 +2055,11 @@ ags_core_audio_devout_is_starting(AgsSoundcard *soundcard)
 
   gboolean is_starting;
   
-  GRecMutex *core_audio_devout_mutex;
-  
   core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard);
 
-  /* get core audio devout mutex */
-  core_audio_devout_mutex = AGS_CORE_AUDIO_DEVOUT_GET_OBJ_MUTEX(core_audio_devout);
-
   /* check is starting */
-  g_rec_mutex_lock(core_audio_devout_mutex);
+  is_starting = ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_START_PLAY);
 
-  is_starting = ((AGS_CORE_AUDIO_DEVOUT_START_PLAY & (core_audio_devout->flags)) != 0) ? TRUE: FALSE;
-
-  g_rec_mutex_unlock(core_audio_devout_mutex);
-  
   return(is_starting);
 }
 
@@ -2079,19 +2070,10 @@ ags_core_audio_devout_is_playing(AgsSoundcard *soundcard)
 
   gboolean is_playing;
   
-  GRecMutex *core_audio_devout_mutex;
-
   core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard);
   
-  /* get core audio devout mutex */
-  core_audio_devout_mutex = AGS_CORE_AUDIO_DEVOUT_GET_OBJ_MUTEX(core_audio_devout);
-
-  /* check is starting */
-  g_rec_mutex_lock(core_audio_devout_mutex);
-
-  is_playing = ((AGS_CORE_AUDIO_DEVOUT_PLAY & (core_audio_devout->flags)) != 0) ? TRUE: FALSE;
-
-  g_rec_mutex_unlock(core_audio_devout_mutex);
+  /* check is playing */
+  is_playing = ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_PLAY);
 
   return(is_playing);
 }
@@ -2156,6 +2138,8 @@ ags_core_audio_devout_port_init(AgsSoundcard *soundcard,
 
   core_audio_devout = AGS_CORE_AUDIO_DEVOUT(soundcard);
 
+  //  g_message("Core Audio init");
+  
   /* get core-audio devout mutex */
   core_audio_devout_mutex = AGS_CORE_AUDIO_DEVOUT_GET_OBJ_MUTEX(core_audio_devout);
 
@@ -2320,6 +2304,8 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
     return;
   }
   
+  //  g_message("Core Audio play");
+
   switch(core_audio_devout->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {

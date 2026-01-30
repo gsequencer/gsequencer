@@ -1701,7 +1701,8 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   
   GList *start_sound_server, *sound_server;
   GList *start_soundcard;
-  GList *card_name, *card_uri;
+  GList *start_card_id, *card_id;
+  GList *start_card_name, *card_name;
 
   gchar *backend;
   gchar *tmp;
@@ -1970,15 +1971,18 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   }
   
   /*  */
-  card_name = NULL;
-  card_uri = NULL;
+  start_card_id = NULL;
+  start_card_name = NULL;
   
   ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard),
-			   &card_uri, &card_name);
+			   &start_card_id, &start_card_name);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
 
-  while(card_uri != NULL){
+  card_id = start_card_id;
+  card_name = start_card_name;
+  
+  while(card_id != NULL){
 #ifdef AGS_WITH_CORE_AUDIO
     tmp = card_name->data;
 #else
@@ -1990,7 +1994,8 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 				     tmp);
     }
     
-    card_uri = card_uri->next;
+    card_id = card_id->next;
+    card_name = card_name->next;
   }
 
   /* unref */
