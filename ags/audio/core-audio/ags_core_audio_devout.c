@@ -824,7 +824,7 @@ ags_core_audio_devout_set_property(GObject *gobject,
 
       g_rec_mutex_lock(core_audio_devout_mutex);
 
-      core_audio_devout->card_uri = g_strdup(device);
+      core_audio_devout->device_name = g_strdup(device);
 
       g_rec_mutex_unlock(core_audio_devout_mutex);
     }
@@ -1120,7 +1120,7 @@ ags_core_audio_devout_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(core_audio_devout_mutex);
 
-      g_value_set_string(value, core_audio_devout->card_uri);
+      g_value_set_string(value, core_audio_devout->device_name);
 
       g_rec_mutex_unlock(core_audio_devout_mutex);
     }
@@ -1636,6 +1636,7 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
   int device_count;
   int stream_count;
   int is_mic;
+  int is_speaker;
   UInt32 prop_size;
   int i;
   OSStatus error;
@@ -1660,6 +1661,19 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
     return;
   }
 
+  /* get some fields */
+  g_rec_mutex_lock(core_audio_devout_mutex);
+
+  start_core_audio_port = 
+    core_audio_port = g_list_copy(core_audio_devout->core_audio_port);
+
+  g_rec_mutex_unlock(core_audio_devout_mutex);
+  
+  /* unregister */
+  if(start_core_audio_port != NULL){
+    ags_core_audio_port_unregister(start_core_audio_port->data);
+  }
+  
   g_free(core_audio_devout->device_name);
 
   core_audio_devout->device_name = NULL;
@@ -1722,7 +1736,7 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 	  device_uid = current_uid;
 	}
 
-	is_mic = 0;
+	is_speaker = 0;
 
 	error = AudioObjectGetPropertyDataSize(audio_devices[i], 
 					       &streams_property_address, 
@@ -1733,14 +1747,14 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 	stream_count = prop_size / sizeof(AudioStreamID);
 
 	if(stream_count > 0){
-	  is_mic = YES;
+	  is_speaker = YES;
 	}
 
 	str = g_strdup_printf("%s - %s",
 			      [current_manufacturer UTF8String],
 			      [current_name UTF8String]);
 
-	if(!is_mic &&
+	if(is_speaker &&
 	   !g_ascii_strcasecmp(str, device)){
 	  core_audio_devout->device_name = g_strdup(device);
 	  
@@ -1763,20 +1777,20 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 #endif
   
   /* apply name to port */
-  g_rec_mutex_lock(core_audio_devout_mutex);
-
-  start_core_audio_port = 
-    core_audio_port = g_list_copy(core_audio_devout->core_audio_port);
-
-  g_rec_mutex_unlock(core_audio_devout_mutex);
-  
   str = g_strdup_printf("out-%s",
 			core_audio_devout->device_id);
-    
-  g_object_set(core_audio_port->data,
-	       "port-name", str,
-	       NULL);
+  
+  if(start_core_audio_port != NULL){
+    g_object_set(start_core_audio_port->data,
+		 "port-name", str,
+		 NULL);
 
+    ags_core_audio_port_register(start_core_audio_port->data,
+				 str,
+				 TRUE, FALSE,
+				 TRUE);
+  }
+  
   g_list_free(start_core_audio_port);
 
   g_free(str);
@@ -1886,6 +1900,7 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
   int device_count;
   int stream_count;
   int is_mic;
+  int is_speaker;
   UInt32 prop_size;
   int i;
   OSStatus error;
@@ -1955,7 +1970,7 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
 	  device_uid = current_uid;
 	}
 
-	is_mic = 0;
+	is_speaker = 0;
 
 	error = AudioObjectGetPropertyDataSize(audio_devices[i], 
 					       &streams_property_address, 
@@ -1966,12 +1981,12 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
 	stream_count = prop_size / sizeof(AudioStreamID);
 
 	if(stream_count > 0){
-	  is_mic = YES;
+	  is_speaker = YES;
 	}
 
-	g_message("found %s device: %s - %s <%s>", (!is_mic ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
+	g_message("found %s device: %s - %s <%s>", (is_speaker ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
 
-	if(!is_mic){
+	if(is_speaker){
 	  *card_id = g_list_prepend(*card_id,
 				    g_strdup_printf("out-%s", [current_uid UTF8String]));
        

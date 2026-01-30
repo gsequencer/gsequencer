@@ -43,6 +43,9 @@ void ags_soundcard_editor_add_port_callback(GtkWidget *button,
 void ags_soundcard_editor_remove_port_callback(GtkWidget *button,
 					       AgsSoundcardEditor *soundcard_editor);
 
+void ags_soundcard_editor_capability_changed_callback(GtkComboBox *combo,
+						      AgsSoundcardEditor *soundcard_editor);
+
 void ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 							  AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,

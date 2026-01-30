@@ -158,6 +158,13 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 }
 
 void
+ags_soundcard_editor_capability_changed_callback(GtkComboBox *combo,
+						 AgsSoundcardEditor *soundcard_editor)
+{
+  ags_soundcard_editor_load_core_audio_card(soundcard_editor);
+}
+
+void
 ags_soundcard_editor_add_port_callback(GtkWidget *button,
 				       AgsSoundcardEditor *soundcard_editor)
 {

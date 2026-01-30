@@ -2050,6 +2050,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   GRecMutex *core_audio_port_mutex;
 
   if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port) ||
+     ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED) ||
      port_name == NULL){
     return;
   }
@@ -2819,7 +2820,8 @@ ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port)
 #endif
 #endif
   
-  if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port)){
+  if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port) ||
+     !ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED)){
     return;
   }
   

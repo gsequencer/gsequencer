@@ -184,7 +184,7 @@ guint ags_core_audio_devin_get_note_256th_attack_of_16th_pulse_position(AgsSound
 
 /**
  * SECTION:ags_core_audio_devin
- * @short_description: Output to soundcard
+ * @short_description: Input from soundcard
  * @title: AgsCoreAudioDevin
  * @section_id:
  * @include: ags/audio/core-audio/ags_core_audio_devin.h
@@ -813,7 +813,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_lock(core_audio_devin_mutex);
 
-      core_audio_devin->card_uri = g_strdup(device);
+      core_audio_devin->device_name = g_strdup(device);
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
     }
@@ -1089,7 +1089,7 @@ ags_core_audio_devin_get_property(GObject *gobject,
     {
       g_rec_mutex_lock(core_audio_devin_mutex);
 
-      g_value_set_string(value, core_audio_devin->card_uri);
+      g_value_set_string(value, core_audio_devin->device_name);
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
     }
@@ -1598,6 +1598,7 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
   int device_count;
   int stream_count;
   int is_mic;
+  int is_speaker;
   UInt32 prop_size;
   int i;
   OSStatus error;
@@ -1622,6 +1623,19 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
     return;
   }
 
+  /* get some fields */
+  g_rec_mutex_lock(core_audio_devin_mutex);
+
+  start_core_audio_port = 
+    core_audio_port = g_list_copy(core_audio_devin->core_audio_port);
+
+  g_rec_mutex_unlock(core_audio_devin_mutex);
+  
+  /* unregister */
+  if(start_core_audio_port != NULL){
+    ags_core_audio_port_unregister(start_core_audio_port->data);
+  }
+  
   g_free(core_audio_devin->device_name);
 
   core_audio_devin->device_name = NULL;
@@ -1680,7 +1694,7 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
 	  //	  continue;
 	}
 	
-	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
+	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Input"]){
 	  device_uid = current_uid;
 	}
 
@@ -1725,18 +1739,18 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
 #endif
   
   /* apply name to port */
-  g_rec_mutex_lock(core_audio_devin_mutex);
-
-  start_core_audio_port = 
-    core_audio_port = g_list_copy(core_audio_devin->core_audio_port);
-
-  g_rec_mutex_unlock(core_audio_devin_mutex);
-  
   str = g_strdup_printf("in-%s", core_audio_devin->device_id);
+  
+  if(start_core_audio_port != NULL){
+    g_object_set(start_core_audio_port->data,
+		 "port-name", str,
+		 NULL);
     
-  g_object_set(core_audio_port->data,
-	       "port-name", str,
-	       NULL);
+    ags_core_audio_port_register(start_core_audio_port->data,
+				 str,
+				 TRUE, FALSE,
+				 TRUE);
+  }
 
   g_list_free(start_core_audio_port);
 
@@ -1857,6 +1871,7 @@ ags_core_audio_devin_list_cards(AgsSoundcard *soundcard,
   int device_count;
   int stream_count;
   int is_mic;
+  int is_speaker;
   UInt32 prop_size;
   int i;
   OSStatus error;
@@ -1922,7 +1937,7 @@ ags_core_audio_devin_list_cards(AgsSoundcard *soundcard,
 	  //	  continue;
 	}
 	
-	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
+	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Input"]){
 	  device_uid = current_uid;
 	}
 
