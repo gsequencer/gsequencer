@@ -2005,10 +2005,22 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 {
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioClient *core_audio_client;
+  
+#if defined(AGS_WITH_CORE_AUDIO)
+  AudioDeviceID *audio_devices;
+  
+  NSString *device_uid = @"";
 
+  AudioObjectPropertyAddress devices_property_address;
+  AudioObjectPropertyAddress streams_property_address;
+  
+  struct AudioStreamBasicDescription stream_desc;
+#endif
+ 
   GList *list;
 
   gchar *name, *uuid;
+  gchar *str;
 
   AgsSoundcardFormat format;
   guint i;
@@ -2025,6 +2037,10 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 #else
   AUGraph *graph;
 #endif
+  int device_count;
+  int stream_count;
+  int is_mic;
+  UInt32 prop_size;
   OSStatus retval;
 #else
   gpointer graph;
@@ -2092,7 +2108,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   core_audio_port_mutex = AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(core_audio_port);
   
   /* get port name */
-  //FIXME:JK: memory leak?
   g_rec_mutex_lock(core_audio_port_mutex);
 
   port_name = g_strdup(core_audio_port->port_name);
@@ -2116,18 +2131,91 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     if(is_output){
 #ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
-      AudioObjectGetPropertyDataSize(kAudioObjectSystemObject,
-				     &(core_audio_port->output_property_address),
-				     0,
-				     NULL,
-				     &property_size);
+      devices_property_address.mSelector = kAudioHardwarePropertyDevices;
+      devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
+      devices_property_address.mElement = kAudioObjectPropertyElementMaster;
+
+      streams_property_address.mSelector = kAudioDevicePropertyStreams;
+      streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
+
+      retval = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size);
+  
+      if(retval == noErr){
+	device_count = prop_size / sizeof(AudioDeviceID);
+    
+	audio_devices = (AudioDeviceID *) malloc(prop_size);
+    
+	retval = AudioObjectGetPropertyData(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size, audio_devices);
+    
+	if(retval == noErr) {
+	  for(i = 0; i < device_count; i++){
+	    NSString *current_manufacturer, *current_name, *current_uid;
 	
-      AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				 &(core_audio_port->output_property_address),
-				 0, 
-				 NULL, 
-				 &property_size, 
-				 &(core_audio_port->output_device));
+	    prop_size = sizeof(CFStringRef);
+	
+	    devices_property_address.mSelector = kAudioDevicePropertyDeviceManufacturerCFString;
+	    retval = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_manufacturer);
+	
+	    if(retval != noErr){
+	      current_manufacturer = @"";
+	  
+	      //	  continue;
+	    }
+	
+	    devices_property_address.mSelector = kAudioDevicePropertyDeviceNameCFString;
+	    retval = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_name);
+	
+	    if(retval != noErr){
+	      current_name = @"";
+
+	      //	  continue;
+	    }
+	
+	    devices_property_address.mSelector = kAudioDevicePropertyDeviceUID;
+	    retval = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_uid);
+	
+	    if(retval != noErr){
+	      current_uid = @"";
+	  
+	      //	  continue;
+	    }
+	
+	    if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
+	      device_uid = current_uid;
+	    }
+
+	    is_mic = 0;
+
+	    retval = AudioObjectGetPropertyDataSize(audio_devices[i], 
+						   &streams_property_address, 
+						   0, 
+						   NULL, 
+						   &prop_size);
+	
+	    stream_count = prop_size / sizeof(AudioStreamID);
+
+	    if(stream_count > 0){
+	      is_mic = YES;
+	    }
+
+	    str = g_strdup_printf("out-%s",
+				  [current_uid UTF8String]);
+
+	    if(!is_mic &&
+	       !g_ascii_strcasecmp(str, port_name)){
+	      core_audio_port->output_device = audio_devices[i];
+
+	      g_free(str);
+	  
+	      break;
+	    }
+
+	    g_free(str);
+	  }
+	}
+    
+	free(audio_devices);
+      }
       
       output_samplerate = (Float64) core_audio_port->samplerate;
 
@@ -2273,18 +2361,91 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
     }else{
 #ifdef AGS_WITH_CORE_AUDIO
 #if defined(AGS_CORE_AUDIO_PORT_USE_HW)
-      AudioObjectGetPropertyDataSize(kAudioObjectSystemObject,
-				     &(core_audio_port->input_property_address),
-				     0,
-				     NULL,
-				     &property_size);
+      devices_property_address.mSelector = kAudioHardwarePropertyDevices;
+      devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
+      devices_property_address.mElement = kAudioObjectPropertyElementMaster;
+
+      streams_property_address.mSelector = kAudioDevicePropertyStreams;
+      streams_property_address.mScope = kAudioDevicePropertyScopeInput;
+
+      retval = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size);
+  
+      if(retval == noErr){
+	device_count = prop_size / sizeof(AudioDeviceID);
+    
+	audio_devices = (AudioDeviceID *) malloc(prop_size);
+    
+	retval = AudioObjectGetPropertyData(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size, audio_devices);
+    
+	if(retval == noErr) {
+	  for(i = 0; i < device_count; i++){
+	    NSString *current_manufacturer, *current_name, *current_uid;
 	
-      AudioObjectGetPropertyData(kAudioObjectSystemObject, 
-				 &(core_audio_port->input_property_address),
-				 0, 
-				 NULL, 
-				 &property_size, 
-				 &(core_audio_port->input_device));
+	    prop_size = sizeof(CFStringRef);
+	
+	    devices_property_address.mSelector = kAudioDevicePropertyDeviceManufacturerCFString;
+	    retval = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_manufacturer);
+	
+	    if(retval != noErr){
+	      current_manufacturer = @"";
+	  
+	      //	  continue;
+	    }
+	
+	    devices_property_address.mSelector = kAudioDevicePropertyDeviceNameCFString;
+	    retval = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_name);
+	
+	    if(retval != noErr){
+	      current_name = @"";
+
+	      //	  continue;
+	    }
+	
+	    devices_property_address.mSelector = kAudioDevicePropertyDeviceUID;
+	    retval = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_uid);
+	
+	    if(retval != noErr){
+	      current_uid = @"";
+	  
+	      //	  continue;
+	    }
+	
+	    if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
+	      device_uid = current_uid;
+	    }
+
+	    is_mic = 0;
+
+	    retval = AudioObjectGetPropertyDataSize(audio_devices[i], 
+						   &streams_property_address, 
+						   0, 
+						   NULL, 
+						   &prop_size);
+	
+	    stream_count = prop_size / sizeof(AudioStreamID);
+
+	    if(stream_count > 0){
+	      is_mic = YES;
+	    }
+
+	    str = g_strdup_printf("in-%s",
+				  [current_uid UTF8String]);
+
+	    if(is_mic &&
+	       !g_ascii_strcasecmp(str, port_name)){
+	      core_audio_port->input_device = audio_devices[i];
+
+	      g_free(str);
+	  
+	      break;
+	    }
+
+	    g_free(str);
+	  }
+	}
+    
+	free(audio_devices);
+      }
       
       input_samplerate = (Float64) core_audio_port->samplerate;
       
@@ -2627,7 +2788,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	goto ags_core_audio_port_register_END;
       }
       
-      retval = MIDIPortConnectSource(*(core_audio_port->midi_port), endpoint, core_audio_port);
+      retval = MIDIPortConnectSource(*(core_audio_port->midi_port),
+				     endpoint,
+				     core_audio_port);
 
       if(retval != noErr){
 	goto ags_core_audio_port_register_END;
@@ -2642,12 +2805,20 @@ ags_core_audio_port_register_END:
   
   g_object_unref(core_audio_client);
 
-  g_object_unref(core_audio_server);    
+  g_object_unref(core_audio_server);
+
+  g_free(port_name);
 }
 
 void
 ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port)
 {
+#if defined(AGS_WITH_CORE_AUDIO)
+#if defined(AGS_CORE_AUDIO_PORT_USE_HW)
+  MIDIEndpointRef endpoint;
+#endif
+#endif
+  
   if(!AGS_IS_CORE_AUDIO_PORT(core_audio_port)){
     return;
   }

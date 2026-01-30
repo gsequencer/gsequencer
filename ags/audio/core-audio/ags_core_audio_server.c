@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,10 @@
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
+
+#include <ags/config.h>
+
+#include <ags/config.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_devin.h>
@@ -1089,6 +1093,9 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
   gpointer graph;
 #endif
 
+  GList *start_card_id;
+  GList *start_card_name;
+
   gchar *str;  
 
   guint n_soundcards;
@@ -1180,15 +1187,17 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     core_audio_devout = ags_core_audio_devout_new();
     soundcard = (GObject *) core_audio_devout;
 
-    str = g_strdup_printf("ags-core-audio-devout-%d",
-			  n_soundcards);
+    start_card_id = NULL;
+    start_card_name = NULL;
+
+    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
+			     &start_card_id, &start_card_name);
     
     g_object_set(AGS_CORE_AUDIO_DEVOUT(core_audio_devout),
 		 "core-audio-client", default_client,
-		 "device", str,
+		 "device", start_card_name->data,
 		 "format", format,
 		 NULL);
-    g_free(str);
         
     /* register ports */      
     core_audio_port = ags_core_audio_port_new((GObject *) default_client);
@@ -1202,9 +1211,6 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     ags_core_audio_port_set_samplerate(core_audio_port,
 				       samplerate);
     
-    str = g_strdup_printf("ags-soundcard%d",
-			  n_soundcards);
-    
     g_object_set(core_audio_port,
 		 "core-audio-device", core_audio_devout,
 		 NULL);
@@ -1216,11 +1222,11 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 		 NULL);
     
     core_audio_devout->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
-    core_audio_devout->port_name[0] = g_strdup(str);
+    core_audio_devout->port_name[0] = g_strdup(start_card_id->data);
     core_audio_devout->port_name[1] = NULL;
     
     ags_core_audio_port_register(core_audio_port,
-				 str,
+				 start_card_id->data,
 				 TRUE, FALSE,
 				 TRUE);
 
@@ -1236,19 +1242,27 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     core_audio_server->n_soundcards += 1;
 
     g_rec_mutex_unlock(core_audio_server_mutex);
+
+    g_list_free_full(start_card_id,
+		     (GDestroyNotify) g_free);
+
+    g_list_free_full(start_card_name,
+		     (GDestroyNotify) g_free);
   }else{
     core_audio_devin = ags_core_audio_devin_new();
     soundcard = (GObject *) core_audio_devin;
 
-    str = g_strdup_printf("ags-core-audio-devin-%d",
-			  n_soundcards);
+    start_card_id = NULL;
+    start_card_name = NULL;
+
+    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
+			     &start_card_id, &start_card_name);
     
     g_object_set(AGS_CORE_AUDIO_DEVIN(core_audio_devin),
 		 "core-audio-client", default_client,
-		 "device", str,
+		 "device", start_card_name->data,
 		 "format", format,
 		 NULL);
-    g_free(str);
         
     /* register ports */      
     core_audio_port = ags_core_audio_port_new((GObject *) default_client);
@@ -1262,9 +1276,6 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     ags_core_audio_port_set_samplerate(core_audio_port,
 				       samplerate);
 
-    str = g_strdup_printf("ags-soundcard%d",
-			  n_soundcards);
-    
     g_object_set(core_audio_port,
 		 "core-audio-device", core_audio_devin,
 		 NULL);
@@ -1276,11 +1287,11 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 		 NULL);
     
     core_audio_devin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
-    core_audio_devin->port_name[0] = g_strdup(str);
+    core_audio_devin->port_name[0] = g_strdup(start_card_id->data);
     core_audio_devin->port_name[1] = NULL;
     
     ags_core_audio_port_register(core_audio_port,
-				 str,
+				 start_card_id->data,
 				 TRUE, FALSE,
 				 FALSE);
 
@@ -1296,6 +1307,12 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     core_audio_server->n_soundcards += 1;
 
     g_rec_mutex_unlock(core_audio_server_mutex);
+    
+    g_list_free_full(start_card_id,
+		     (GDestroyNotify) g_free);
+
+    g_list_free_full(start_card_name,
+		     (GDestroyNotify) g_free);
   }
   
   return(soundcard);

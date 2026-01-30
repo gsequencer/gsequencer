@@ -27,6 +27,17 @@
 
 #include <ags/ags_api_config.h>
 
+#if defined(AGS_WITH_CORE_AUDIO)  
+#include <AudioToolbox/AudioToolbox.h>
+
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <AudioUnit/AudioComponent.h>
+
+#include <Foundation/Foundation.h>
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_CORE_AUDIO_DEVOUT                (ags_core_audio_devout_get_type())

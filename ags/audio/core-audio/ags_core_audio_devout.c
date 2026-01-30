@@ -1674,7 +1674,7 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
   devices_property_address.mElement = kAudioObjectPropertyElementMaster;
 
   streams_property_address.mSelector = kAudioDevicePropertyStreams;
-  streams_property_address.mScope = kAudioDevicePropertyScopeInput;
+  streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
 
   error = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size);
   
@@ -1741,10 +1741,11 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 			      [current_name UTF8String]);
 
 	if(!is_mic &&
-	   !g_ascii_strncasemp(str, device, strlen(str))){
+	   !g_ascii_strcasecmp(str, device)){
 	  core_audio_devout->device_name = g_strdup(device);
 	  
-	  core_audio_devout->device_id = g_strdup([current_uid UTF8String]);
+	  core_audio_devout->device_id = g_strdup_printf("out-%s",
+							 [current_uid UTF8String]);
 
 	  core_audio_devout->audio_device = audio_devices[i];
 
@@ -1769,7 +1770,8 @@ ags_core_audio_devout_set_device(AgsSoundcard *soundcard,
 
   g_rec_mutex_unlock(core_audio_devout_mutex);
   
-  str = g_strdup_printf("out<%s>", core_audio_devout->device_id);
+  str = g_strdup_printf("out-%s",
+			core_audio_devout->device_id);
     
   g_object_set(core_audio_port->data,
 	       "port-name", str,
@@ -1905,7 +1907,7 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
   devices_property_address.mElement = kAudioObjectPropertyElementMaster;
 
   streams_property_address.mSelector = kAudioDevicePropertyStreams;
-  streams_property_address.mScope = kAudioDevicePropertyScopeInput;
+  streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
 
   error = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size);
   
@@ -1971,7 +1973,7 @@ ags_core_audio_devout_list_cards(AgsSoundcard *soundcard,
 
 	if(!is_mic){
 	  *card_id = g_list_prepend(*card_id,
-				    g_strdup([current_uid UTF8String]));
+				    g_strdup_printf("out-%s", [current_uid UTF8String]));
        
 	  *card_name = g_list_prepend(*card_name,
 				      g_strdup_printf("%s - %s", [current_manufacturer UTF8String], [current_name UTF8String]));
