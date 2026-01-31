@@ -1769,6 +1769,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
   AgsSoundcardFormat format;
   guint samplerate;
   gboolean initial_set;
+  gboolean is_output;
   guint i;
   
   GRecMutex *core_audio_server_mutex;

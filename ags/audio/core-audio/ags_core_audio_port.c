@@ -2266,7 +2266,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 					 &(core_audio_port->output_proc_id));
 
       if(retval != noErr){
-	g_warning("failed create IOProcID");
+	g_warning("failed create IOProcID OS status: %d", retval);
       }
       
       AudioDeviceStart(core_audio_port->output_device,
@@ -2506,7 +2506,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 					 &(core_audio_port->input_proc_id));
 
       if(retval != noErr){
-	g_warning("failed create IOProcID");
+	g_warning("failed create IOProcID OS status: %d", retval);
       }
       
       AudioDeviceStart(core_audio_port->input_device,
@@ -2873,9 +2873,15 @@ ags_core_audio_port_unregister(AgsCoreAudioPort *core_audio_port)
     if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_IS_OUTPUT)){
       AudioDeviceStop(core_audio_port->output_device,
 		      core_audio_port->output_proc_id);
+
+      AudioDeviceDestroyIOProcID(core_audio_port->output_device,
+				 core_audio_port->output_proc_id);
     }else{
       AudioDeviceStop(core_audio_port->input_device,
 		      core_audio_port->input_proc_id);
+
+      AudioDeviceDestroyIOProcID(core_audio_port->input_device,
+				 core_audio_port->input_proc_id);
     }
   }
 #else

@@ -1748,7 +1748,7 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
     ags_core_audio_port_register(start_core_audio_port->data,
 				 str,
 				 TRUE, FALSE,
-				 TRUE);
+				 FALSE);
   }
 
   g_list_free(start_core_audio_port);
