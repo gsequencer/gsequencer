@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -974,15 +974,28 @@ ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
-
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
+      
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }else{
+	alias_new_source_buffer[i] = alias_source_buffer[i];
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
-
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
+      
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
       }else{
 	if(reset_i == -1){
@@ -992,8 +1005,12 @@ ags_pitch_16x_alias_util_pitch_s8(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 	if(reset_i != -1 && i - reset_i >= reset_i){
 	  reset_i = i;
 	}
-	
-	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+
+	if(new_source_freq_period != 0.0){
+	  alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	}else{
+	  alias_new_source_buffer[i] = alias_source_buffer[i];
+	}
       }
     }
   }
@@ -1091,15 +1108,28 @@ ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }else{
+	alias_new_source_buffer[i] = alias_source_buffer[i];
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
       }else{
 	if(reset_i == -1){
@@ -1110,7 +1140,11 @@ ags_pitch_16x_alias_util_pitch_s16(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 	  reset_i = i;
 	}
 	
-	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	if(new_source_freq_period != 0.0){
+	  alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	}else{
+	  alias_new_source_buffer[i] = alias_source_buffer[i];
+	}
       }
     }
   }
@@ -1208,15 +1242,28 @@ ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }else{
+	alias_new_source_buffer[i] = alias_source_buffer[i];
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
       }else{
 	if(reset_i == -1){
@@ -1227,7 +1274,11 @@ ags_pitch_16x_alias_util_pitch_s24(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 	  reset_i = i;
 	}
 	
-	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	if(new_source_freq_period != 0.0){
+	  alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	}else{
+	  alias_new_source_buffer[i] = alias_source_buffer[i];
+	}
       }
     }
   }
@@ -1325,15 +1376,28 @@ ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }else{
+	alias_new_source_buffer[i] = alias_source_buffer[i];
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
       }else{
 	if(reset_i == -1){
@@ -1344,7 +1408,11 @@ ags_pitch_16x_alias_util_pitch_s32(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 	  reset_i = i;
 	}
 	
-	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	if(new_source_freq_period != 0.0){
+	  alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	}else{
+	  alias_new_source_buffer[i] = alias_source_buffer[i];
+	}
       }
     }
   }
@@ -1442,15 +1510,28 @@ ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }else{
+	alias_new_source_buffer[i] = alias_source_buffer[i];
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
       }else{
 	if(reset_i == -1){
@@ -1461,7 +1542,11 @@ ags_pitch_16x_alias_util_pitch_s64(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 	  reset_i = i;
 	}
 	
-	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	if(new_source_freq_period != 0.0){
+	  alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	}else{
+	  alias_new_source_buffer[i] = alias_source_buffer[i];
+	}
       }
     }
   }
@@ -1559,15 +1644,28 @@ ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util)
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }else{
+	alias_new_source_buffer[i] = alias_source_buffer[i];
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
       }else{
 	if(reset_i == -1){
@@ -1578,7 +1676,11 @@ ags_pitch_16x_alias_util_pitch_float(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 	  reset_i = i;
 	}
 	
-	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	if(new_source_freq_period != 0.0){
+	  alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	}else{
+	  alias_new_source_buffer[i] = alias_source_buffer[i];
+	}
       }
     }
   }
@@ -1676,15 +1778,28 @@ ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	alias_new_source_buffer[i] = ((1.0 - t) * alias_source_buffer[i]) + (t * alias_source_buffer[(guint) floor(i * (source_freq_period / new_source_freq_period))]);
+      }else{
+	alias_new_source_buffer[i] = alias_source_buffer[i];
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor(i * source_freq_period / new_source_freq_period)];
       }else{
 	if(reset_i == -1){
@@ -1695,7 +1810,11 @@ ags_pitch_16x_alias_util_pitch_double(AgsPitch16xAliasUtil *pitch_16x_alias_util
 	  reset_i = i;
 	}
 	
-	alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	if(new_source_freq_period != 0.0){
+	  alias_new_source_buffer[i] = alias_source_buffer[(guint) floor((i - reset_i) * source_freq_period / new_source_freq_period)];
+	}else{
+	  alias_new_source_buffer[i] = alias_source_buffer[i];
+	}
       }
     }
   }
@@ -1794,16 +1913,30 @@ ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_uti
     new_source_freq_period = (16 * samplerate) / new_pitch_hz;
     
     if(source_freq_period < new_source_freq_period){
-      t = (i % (guint) source_freq_period) / new_source_freq_period;
+      if((guint) source_freq_period != 0 &&
+	 new_source_freq_period != 0.0){
+	t = (i % (guint) source_freq_period) / new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if((guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 (guint) floor(i * (source_freq_period / new_source_freq_period)) < 16 * buffer_length){
 	ags_complex_set(alias_new_source_buffer + i,
 			((1.0 - t) * ags_complex_get(alias_source_buffer + i)) + (t * ags_complex_get(alias_source_buffer + ((guint) floor(i * (source_freq_period / new_source_freq_period))))));
+      }else{
+	ags_complex_set(alias_new_source_buffer + i,
+			ags_complex_get(alias_source_buffer + i));
       }
     }else{
-      t = 1.0 / source_freq_period * new_source_freq_period;
+      if(source_freq_period != 0.0){
+	t = 1.0 / source_freq_period * new_source_freq_period;
+      }else{
+	t = 0.0;
+      }
 
-      if(i * source_freq_period / new_source_freq_period < 16 * buffer_length){
+      if(new_source_freq_period != 0.0 &&
+	 i * source_freq_period / new_source_freq_period < 16 * buffer_length){
 	ags_complex_set(alias_new_source_buffer + i,
 			ags_complex_get(alias_source_buffer + ((guint) floor(i * source_freq_period / new_source_freq_period))));
       }else{
@@ -1814,9 +1947,14 @@ ags_pitch_16x_alias_util_pitch_complex(AgsPitch16xAliasUtil *pitch_16x_alias_uti
 	if(reset_i != -1 && i - reset_i >= reset_i){
 	  reset_i = i;
 	}
-	
-	ags_complex_set(alias_new_source_buffer + i,
-			ags_complex_get(alias_source_buffer + ((guint) floor((i - reset_i) * source_freq_period / new_source_freq_period))));
+
+	if(new_source_freq_period != 0.0){
+	  ags_complex_set(alias_new_source_buffer + i,
+			  ags_complex_get(alias_source_buffer + ((guint) floor((i - reset_i) * source_freq_period / new_source_freq_period))));
+	}else{
+	  ags_complex_set(alias_new_source_buffer + i,
+			  ags_complex_get(alias_source_buffer + i));
+	}
       }
     }
   }
@@ -1846,45 +1984,45 @@ ags_pitch_16x_alias_util_pitch(AgsPitch16xAliasUtil *pitch_16x_alias_util)
 
   switch(pitch_16x_alias_util->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
-  {
-    ags_pitch_16x_alias_util_pitch_s8(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_s8(pitch_16x_alias_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
-  {
-    ags_pitch_16x_alias_util_pitch_s16(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_s16(pitch_16x_alias_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
-  {
-    ags_pitch_16x_alias_util_pitch_s24(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_s24(pitch_16x_alias_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
-  {
-    ags_pitch_16x_alias_util_pitch_s32(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_s32(pitch_16x_alias_util);
+    }
+    break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
-  {
-    ags_pitch_16x_alias_util_pitch_s64(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_s64(pitch_16x_alias_util);
+    }
+    break;
   case AGS_SOUNDCARD_FLOAT:
-  {
-    ags_pitch_16x_alias_util_pitch_float(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_float(pitch_16x_alias_util);
+    }
+    break;
   case AGS_SOUNDCARD_DOUBLE:
-  {
-    ags_pitch_16x_alias_util_pitch_double(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_double(pitch_16x_alias_util);
+    }
+    break;
   case AGS_SOUNDCARD_COMPLEX:
-  {
-    ags_pitch_16x_alias_util_pitch_complex(pitch_16x_alias_util);
-  }
-  break;
+    {
+      ags_pitch_16x_alias_util_pitch_complex(pitch_16x_alias_util);
+    }
+    break;
   default:
     g_warning("unknown format");
   }

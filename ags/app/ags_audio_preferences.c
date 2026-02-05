@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -159,6 +159,9 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
   AgsConfig *config;
   
+  GSimpleActionGroup *action_group;
+  GSimpleAction *action;
+  
   gchar *str;  
 
   config = ags_config_get_instance();
@@ -175,6 +178,28 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   audio_preferences->flags = 0;
   audio_preferences->connectable_flags = 0;
 
+  /* action group */
+  action_group = g_simple_action_group_new();
+  gtk_widget_insert_action_group((GtkWidget *) audio_preferences,
+				 "audio_preferences",
+				 G_ACTION_GROUP(action_group));
+
+  /* add output soundcard */
+  action = g_simple_action_new("add_output_soundcard",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_audio_preferences_add_output_soundcard_callback), audio_preferences);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
+  /* add input soundcard */
+  action = g_simple_action_new("add_input_soundcard",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_audio_preferences_add_input_soundcard_callback), audio_preferences);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
@@ -350,12 +375,7 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
   }
 
   audio_preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-  
-  if(audio_preferences->add != NULL){
-    g_signal_connect(G_OBJECT(audio_preferences->add), "clicked",
-		     G_CALLBACK(ags_audio_preferences_add_callback), audio_preferences);
-  }
-      
+        
   /* experimental */
   if(audio_preferences->start_jack != NULL){
     g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked",
@@ -380,14 +400,6 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   }
 
   audio_preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-
-  if(audio_preferences->add != NULL){
-    g_object_disconnect(G_OBJECT(audio_preferences->add),
-			"any_signal::clicked",
-			G_CALLBACK(ags_audio_preferences_add_callback),
-			audio_preferences,
-			NULL);
-  }
 
   /* experimental */
   if(audio_preferences->start_jack != NULL){

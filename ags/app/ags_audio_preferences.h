@@ -54,6 +54,9 @@ struct _AgsAudioPreferences
   
   GtkBox *soundcard_editor_box;
   
+  GtkMenuButton *add_menu_button;
+  GMenuModel *add_menu_button_model;
+  
   GtkButton *add;
   
   GtkComboBoxText *jack_driver;
