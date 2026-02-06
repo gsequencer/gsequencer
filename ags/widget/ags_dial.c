@@ -538,8 +538,8 @@ ags_dial_init(AgsDial *dial)
 
   dial->box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				     6);
-  gtk_widget_set_parent(dial->box,
-			dial);
+  gtk_widget_set_parent((GtkWidget *) dial->box,
+			(GtkWidget *) dial);
 }
 
 void
