@@ -1340,7 +1340,7 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     start_card_id = NULL;
     start_card_name = NULL;
 
-    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
+    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devin),
 			     &start_card_id, &start_card_name);
     
     card_id = start_card_id;
@@ -1360,7 +1360,7 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 		 "format", format,
 		 NULL);    
 
-    ags_soundcard_set_device(AGS_SOUNDCARD(core_audio_devout),
+    ags_soundcard_set_device(AGS_SOUNDCARD(core_audio_devin),
 			     card_name->data);
     
     /* register ports */      
