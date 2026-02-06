@@ -5,7 +5,8 @@ ags (8.3.0)
 	* improved ags_pitch_2x_alias_util.c check division by 0.0
 	* improved ags_pitch_4x_alias_util.c check division by 0.0
 	* improved ags_pitch_16x_alias_util.c check division by 0.0
-	* added css-name of widgets to ags/widget/*
+	* added css-name of widgets for ags/widget/*
+	* added user's handbook content, missing new synths
 
 ags (8.2.12)
 
