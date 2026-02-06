@@ -1687,7 +1687,7 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioDevout *core_audio_devout;
-  AgsCoreAudioDevout *core_audio_devin;
+  AgsCoreAudioDevin *core_audio_devin;
 
   AgsThread *main_loop;
   AgsThread *soundcard_thread, *default_soundcard_thread;
