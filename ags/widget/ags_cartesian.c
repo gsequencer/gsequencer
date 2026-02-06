@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1073,6 +1073,9 @@ ags_cartesian_class_init(AgsCartesianClass *cartesian)
   widget->size_allocate = ags_cartesian_size_allocate;
   
   widget->snapshot = ags_cartesian_snapshot;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-cartesian");
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,13 +69,20 @@ void
 ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
 {
   GObjectClass *gobject;
-
+  GtkWidgetClass *widget;
+  
   ags_scrolled_level_box_parent_class = g_type_class_peek_parent(scrolled_level_box);
 
   /* GObjectClass */
   gobject = (GObjectClass *) scrolled_level_box;
 
   gobject->finalize = ags_scrolled_level_box_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) scrolled_level_box;
+  
+  gtk_widget_class_set_css_name(widget,
+				"ags-scrolled-level-box");
 }
 
 void

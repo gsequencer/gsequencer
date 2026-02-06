@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -169,6 +169,9 @@ ags_led_class_init(AgsLedClass *led)
   widget->size_allocate = ags_led_size_allocate;
   
   widget->snapshot = ags_led_snapshot;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-led");
 }
 
 void

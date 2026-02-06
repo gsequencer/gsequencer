@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -92,8 +92,16 @@ ags_input_dialog_get_type(void)
 void
 ags_input_dialog_class_init(AgsInputDialogClass *input_dialog)
 {
+  GtkWidgetClass *widget;
+  
   ags_input_dialog_parent_class = g_type_class_peek_parent(input_dialog);
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) input_dialog;
+  
+  gtk_widget_class_set_css_name(widget,
+				"ags-input-dialog");
+  
   /* AgsInputDialogClass */
   input_dialog->response = NULL;
 

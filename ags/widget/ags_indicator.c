@@ -270,6 +270,9 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
 
   gtk_widget_class_set_accessible_role(widget,
 				       GTK_ACCESSIBLE_ROLE_METER);
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-indicator");
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -208,6 +208,9 @@ ags_file_entry_class_init(AgsFileEntryClass *file_entry)
   widget->realize = ags_file_entry_realize;
   widget->unrealize = ags_file_entry_unrealize;
   
+  gtk_widget_class_set_css_name(widget,
+				"ags-file-entry");  
+
   /* properties */
   /**
    * AgsFileEntry:filename:

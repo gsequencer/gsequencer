@@ -5,7 +5,7 @@ ags (8.3.0)
 	* improved ags_pitch_2x_alias_util.c check division by 0.0
 	* improved ags_pitch_4x_alias_util.c check division by 0.0
 	* improved ags_pitch_16x_alias_util.c check division by 0.0
-	* TODO:JK: refactor VST3 support
+	* added css-name of widgets to ags/widget/*
 
 ags (8.2.12)
 

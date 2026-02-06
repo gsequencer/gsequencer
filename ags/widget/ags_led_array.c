@@ -87,6 +87,7 @@ void
 ags_led_array_class_init(AgsLedArrayClass *led_array)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   
   GParamSpec *param_spec;
 
@@ -99,6 +100,12 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
   gobject->get_property = ags_led_array_get_property;
 
   gobject->finalize = ags_led_array_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) led_array;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-led-array");
   
   /* properties */
   /**
