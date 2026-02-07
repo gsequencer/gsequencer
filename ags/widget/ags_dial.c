@@ -42,6 +42,7 @@ void ags_dial_get_property(GObject *gobject,
 			   GValue *value,
 			   GParamSpec *param_spec);
 void ags_dial_dispose(GObject *gobject);
+void ags_dial_finalize(GObject *gobject);
 
 void ags_dial_realize(GtkWidget *widget);
 void ags_dial_unrealize(GtkWidget *widget);
@@ -240,6 +241,7 @@ ags_dial_class_init(AgsDialClass *dial)
   gobject->get_property = ags_dial_get_property;
 
   gobject->dispose = ags_dial_dispose;
+  gobject->finalize = ags_dial_finalize;
   
   /* properties */
   /**
@@ -737,6 +739,15 @@ ags_dial_dispose(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_dial_parent_class)->dispose(gobject);
+}
+
+void
+ags_dial_finalize(GObject *gobject)
+{
+  gtk_widget_unparent(AGS_DIAL(gobject)->box);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_dial_parent_class)->finalize(gobject);
 }
 
 void

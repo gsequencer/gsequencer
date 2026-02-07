@@ -191,7 +191,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
   /* action group */
   action_group = g_simple_action_group_new();
-  gtk_widget_insert_action_group((GtkWidget *) audio_preferences,
+  gtk_widget_insert_action_group((GtkWidget *) preferences,
 				 "audio_preferences",
 				 G_ACTION_GROUP(action_group));
 

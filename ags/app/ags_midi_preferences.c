@@ -182,7 +182,7 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   
   /* action group */
   action_group = g_simple_action_group_new();
-  gtk_widget_insert_action_group((GtkWidget *) midi_preferences,
+  gtk_widget_insert_action_group((GtkWidget *) preferences,
 				 "midi_preferences",
 				 G_ACTION_GROUP(action_group));
 
@@ -231,6 +231,9 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   
   gtk_menu_button_set_menu_model(midi_preferences->add_menu_button,
 				 add_popup);
+
+  gtk_widget_set_visible((GtkWidget *) midi_preferences->add_menu_button,
+			 FALSE);
   
   midi_preferences->add = NULL;  
 }
