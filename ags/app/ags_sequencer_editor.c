@@ -740,16 +740,6 @@ ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
     
     card_id = card_id->next;
   }
-
-  /* remove previous */
-  if(sequencer_editor->sequencer != NULL){
-    ags_sequencer_editor_remove_sequencer(sequencer_editor,
-					  (GObject *) sequencer_editor->sequencer);
-  }
-
-  /* add new */
-  ags_sequencer_editor_add_sequencer(sequencer_editor,
-				     (GObject *) alsa_midiin);
 }
 
 void
@@ -777,16 +767,6 @@ ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
     
     card_id = card_id->next;
   }
-
-  /* remove previous */
-  if(sequencer_editor->sequencer != NULL){
-    ags_sequencer_editor_remove_sequencer(sequencer_editor,
-					  (GObject *) sequencer_editor->sequencer);
-  }
-
-  /* add new */
-  ags_sequencer_editor_add_sequencer(sequencer_editor,
-				     (GObject *) oss_midiin);
 }
 
 /**

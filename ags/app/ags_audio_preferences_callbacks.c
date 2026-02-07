@@ -698,15 +698,6 @@ ags_audio_preferences_add_input_soundcard_callback(GAction *action, GVariant *pa
     card_name = card_name->next;
   }
 
-  /* unref */
-  g_object_unref(main_loop);
-  
-  g_list_free_full(start_card_id,
-		   (GDestroyNotify) g_free);
-  
-  g_list_free_full(start_card_name,
-		   (GDestroyNotify) g_free);
-  
   ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
   ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
 
@@ -715,6 +706,13 @@ ags_audio_preferences_add_input_soundcard_callback(GAction *action, GVariant *pa
 
   gtk_widget_show((GtkWidget *) soundcard_editor);
 
+  /* unref */
+  g_list_free_full(start_card_id,
+		   (GDestroyNotify) g_free);
+  
+  g_list_free_full(start_card_name,
+		   (GDestroyNotify) g_free);
+  
   /* reset default card */  
   g_object_unref(main_loop);  
 }
