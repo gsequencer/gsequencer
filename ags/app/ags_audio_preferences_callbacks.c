@@ -32,44 +32,7 @@ ags_audio_preferences_notify_parent_callback(GObject *gobject,
 					     GParamSpec *pspec,
 					     gpointer user_data)
 {
-  AgsAudioPreferences *audio_preferences;
-
-  audio_preferences = (AgsAudioPreferences *) gobject;
-  
-  if(audio_preferences->add_menu_button == NULL) {
-    AgsPreferences *preferences;
-
-    AgsApplicationContext *application_context;
-    
-    GMenu *menu;
-    GMenuItem *item;
-    
-    application_context = ags_application_context_get_instance();
-
-    preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
-    
-    audio_preferences->add_menu_button = (GtkMenuButton *) g_object_new(GTK_TYPE_MENU_BUTTON,
-									"icon-name", "list-add",
-									NULL);
-
-    menu = (GMenu *) g_menu_new();
-
-    item = g_menu_item_new(i18n("add output soundcard"),
-			   "audio_preferences.add_output_soundcard");
-    g_menu_append_item(menu,
-		       item);
-    
-    item = g_menu_item_new(i18n("add input soundcard"),
-			   "audio_preferences.add_input_soundcard");
-    g_menu_append_item(menu,
-		       item);
-
-    gtk_menu_button_set_menu_model(audio_preferences->add_menu_button,
-				   G_MENU_MODEL(menu));
-    
-    gtk_box_prepend(preferences->action_area,
-		    (GtkWidget *) audio_preferences->add_menu_button);
-  }
+  //empty
 }
 
 void

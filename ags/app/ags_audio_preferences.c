@@ -152,6 +152,8 @@ ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *applicab
 void
 ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 {
+  AgsPreferences *preferences;
+
   GtkScrolledWindow *scrolled_window;
   GtkGrid *grid;
   GtkBox *hbox;
@@ -162,13 +164,18 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   GMenuItem *item;
   
   AgsConfig *config;
+  AgsApplicationContext *application_context;
   
   GSimpleActionGroup *action_group;
   GSimpleAction *action;
   
-  gchar *str;  
+  gchar *str;
+  
+  application_context = ags_application_context_get_instance();
 
   config = ags_config_get_instance();
+  
+  preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(audio_preferences),
 				 GTK_ORIENTATION_VERTICAL);
@@ -233,7 +240,9 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
   /*  */
   audio_preferences->add_menu_button = gtk_menu_button_new();
-
+  gtk_box_prepend(preferences->action_area,
+		  (GtkWidget *) audio_preferences->add_menu_button);
+  
   menu = (GMenu *) g_menu_new();
   add_popup = G_MENU_MODEL(menu);
 

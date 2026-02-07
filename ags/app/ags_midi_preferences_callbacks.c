@@ -32,24 +32,8 @@ void
 ags_midi_preferences_notify_parent_callback(GObject *gobject,
 					    GParamSpec *pspec,
 					    gpointer user_data)
-{  
-  AgsMidiPreferences *midi_preferences;
-
-  midi_preferences = (AgsMidiPreferences *) gobject;
-  
-  if(midi_preferences->add == NULL) {
-    AgsPreferences *preferences;
-    
-    AgsApplicationContext *application_context;
-    
-    application_context = ags_application_context_get_instance();
-    
-    preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
-    
-    midi_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
-    gtk_box_prepend(preferences->action_area,
-		    (GtkWidget *) midi_preferences->add);
-  }
+{
+  //empty
 }
 
 void

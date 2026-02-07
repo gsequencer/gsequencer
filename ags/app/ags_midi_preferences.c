@@ -152,6 +152,8 @@ ags_midi_preferences_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 {
+  AgsPreferences *preferences;
+
   GtkScrolledWindow *scrolled_window;
 
   GMenuModel *add_popup;
@@ -159,7 +161,13 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   GMenuItem *item;
   
   GSimpleActionGroup *action_group;
-  GSimpleAction *action;  
+  GSimpleAction *action;
+  
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
 
   gtk_orientable_set_orientation(GTK_ORIENTABLE(midi_preferences),
 				 GTK_ORIENTATION_VERTICAL);
@@ -210,7 +218,9 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 
   /*  */
   midi_preferences->add_menu_button = gtk_menu_button_new();
-
+  gtk_box_prepend(preferences->action_area,
+		  (GtkWidget *) midi_preferences->add_menu_button);
+  
   menu = (GMenu *) g_menu_new();
   add_popup = G_MENU_MODEL(menu);
 
