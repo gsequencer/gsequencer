@@ -1568,6 +1568,9 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
 
   application_context = ags_application_context_get_instance();
 
+  /* config */
+  config = ags_config_get_instance();
+  
   /* get core-audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 

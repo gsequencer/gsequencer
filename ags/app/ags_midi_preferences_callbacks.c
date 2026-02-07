@@ -90,11 +90,6 @@ ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
   sequencer_editor = (AgsSequencerEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SEQUENCER_EDITOR);
 
-  if(!AGS_IS_JACK_DEVOUT(sequencer_editor->sequencer)){
-    ags_sequencer_editor_remove_sequencer(sequencer_editor,
-					  sequencer_editor->sequencer);
-  }
-
   ags_midi_preferences_remove_sequencer_editor(midi_preferences,
 					       sequencer_editor);
 }

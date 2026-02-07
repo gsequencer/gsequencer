@@ -45,8 +45,6 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 			    "core-audio",
 			    11)){
       ags_soundcard_editor_load_core_audio_card(soundcard_editor);
-
-      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "pulse",
 				  6)){
@@ -54,32 +52,22 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 			       0);
 
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
-
-      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "jack",
 				  5)){
       ags_soundcard_editor_load_jack_card(soundcard_editor);
-
-      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "wasapi",
 				  6)){      
       ags_soundcard_editor_load_wasapi_card(soundcard_editor);
-
-      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
-
-      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
-
-      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }
   }
 }

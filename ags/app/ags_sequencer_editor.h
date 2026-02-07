@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,16 +70,6 @@ struct _AgsSequencerEditorClass
 };
 
 GType ags_sequencer_editor_get_type(void);
-
-void ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
-				     gchar *device);
-void ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
-					gchar *device);
-
-void ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
-					GObject *sequencer);
-void ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
-					   GObject *sequencer);
 
 void ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor);
