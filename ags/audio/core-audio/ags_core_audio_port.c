@@ -2641,6 +2641,39 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	goto ags_core_audio_port_register_END;
       }
       
+      sources_count = MIDIGetNumberOfSources();
+
+      for(i = 0; i < sources_count; i++){
+	endpoint = MIDIGetSource(i);
+
+	if(endpoint != 0){
+	  current_uid = NULL;
+      
+	  retval = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyDeviceID, &current_uid);
+
+	  if(retval != noErr){
+	    current_uid = @"";
+	  }
+	  
+	  NSString *str_uid = (__bridge_transfer NSString *) current_uid;   
+
+	  str = g_strdup_printf("in-%s",
+				[str_uid UTF8String]);
+	    
+	  if(!g_ascii_strcasecmp(str, port_name)){
+	    core_audio_port->midi_port_number = i;
+	    
+	    core_audio_port->midi_input_endpoint = endpoint;
+
+	    g_free(str);
+	    
+	    break;
+	  }
+
+	  g_free(str);
+	}
+      }
+      
       // Objective-C block      
       retval = MIDIInputPortCreateWithProtocol(core_audio_port->midi_client,
 					       CFSTR("Input port"),
@@ -2817,39 +2850,6 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	
       if(retval != noErr){
 	goto ags_core_audio_port_register_END;
-      }
-
-      sources_count = MIDIGetNumberOfSources();
-
-      for(i = 0; i < sources_count; i++){
-	endpoint = MIDIGetSource(i);
-
-	if(endpoint != 0){
-	  current_uid = NULL;
-      
-	  retval = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyUniqueID, &current_uid);
-
-	  if(retval != noErr){
-	    current_uid = @"";
-	  }
-	  
-	  NSString *str_uid = (__bridge_transfer NSString *) current_uid;   
-
-	  str = g_strdup_printf("in-%s",
-				[str_uid UTF8String]);
-	    
-	  if(!g_ascii_strcasecmp(str, port_name)){
-	    core_audio_port->midi_port_number = i;
-	    
-	    core_audio_port->midi_input_endpoint = endpoint;
-
-	    g_free(str);
-	    
-	    break;
-	  }
-
-	  g_free(str);
-	}
       }
 
       endpoint = core_audio_port->midi_input_endpoint;

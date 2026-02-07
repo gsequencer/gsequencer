@@ -1346,15 +1346,22 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     card_id = start_card_id;
     card_name = start_card_name;
 
-    while(card_id != NULL){
-      if(!g_ascii_strcasecmp(card_name->data, conf_device)){
-	break;
-      }
+    if(conf_device != NULL){
+      while(card_id != NULL){
+	if(!g_ascii_strcasecmp(card_name->data, conf_device)){
+	  break;
+	}
       
-      card_id = card_id->next;
-      card_name = card_name->next;
+	card_id = card_id->next;
+	card_name = card_name->next;
+      }
     }
     
+    if(card_id == NULL){
+      card_id = start_card_id;
+      card_name = start_card_name;
+    }
+
     g_object_set(AGS_CORE_AUDIO_DEVIN(core_audio_devin),
 		 "core-audio-client", default_client,
 		 "format", format,
@@ -1555,12 +1562,12 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
   gboolean initial_set;
   guint i;
 
-
   GRecMutex *core_audio_server_mutex;
   GRecMutex *core_audio_client_mutex;
   
   if(is_output){
     g_warning("GSequencer - MIDI output not implemented");
+    
     return(NULL);
   }
   
@@ -1685,13 +1692,21 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
     card_id = start_card_id;
     card_name = start_card_name;
 
-    while(card_id != NULL){
-      if(!g_ascii_strcasecmp(card_name->data, conf_device)){
-	break;
-      }
+    if(conf_device != NULL){
+      while(card_id != NULL){
+	if(conf_device != NULL &&
+	   !g_ascii_strcasecmp(card_name->data, conf_device)){
+	  break;
+	}
       
-      card_id = card_id->next;
-      card_name = card_name->next;
+	card_id = card_id->next;
+	card_name = card_name->next;
+      }
+    }
+
+    if(card_id == NULL){
+      card_id = start_card_id;
+      card_name = start_card_name;
     }
     
     g_object_set(AGS_CORE_AUDIO_MIDIIN(core_audio_midiin),

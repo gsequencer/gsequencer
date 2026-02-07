@@ -1159,7 +1159,7 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
       current_manufacturer = NULL;
       current_name = NULL;
       
-      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyUniqueID, &current_uid);
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyDeviceID, &current_uid);
 
       if(error != noErr){
 	current_uid = @"";
@@ -1185,7 +1185,8 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
 			    [str_manufacturer UTF8String],
 			    [str_name UTF8String]);
 
-      if(!g_ascii_strcasecmp(str, device)){
+      if(device != NULL &&
+	 !g_ascii_strcasecmp(str, device)){
 	core_audio_midiin->device_name = g_strdup(device);
 	  
 	core_audio_midiin->device_id = g_strdup_printf("in-%s",
@@ -1293,7 +1294,7 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
       current_manufacturer = NULL;
       current_name = NULL;
 
-      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyUniqueID, &current_uid);
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyDeviceID, &current_uid);
       
       if(error != noErr){
 	current_uid = @"";
