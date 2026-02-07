@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,10 +38,6 @@ void ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
 void ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 						AgsSoundcardEditor *soundcard_editor);
-void ags_soundcard_editor_add_port_callback(GtkWidget *button,
-					    AgsSoundcardEditor *soundcard_editor);
-void ags_soundcard_editor_remove_port_callback(GtkWidget *button,
-					       AgsSoundcardEditor *soundcard_editor);
 
 void ags_soundcard_editor_capability_changed_callback(GtkComboBox *combo,
 						      AgsSoundcardEditor *soundcard_editor);

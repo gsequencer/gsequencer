@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -91,16 +91,6 @@ struct _AgsSoundcardEditorClass
 };
 
 GType ags_soundcard_editor_get_type(void);
-
-void ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
-				   gchar *device);
-void ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
-				      gchar *device);
-
-void ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
-					GObject *soundcard);
-void ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
-					   GObject *soundcard);
 
 void ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor);
 void ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor);
