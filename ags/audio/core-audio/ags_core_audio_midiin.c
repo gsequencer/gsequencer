@@ -1100,6 +1100,7 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
   
 #if defined(AGS_WITH_CORE_AUDIO)  
   ItemCount sources_count;
+  SInt32 uid;
 
   int i;
   
@@ -1159,8 +1160,10 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
       current_manufacturer = NULL;
       current_name = NULL;
       
-      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyDeviceID, &current_uid);
+      error = MIDIObjectGetIntegerProperty(endpoint, kMIDIPropertyUniqueID, &uid);
 
+      current_uid = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%d"), (int) uid);
+      
       if(error != noErr){
 	current_uid = @"";
       }
@@ -1265,7 +1268,8 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
   CFStringRef current_name;  
   
   ItemCount sources_count;
-
+  SInt32 uid;
+  
   int i;
   
   OSStatus error;
@@ -1294,7 +1298,9 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
       current_manufacturer = NULL;
       current_name = NULL;
 
-      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyDeviceID, &current_uid);
+      error = MIDIObjectGetIntegerProperty(endpoint, kMIDIPropertyUniqueID, &uid);
+
+      current_uid = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%d"), (int) uid);
       
       if(error != noErr){
 	current_uid = @"";

@@ -2631,6 +2631,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       CFStringRef current_uid;
   
       ItemCount sources_count;
+      SInt32 uid;
 
       retval = MIDIClientCreate(CFSTR("Advanced Gtk+ Sequencer - Core MIDI to System Sounds"),
 				NULL,
@@ -2649,8 +2650,10 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	if(endpoint != 0){
 	  current_uid = NULL;
       
-	  retval = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyDeviceID, &current_uid);
+	  retval = MIDIObjectGetIntegerProperty(endpoint, kMIDIPropertyUniqueID, &uid);
 
+	  current_uid = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%d"), (int) uid);
+	  
 	  if(retval != noErr){
 	    current_uid = @"";
 	  }
