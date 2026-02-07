@@ -1574,7 +1574,7 @@ void
 ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
 				gchar *device)
 {
-    AgsCoreAudioDevin *core_audio_devin;
+  AgsCoreAudioDevin *core_audio_devin;
   
 #if defined(AGS_WITH_CORE_AUDIO)
   AudioDeviceID *audio_devices;

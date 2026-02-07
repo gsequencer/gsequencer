@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,11 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#ifdef AGS_WITH_CORE_AUDIO
+#include <CoreFoundation/CoreFoundation.h>
+#include <AudioToolbox/AudioToolbox.h>
+#endif
 
 G_BEGIN_DECLS
 
@@ -162,6 +167,15 @@ struct _AgsCoreAudioMidiin
   GCond callback_finish_cond;
 
   AgsSequencerMidiVersion midi_version;
+
+  gchar *device_id;
+  gchar *device_name;
+
+#if defined(AGS_WITH_CORE_AUDIO)
+  MIDIObjectRef midi_device;
+#else
+  guint32 midi_device;
+#endif
 };
 
 struct _AgsCoreAudioMidiinClass

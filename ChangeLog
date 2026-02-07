@@ -3,6 +3,7 @@ ags (8.3.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved Core Audio soundcard configuration
 	* improved Core Audio sequencer configuration
+	* improved ags_core_audio_port_register() MIDI setup
 	* improved ags_pitch_2x_alias_util.c check division by 0.0
 	* improved ags_pitch_4x_alias_util.c check division by 0.0
 	* improved ags_pitch_16x_alias_util.c check division by 0.0

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -436,7 +436,7 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   core_audio_midiin->flags = 0;
   core_audio_midiin->connectable_flags = 0;
   ags_atomic_int_set(&(core_audio_midiin->sync_flags),
-		   AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH);
+		     AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH);
 
   /* core-audio midiin mutex */
   g_rec_mutex_init(&(core_audio_midiin->obj_mutex));
@@ -1085,99 +1085,166 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
 				 gchar *device)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
+  
+#if defined(AGS_WITH_CORE_AUDIO)
+  MIDIObjectRef endpoint;
 
-  GList *core_audio_port, *core_audio_port_start;
+  CFStringRef current_uid;
+  CFStringRef current_manufacturer;
+  CFStringRef current_name;
+#endif
+  
+  GList *core_audio_port, *start_core_audio_port;
 
   gchar *str;
   
-  int ret;
-  guint nth_card;
-  guint i;
+#if defined(AGS_WITH_CORE_AUDIO)  
+  ItemCount sources_count;
+
+  int i;
+  
+  OSStatus error;
+#endif
 
   GRecMutex *core_audio_midiin_mutex;
-  
+
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
-  /* get core_audio_midiin mutex */
+  /* get core audio midiin mutex */
   core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
+  /* check device */
   g_rec_mutex_lock(core_audio_midiin_mutex);
 
-  if(core_audio_midiin->card_uri == device ||
-     (core_audio_midiin->card_uri != NULL &&
-      !g_ascii_strcasecmp(core_audio_midiin->card_uri,
+  if(core_audio_midiin->device_name == device ||
+     (core_audio_midiin->device_name != NULL &&
+      !g_ascii_strcasecmp(core_audio_midiin->device_name,
 			  device))){
     g_rec_mutex_unlock(core_audio_midiin_mutex);
-    
-    return;
-  }
-
-  if(!g_str_has_prefix(device,
-		       "ags-core-audio-midiin-")){
-    g_warning("invalid CoreAudio device prefix");
-
-    g_rec_mutex_unlock(core_audio_midiin_mutex);
-
-    return;
-  }
-
-  ret = sscanf(device,
-	       "ags-core-audio-midiin-%u",
-	       &nth_card);
-
-  if(ret != 1){
-    g_warning("invalid CoreAudio device specifier");
-
-    g_rec_mutex_unlock(core_audio_midiin_mutex);
-
-    return;
-  }
-
-  if(core_audio_midiin->card_uri != NULL){
-    g_free(core_audio_midiin->card_uri);
-  }
   
-  core_audio_midiin->card_uri = g_strdup(device);
+    return;
+  }
 
-  /* apply name to port */
-  core_audio_port_start = 
+  g_message("input set device - %s", device);
+  
+  /* get some fields */
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  start_core_audio_port = 
     core_audio_port = g_list_copy(core_audio_midiin->core_audio_port);
-  
-  str = g_strdup_printf("ags-sequencer%d",
-			nth_card);
-    
-  g_object_set(core_audio_port->data,
-	       "port-name", str,
-	       NULL);
-  g_free(str);
 
-  g_list_free(core_audio_port_start);
-  
   g_rec_mutex_unlock(core_audio_midiin_mutex);
+  
+  /* unregister */
+  if(start_core_audio_port != NULL){
+    ags_core_audio_port_unregister(start_core_audio_port->data);
+  }
+  
+  g_free(core_audio_midiin->device_name);
+
+  core_audio_midiin->device_name = NULL;
+
+  g_free(core_audio_midiin->device_id);
+
+  core_audio_midiin->device_id = NULL;
+  
+#if defined(AGS_WITH_CORE_AUDIO)
+  sources_count = MIDIGetNumberOfSources();
+
+  for(i = 0; i < sources_count; i++){
+    endpoint = MIDIGetSource(i);
+
+    if(endpoint != 0){
+      current_uid = NULL;
+      current_manufacturer = NULL;
+      current_name = NULL;
+      
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyUniqueID, &current_uid);
+
+      if(error != noErr){
+	current_uid = @"";
+      }
+      
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyManufacturer, &current_manufacturer);
+
+      if(error != noErr){
+	current_manufacturer = @"";
+      }
+      
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyName, &current_name);
+
+      if(error != noErr){
+	current_name = @"";
+      }
+      
+      NSString *str_uid = (__bridge_transfer NSString *) current_uid;
+      NSString *str_manufacturer = (__bridge_transfer NSString *) current_manufacturer;
+      NSString *str_name = (__bridge_transfer NSString *) current_name;      
+
+      str = g_strdup_printf("%s - %s",
+			    [str_manufacturer UTF8String],
+			    [str_name UTF8String]);
+
+      if(!g_ascii_strcasecmp(str, device)){
+	core_audio_midiin->device_name = g_strdup(device);
+	  
+	core_audio_midiin->device_id = g_strdup_printf("in-%s",
+						       [str_uid UTF8String]);
+
+	core_audio_midiin->midi_device = endpoint;
+
+	g_free(str);
+	  
+	break;
+      }
+
+      g_free(str);
+    }
+  }
+#endif
+  
+  /* apply name to port */
+  str = g_strdup(core_audio_midiin->device_id);
+  
+  if(start_core_audio_port != NULL){
+    g_object_set(start_core_audio_port->data,
+		 "port-name", str,
+		 NULL);
+    
+    ags_core_audio_port_register(start_core_audio_port->data,
+				 str,
+				 FALSE, TRUE,
+				 FALSE);
+  }
+
+  g_list_free(start_core_audio_port);
+
+  g_free(str);
 }
 
 gchar*
 ags_core_audio_midiin_get_device(AgsSequencer *sequencer)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
-
+  
   gchar *device;
-  
+
   GRecMutex *core_audio_midiin_mutex;
-  
+
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
-  /* get core_audio_midiin mutex */
+  /* get core audio midiin mutex */
   core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   device = NULL;
-  
+
+  /* get device */
   g_rec_mutex_lock(core_audio_midiin_mutex);
 
-  device = g_strdup(core_audio_midiin->card_uri);
+  device = g_strdup(core_audio_midiin->device_name);
 
   g_rec_mutex_unlock(core_audio_midiin_mutex);
-
+  
   return(device);
 }
 
@@ -1185,14 +1252,23 @@ void
 ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
 				 GList **card_id, GList **card_name)
 {
-  AgsCoreAudioClient *core_audio_client;
   AgsCoreAudioMidiin *core_audio_midiin;
 
   AgsApplicationContext *application_context;
   
-  GList *list, *list_start;
+#if defined(AGS_WITH_CORE_AUDIO)
+  MIDIObjectRef endpoint;
 
-  gchar *device, *client_name;
+  CFStringRef current_uid;
+  CFStringRef current_manufacturer;
+  CFStringRef current_name;  
+  
+  ItemCount sources_count;
+
+  int i;
+  
+  OSStatus error;
+#endif
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
@@ -1206,46 +1282,54 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
     *card_name = NULL;
   }
 
-  list_start = 
-    list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-  
-  while(list != NULL){
-    if(AGS_IS_CORE_AUDIO_MIDIIN(list->data)){
-      g_object_get(list->data,
-		   "device", &device,
-		   "core-audio-client", &core_audio_client,
-		   NULL);
+#if defined(AGS_WITH_CORE_AUDIO)
+  sources_count = MIDIGetNumberOfSources();
+
+  for(i = 0; i < sources_count; i++){
+    endpoint = MIDIGetSource(i);
+
+    if(endpoint != 0){
+      current_uid = NULL;
+      current_manufacturer = NULL;
+      current_name = NULL;
+
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyUniqueID, &current_uid);
       
-      if(card_id != NULL){
-	*card_id = g_list_prepend(*card_id,
-				  device);
+      if(error != noErr){
+	current_uid = @"";
       }
+      
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyManufacturer, &current_manufacturer);
 
-      if(card_name != NULL){	
-	if(core_audio_client != NULL){
-	  g_object_get(core_audio_client,
-		       "client-name", &client_name,
-		       NULL);
-	  
-	  *card_name = g_list_prepend(*card_name,
-				      client_name);
-	}else{
-	  *card_name = g_list_prepend(*card_name,
-				      g_strdup("(null)"));
-
-	  g_warning("ags_core_audio_midiin_list_cards() - CORE_AUDIO client not connected (null)");
-	}
+      if(error != noErr){
+	current_manufacturer = @"";
       }
+      
+      error = MIDIObjectGetStringProperty(endpoint, kMIDIPropertyName, &current_name);
 
-      g_object_unref(core_audio_client);
+      if(error != noErr){
+	current_name = @"";
+      }
+      
+      NSString *str_uid = (__bridge_transfer NSString *) current_uid;
+      NSString *str_manufacturer = (__bridge_transfer NSString *) current_manufacturer;
+      NSString *str_name = (__bridge_transfer NSString *) current_name;
+
+      *card_id = g_list_prepend(*card_id,
+				g_strdup_printf("in-%s", [str_uid UTF8String]));
+      
+      *card_name = g_list_prepend(*card_name,
+				  g_strdup_printf("%s - %s", [str_manufacturer UTF8String], [str_name UTF8String]));
+      
+      g_message("found device: %s - %s", [str_manufacturer UTF8String], [str_name UTF8String]);
+      
+      CFRelease(current_uid);
+      CFRelease(current_manufacturer);
+      CFRelease(current_name);
     }
-
-    list = list->next;
   }
+#endif
   
-  g_list_free_full(list_start,
-		   g_object_unref);
-
   if(card_id != NULL && *card_id != NULL){
     *card_id = g_list_reverse(*card_id);
   }
@@ -1342,9 +1426,9 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
 			       AGS_CORE_AUDIO_MIDIIN_RECORD);
   
   ags_atomic_int_and(&(core_audio_midiin->sync_flags),
-		   (~(AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH)));
+		     (~(AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH)));
   ags_atomic_int_or(&(core_audio_midiin->sync_flags),
-		  AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK);
+		    AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK);
   
   g_rec_mutex_unlock(core_audio_midiin_mutex);
 }
@@ -1421,14 +1505,14 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
     if((AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
       if((AGS_CORE_AUDIO_MIDIIN_DO_SYNC & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
 	ags_atomic_int_and(&(core_audio_midiin->sync_flags),
-			 (~AGS_CORE_AUDIO_MIDIIN_DO_SYNC));
+			   (~AGS_CORE_AUDIO_MIDIIN_DO_SYNC));
 	do_sync = TRUE;
       
 	/* signal client - wait callback */
 	g_mutex_lock(callback_mutex);
 
 	ags_atomic_int_and(&(core_audio_midiin->sync_flags),
-			 (~AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT));
+			   (~AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT));
 
 	if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0){
 	  g_cond_signal(&(core_audio_midiin->callback_cond));
@@ -1438,15 +1522,15 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
       }  
     }else{
       ags_atomic_int_and(&(core_audio_midiin->sync_flags),
-		       (~AGS_CORE_AUDIO_MIDIIN_DO_SYNC));
+			 (~AGS_CORE_AUDIO_MIDIIN_DO_SYNC));
 
       ags_atomic_int_or(&(core_audio_midiin->sync_flags),
-		      (AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE));
+			(AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE));
       ags_atomic_int_or(&(core_audio_midiin->sync_flags),
-		      (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
+			(AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT | AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
       
       ags_atomic_int_and(&(core_audio_midiin->sync_flags),
-		       (~AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK));
+			 (~AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK));
     }
 #endif
   }
@@ -1458,7 +1542,7 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
 
     if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
       ags_atomic_int_and(&(core_audio_midiin->sync_flags),
-		       (~AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
+			 (~AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
 
       while((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) == 0 &&
 	    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
@@ -1470,7 +1554,7 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
     g_mutex_unlock(callback_finish_mutex);
 
     ags_atomic_int_or(&(core_audio_midiin->sync_flags),
-		    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT |  AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
+		      (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT |  AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
   }
 #endif
   
@@ -1528,9 +1612,9 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
   core_audio_midiin->flags &= (~(AGS_CORE_AUDIO_MIDIIN_RECORD));
 
   ags_atomic_int_or(&(core_audio_midiin->sync_flags),
-		  AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH);
+		    AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH);
   ags_atomic_int_and(&(core_audio_midiin->sync_flags),
-		   (~AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK));
+		     (~AGS_CORE_AUDIO_MIDIIN_INITIAL_CALLBACK));
 
   g_rec_mutex_unlock(core_audio_midiin_mutex);
 
@@ -1538,7 +1622,7 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
   g_mutex_lock(callback_mutex);
 
   ags_atomic_int_or(&(core_audio_midiin->sync_flags),
-		  AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE);
+		    AGS_CORE_AUDIO_MIDIIN_CALLBACK_DONE);
     
   if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_WAIT & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
     g_cond_signal(&(core_audio_midiin->callback_cond));
@@ -1550,7 +1634,7 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
   g_mutex_lock(callback_finish_mutex);
 
   ags_atomic_int_or(&(core_audio_midiin->sync_flags),
-		  AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE);
+		    AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE);
     
   if((AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT & (ags_atomic_int_get(&(core_audio_midiin->sync_flags)))) != 0){
     g_cond_signal(&(core_audio_midiin->callback_finish_cond));
