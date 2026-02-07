@@ -588,12 +588,6 @@ ags_preferences_show(GtkWidget *widget)
   preferences = (AgsPreferences *) widget;
   
   GTK_WIDGET_CLASS(ags_preferences_parent_class)->show(widget);
-
-  if(preferences->generic_preferences != NULL){
-    gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
-  }
-
-  gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
 }
 
 void

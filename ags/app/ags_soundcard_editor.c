@@ -1023,39 +1023,41 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 #ifdef AGS_DEBUG
   g_message("%s", device);
 #endif
-  
-  if(use_core_audio){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_pulse){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_jack){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_wasapi){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_alsa){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_oss){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }
 
+  if(soundcard_editor->soundcard != NULL){
+    if(use_core_audio){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_pulse){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_jack){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_wasapi){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_alsa){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_oss){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }
+  }
+  
   if(AGS_IS_PULSE_DEVOUT(soundcard_editor->soundcard) ||
      AGS_IS_CORE_AUDIO_DEVOUT(soundcard_editor->soundcard)){
     ags_config_set_value(config,

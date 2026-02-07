@@ -1655,7 +1655,7 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
 
     if(backend != NULL){
       if(!g_ascii_strncasecmp(backend,
-			      "core-audio",
+			      "core-midi",
 			      10)){
 	conf_device = device;
 	

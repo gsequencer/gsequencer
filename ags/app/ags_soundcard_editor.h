@@ -54,7 +54,7 @@ struct _AgsSoundcardEditor
   GtkBox box;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GObject *soundcard;
   GObject *soundcard_thread;

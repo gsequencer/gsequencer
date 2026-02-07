@@ -436,28 +436,32 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
   }
 
   /* handle */
+#ifdef AGS_DEBUG
   g_message("%s", device);
+#endif
 
-  if(use_alsa){
-    ags_config_set_value(config,
-			 sequencer_group,
-			 "device",
-			 device);
-  }else if(use_oss){
-    ags_config_set_value(config,
-			 sequencer_group,
-			 "device",
-			 device);
-  }else if(use_core_midi){
-    ags_config_set_value(config,
-			 sequencer_group,
-			 "device",
-			 device);
-  }else if(use_jack){
-    ags_config_set_value(config,
-			 sequencer_group,
-			 "device",
-			 device);
+  if(sequencer_editor->sequencer != NULL){
+    if(use_alsa){
+      ags_config_set_value(config,
+			   sequencer_group,
+			   "device",
+			   device);
+    }else if(use_oss){
+      ags_config_set_value(config,
+			   sequencer_group,
+			   "device",
+			   device);
+    }else if(use_core_midi){
+      ags_config_set_value(config,
+			   sequencer_group,
+			   "device",
+			   device);
+    }else if(use_jack){
+      ags_config_set_value(config,
+			   sequencer_group,
+			   "device",
+			   device);
+    }
   }
 }
 
@@ -468,7 +472,8 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 
   GObject *sequencer;
 
-  GList *card_id, *card_id_start, *card_name, *card_name_start;
+  GList *card_id, *start_card_id;
+  GList *card_name, *start_card_name;
 
   gchar *backend, *device, *tmp;
 
@@ -477,6 +482,13 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
   gboolean found_card;
     
   sequencer_editor = AGS_SEQUENCER_EDITOR(applicable);
+  
+  if((AGS_SEQUENCER_EDITOR_BLOCK_RESET & (sequencer_editor->flags)) != 0){
+    return;
+  }
+  
+  sequencer_editor->flags |= AGS_SEQUENCER_EDITOR_BLOCK_RESET;
+  
   sequencer = sequencer_editor->sequencer;
   
   /* refresh */
@@ -537,16 +549,20 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
   }
 
   /*  */
+  /*  */
   device = ags_sequencer_get_device(AGS_SEQUENCER(sequencer));
   
-  card_id_start = NULL;
-  card_name_start = NULL;
+  card_id = 
+    start_card_id = NULL;
+
+  card_name = 
+    start_card_name = NULL;
 
   ags_sequencer_list_cards(AGS_SEQUENCER(sequencer),
-			   &card_id_start, &card_name_start);
+			   &start_card_id, &start_card_name);
 
-  card_id = card_id_start;
-  card_name = card_name_start;
+  card_id = start_card_id;
+  card_name = start_card_name;
   
   nth = 0;
   found_card = FALSE;
@@ -555,20 +571,30 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 
   while(card_id != NULL){
     //FIXME:JK: work-around for alsa-handle
+#ifdef AGS_WITH_CORE_AUDIO
+    tmp = card_name->data;
+#else
     tmp = card_id->data;
+#endif
         
     if(tmp != NULL &&
-       device != NULL &&
-       !g_ascii_strcasecmp(tmp,
-			   device)){
-      found_card = TRUE;
+       device != NULL){
+      if(!g_ascii_strcasecmp(tmp,
+			     device)){
+	found_card = TRUE;
+      }
+    }else{
+      if(tmp == NULL &&
+	 device == NULL){
+	found_card = TRUE;
+      }
     }
 
     if(tmp != NULL){
       gtk_combo_box_text_append_text(sequencer_editor->card,
 				     tmp);
     }
-    
+        
     if(!found_card){
       nth++;
     }
@@ -584,12 +610,13 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
   gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->card),
 			   nth);
 
-  if(card_id_start != NULL){
-    g_list_free_full(card_id_start,
-		     g_free);
-    g_list_free_full(card_name_start,
-		     g_free);
-  }
+  g_list_free_full(start_card_id,
+		   (GDestroyNotify) g_free);
+
+  g_list_free_full(start_card_name,
+		   (GDestroyNotify) g_free);
+  
+  sequencer_editor->flags &= (~AGS_SEQUENCER_EDITOR_BLOCK_RESET);
 }
 
 void

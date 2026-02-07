@@ -2832,7 +2832,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	  if(retval != noErr){
 	    current_uid = @"";
 	  }
-      
+	  
 	  NSString *str_uid = (__bridge_transfer NSString *) current_uid;   
 
 	  str = g_strdup_printf("in-%s",
