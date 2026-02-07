@@ -1723,6 +1723,7 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 
   core_audio_server = NULL;
   core_audio_devout = NULL;
+  core_audio_devin = NULL;
   
   pulse_server = NULL;
   pulse_devout = NULL;
@@ -1849,9 +1850,6 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 		       samplerate);
       
       core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
-      
-      core_audio_devout = NULL;
-      core_audio_devin = NULL;
 
       if(is_output){
 	core_audio_devout = (AgsCoreAudioDevout *) ags_sound_server_register_soundcard_with_params(AGS_SOUND_SERVER(core_audio_server),
@@ -2014,12 +2012,15 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 {
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioDevout *core_audio_devout;
+  AgsCoreAudioDevout *core_audio_devin;
 
   AgsPulseServer *pulse_server;
   AgsPulseDevout *pulse_devout;
+  AgsPulseDevout *pulse_devin;
 
   AgsJackServer *jack_server;
   AgsJackDevout *jack_devout;
+  AgsJackDevout *jack_devin;
 
   AgsApplicationContext *application_context;
   AgsThread *main_loop;
@@ -2045,12 +2046,15 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 
   core_audio_server = NULL;
   core_audio_devout = NULL;
+  core_audio_devin = NULL;
   
   pulse_server = NULL;
   pulse_devout = NULL;
+  pulse_devin = NULL;
   
   jack_server = NULL;
   jack_devout = NULL;
+  jack_devin = NULL;
 
   soundcard = NULL;
 
@@ -2109,34 +2113,83 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
     start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
-    if(use_core_audio){
-      if(AGS_IS_CORE_AUDIO_DEVOUT(list->data) &&
-	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
-			     device)){
-	core_audio_devout = list->data;
-	soundcard = (GObject *) core_audio_devout;
+    gchar *current_device;
 
-	break;
+    current_device = NULL;
+
+    if(AGS_IS_SOUNDCARD(list->data)){
+      current_device = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));	
+    }
+    
+    if(use_core_audio){
+      if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+	if(!g_ascii_strcasecmp(current_device,
+			       device)){
+	  core_audio_devout = list->data;
+	  soundcard = (GObject *) core_audio_devout;
+
+	  g_free(current_device);
+
+	  break;
+	}
+      }else if(AGS_IS_CORE_AUDIO_DEVIN(list->data)){
+	if(!g_ascii_strcasecmp(current_device,
+			       device)){
+	  core_audio_devin = list->data;
+	  soundcard = (GObject *) core_audio_devin;
+
+	  g_free(current_device);
+
+	  break;
+	}
       }
     }else if(use_pulse){
-      if(AGS_IS_PULSE_DEVOUT(list->data) &&
-	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
-			     device)){
-	pulse_devout = list->data;
-	soundcard = (GObject *) pulse_devout;
+      if(AGS_IS_PULSE_DEVOUT(list->data)){
+	if(!g_ascii_strcasecmp(current_device,
+			       device)){
+	  pulse_devout = list->data;
+	  soundcard = (GObject *) pulse_devout;
 
-	break;
+	  g_free(current_device);
+	  
+	  break;
+	}
+      }else if(AGS_IS_PULSE_DEVIN(list->data)){
+	if(!g_ascii_strcasecmp(current_device,
+			       device)){
+	  pulse_devin = list->data;
+	  soundcard = (GObject *) pulse_devin;
+
+	  g_free(current_device);
+
+	  break;
+	}
       }
     }else if(use_jack){
-      if(AGS_IS_JACK_DEVOUT(list->data) &&
-	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
-			     device)){
-	jack_devout = list->data;
-	soundcard = (GObject *) jack_devout;
-	
-	break;
+      if(AGS_IS_JACK_DEVOUT(list->data)){
+	if(!g_ascii_strcasecmp(current_device,
+			       device)){
+	  jack_devout = list->data;
+	  soundcard = (GObject *) jack_devout;
+	  
+	  g_free(current_device);
+	  
+	  break;
+	}
+      }else if(AGS_IS_JACK_DEVIN(list->data)){
+	if(!g_ascii_strcasecmp(current_device,
+			       device)){
+	  jack_devin = list->data;
+	  soundcard = (GObject *) jack_devin;
+
+	  g_free(current_device);
+
+	  break;
+	}
       }
     }
+
+    g_free(current_device);
     
     list = list->next;
   }
