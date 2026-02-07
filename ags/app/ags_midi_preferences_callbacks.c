@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,7 +53,8 @@ ags_midi_preferences_notify_parent_callback(GObject *gobject,
 }
 
 void
-ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences)
+ags_midi_preferences_add_input_sequencer_callback(GAction *action, GVariant *parameter,
+						  AgsMidiPreferences *midi_preferences)
 {
   AgsSequencerEditor *sequencer_editor;
 
@@ -68,7 +69,7 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
   application_context = ags_application_context_get_instance();
 
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  
+
   /* sequencer */
   sequencer = NULL;
   
@@ -79,10 +80,10 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
     sequencer_editor->sequencer = sequencer;
     sequencer_editor->sequencer_thread = (GObject *) ags_thread_find_type(main_loop,
 									  AGS_TYPE_SEQUENCER_THREAD);
-  }
-
+   }
+  
   ags_midi_preferences_add_sequencer_editor(midi_preferences,
-					    sequencer_editor);
+					     sequencer_editor);
   
   ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
   ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
@@ -92,7 +93,8 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
 
   gtk_widget_show((GtkWidget *) sequencer_editor);
 
-  g_object_unref(G_OBJECT(main_loop));
+  /* reset default card */  
+  g_object_unref(main_loop);  
 }
 
 void

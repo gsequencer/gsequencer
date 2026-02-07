@@ -157,6 +157,10 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   GtkBox *hbox;
   GtkLabel *label;
 
+  GMenuModel *add_popup;
+  GMenu *menu;
+  GMenuItem *item;
+  
   AgsConfig *config;
   
   GSimpleActionGroup *action_group;
@@ -228,6 +232,24 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 				(GtkWidget *) audio_preferences->soundcard_editor_box);
 
   /*  */
+  audio_preferences->add_menu_button = gtk_menu_button_new();
+
+  menu = (GMenu *) g_menu_new();
+  add_popup = G_MENU_MODEL(menu);
+
+  item = g_menu_item_new(i18n("add output soundcard"),
+			 "audio_preferences.add_output_soundcard");
+  g_menu_append_item(menu,
+		     item);
+  
+  item = g_menu_item_new(i18n("add input soundcard"),
+			 "audio_preferences.add_input_soundcard");
+  g_menu_append_item(menu,
+		     item);
+  
+  gtk_menu_button_set_menu_model(audio_preferences->add_menu_button,
+				 add_popup);
+  
   audio_preferences->add = NULL;
   
   /*  */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,6 +52,9 @@ struct _AgsMidiPreferences
   GList *sequencer_editor;
   
   GtkBox *sequencer_editor_box;
+
+  GtkMenuButton *add_menu_button;
+  GMenuModel *add_menu_button_model;
 
   GtkButton *add;
 };

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,7 +37,9 @@ void ags_midi_preferences_notify_parent_callback(GObject *gobject,
 						 GParamSpec *pspec,
 						 gpointer user_data);
 
-void ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_input_sequencer_callback(GAction *action, GVariant *parameter,
+						       AgsMidiPreferences *midi_preferences);
+
 void ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *sequencer_editor,
 							   AgsMidiPreferences *midi_preferences);
 

@@ -1461,7 +1461,7 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
     while(list != NULL){
       ags_core_audio_port_unregister(list->data);
       ags_core_audio_client_remove_port(default_client,
-				   list->data);
+					list->data);
     
       list = list->next;
     }
@@ -1478,7 +1478,7 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
     while(list != NULL){
       ags_core_audio_port_unregister(list->data);
       ags_core_audio_client_remove_port(default_client,
-				   list->data);
+					list->data);
     
       list = list->next;
     }
