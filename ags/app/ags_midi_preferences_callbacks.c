@@ -125,8 +125,8 @@ ags_midi_preferences_add_input_sequencer_callback(GAction *action, GVariant *par
 				  4)){
       use_oss = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-				  "core-audio",
-				  11)){
+				  "core-midi",
+				  10)){
       server_type = AGS_TYPE_CORE_AUDIO_SERVER;
       
       use_core_audio = TRUE;
@@ -162,12 +162,10 @@ ags_midi_preferences_add_input_sequencer_callback(GAction *action, GVariant *par
       
       core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
 
-      if(!is_output){
-	core_audio_midiin = (AgsCoreAudioMidiin *) ags_sound_server_register_sequencer_with_params(AGS_SOUND_SERVER(core_audio_server),
-												   is_output,
-												   (gchar **) param_strv, param_value);
-	sequencer = (GObject *) core_audio_midiin;
-      }
+      core_audio_midiin = (AgsCoreAudioMidiin *) ags_sound_server_register_sequencer_with_params(AGS_SOUND_SERVER(core_audio_server),
+												 is_output,
+												 (gchar **) param_strv, param_value);
+      sequencer = (GObject *) core_audio_midiin;
 
       g_strfreev(param_strv);
       g_free(param_value);

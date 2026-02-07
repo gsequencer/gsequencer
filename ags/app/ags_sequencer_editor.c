@@ -505,7 +505,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 			       0);
 #endif
       
-      ags_sequencer_editor_load_alsa_card(sequencer_editor);
+      //      ags_sequencer_editor_load_alsa_card(sequencer_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){
@@ -514,7 +514,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 			       0);
 #endif
       
-      ags_sequencer_editor_load_oss_card(sequencer_editor);
+      //      ags_sequencer_editor_load_oss_card(sequencer_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "core-midi",
 				  10)){
@@ -523,7 +523,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 			       0);
 #endif
       
-      ags_sequencer_editor_load_core_midi_card(sequencer_editor);
+      //      ags_sequencer_editor_load_core_midi_card(sequencer_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "jack",
 				  5)){
@@ -532,7 +532,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 			       1);
 #endif
       
-      ags_sequencer_editor_load_jack_card(sequencer_editor);
+      //      ags_sequencer_editor_load_jack_card(sequencer_editor);
     }
   }
 
@@ -595,178 +595,25 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 void
 ags_sequencer_editor_load_core_midi_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_sequencer, *sequencer;
-  GList *card_id;
-
-  application_context = ags_application_context_get_instance();
-
-  /* create sequencer */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if((sound_server = ags_list_util_find_type(sound_server,
-					     AGS_TYPE_CORE_AUDIO_SERVER)) == NULL){
-    g_warning("sound server not found");
-
-    g_list_free_full(sound_server,
-		     g_object_unref);
-    
-    return;
-  }
-
-  sequencer = 
-    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-  core_audio_midiin = NULL;
-  
-  while(sequencer != NULL){
-    if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer->data)){
-      core_audio_midiin = sequencer->data;
-
-      break;
-    }
-    
-    sequencer = sequencer->next;
-  }
-
-  card_id = NULL;
-  ags_sequencer_list_cards(AGS_SEQUENCER(core_audio_midiin),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(sequencer_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-  g_list_free_full(start_sequencer,
-		   g_object_unref);
+  //empty
 }
 
 void
 ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsJackMidiin *jack_midiin;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_sequencer, *sequencer;
-  GList *card_id;
-
-  application_context = ags_application_context_get_instance();
-
-  /* create sequencer */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if((sound_server = ags_list_util_find_type(sound_server,
-					     AGS_TYPE_JACK_SERVER)) == NULL){
-    g_warning("sound server not found");
-
-    g_list_free_full(sound_server,
-		     g_object_unref);
-    
-    return;
-  }
-
-  sequencer = 
-    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
-  jack_midiin = NULL;
-  
-  while(sequencer != NULL){
-    if(AGS_IS_JACK_MIDIIN(sequencer->data)){
-      jack_midiin = sequencer->data;
-      break;
-    }
-    
-    sequencer = sequencer->next;
-  }
-
-  card_id = NULL;
-  ags_sequencer_list_cards(AGS_SEQUENCER(jack_midiin),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(sequencer_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-  g_list_free_full(start_sequencer,
-		   g_object_unref);
+  //empty
 }
 
 void
 ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsAlsaMidiin *alsa_midiin;
-
-  GList *card_id;
-  
-  /*  */
-  alsa_midiin = g_object_new(AGS_TYPE_ALSA_MIDIIN,
-			     NULL);
-
-  card_id = NULL;
-  ags_sequencer_list_cards(AGS_SEQUENCER(alsa_midiin),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(sequencer_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
+  //empty
 }
 
 void
 ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor)
 {
-  AgsOssMidiin *oss_midiin;
-
-  GList *card_id;
-    
-  /*  */  
-  oss_midiin = g_object_new(AGS_TYPE_OSS_MIDIIN,
-			    NULL);
-
-  card_id = NULL;
-  ags_sequencer_list_cards(AGS_SEQUENCER(oss_midiin),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(sequencer_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(sequencer_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
+  //empty
 }
 
 /**

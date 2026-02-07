@@ -1633,357 +1633,37 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 void
 ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsCoreAudioDevout *core_audio_devout;
-  AgsCoreAudioDevin *core_audio_devin;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_soundcard, *soundcard;
-  GList *start_card_id, *card_id;
-  GList *start_card_name, *card_name;
-
-  gchar *tmp;
-
-  gboolean is_output;
-  
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  /* create soundcard */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if(sound_server == NULL){
-    g_warning("sound server not found");
-
-    return;
-  }
-
-  soundcard =
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-
-  is_output = (gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->capability)) == 0) ? TRUE: FALSE;
-  
-  core_audio_devout = NULL;
-  core_audio_devin = NULL;
-  
-  while(soundcard != NULL){
-    if(is_output &&
-       AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
-      core_audio_devout = soundcard->data;
-
-      break;
-    }else if(!is_output &&
-	     AGS_IS_CORE_AUDIO_DEVIN(soundcard->data)){
-      core_audio_devin = soundcard->data;
-      
-      break;      
-    }
-    
-    soundcard = soundcard->next;
-  }
-
-  start_card_id = NULL;
-  start_card_name = NULL;
-
-  if(is_output){
-    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
-			     &start_card_id, &start_card_name);
-  }else{
-    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devin),
-			     &start_card_id, &start_card_name);
-  }
-  
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  card_id = start_card_id;
-  card_name = start_card_name;
-  
-  while(card_id != NULL){
-#ifdef AGS_WITH_CORE_AUDIO
-    tmp = card_name->data;
-#else
-    tmp = card_id->data;
-#endif
-
-    if(tmp != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     tmp);
-    }
-    
-    card_id = card_id->next;
-    card_name = card_name->next;
-  }
-
-  /* unref */
-  g_list_free_full(start_sound_server,
-		   (GDestroyNotify) g_object_unref);
-  
-  g_list_free_full(start_soundcard,
-		   (GDestroyNotify) g_object_unref);
-
-  g_list_free_full(start_card_id,
-		   (GDestroyNotify) g_free);
-  
-  g_list_free_full(start_card_name,
-		   (GDestroyNotify) g_free);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsPulseDevout *pulse_devout;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_soundcard, *soundcard;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  /* create soundcard */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if(sound_server == NULL){
-    g_warning("sound server not found");
-
-    return;
-  }
-
-  soundcard =
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  pulse_devout = NULL;
-  
-  while(soundcard != NULL){
-    if(AGS_IS_PULSE_DEVOUT(soundcard->data)){
-      pulse_devout = soundcard->data;
-      break;
-    }
-    
-    soundcard = soundcard->next;
-  }
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(pulse_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* unref */
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-  
-  g_list_free_full(start_soundcard,
-		   g_object_unref);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsJackDevout *jack_devout;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_soundcard, *soundcard;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  /* create soundcard */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if(sound_server == NULL){
-    g_warning("sound server not found");
-
-    return;
-  }
-
-  soundcard =
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  jack_devout = NULL;
-  
-  while(soundcard != NULL){
-    if(AGS_IS_JACK_DEVOUT(soundcard->data)){
-      jack_devout = soundcard->data;
-      break;
-    }
-    
-    soundcard = soundcard->next;
-  }
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* unref */
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-  
-  g_list_free_full(start_soundcard,
-		   g_object_unref);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsAudioPreferences *audio_preferences;
-  
-  AgsWasapiDevout *wasapi_devout;
-
-  GList *start_list;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
-    return;
-  }
-
-  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
-
-  /*  */
-  wasapi_devout = g_object_new(AGS_TYPE_WASAPI_DEVOUT,
-			       NULL);
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(wasapi_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id != NULL){
-      if(card_id->data != NULL){
-	gtk_combo_box_text_append_text(soundcard_editor->card,
-				       card_id->data);
-      }else{
-	gtk_combo_box_text_append_text(soundcard_editor->card,
-				       "(null)");
-      }
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /*  */  
-  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsAudioPreferences *audio_preferences;
-
-  AgsAlsaDevout *alsa_devout;
-
-  GList *start_list;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-  
-  if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
-    return;
-  }
-
-  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
-
-  /*  */
-  alsa_devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
-			     NULL);
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(alsa_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /*  */  
-  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsAudioPreferences *audio_preferences;
-
-  AgsOssDevout *oss_devout;
-
-  GList *start_list;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-  
-  /*  */
-  oss_devout = g_object_new(AGS_TYPE_OSS_DEVOUT,
-			    NULL);
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(oss_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /*  */
+  //empty
 }
 
 void
