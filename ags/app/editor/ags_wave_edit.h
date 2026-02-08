@@ -102,13 +102,18 @@ struct _AgsWaveEdit
 {
   GtkGrid grid;
 
-  guint flags;
-  guint connectable_flags;
-  guint mode;
+  AgsWaveEditFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsWaveEditMode mode;
 
-  guint button_mask;
-  guint key_mask;
+  AgsWaveEditButtonMask button_mask;
+  AgsWaveEditKeyMask key_mask;
 
+  GtkEventController *key_event_controller;
+  GtkEventController *gesture_click_event_controller;
+  GtkEventController *motion_event_controller;
+  GtkEventController *gesture_swipe_event_controller;
+  
   GtkWidget *parent_composite_edit;
   
   guint line;
@@ -126,10 +131,10 @@ struct _AgsWaveEdit
 
   guint selected_buffer_border;
   
-  guint selection_x0;
-  guint selection_x1;
-  guint selection_y0;
-  guint selection_y1;
+  gint selection_x0;
+  gint selection_x1;
+  gint selection_y0;
+  gint selection_y1;
   
   AgsRuler *ruler;
 

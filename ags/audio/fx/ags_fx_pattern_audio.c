@@ -296,8 +296,8 @@ ags_fx_pattern_audio_init(AgsFxPatternAudio *fx_pattern_audio)
   gdouble bpm;
   gdouble delay;
 
-  g_signal_connect(fx_pattern_audio, "notify::output-soundcard",
-		   G_CALLBACK(ags_fx_pattern_audio_notify_output_soundcard_callback), NULL);
+  g_signal_connect_after(fx_pattern_audio, "notify::output-soundcard",
+			 G_CALLBACK(ags_fx_pattern_audio_notify_output_soundcard_callback), NULL);
 
   AGS_RECALL(fx_pattern_audio)->name = "ags-fx-pattern";
   AGS_RECALL(fx_pattern_audio)->version = AGS_RECALL_DEFAULT_VERSION;

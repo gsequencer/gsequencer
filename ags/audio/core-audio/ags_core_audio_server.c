@@ -1158,7 +1158,7 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
   pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  format = AGS_SOUNDCARD_FLOAT;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
 
   if(param_strv != NULL){
@@ -1186,6 +1186,7 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     g_object_set(AGS_CORE_AUDIO_DEVOUT(core_audio_devout),
 		 "core-audio-client", default_client,
 		 "device", str,
+		 "format", format,
 		 NULL);
     g_free(str);
         
@@ -1245,6 +1246,7 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     g_object_set(AGS_CORE_AUDIO_DEVIN(core_audio_devin),
 		 "core-audio-client", default_client,
 		 "device", str,
+		 "format", format,
 		 NULL);
     g_free(str);
         
@@ -2036,6 +2038,12 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 
   g_list_free_full(client_start,
 		   g_object_unref);
+}
+
+void
+ags_core_audio_server_start_poll(AgsCoreAudioServer *core_audio_server)
+{
+  //NOTE:JK: not implemented
 }
 
 /**

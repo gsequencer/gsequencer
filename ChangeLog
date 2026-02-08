@@ -1,3 +1,77 @@
+ags (8.2.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved modular synth util check division by zero
+	* improved modular synth env-0 and env-1 frequency lower
+	* improved modular synth noise frequency default
+
+ags (8.2.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved line and bulk member and related with update-ui callback
+	* improved peak util check NaN
+	* improved use AGS_VECTORIZED_BUILTIN_FUNCTIONS conditional code on macOS
+
+ags (8.2.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented audio buffer clear of signed integer types
+
+ags (8.2.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented array type presets
+	* improved user manual
+
+ags (8.2.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-playback record format
+
+ags (8.2.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved CoreAudio backend
+
+ags (8.2.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation edit draw overflow
+
+ags (8.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved composite editor event controllers
+	* fixed simple file automation restore
+
+ags (8.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved automation edit drawing
+	* fixed automation edit copy and paste by using timestamp to iterate automation
+	* fixed notation edit selection potential pixel overflow
+	* fixed automation edit selection potential pixel overflow
+	* fixed wave edit selection potential pixel overflow
+	* fixed tempo edit selection potential pixel overflow
+
+ags (8.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved automation edit drawing
+	* improved gen-sym-libags-gui.pl exclude files
+	* fixed gen-sym-libags-audio.pl exclude files
+
+ags (8.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed automation edit drawing bug
+
+ags (8.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsSFZSample to read acid from WAV like files
+	* fixed AgsSFZSynth pitch type selected callback
+
 ags (8.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -8760,7 +8834,7 @@ ags (0.4.2-68)
 	* added `midi2xml` the MIDI file to XML parser
 
 
-Copyright (C) 2005-2025 Joël Krähemann
+Copyright (C) 2005-2026 Joël Krähemann
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3

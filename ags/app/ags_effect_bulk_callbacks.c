@@ -25,6 +25,8 @@
 #include <ags/app/ags_bulk_member.h>
 #include <ags/app/ags_plugin_browser.h>
 
+#include <math.h>
+
 void ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
 							  gchar *filename, gchar *effect);
 
@@ -104,8 +106,10 @@ ags_effect_bulk_update_ui_callback(GObject *ui_provider,
 			   FALSE);
       }
     }else if(AGS_IS_INDICATOR(child_widget)){
-      gtk_adjustment_set_value(AGS_INDICATOR(child_widget)->adjustment,
-			       val);
+      if(!isnan(val)){
+	gtk_adjustment_set_value(AGS_INDICATOR(child_widget)->adjustment,
+				 val);
+      }
     }
     
     /* iterate */

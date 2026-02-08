@@ -1436,9 +1436,9 @@ ags_base_plugin_set_ui_effect_index(AgsBasePlugin *base_plugin,
  * ags_base_plugin_get_ui_plugin_so:
  * @base_plugin: the #AgsBasePlugin
  * 
- * Get plugin so.
+ * Get UI plugin so.
  * 
- * Returns: the plugin so
+ * Returns: the UI plugin so
  * 
  * Since: 3.1.0
  */
@@ -1461,7 +1461,7 @@ ags_base_plugin_get_ui_plugin_so(AgsBasePlugin *base_plugin)
 /**
  * ags_base_plugin_set_ui_plugin_so:
  * @base_plugin: the #AgsBasePlugin
- * @ui_plugin_so: the plugin so
+ * @ui_plugin_so: the UI plugin so
  * 
  * Set ui_plugin_so.
  * 
@@ -1469,7 +1469,7 @@ ags_base_plugin_get_ui_plugin_so(AgsBasePlugin *base_plugin)
  */
 void
 ags_base_plugin_set_ui_plugin_so(AgsBasePlugin *base_plugin,
-			      gpointer ui_plugin_so)
+				 gpointer ui_plugin_so)
 {
   if(!AGS_IS_BASE_PLUGIN(base_plugin)){
     return;
@@ -1477,6 +1477,54 @@ ags_base_plugin_set_ui_plugin_so(AgsBasePlugin *base_plugin,
 
   g_object_set(base_plugin,
 	       "ui-plugin-so", ui_plugin_so,
+	       NULL);
+}
+
+/**
+ * ags_base_plugin_get_ui_plugin:
+ * @base_plugin: the #AgsBasePlugin
+ * 
+ * Get UI plugin.
+ * 
+ * Returns: the UI plugin
+ * 
+ * Since: 8.2.1
+ */
+GObject*
+ags_base_plugin_get_ui_plugin(AgsBasePlugin *base_plugin)
+{
+  gpointer ui_plugin;
+  
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return(NULL);
+  }
+  
+  g_object_get(base_plugin,
+	       "ui-plugin", &ui_plugin,
+	       NULL);
+
+  return(ui_plugin);
+}
+
+/**
+ * ags_base_plugin_set_ui_plugin:
+ * @base_plugin: the #AgsBasePlugin
+ * @ui_plugin: the UIplugin
+ * 
+ * Set UI plugin.
+ * 
+ * Since: 8.2.1
+ */
+void
+ags_base_plugin_set_ui_plugin(AgsBasePlugin *base_plugin,
+			      GObject* ui_plugin)
+{
+  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+    return;
+  }
+
+  g_object_set(base_plugin,
+	       "ui-plugin", ui_plugin,
 	       NULL);
 }
 

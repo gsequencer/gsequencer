@@ -564,6 +564,7 @@ LT_REVISION = @LT_REVISION@
 LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MANPAGES_XSL = @MANPAGES_XSL@
 MIDI2XML_CFLAGS = @MIDI2XML_CFLAGS@
 MIDI2XML_CXXFLAGS = @MIDI2XML_CXXFLAGS@
 MIDI2XML_LDFLAGS = @MIDI2XML_LDFLAGS@
@@ -858,9 +859,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/./gtk-doc.make $(am__con
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign docs/reference/libgsequencer/Makefile
+	  $(AUTOMAKE) --gnu docs/reference/libgsequencer/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

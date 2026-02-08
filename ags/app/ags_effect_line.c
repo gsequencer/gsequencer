@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1179,9 +1179,13 @@ ags_effect_line_add_line_member(AgsEffectLine *effect_line,
 				guint x, guint y,
 				guint width, guint height)
 {
+  GtkWidget *child_widget;
+  
   g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
   g_return_if_fail(AGS_IS_LINE_MEMBER(line_member));
 
+  child_widget = ags_line_member_get_widget(line_member);
+  
   if(g_list_find(effect_line->line_member, line_member) == NULL){
     effect_line->line_member = g_list_prepend(effect_line->line_member,
 					      line_member);
@@ -1192,6 +1196,12 @@ ags_effect_line_add_line_member(AgsEffectLine *effect_line,
 		    (GtkWidget *) line_member,
 		    x, y,
 		    width, height);
+  }
+
+  if(AGS_IS_INDICATOR(child_widget) ||
+     AGS_IS_LED(child_widget)){
+    effect_line->queued_refresh = g_list_prepend(effect_line->queued_refresh,
+						 child_widget);
   }
 }
 
@@ -1208,9 +1218,19 @@ void
 ags_effect_line_remove_line_member(AgsEffectLine *effect_line,
 				   AgsLineMember *line_member)
 {
+  GtkWidget *child_widget;
+  
   g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
   g_return_if_fail(AGS_IS_LINE_MEMBER(line_member));
+  
+  child_widget = ags_line_member_get_widget(line_member);
 
+  if(AGS_IS_INDICATOR(child_widget) ||
+     AGS_IS_LED(child_widget)){
+    effect_line->queued_refresh = g_list_remove(effect_line->queued_refresh,
+						child_widget);
+  }
+      
   if(g_list_find(effect_line->line_member, line_member) != NULL){
     effect_line->line_member = g_list_remove(effect_line->line_member,
 					     line_member);
@@ -1922,10 +1942,6 @@ ags_effect_line_add_ladspa_plugin(AgsEffectLine *effect_line,
 
 	gtk_adjustment_set_value(adjustment,
 				 control_value);
-      }else if(AGS_IS_INDICATOR(child_widget) ||
-	       AGS_IS_LED(child_widget)){
-	effect_line->queued_refresh = g_list_prepend(effect_line->queued_refresh,
-						     child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -2654,10 +2670,6 @@ ags_effect_line_add_lv2_plugin(AgsEffectLine *effect_line,
 
 	gtk_adjustment_set_value(adjustment,
 				 control_value);
-      }else if(AGS_IS_INDICATOR(child_widget) ||
-	       AGS_IS_LED(child_widget)){
-	effect_line->queued_refresh = g_list_prepend(effect_line->queued_refresh,
-						     child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -3313,10 +3325,6 @@ ags_effect_line_add_vst3_plugin(AgsEffectLine *effect_line,
 
 	gtk_adjustment_set_value(adjustment,
 				 control_value);
-      }else if(AGS_IS_INDICATOR(child_widget) ||
-	       AGS_IS_LED(child_widget)){
-	effect_line->queued_refresh = g_list_prepend(effect_line->queued_refresh,
-						     child_widget);
       }
 
 #ifdef AGS_DEBUG
@@ -3708,16 +3716,6 @@ ags_effect_line_real_remove_plugin(AgsEffectLine *effect_line,
   while(list != NULL){
     if(AGS_IS_LINE_MEMBER(list->data) &&
        AGS_LINE_MEMBER(list->data)->play_container == effect_line_plugin->play_container){
-      GtkWidget *child_widget;
-
-      child_widget = ags_line_member_get_widget(AGS_LINE_MEMBER(list->data));
-
-      if(AGS_IS_INDICATOR(child_widget) ||
-	 AGS_IS_LED(child_widget)){
-	effect_line->queued_refresh = g_list_remove(effect_line->queued_refresh,
-						    child_widget);
-      }
-
       ags_effect_line_remove_line_member(effect_line,
 					 list->data);
     }

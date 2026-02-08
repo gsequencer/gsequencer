@@ -1826,6 +1826,12 @@ ags_wave_set_format(AgsWave *wave,
 
   /* apply format */
   g_rec_mutex_lock(wave_mutex);
+
+  if(wave->format == format){
+    g_rec_mutex_unlock(wave_mutex);
+
+    return;
+  }
   
   wave->format = format;
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -162,6 +162,105 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 					      g_value_get_double(&port_value)),
 			   5, G_TYPE_DOUBLE,
 			   -1);      
+      }else if(G_VALUE_HOLDS_POINTER(plugin_port->default_value)){
+	if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
+	  gpointer data;
+
+	  gchar *str, *str_iter;
+
+	  guint current_length;
+	  guint value_length;
+	  guint i;
+	  gint retval;
+	  
+	  g_value_init(&port_value,
+		       G_TYPE_POINTER);
+
+	  data = NULL;
+
+	  if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gboolean));
+
+	    value_length = AGS_PORT_BOOLEAN_BUF_SIZE;
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gint64));
+
+	    value_length = AGS_PORT_INT64_BUF_SIZE;
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(guint64));
+
+	    value_length = AGS_PORT_UINT64_BUF_SIZE;
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gfloat));
+
+	    value_length = AGS_PORT_FLOAT_BUF_SIZE;
+	  }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+	    data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gdouble));
+
+	    value_length = AGS_PORT_DOUBLE_BUF_SIZE;
+	  }
+
+	  if(data != NULL){	  
+	    g_value_set_pointer(&port_value,
+				data);
+	    
+	    ags_port_safe_read(port->data,
+			       &port_value);
+
+	    str = g_malloc(2048 * sizeof(gchar));
+
+	    current_length = 2048;
+	    	    
+	    memset(str, 0, current_length * sizeof(gchar));
+
+	    str_iter = str;
+
+	    for(i = 0; i < AGS_PORT(port->data)->port_value_length; i++){
+	      retval = 0;
+	      
+	      if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
+		retval = sprintf(str_iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
+	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
+		retval = sprintf(str_iter, "%li", ((gint64 *) data)[i]);
+	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
+		retval = sprintf(str_iter, "%lu", ((guint64 *) data)[i]);
+	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+		retval = sprintf(str_iter, "%f", ((gfloat *) data)[i]);
+	      }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+		retval = sprintf(str_iter, "%lf", ((gdouble *) data)[i]);
+	      }
+
+	      if(str_iter + retval + 1 + value_length + 1 >= str + current_length){
+		str = g_realloc(str,
+				(current_length + 2048) * sizeof(gchar));
+
+		memset(str + current_length, 0, 2048 * sizeof(gchar));
+		
+		current_length += 2048;
+	      }
+	      
+	      str_iter += retval;
+
+	      if(i + 1 < AGS_PORT(port->data)->port_value_length){
+		str_iter[0] = ' ';
+		
+		str_iter++;
+	      }
+	    }
+
+	    gtk_list_store_append(list_store, &iter);
+	    gtk_list_store_set(list_store, &iter,
+			       0, g_strdup("audio"),
+			       1, g_strdup("0"),
+			       2, g_strdup(specifier),
+			       3, g_strdup_printf("array count %d", AGS_PORT(port->data)->port_value_length),
+			       4, str,
+			       5, AGS_PORT(port->data)->port_value_type,
+			       -1);
+	    
+	    g_free(data);
+	  }
+	}
       }
       
       /* add to collected specifier */
@@ -294,6 +393,105 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 						g_value_get_double(&port_value)),
 			     5, G_TYPE_DOUBLE,
 			     -1);      
+	}else if(G_VALUE_HOLDS_POINTER(plugin_port->default_value)){
+	  if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
+	    gpointer data;
+
+	    gchar *str, *str_iter;
+
+	    guint current_length;
+	    guint value_length;
+	    guint i;
+	    gint retval;
+	  
+	    g_value_init(&port_value,
+			 G_TYPE_POINTER);
+
+	    data = NULL;
+
+	    if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gboolean));
+
+	      value_length = AGS_PORT_BOOLEAN_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gint64));
+
+	      value_length = AGS_PORT_INT64_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(guint64));
+
+	      value_length = AGS_PORT_UINT64_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gfloat));
+
+	      value_length = AGS_PORT_FLOAT_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gdouble));
+
+	      value_length = AGS_PORT_DOUBLE_BUF_SIZE;
+	    }
+
+	    if(data != NULL){	  
+	      g_value_set_pointer(&port_value,
+				  data);
+	    
+	      ags_port_safe_read(port->data,
+				 &port_value);
+
+	      str = g_malloc(2048 * sizeof(gchar));
+
+	      current_length = 2048;
+	    	    
+	      memset(str, 0, current_length * sizeof(gchar));
+
+	      str_iter = str;
+
+	      for(i = 0; i < AGS_PORT(port->data)->port_value_length; i++){
+		retval = 0;
+	      
+		if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
+		  retval = sprintf(str_iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
+		  retval = sprintf(str_iter, "%li", ((gint64 *) data)[i]);
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
+		  retval = sprintf(str_iter, "%lu", ((guint64 *) data)[i]);
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+		  retval = sprintf(str_iter, "%f", ((gfloat *) data)[i]);
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+		  retval = sprintf(str_iter, "%lf", ((gdouble *) data)[i]);
+		}
+
+		if(str_iter + retval + 1 + value_length + 1 >= str + current_length){
+		  str = g_realloc(str,
+				  (current_length + 2048) * sizeof(gchar));
+
+		  memset(str + current_length, 0, 2048 * sizeof(gchar));
+		
+		  current_length += 2048;
+		}
+	      
+		str_iter += retval;
+
+		if(i + 1 < AGS_PORT(port->data)->port_value_length){
+		  str_iter[0] = ' ';
+		
+		  str_iter++;
+		}
+	      }
+
+	      gtk_list_store_append(list_store, &iter);
+	      gtk_list_store_set(list_store, &iter,
+				 0, g_strdup("audio"),
+				 1, g_strdup("0"),
+				 2, g_strdup(specifier),
+				 3, g_strdup_printf("array count %d", AGS_PORT(port->data)->port_value_length),
+				 4, str,
+				 5, AGS_PORT(port->data)->port_value_type,
+				 -1);
+	    
+	      g_free(data);
+	    }
+	  }
 	}
 
 	/* add to collected specifier */
@@ -436,6 +634,105 @@ ags_preset_editor_load_callback(GtkButton *button, AgsPresetEditor *preset_edito
 						g_value_get_double(&port_value)),
 			     5, G_TYPE_DOUBLE,
 			     -1);      
+	}else if(G_VALUE_HOLDS_POINTER(plugin_port->default_value)){
+	  if(ags_plugin_port_test_flags(plugin_port, (AGS_PLUGIN_PORT_INPUT | AGS_PLUGIN_PORT_CONTROL))){
+	    gpointer data;
+
+	    gchar *str, *str_iter;
+
+	    guint current_length;
+	    guint value_length;
+	    guint i;
+	    gint retval;
+	  
+	    g_value_init(&port_value,
+			 G_TYPE_POINTER);
+
+	    data = NULL;
+
+	    if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gboolean));
+
+	      value_length = AGS_PORT_BOOLEAN_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gint64));
+
+	      value_length = AGS_PORT_INT64_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(guint64));
+
+	      value_length = AGS_PORT_UINT64_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gfloat));
+
+	      value_length = AGS_PORT_FLOAT_BUF_SIZE;
+	    }else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+	      data = (gpointer) g_malloc(AGS_PORT(port->data)->port_value_length * sizeof(gdouble));
+
+	      value_length = AGS_PORT_DOUBLE_BUF_SIZE;
+	    }
+
+	    if(data != NULL){	  
+	      g_value_set_pointer(&port_value,
+				  data);
+	    
+	      ags_port_safe_read(port->data,
+				 &port_value);
+
+	      str = g_malloc(2048 * sizeof(gchar));
+
+	      current_length = 2048;
+	    	    
+	      memset(str, 0, current_length * sizeof(gchar));
+
+	      str_iter = str;
+
+	      for(i = 0; i < AGS_PORT(port->data)->port_value_length; i++){
+		retval = 0;
+	      
+		if(AGS_PORT(port->data)->port_value_type == G_TYPE_BOOLEAN){
+		  retval = sprintf(str_iter, "%s", (((gboolean *) data)[i] == TRUE) ? "true": "false");
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_INT64){
+		  retval = sprintf(str_iter, "%li", ((gint64 *) data)[i]);
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_UINT64){
+		  retval = sprintf(str_iter, "%lu", ((guint64 *) data)[i]);
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_FLOAT){
+		  retval = sprintf(str_iter, "%f", ((gfloat *) data)[i]);
+		}else if(AGS_PORT(port->data)->port_value_type == G_TYPE_DOUBLE){
+		  retval = sprintf(str_iter, "%lf", ((gdouble *) data)[i]);
+		}
+
+		if(str_iter + retval + 1 + value_length + 1 >= str + current_length){
+		  str = g_realloc(str,
+				  (current_length + 2048) * sizeof(gchar));
+
+		  memset(str + current_length, 0, 2048 * sizeof(gchar));
+		
+		  current_length += 2048;
+		}
+	      
+		str_iter += retval;
+
+		if(i + 1 < AGS_PORT(port->data)->port_value_length){
+		  str_iter[0] = ' ';
+		
+		  str_iter++;
+		}
+	      }
+
+	      gtk_list_store_append(list_store, &iter);
+	      gtk_list_store_set(list_store, &iter,
+				 0, g_strdup("audio"),
+				 1, g_strdup("0"),
+				 2, g_strdup(specifier),
+				 3, g_strdup_printf("array count %d", AGS_PORT(port->data)->port_value_length),
+				 4, str,
+				 5, AGS_PORT(port->data)->port_value_type,
+				 -1);
+	    
+	      g_free(data);
+	    }
+	  }
 	}
 
 	/* add to collected specifier */

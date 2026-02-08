@@ -292,42 +292,25 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->button_mask = 0;
   wave_edit->key_mask = 0;
 
-  event_controller = gtk_event_controller_key_new();
+  event_controller = 
+    wave_edit->key_event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) wave_edit,
 			    event_controller);
 
-  g_signal_connect((GObject *) event_controller, "key-pressed",
-		   G_CALLBACK(ags_wave_edit_key_pressed_callback), (gpointer) wave_edit);
+  event_controller = 
+    wave_edit->gesture_click_event_controller = (GtkEventController *) gtk_gesture_click_new();
+  gtk_widget_add_controller((GtkWidget *) wave_edit,
+			    event_controller);
   
-  g_signal_connect((GObject *) event_controller, "key-released",
-		   G_CALLBACK(ags_wave_edit_key_released_callback), (gpointer) wave_edit);
-
-  g_signal_connect((GObject *) event_controller, "modifiers",
-		   G_CALLBACK(ags_wave_edit_modifiers_callback), (gpointer) wave_edit);
-
-  event_controller = (GtkEventController *) gtk_gesture_click_new();
+  event_controller =
+    wave_edit->motion_event_controller =  gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) wave_edit,
 			    event_controller);
 
-  g_signal_connect((GObject *) event_controller, "pressed",
-		   G_CALLBACK(ags_wave_edit_gesture_click_pressed_callback), (gpointer) wave_edit);
-
-  g_signal_connect((GObject *) event_controller, "released",
-		   G_CALLBACK(ags_wave_edit_gesture_click_released_callback), (gpointer) wave_edit);
-
-  event_controller = gtk_event_controller_motion_new();
+  event_controller = 
+    wave_edit->gesture_swipe_event_controller = (GtkEventController *) gtk_gesture_swipe_new();
   gtk_widget_add_controller((GtkWidget *) wave_edit,
 			    event_controller);
-
-  g_signal_connect(event_controller, "motion",
-		   G_CALLBACK(ags_wave_edit_motion_callback), wave_edit);
-
-  event_controller = (GtkEventController *) gtk_gesture_swipe_new();
-  gtk_widget_add_controller((GtkWidget *) wave_edit,
-			    event_controller);
-
-  g_signal_connect(event_controller, "swipe",
-		   G_CALLBACK(ags_wave_edit_gesture_swipe_callback), wave_edit);
 
   wave_edit->parent_composite_edit = NULL;
   
@@ -541,6 +524,28 @@ ags_wave_edit_connect(AgsConnectable *connectable)
   
   wave_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
   
+  /* event controller */
+  g_signal_connect(wave_edit->key_event_controller, "key-pressed",
+		   G_CALLBACK(ags_wave_edit_key_pressed_callback), wave_edit);
+  
+  g_signal_connect(wave_edit->key_event_controller, "key-released",
+		   G_CALLBACK(ags_wave_edit_key_released_callback), wave_edit);
+
+  g_signal_connect(wave_edit->key_event_controller, "modifiers",
+		   G_CALLBACK(ags_wave_edit_modifiers_callback), wave_edit);
+
+  g_signal_connect(wave_edit->gesture_click_event_controller, "pressed",
+		   G_CALLBACK(ags_wave_edit_gesture_click_pressed_callback), wave_edit);
+
+  g_signal_connect(wave_edit->gesture_click_event_controller, "released",
+		   G_CALLBACK(ags_wave_edit_gesture_click_released_callback), wave_edit);
+
+  g_signal_connect(wave_edit->motion_event_controller, "motion",
+		   G_CALLBACK(ags_wave_edit_motion_callback), wave_edit);
+
+  g_signal_connect(wave_edit->gesture_swipe_event_controller, "swipe",
+		   G_CALLBACK(ags_wave_edit_gesture_swipe_callback), wave_edit);
+
   /* drawing area */
   gtk_drawing_area_set_draw_func(wave_edit->drawing_area,
 				 (GtkDrawingAreaDrawFunc) ags_wave_edit_draw_callback,
@@ -571,6 +576,49 @@ ags_wave_edit_disconnect(AgsConnectable *connectable)
   
   wave_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
+  /* event controller */
+  g_object_disconnect(wave_edit->key_event_controller,
+		      "any_signal::key-pressed",
+		      G_CALLBACK(ags_wave_edit_key_pressed_callback),
+		      wave_edit,
+		      NULL);
+  
+  g_object_disconnect(wave_edit->key_event_controller,
+		      "any_signal::key-released",
+		      G_CALLBACK(ags_wave_edit_key_released_callback),
+		      wave_edit,
+		      NULL);
+
+  g_object_disconnect(wave_edit->key_event_controller,
+		      "any_signal::modifiers",
+		      G_CALLBACK(ags_wave_edit_modifiers_callback),
+		      wave_edit,
+		      NULL);
+
+  g_object_disconnect(wave_edit->gesture_click_event_controller,
+		      "any_signal::pressed",
+		      G_CALLBACK(ags_wave_edit_gesture_click_pressed_callback),
+		      wave_edit,
+		      NULL);
+
+  g_object_disconnect(wave_edit->gesture_click_event_controller,
+		      "any_signal::released",
+		      G_CALLBACK(ags_wave_edit_gesture_click_released_callback),
+		      wave_edit,
+		      NULL);
+
+  g_object_disconnect(wave_edit->motion_event_controller,
+		      "any_signal::motion",
+		      G_CALLBACK(ags_wave_edit_motion_callback),
+		      wave_edit,
+		      NULL);
+
+  g_object_disconnect(wave_edit->gesture_swipe_event_controller,
+		      "any_signal::swipe",
+		      G_CALLBACK(ags_wave_edit_gesture_swipe_callback),
+		      wave_edit,
+		      NULL);
+  
   /* drawing area */
   gtk_drawing_area_set_draw_func(wave_edit->drawing_area,
 				 NULL,
@@ -966,6 +1014,14 @@ ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
   
   gtk_widget_grab_focus((GtkWidget *) wave_edit->drawing_area);
 
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
+
   if(machine != NULL &&
      (AGS_WAVE_EDIT_BUTTON_1 & (wave_edit->button_mask)) != 0){
     if(wave_edit->mode == AGS_WAVE_EDIT_POSITION_CURSOR){
@@ -1198,6 +1254,14 @@ ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   composite_editor->wave_edit->focused_edit = (GtkWidget *) wave_edit;
   
   gtk_widget_grab_focus((GtkWidget *) wave_edit->drawing_area);
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
   
   if(machine != NULL){    
     wave_edit->button_mask |= AGS_WAVE_EDIT_BUTTON_1;
@@ -1362,6 +1426,14 @@ ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
     
   selected_position_cursor = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->position) ? TRUE: FALSE;
   selected_select = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->select) ? TRUE: FALSE;
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
   
   if(machine != NULL){
     wave_edit->button_mask &= (~AGS_WAVE_EDIT_BUTTON_1);

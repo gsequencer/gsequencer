@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2630,13 +2630,25 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -2740,7 +2752,8 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -2894,7 +2907,8 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -3675,11 +3689,6 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;
@@ -4554,13 +4563,25 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -4666,7 +4687,8 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -4831,7 +4853,8 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -5651,11 +5674,6 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;
@@ -6530,13 +6548,25 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -6640,7 +6670,8 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -6794,7 +6825,8 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -7575,11 +7607,6 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;
@@ -8454,13 +8481,25 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -8564,7 +8603,8 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -8718,7 +8758,8 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -9499,11 +9540,6 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;
@@ -10378,13 +10414,25 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -10488,7 +10536,8 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -10642,7 +10691,8 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -11423,11 +11473,6 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;
@@ -12300,13 +12345,25 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -12410,7 +12467,8 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -12564,7 +12622,8 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -13345,11 +13404,6 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;
@@ -14224,13 +14278,25 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -14334,7 +14400,8 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -14488,7 +14555,8 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -15269,11 +15337,6 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;
@@ -16146,13 +16209,25 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 
   samplerate = modular_synth_util->samplerate;
 
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+  
   osc_0_frequency = modular_synth_util->osc_0_frequency;
   osc_0_phase = modular_synth_util->osc_0_phase;
   osc_0_volume = modular_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
 
   osc_1_frequency = modular_synth_util->osc_1_frequency;
   osc_1_phase = modular_synth_util->osc_1_phase;
   osc_1_volume = modular_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
   
   pitch_buffer = modular_synth_util->pitch_buffer;
   
@@ -16256,7 +16331,8 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_0_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -16410,7 +16486,8 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 
 	end_volume = modular_synth_util->env_1_release;
       
-	if(end_offset == 0){
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
 	  env_amount = 0.0;
 	}else{
 	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
@@ -16779,11 +16856,6 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
   /* OSC-1 */
   source = modular_synth_util->source;
 
-  source_stride = modular_synth_util->source_stride;
-
-  samplerate = modular_synth_util->samplerate;
-
-  frame_count = modular_synth_util->frame_count;
   offset = modular_synth_util->offset;
 
   i = 0;

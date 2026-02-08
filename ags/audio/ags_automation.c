@@ -2448,32 +2448,34 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 
   if(use_selection_list){
     if((current = ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE)) != NULL){
-      current->x = acceleration->x;
-      current->y = acceleration->y;
-    }else{
-      if(g_list_find(automation->selection, acceleration) == NULL &&
-	 ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE) == NULL){
-	g_object_ref(acceleration);
+      g_warning("inconsistent data");
       
-	automation->selection = g_list_insert_sorted(automation->selection,
-						     acceleration,
-						     (GCompareFunc) ags_acceleration_sort_func);
-	ags_acceleration_set_flags(acceleration,
-				   AGS_ACCELERATION_IS_SELECTED);
-      }
+      return;
+    }
+    
+    if(g_list_find(automation->selection, acceleration) == NULL){
+      g_object_ref(acceleration);
+      
+      automation->selection = g_list_insert_sorted(automation->selection,
+						   acceleration,
+						   (GCompareFunc) ags_acceleration_sort_func);
+      ags_acceleration_set_flags(acceleration,
+				 AGS_ACCELERATION_IS_SELECTED);
     }
   }else{
     if((current = ags_automation_find_point(automation, acceleration->x, acceleration->y, FALSE)) != NULL){
       current->x = acceleration->x;
       current->y = acceleration->y;
-    }else{
-      if(g_list_find(automation->acceleration, acceleration) == NULL){
-	g_object_ref(acceleration);
-  
-	automation->acceleration = g_list_insert_sorted(automation->acceleration,
-							acceleration,
-							(GCompareFunc) ags_acceleration_sort_func);
-      }
+
+      return;
+    }
+    
+    if(g_list_find(automation->acceleration, acceleration) == NULL){
+      g_object_ref(acceleration);
+      
+      automation->acceleration = g_list_insert_sorted(automation->acceleration,
+						      acceleration,
+						      (GCompareFunc) ags_acceleration_sort_func);
     }
   }
 
@@ -3347,7 +3349,7 @@ ags_automation_cut_selection(AgsAutomation *automation)
 {
   xmlNode *automation_node;
   
-  GList *selection, *acceleration;
+  GList *start_selection, *selection, *acceleration;
   
   GRecMutex *automation_mutex;
 
@@ -3364,7 +3366,8 @@ ags_automation_cut_selection(AgsAutomation *automation)
   /* cut */
   g_rec_mutex_lock(automation_mutex);
 
-  selection = automation->selection;
+  selection =
+    start_selection = g_list_copy(automation->selection);
 
   while(selection != NULL){
     automation->acceleration = g_list_remove(automation->acceleration,
@@ -3375,6 +3378,8 @@ ags_automation_cut_selection(AgsAutomation *automation)
   }
 
   g_rec_mutex_unlock(automation_mutex);
+
+  g_list_free(start_selection);
 
   /* free selection */
   ags_automation_free_selection(automation);
@@ -4042,8 +4047,8 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
     g_rec_mutex_unlock(automation_mutex);
 
     /* check channel type, line and control name */
-    success = (!g_ascii_strcasecmp(current_control_name,
-				   specifier) &&
+    success = ((!g_ascii_strcasecmp(current_control_name,
+				    specifier) == TRUE) &&
 	       current_channel_type == channel_type &&
 	       current_line == line) ? TRUE: FALSE;
 

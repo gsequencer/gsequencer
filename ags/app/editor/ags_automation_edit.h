@@ -116,37 +116,42 @@ struct _AgsAutomationEdit
 {
   GtkGrid grid;
 
-  guint flags;
-  guint connectable_flags;
-  guint mode;
+  AgsAutomationEditFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsAutomationEditMode mode;
 
-  guint render_mode;
+  AgsAutomationEditRenderMode render_mode;
   
-  guint button_mask;
-  guint key_mask;
+  AgsAutomationEditButtonMask button_mask;
+  AgsAutomationEditKeyMask key_mask;
+
+  GtkEventController *key_event_controller;
+  GtkEventController *gesture_click_event_controller;
+  GtkEventController *motion_event_controller;
+  GtkEventController *gesture_swipe_event_controller;
   
   guint note_offset;
   guint note_offset_absolute;
 
-  guint point_radius;
+  gdouble point_radius;
   
-  guint scan_width;
-  guint scan_height;
+  gdouble scan_width;
+  gdouble scan_height;
 
-  guint control_width;
-  guint control_height;
+  gdouble control_width;
+  gdouble control_height;
 
-  guint step_count;
+  gdouble step_count;
   
-  guint cursor_position_x;
+  gint cursor_position_x;
   gdouble cursor_position_y;
 
-  guint selected_acceleration_border;
+  gint selected_acceleration_border;
 
-  guint selection_x0;
-  guint selection_x1;
-  guint selection_y0;
-  guint selection_y1;
+  gint selection_x0;
+  gint selection_x1;
+  gint selection_y0;
+  gint selection_y1;
 
   AgsAcceleration *current_acceleration;
   
@@ -188,17 +193,6 @@ GType ags_automation_edit_get_type(void);
 
 void ags_automation_edit_reset_vscrollbar(AgsAutomationEdit *automation_edit);
 void ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit);
-
-/*  */
-gint ags_automation_edit_compare_x_offset_func(gconstpointer a,
-					       gconstpointer b,
-					       AgsAutomationEdit *automation_edit,
-					       gdouble x_offset);
-
-GList* ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
-						 GList *automation);
-GList* ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
-						GList *automation);
 
 /*  */
 void ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr);

@@ -365,7 +365,7 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
 				 i18n_pspec("The precision to use for a frame"),
 				 1,
 				 G_MAXUINT,
-				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 AGS_SOUNDCARD_FLOAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_FORMAT,
@@ -652,7 +652,7 @@ ags_core_audio_devout_init(AgsCoreAudioDevout *core_audio_devout)
 
   core_audio_devout->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   core_audio_devout->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  core_audio_devout->format = ags_soundcard_helper_config_get_format(config);
+  core_audio_devout->format = AGS_SOUNDCARD_FLOAT;
 
   /* buffer */
   core_audio_devout->app_buffer_mode = AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_0;
@@ -2309,6 +2309,38 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
 	}
       }
       break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	if(cache_offset == 0){
+	  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					     core_audio_port->cache[write_cache], 1,
+					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+	}
+
+	if(buffer != NULL){
+	  ags_audio_buffer_util_copy_float_to_float(core_audio_port->audio_buffer_util,
+						    (gfloat *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+						    (gfloat *) buffer, 1,
+						    pcm_channels * buffer_size);
+	}
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	if(cache_offset == 0){
+	  ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					     core_audio_port->cache[write_cache], 1,
+					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+	}
+
+	if(buffer != NULL){
+	  ags_audio_buffer_util_copy_double_to_double(core_audio_port->audio_buffer_util,
+						      (gdouble *) core_audio_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+						      (gdouble *) buffer, 1,
+						      pcm_channels * buffer_size);
+	}
+      }
+      break;
     }
     
     /* seek cache */
@@ -2529,6 +2561,38 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
       ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
 					 core_audio_port->cache[3], 1,
 					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[0], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[1], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[2], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[3], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_FLOAT);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[0], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[1], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[2], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
+      ags_audio_buffer_util_clear_buffer(core_audio_port->audio_buffer_util,
+					 core_audio_port->cache[3], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_DOUBLE);
     }
     break;
   }
@@ -4139,6 +4203,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   }
   
   core_audio_devout->app_buffer[0] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  memset(core_audio_devout->app_buffer[0], 0, pcm_channels * buffer_size * word_size);
   
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_1 */
   if(core_audio_devout->app_buffer[1] != NULL){
@@ -4147,12 +4213,16 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
 
   core_audio_devout->app_buffer[1] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
   
+  memset(core_audio_devout->app_buffer[1], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_2 */
   if(core_audio_devout->app_buffer[2] != NULL){
     g_free(core_audio_devout->app_buffer[2]);
   }
 
   core_audio_devout->app_buffer[2] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+  
+  memset(core_audio_devout->app_buffer[2], 0, pcm_channels * buffer_size * word_size);
   
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_3 */
   if(core_audio_devout->app_buffer[3] != NULL){
@@ -4161,6 +4231,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[3] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[3], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_4 */
   if(core_audio_devout->app_buffer[4] != NULL){
     g_free(core_audio_devout->app_buffer[4]);
@@ -4168,6 +4240,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[4] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[4], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_5 */
   if(core_audio_devout->app_buffer[5] != NULL){
     g_free(core_audio_devout->app_buffer[5]);
@@ -4175,6 +4249,8 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[5] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[5], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_6 */
   if(core_audio_devout->app_buffer[6] != NULL){
     g_free(core_audio_devout->app_buffer[6]);
@@ -4182,12 +4258,16 @@ ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout)
   
   core_audio_devout->app_buffer[6] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
 
+  memset(core_audio_devout->app_buffer[6], 0, pcm_channels * buffer_size * word_size);
+  
   /* AGS_CORE_AUDIO_DEVOUT_APP_BUFFER_7 */
   if(core_audio_devout->app_buffer[7] != NULL){
     g_free(core_audio_devout->app_buffer[7]);
   }
   
   core_audio_devout->app_buffer[7] = (void *) g_malloc(pcm_channels * buffer_size * word_size);
+
+  memset(core_audio_devout->app_buffer[7], 0, pcm_channels * buffer_size * word_size);  
 }
 
 /**

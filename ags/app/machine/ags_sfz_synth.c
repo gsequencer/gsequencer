@@ -1622,7 +1622,7 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) sfz_synth->open, "clicked",
 		   G_CALLBACK(ags_sfz_synth_open_clicked_callback), (gpointer) sfz_synth);
 
-  g_signal_connect((GObject *) sfz_synth->synth_pitch_type, "notify::activate",
+  g_signal_connect((GObject *) sfz_synth->synth_pitch_type, "notify::selected",
 		   G_CALLBACK(ags_sfz_synth_synth_pitch_type_callback), (gpointer) sfz_synth);
 
   g_signal_connect_after(sfz_synth->synth_octave, "value-changed",

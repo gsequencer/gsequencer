@@ -38,6 +38,12 @@ G_BEGIN_DECLS
 
 #define AGS_PORT_GET_OBJ_MUTEX(obj) (&(((AgsPort *) obj)->obj_mutex))
 
+#define AGS_PORT_BOOLEAN_BUF_SIZE (5)
+#define AGS_PORT_INT64_BUF_SIZE (20)
+#define AGS_PORT_UINT64_BUF_SIZE (20)
+#define AGS_PORT_FLOAT_BUF_SIZE (15)
+#define AGS_PORT_DOUBLE_BUF_SIZE (25)
+
 typedef struct _AgsPort AgsPort;
 typedef struct _AgsPortClass AgsPortClass;
 

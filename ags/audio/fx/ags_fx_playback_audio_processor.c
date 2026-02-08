@@ -1502,14 +1502,6 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-
-  if(input_soundcard != NULL){
-    ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
-			      &audio_channels,
-			      &samplerate,
-			      &buffer_size,
-			      &format);
-  }
   
   start_wave = NULL;
 
@@ -1533,6 +1525,14 @@ ags_fx_playback_audio_processor_real_record(AgsFxPlaybackAudioProcessor *fx_play
 	       "input-soundcard-channel", &input_soundcard_channel,
 	       NULL);
 
+  if(input_soundcard != NULL){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
+			      &audio_channels,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
+  }
+  
   g_rec_mutex_lock(fx_playback_audio_processor_mutex);
 
   timestamp = fx_playback_audio_processor->timestamp;

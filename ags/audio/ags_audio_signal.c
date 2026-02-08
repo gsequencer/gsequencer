@@ -3538,6 +3538,12 @@ ags_audio_signal_contains_note(AgsAudioSignal *audio_signal,
   return(success);
 }
 
+void
+ags_audio_signal_refresh_data(AgsAudioSignal *audio_signal)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_audio_signal_add_stream:
  * @audio_signal: the #AgsAudioSignal

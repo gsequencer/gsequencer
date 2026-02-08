@@ -345,46 +345,25 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 			   TRUE);
 
   event_controller =
-    notation_edit->key_controller = gtk_event_controller_key_new();
+    notation_edit->key_event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
-
-  g_signal_connect(event_controller, "key-pressed",
-		   G_CALLBACK(ags_notation_edit_key_pressed_callback), notation_edit);
-  
-  g_signal_connect(event_controller, "key-released",
-		   G_CALLBACK(ags_notation_edit_key_released_callback), notation_edit);
-
-  g_signal_connect(event_controller, "modifiers",
-		   G_CALLBACK(ags_notation_edit_modifiers_callback), notation_edit);
 
   event_controller =
-    notation_edit->gesture_controller = (GtkEventController *) gtk_gesture_click_new();
+    notation_edit->gesture_click_event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
-
-  g_signal_connect(event_controller, "pressed",
-		   G_CALLBACK(ags_notation_edit_gesture_click_pressed_callback), notation_edit);
-
-  g_signal_connect(event_controller, "released",
-		   G_CALLBACK(ags_notation_edit_gesture_click_released_callback), notation_edit);
 
   event_controller =
-    notation_edit->swipe_controller = (GtkEventController *) gtk_gesture_swipe_new();
+    notation_edit->gesture_swipe_event_controller = (GtkEventController *) gtk_gesture_swipe_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
-
-  g_signal_connect(event_controller, "swipe",
-		   G_CALLBACK(ags_notation_edit_gesture_swipe_callback), notation_edit);
 
   event_controller =
-    notation_edit->motion_controller = (GtkEventController *) gtk_event_controller_motion_new();
+    notation_edit->motion_event_controller = (GtkEventController *) gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) notation_edit->drawing_area,
 			    event_controller);
 
-  g_signal_connect(event_controller, "motion",
-		   G_CALLBACK(ags_notation_edit_motion_callback), notation_edit);
-  
   gtk_widget_set_halign((GtkWidget *) notation_edit->drawing_area,
 			GTK_ALIGN_FILL);
   gtk_widget_set_valign((GtkWidget *) notation_edit->drawing_area,
@@ -513,6 +492,28 @@ ags_notation_edit_connect(AgsConnectable *connectable)
   }
 
   notation_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
+  
+  /* event controller */
+  g_signal_connect(notation_edit->key_event_controller, "key-pressed",
+		   G_CALLBACK(ags_notation_edit_key_pressed_callback), notation_edit);
+  
+  g_signal_connect(notation_edit->key_event_controller, "key-released",
+		   G_CALLBACK(ags_notation_edit_key_released_callback), notation_edit);
+
+  g_signal_connect(notation_edit->key_event_controller, "modifiers",
+		   G_CALLBACK(ags_notation_edit_modifiers_callback), notation_edit);
+
+  g_signal_connect(notation_edit->gesture_click_event_controller, "pressed",
+		   G_CALLBACK(ags_notation_edit_gesture_click_pressed_callback), notation_edit);
+
+  g_signal_connect(notation_edit->gesture_click_event_controller, "released",
+		   G_CALLBACK(ags_notation_edit_gesture_click_released_callback), notation_edit);
+
+  g_signal_connect(notation_edit->motion_event_controller, "motion",
+		   G_CALLBACK(ags_notation_edit_motion_callback), notation_edit);
+
+  g_signal_connect(notation_edit->gesture_swipe_event_controller, "swipe",
+		   G_CALLBACK(ags_notation_edit_gesture_swipe_callback), notation_edit);
 
   /* drawing area */
   gtk_drawing_area_set_draw_func(notation_edit->drawing_area,
@@ -544,6 +545,49 @@ ags_notation_edit_disconnect(AgsConnectable *connectable)
 
   notation_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
 
+  /* event controller */
+  g_object_disconnect(notation_edit->key_event_controller,
+		      "any_signal::key-pressed",
+		      G_CALLBACK(ags_notation_edit_key_pressed_callback),
+		      notation_edit,
+		      NULL);
+  
+  g_object_disconnect(notation_edit->key_event_controller,
+		      "any_signal::key-released",
+		      G_CALLBACK(ags_notation_edit_key_released_callback),
+		      notation_edit,
+		      NULL);
+
+  g_object_disconnect(notation_edit->key_event_controller,
+		      "any_signal::modifiers",
+		      G_CALLBACK(ags_notation_edit_modifiers_callback),
+		      notation_edit,
+		      NULL);
+
+  g_object_disconnect(notation_edit->gesture_click_event_controller,
+		      "any_signal::pressed",
+		      G_CALLBACK(ags_notation_edit_gesture_click_pressed_callback),
+		      notation_edit,
+		      NULL);
+
+  g_object_disconnect(notation_edit->gesture_click_event_controller,
+		      "any_signal::released",
+		      G_CALLBACK(ags_notation_edit_gesture_click_released_callback),
+		      notation_edit,
+		      NULL);
+
+  g_object_disconnect(notation_edit->motion_event_controller,
+		      "any_signal::motion",
+		      G_CALLBACK(ags_notation_edit_motion_callback),
+		      notation_edit,
+		      NULL);
+
+  g_object_disconnect(notation_edit->gesture_swipe_event_controller,
+		      "any_signal::swipe",
+		      G_CALLBACK(ags_notation_edit_gesture_swipe_callback),
+		      notation_edit,
+		      NULL);
+  
   /* drawing area */
   gtk_drawing_area_set_draw_func(notation_edit->drawing_area,
 				 NULL,
@@ -1327,6 +1371,14 @@ ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 
   gtk_widget_grab_focus((GtkWidget *) notation_edit->drawing_area);
 
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
+
   notation_edit->trace_position_x = x;
   notation_edit->trace_position_y = y;
   
@@ -1825,8 +1877,8 @@ ags_notation_edit_drawing_area_button_release_select_note(GtkWidget *editor,
 
   /* select region */
   ags_composite_editor_select_region((AgsCompositeEditor *) editor,
-				     x0, (gdouble) y0,
-				     x1, (gdouble) y1);
+				     ((x0 >= 0) ? x0: 0), (gdouble) ((y0 >= 0) ? y0: 0),
+				     ((x1 >= 0) ? x1: 0), (gdouble) ((y1 >= 0) ? y1: 0));
 }
 
 gboolean
@@ -1864,6 +1916,14 @@ ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controll
   selected_select = (composite_toolbar->selected_tool == (GtkButton *) composite_toolbar->select) ? TRUE: FALSE;
   
   gtk_widget_grab_focus((GtkWidget *) notation_edit->drawing_area);
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
   
   if(machine != NULL){
     notation_edit->button_mask |= AGS_NOTATION_EDIT_BUTTON_1;
@@ -1955,6 +2015,14 @@ ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_control
   selected_edit = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->edit) ? TRUE: FALSE;
   selected_clear = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->clear) ? TRUE: FALSE;
   selected_select = (composite_toolbar->selected_tool == (GtkWidget *) composite_toolbar->select) ? TRUE: FALSE;
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
 
   if(machine != NULL){    
     notation_edit->button_mask &= (~AGS_NOTATION_EDIT_BUTTON_1);

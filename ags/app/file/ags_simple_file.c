@@ -3387,10 +3387,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	      ags_audio_add_automation(gobject->audio,
 				       (GObject *) matched_automation);
 	    }
-	      
-	    ags_automation_add_acceleration(matched_automation,
-					    acceleration->data,
-					    FALSE);
+
+	    if(g_list_find(matched_automation->acceleration, acceleration->data) == NULL &&
+	       ags_automation_find_point(matched_automation, AGS_ACCELERATION(acceleration->data)->x, AGS_ACCELERATION(acceleration->data)->y, FALSE) == NULL){
+	      ags_automation_add_acceleration(matched_automation,
+					      acceleration->data,
+					      FALSE);
+	    }
 	    
 	    acceleration = acceleration->next;
 	  }
@@ -17402,10 +17405,10 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 		     11)){
 	current = NULL;
 
-	if(*automation != NULL){
+	if(automation[0] != NULL){
 	  GList *iter;
 
-	  iter = g_list_nth(*automation,
+	  iter = g_list_nth(automation[0],
 			    i);
 
 	  if(iter != NULL){
@@ -17413,8 +17416,12 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 	  }
 	}
 	
-	ags_simple_file_read_automation(simple_file, child, &current);
-	list = ags_automation_add(list, current);
+	ags_simple_file_read_automation(simple_file,
+					child,
+					&current);
+
+	list = ags_automation_add(list,
+				  current);
 
 	i++;
       }
@@ -17423,7 +17430,7 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
     child = child->next;
   }
 
-  *automation = list;
+  automation[0] = list;
 }
 
 void
@@ -17595,16 +17602,11 @@ ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file
 void
 ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation)
 {
-  AgsMachine *machine;    
-  AgsChannel *start_output, *start_input;
-  AgsChannel *nth_channel;
+  AgsMachine *machine;
   AgsAutomation *gobject;
   AgsAcceleration *acceleration;
 
   xmlNode *child;
-  
-  GList *start_play_port, *play_port;
-  GList *start_recall_port, *recall_port;
   
   xmlChar *str;
   gchar *control_name;
@@ -17651,12 +17653,12 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
   control_name = xmlGetProp(node,
 			    "control-name");
   
-  if(*automation != NULL){
+  if(automation[0] != NULL){
     if(!AGS_IS_MACHINE(machine)){
       return;
     }
 
-    gobject = *automation;
+    gobject = automation[0];
   }else{
     if(!AGS_IS_MACHINE(machine)){
       return;
@@ -17669,61 +17671,9 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 			   "control-name", control_name,
 			   NULL);
 
-    *automation = gobject;
+    automation[0] = gobject;
   }
 
-  start_output = ags_audio_get_output(machine->audio);
-  start_input = ags_audio_get_input(machine->audio);
-
-  play_port = NULL;
-  recall_port = NULL;
-
-  if(channel_type == AGS_TYPE_INPUT){
-    nth_channel = ags_channel_nth(start_input,
-				  line);
-
-    play_port =
-      start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-										       control_name,
-										       TRUE);
-
-    recall_port =
-      start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											 control_name,
-											 FALSE);
-
-    if(nth_channel != NULL){
-      g_object_unref(nth_channel);
-    }
-  }else if(channel_type == AGS_TYPE_OUTPUT){
-    nth_channel = ags_channel_nth(start_output,
-				  line);
-	  
-    play_port =
-      start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-										       control_name,
-										       TRUE);
-
-    recall_port =
-      start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-											 control_name,
-											 FALSE);
-
-    if(nth_channel != NULL){
-      g_object_unref(nth_channel);
-    }
-  }else{
-    play_port =
-      start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-										   control_name,
-										   TRUE);
-	
-    recall_port =
-      start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-										     control_name,
-										     FALSE);
-  }
-  
   /* children */
   child = node->children;
 
@@ -17752,27 +17702,6 @@ ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAu
 
     child = child->next;
   }
-
-  play_port = start_play_port;
-  recall_port = start_recall_port;
-
-  while(play_port != NULL){
-    /* add to port */
-    ags_port_add_automation(play_port->data,
-			    (GObject *) gobject);
-	  
-    ags_port_add_automation(recall_port->data,
-			    (GObject *) gobject);
-
-    /* iterate */
-    play_port = play_port->next;
-    recall_port = recall_port->next;
-  }
-
-  g_list_free_full(start_play_port,
-		   g_object_unref);
-  g_list_free_full(start_recall_port,
-		   g_object_unref);
   
   child = node->children;
 

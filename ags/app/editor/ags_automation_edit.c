@@ -451,43 +451,25 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   application_context = ags_application_context_get_instance();
 
-  event_controller = gtk_event_controller_key_new();
+  event_controller =
+    automation_edit->key_event_controller = gtk_event_controller_key_new();
   gtk_widget_add_controller((GtkWidget *) automation_edit,
 			    event_controller);
 
-  g_signal_connect(event_controller, "key-pressed",
-		   G_CALLBACK(ags_automation_edit_key_pressed_callback), automation_edit);
-  
-  g_signal_connect(event_controller, "key-released",
-		   G_CALLBACK(ags_automation_edit_key_released_callback), automation_edit);
-
-  g_signal_connect(event_controller, "modifiers",
-		   G_CALLBACK(ags_automation_edit_modifiers_callback), automation_edit);
-
-
-  event_controller = (GtkEventController *) gtk_gesture_click_new();
+  event_controller = 
+    automation_edit->gesture_click_event_controller = (GtkEventController *) gtk_gesture_click_new();
   gtk_widget_add_controller((GtkWidget *) automation_edit,
 			    event_controller);
 
-  g_signal_connect(event_controller, "pressed",
-		   G_CALLBACK(ags_automation_edit_gesture_click_pressed_callback), automation_edit);
-
-  g_signal_connect(event_controller, "released",
-		   G_CALLBACK(ags_automation_edit_gesture_click_released_callback), automation_edit);
-  
-  event_controller = gtk_event_controller_motion_new();
+  event_controller = 
+    automation_edit->motion_event_controller = gtk_event_controller_motion_new();
   gtk_widget_add_controller((GtkWidget *) automation_edit,
 			    event_controller);
 
-  g_signal_connect(event_controller, "motion",
-		   G_CALLBACK(ags_automation_edit_motion_callback), automation_edit);
-
-  event_controller = (GtkEventController *) gtk_gesture_swipe_new();
+  event_controller = 
+    automation_edit->gesture_swipe_event_controller = (GtkEventController *) gtk_gesture_swipe_new();
   gtk_widget_add_controller((GtkWidget *) automation_edit,
 			    event_controller);
-
-  g_signal_connect(event_controller, "swipe",
-		   G_CALLBACK(ags_automation_edit_gesture_swipe_callback), automation_edit);
 
   automation_edit->flags = 0;
   automation_edit->connectable_flags = 0;
@@ -504,15 +486,15 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->note_offset = 0;
   automation_edit->note_offset_absolute = 0;
 
-  automation_edit->point_radius = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_POINT_RADIUS);
+  automation_edit->point_radius = (gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_POINT_RADIUS);
 
-  automation_edit->scan_width = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH);
-  automation_edit->scan_height = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_SCAN_HEIGHT);
+  automation_edit->scan_width = (gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH);
+  automation_edit->scan_height = (gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_SCAN_HEIGHT);
 
-  automation_edit->control_width = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
-  automation_edit->control_height = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT);
+  automation_edit->control_width = (gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+  automation_edit->control_height = (gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT);
 
-  automation_edit->step_count = (guint) (AGS_AUTOMATION_EDIT_DEFAULT_STEP_COUNT);
+  automation_edit->step_count = (gint) (AGS_AUTOMATION_EDIT_DEFAULT_STEP_COUNT);
   
   automation_edit->cursor_position_x = AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_X;
   automation_edit->cursor_position_y = AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_Y;
@@ -587,7 +569,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   gtk_widget_set_visible((GtkWidget *) automation_edit->vscrollbar,
 			 FALSE);
   gtk_widget_set_size_request((GtkWidget *) automation_edit->vscrollbar,
-			      -1, (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_HEIGHT_REQUEST));
+			      -1, (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_HEIGHT_REQUEST));
   gtk_grid_attach((GtkGrid *) automation_edit,
 		  (GtkWidget *) automation_edit->vscrollbar,
 		  1, 1,
@@ -834,6 +816,28 @@ ags_automation_edit_connect(AgsConnectable *connectable)
   
   automation_edit->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
 
+  /* event controller */
+  g_signal_connect(automation_edit->key_event_controller, "key-pressed",
+		   G_CALLBACK(ags_automation_edit_key_pressed_callback), automation_edit);
+  
+  g_signal_connect(automation_edit->key_event_controller, "key-released",
+		   G_CALLBACK(ags_automation_edit_key_released_callback), automation_edit);
+
+  g_signal_connect(automation_edit->key_event_controller, "modifiers",
+		   G_CALLBACK(ags_automation_edit_modifiers_callback), automation_edit);
+
+  g_signal_connect(automation_edit->gesture_click_event_controller, "pressed",
+		   G_CALLBACK(ags_automation_edit_gesture_click_pressed_callback), automation_edit);
+
+  g_signal_connect(automation_edit->gesture_click_event_controller, "released",
+		   G_CALLBACK(ags_automation_edit_gesture_click_released_callback), automation_edit);
+
+  g_signal_connect(automation_edit->motion_event_controller, "motion",
+		   G_CALLBACK(ags_automation_edit_motion_callback), automation_edit);
+
+  g_signal_connect(automation_edit->gesture_swipe_event_controller, "swipe",
+		   G_CALLBACK(ags_automation_edit_gesture_swipe_callback), automation_edit);
+
   /* drawing area */
   gtk_drawing_area_set_draw_func(automation_edit->drawing_area,
 				 (GtkDrawingAreaDrawFunc) ags_automation_edit_draw_callback,
@@ -863,6 +867,49 @@ ags_automation_edit_disconnect(AgsConnectable *connectable)
   }
   
   automation_edit->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
+  
+  /* event controller */
+  g_object_disconnect(automation_edit->key_event_controller,
+		      "any_signal::key-pressed",
+		      G_CALLBACK(ags_automation_edit_key_pressed_callback),
+		      automation_edit,
+		      NULL);
+  
+  g_object_disconnect(automation_edit->key_event_controller,
+		      "any_signal::key-released",
+		      G_CALLBACK(ags_automation_edit_key_released_callback),
+		      automation_edit,
+		      NULL);
+
+  g_object_disconnect(automation_edit->key_event_controller,
+		      "any_signal::modifiers",
+		      G_CALLBACK(ags_automation_edit_modifiers_callback),
+		      automation_edit,
+		      NULL);
+
+  g_object_disconnect(automation_edit->gesture_click_event_controller,
+		      "any_signal::pressed",
+		      G_CALLBACK(ags_automation_edit_gesture_click_pressed_callback),
+		      automation_edit,
+		      NULL);
+
+  g_object_disconnect(automation_edit->gesture_click_event_controller,
+		      "any_signal::released",
+		      G_CALLBACK(ags_automation_edit_gesture_click_released_callback),
+		      automation_edit,
+		      NULL);
+
+  g_object_disconnect(automation_edit->motion_event_controller,
+		      "any_signal::motion",
+		      G_CALLBACK(ags_automation_edit_motion_callback),
+		      automation_edit,
+		      NULL);
+
+  g_object_disconnect(automation_edit->gesture_swipe_event_controller,
+		      "any_signal::swipe",
+		      G_CALLBACK(ags_automation_edit_gesture_swipe_callback),
+		      automation_edit,
+		      NULL);
   
   /* drawing area */
   gtk_drawing_area_set_draw_func(automation_edit->drawing_area,
@@ -924,8 +971,7 @@ ags_automation_edit_key_pressed_callback(GtkEventControllerKey *event_controller
 
   machine = NULL;
   
-  editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-							  AGS_TYPE_COMPOSITE_EDITOR);
+  editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   machine = editor->selected_machine;
 
@@ -1060,8 +1106,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 
   application_context = ags_application_context_get_instance();
   
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   machine = composite_editor->selected_machine;
   
@@ -1174,7 +1219,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 	gdouble y0_offset;
 
 	gdouble c_range;
-	guint g_range;
+	gint g_range;
 
 	vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
 
@@ -1218,7 +1263,7 @@ ags_automation_edit_key_released_callback(GtkEventControllerKey *event_controlle
 	gdouble y0_offset;
 
 	gdouble c_range;
-	guint g_range;
+	gint g_range;
 
 	vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
 
@@ -1308,7 +1353,7 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
 
@@ -1324,7 +1369,7 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
 			    &allocation);
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1335,13 +1380,13 @@ ags_automation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor
   g_range = allocation.height;
 
   /* cursor position */
-  automation_edit->cursor_position_x = (guint) zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment));
+  automation_edit->cursor_position_x = (gint) zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment));
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
     automation_edit->cursor_position_y = lower * pow(upper / lower, step / (step_count - 1)) + lower;
@@ -1378,7 +1423,7 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
 
@@ -1400,7 +1445,7 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
   }
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1411,13 +1456,13 @@ ags_automation_edit_drawing_area_motion_notify_add_acceleration(GtkWidget *edito
   g_range = allocation.height;
 
   /* acceleration */
-  acceleration->x = (guint) zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment));
+  acceleration->x = (gint) zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment));
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
 
@@ -1450,12 +1495,12 @@ ags_automation_edit_drawing_area_motion_notify_resize_acceleration(GtkWidget *ed
 
   AgsTimestamp *timestamp;
 
-  guint x0_offset;
+  gint x0_offset;
   gdouble y0_offset;
 
   gdouble c_range;
-  guint g_range;
-  guint current_acceleration_x1;
+  gint g_range;
+  gint current_acceleration_x1;
   double zoom_factor;
   gint i;
   gint j;
@@ -1496,7 +1541,7 @@ ags_automation_edit_drawing_area_motion_notify_resize_acceleration(GtkWidget *ed
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-  x0_offset = (guint) automation_edit->resize_position_x;
+  x0_offset = (gint) automation_edit->resize_position_x;
 
   timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0_offset / AGS_AUTOMATION_DEFAULT_OFFSET);
   
@@ -1553,13 +1598,13 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
   
   if(zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) >= 0.0){
-    automation_edit->selection_x1 = (guint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
+    automation_edit->selection_x1 = (gint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
   }else{
     automation_edit->selection_x1 = 0.0;
   }
   
   if(y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar)) >= 0.0){
-    automation_edit->selection_y1 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
+    automation_edit->selection_y1 = (gint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
   }else{
     automation_edit->selection_y1 = 0.0;
   }
@@ -1579,8 +1624,7 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
 
   application_context = ags_application_context_get_instance();
 
-  editor = (AgsCompositeEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
-							  AGS_TYPE_COMPOSITE_EDITOR);
+  editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   toolbar = editor->toolbar;
 
@@ -1588,6 +1632,14 @@ ags_automation_edit_motion_callback(GtkEventControllerMotion *event_controller,
   
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
 
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
+  
   if(machine != NULL &&
      (AGS_AUTOMATION_EDIT_BUTTON_1 & (automation_edit->button_mask)) != 0){
     if(automation_edit->mode == AGS_AUTOMATION_EDIT_POSITION_CURSOR){
@@ -1751,7 +1803,7 @@ ags_automation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
 
@@ -1767,7 +1819,7 @@ ags_automation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
 			    &allocation);
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1775,13 +1827,13 @@ ags_automation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   g_range = allocation.height;
 
   /* cursor position */
-  automation_edit->cursor_position_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))));
+  automation_edit->cursor_position_x = (gint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))));
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
       
@@ -1816,7 +1868,7 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(GtkWidget *editor
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
     
@@ -1834,7 +1886,7 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(GtkWidget *editor
   acceleration = ags_acceleration_new();
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1845,13 +1897,13 @@ ags_automation_edit_drawing_area_button_press_add_acceleration(GtkWidget *editor
   g_range = allocation.height;
 
   /* acceleration */
-  acceleration->x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment)));
+  acceleration->x = (gint) (zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment)));
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
 
@@ -1896,7 +1948,7 @@ ags_automation_edit_drawing_area_button_press_resize_acceleration(GtkWidget *edi
   double zoom_factor;
   gdouble y0_offset;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
 
   application_context = ags_application_context_get_instance();
 
@@ -1907,7 +1959,7 @@ ags_automation_edit_drawing_area_button_press_resize_acceleration(GtkWidget *edi
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
 
   /* resize position */
-  automation_edit->resize_position_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))));
+  automation_edit->resize_position_x = (gint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar))));
 
   vscrollbar_adjustment = gtk_scrollbar_get_adjustment(automation_edit->vscrollbar);
 
@@ -1947,10 +1999,10 @@ ags_automation_edit_drawing_area_button_press_select_acceleration(GtkWidget *edi
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
   
-  automation_edit->selection_x0 = (guint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
+  automation_edit->selection_x0 = (gint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
   automation_edit->selection_x1 = automation_edit->selection_x0;
     
-  automation_edit->selection_y0 = (guint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
+  automation_edit->selection_y0 = (gint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
   automation_edit->selection_y1 = automation_edit->selection_y0;
 }
 
@@ -1969,10 +2021,10 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
 
   GList *start_tab, *tab;
   
-  guint audio_channels;
-  guint output_lines, input_lines;
-  guint length;
-  guint i;
+  gint audio_channels;
+  gint output_lines, input_lines;
+  gint length;
+  gint i;
   gboolean replace_notebook;
   gboolean selected_position_cursor, selected_edit, selected_clear, selected_select;
   
@@ -1986,8 +2038,7 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   selected_edit = FALSE;
   selected_select = FALSE;
       
-  editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-							  AGS_TYPE_COMPOSITE_EDITOR);
+  editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = AGS_COMPOSITE_EDITOR(editor)->toolbar;
 
@@ -2000,7 +2051,9 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
 
   replace_notebook = (AGS_COMPOSITE_EDITOR(editor)->automation_edit->focused_edit != (GtkWidget *) automation_edit) ? TRUE: FALSE;
 
-  if(editor->automation_edit->focused_edit != NULL){
+  if(editor->automation_edit->focused_edit != NULL &&
+     AGS_IS_AUTOMATION_EDIT(editor->automation_edit->focused_edit) &&
+     editor->automation_edit->focused_edit != automation_edit){
     AGS_AUTOMATION_EDIT(editor->automation_edit->focused_edit)->render_mode = AGS_AUTOMATION_EDIT_RENDER_VIEW;
   }
   
@@ -2060,6 +2113,14 @@ ags_automation_edit_gesture_click_pressed_callback(GtkGestureClick *event_contro
   
   gtk_widget_grab_focus((GtkWidget *) automation_edit->drawing_area);
   gtk_widget_queue_draw((GtkWidget *) automation_edit);
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
 
   if(machine != NULL){    
     automation_edit->button_mask |= AGS_AUTOMATION_EDIT_BUTTON_1;
@@ -2136,7 +2197,7 @@ ags_automation_edit_drawing_area_button_release_position_cursor(GtkWidget *edito
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
 
@@ -2152,7 +2213,7 @@ ags_automation_edit_drawing_area_button_release_position_cursor(GtkWidget *edito
 			    &allocation);
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -2163,13 +2224,13 @@ ags_automation_edit_drawing_area_button_release_position_cursor(GtkWidget *edito
   g_range = allocation.height;
 
   /* cursor position */
-  automation_edit->cursor_position_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment)));
+  automation_edit->cursor_position_x = (gint) (zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment)));
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
     automation_edit->cursor_position_y = lower * pow(upper / lower, step / (step_count - 1)) + lower;
@@ -2203,10 +2264,10 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
-  guint new_x;
+  gint new_x;
     
   application_context = ags_application_context_get_instance();
 
@@ -2226,7 +2287,7 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
   }
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -2237,13 +2298,13 @@ ags_automation_edit_drawing_area_button_release_add_acceleration(GtkWidget *edit
   g_range = allocation.height;
 
   /* acceleration */
-  acceleration->x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment)));
+  acceleration->x = (gint) (zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment)));
     
   lower = automation_edit->lower;
   upper = automation_edit->upper;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
 
@@ -2284,12 +2345,12 @@ ags_automation_edit_drawing_area_button_release_resize_acceleration(GtkWidget *e
 
   AgsTimestamp *timestamp;
 
-  guint x0_offset;
+  gint x0_offset;
   gdouble y0_offset;
 
   gdouble c_range;
-  guint g_range;
-  guint current_acceleration_x1;
+  gint g_range;
+  gint current_acceleration_x1;
   double zoom_factor;
   gint i;
   gint j;
@@ -2330,7 +2391,7 @@ ags_automation_edit_drawing_area_button_release_resize_acceleration(GtkWidget *e
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-  x0_offset = (guint) automation_edit->resize_position_x;
+  x0_offset = (gint) automation_edit->resize_position_x;
 
   timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0_offset / AGS_AUTOMATION_DEFAULT_OFFSET);
   
@@ -2390,7 +2451,7 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
 
@@ -2406,7 +2467,7 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
 			    &allocation);
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -2417,13 +2478,13 @@ ags_automation_edit_drawing_area_button_release_delete_acceleration(GtkWidget *e
   g_range = allocation.height;
   
   /* acceleration */
-  x = (guint) zoom_factor * ((x + gtk_adjustment_get_value(hscrollbar_adjustment)));
+  x = (gint) zoom_factor * ((x + gtk_adjustment_get_value(hscrollbar_adjustment)));
 
   lower = automation_edit->lower;
   upper = automation_edit->upper;
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
     y = lower * pow(upper / lower, step / (step_count - 1)) + lower;
@@ -2459,10 +2520,10 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   gdouble gui_scale_factor;
   double zoom_factor;
   gdouble c_range;
-  guint g_range;
+  gint g_range;
   gdouble value, step;
   gdouble upper, lower, step_count;
-  guint x0, x1;
+  gint x0, x1;
   gdouble y0, y1;
     
   application_context = ags_application_context_get_instance();
@@ -2477,7 +2538,7 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
 			    &allocation);
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -2488,13 +2549,13 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
   g_range = allocation.height;
   
   /* region */
-  x0 = (guint) automation_edit->selection_x0;
-
+  x0 = (gint) automation_edit->selection_x0;
+  
   lower = automation_edit->lower;
   upper = automation_edit->upper;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) automation_edit->selection_y0;
       
@@ -2508,10 +2569,10 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
     }
   }
   
-  x1 = (guint) zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment));
+  x1 = (gint) zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment));
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
 
     step = (gdouble) allocation.height - (gdouble) y;
       
@@ -2527,8 +2588,8 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
     
   /* select region */
   ags_composite_editor_select_region((AgsCompositeEditor *) editor,
-				     x0, y0,
-				     x1, y1);
+				     ((x0 >= 0) ? x0: 0), ((y0 >= lower) ? y0: lower),
+				     ((x1 >= 0) ? x1: 0), ((y1 >= lower) ? y1: lower));
 }
 
 gboolean
@@ -2552,12 +2613,19 @@ ags_automation_edit_gesture_click_released_callback(GtkGestureClick *event_contr
   
   machine = NULL;  
     
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
   machine = composite_editor->selected_machine;
+
+  if(x < 0.0){
+    x = 0.0;
+  }
+
+  if(y < 0.0){
+    y = 0.0;
+  }
   
   if(machine != NULL){
     automation_edit->button_mask &= (~AGS_AUTOMATION_EDIT_BUTTON_1);
@@ -2813,7 +2881,7 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   gdouble gui_scale_factor;
   double zoom_factor, zoom;
   double zoom_correction;
-  guint map_width;
+  gint map_width;
   gdouble upper, old_upper;
   
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit) ||
@@ -2835,8 +2903,7 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   adjustment = gtk_scrollbar_get_adjustment(automation_edit->hscrollbar);
 
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
@@ -2878,402 +2945,6 @@ ags_automation_edit_reset_hscrollbar(AgsAutomationEdit *automation_edit)
   automation_edit->flags &= (~AGS_AUTOMATION_EDIT_BLOCK_RESET_HSCROLLBAR);  
 }
 
-gint
-ags_automation_edit_compare_x_offset_func(gconstpointer a,
-					  gconstpointer b,
-					  AgsAutomationEdit *automation_edit,
-					  gdouble x_offset)
-{
-  AgsTimestamp *timestamp_a, *timestamp_b;
-  
-  guint64 current_offset;
-  guint64 a_offset, b_offset;
-
-  gint retval;
-  
-  timestamp_a = ags_automation_get_timestamp(a);
-  timestamp_b = ags_automation_get_timestamp(b);
-
-  current_offset = (guint64) ((double) AGS_AUTOMATION_DEFAULT_OFFSET * floor(x_offset / AGS_AUTOMATION_DEFAULT_OFFSET));
-
-  a_offset = ags_timestamp_get_ags_offset(timestamp_a);
-  b_offset = ags_timestamp_get_ags_offset(timestamp_b);
-
-  g_object_unref(timestamp_a);
-  g_object_unref(timestamp_b);
-
-  retval = 0;
-  
-  if(a_offset == current_offset){
-    retval = 0;
-  }else if(b_offset == current_offset){
-    retval = 1;
-  }else{
-    if(b_offset > current_offset){
-      retval = (a_offset < current_offset) ? -1: 1;
-    }else{
-      retval = 1;
-    }
-  }
-  
-  return(retval);
-}
-
-
-GList*
-ags_automation_edit_find_first_drawn_func(AgsAutomationEdit *automation_edit,
-					  GList *automation)
-{
-  AgsCompositeEditor *composite_editor;
-  AgsCompositeToolbar *composite_toolbar;
-  AgsCompositeEdit *composite_edit;
-
-  GtkAdjustment *adjustment;
-
-  AgsApplicationContext *application_context;
-  
-  GList *start_list;
-  GList *automation_last;
-  GList *a_list, *b_list, *c_list;
-  GList *retval;
-  
-  gint automation_length;
-  gint bisect_steps;
-  gdouble zoom_factor;
-  gdouble x_offset;
-  gint nth_bisect;
-  
-  application_context = ags_application_context_get_instance();
-
-  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
-
-  composite_toolbar = composite_editor->toolbar;
-
-  composite_edit = composite_editor->automation_edit;
-
-  adjustment = gtk_scrollbar_get_adjustment(composite_edit->hscrollbar);
-
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
-  
-  x_offset = (guint64) (AGS_AUTOMATION_DEFAULT_OFFSET * floor(((zoom_factor * gtk_adjustment_get_value(adjustment))) / (double) AGS_AUTOMATION_DEFAULT_OFFSET));
-
-  start_list = automation;
-
-  retval = start_list;  
-
-  automation_last = g_list_last(start_list);
-  automation_length = g_list_length(start_list);
-  
-  a_list = start_list;
-  b_list = g_list_nth(start_list,
-		      (guint) floor((double) automation_length / 2.0));
-  c_list = automation_last;
-  
-  bisect_steps = (guint) floor((automation_length) / 2.0);
-  nth_bisect = 0;
-
-  if(start_list == automation_last){
-    AgsTimestamp *cmp_timestamp;
-    
-    GList *cmp_list;
-
-    guint64 cmp_offset;
-
-    cmp_list = start_list;
-    
-    if(cmp_list != NULL){
-      cmp_timestamp = ags_automation_get_timestamp(cmp_list->data);
-      
-      cmp_offset = ags_timestamp_get_ags_offset(cmp_timestamp);
-
-      if(x_offset <= cmp_offset){
-	retval = g_list_find(automation,
-			     cmp_list->data);
-      }
-      
-      if(cmp_timestamp != NULL){
-	g_object_unref(cmp_timestamp);
-      }
-    }
-  
-    bisect_steps = 0;
-  }
-  
-  while(bisect_steps > 0){
-    AgsTimestamp *cmp_timestamp;
-    
-    GList *cmp_list;
-
-    gint cmp_val_0, cmp_val_1;
-    guint64 cmp_offset;
-
-    cmp_val_0 = 0;
-    cmp_val_1 = 0;
-
-    if(a_list == b_list){
-      b_list = b_list->next;
-    }
-    
-    if(a_list != NULL &&
-       b_list != NULL){
-      cmp_val_0 = ags_automation_edit_compare_x_offset_func(a_list->data,
-							    b_list->data,
-							    automation_edit,
-							    x_offset);
-    }else{
-      break;
-    }
-
-    cmp_list = a_list;
-
-    if(cmp_val_0 <= 0){
-      cmp_list = a_list;
-    }else{
-      cmp_list = b_list;
-    }
-
-    if(b_list == c_list){
-      c_list = c_list->next;
-    }
-    
-    if(b_list != NULL &&
-       c_list != NULL){
-      cmp_val_1 = ags_automation_edit_compare_x_offset_func(b_list->data,
-							    c_list->data,
-							    automation_edit,
-							    x_offset);
-    }else{
-      break;
-    }
-
-    if(cmp_val_1 <= 0){
-      cmp_list = b_list;
-    }
-
-    if(cmp_list != NULL){
-      cmp_timestamp = ags_automation_get_timestamp(cmp_list->data);
-    
-      cmp_offset = ags_timestamp_get_ags_offset(cmp_timestamp);
-
-      if(x_offset <= cmp_offset){
-	retval = g_list_find(automation,
-			     cmp_list->data);
-      }
-      
-      if(cmp_timestamp != NULL){
-	g_object_unref(cmp_timestamp);
-      }
-    }
-    
-    nth_bisect++;
-
-    if(cmp_list == a_list){
-      if(cmp_val_0 == 0){
-	break;
-      }
-
-      automation_length = g_list_position(a_list, b_list) + 1;
-      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
-
-      c_list = b_list->prev;
-
-      b_list = g_list_nth(a_list,
-			  bisect_steps);
-
-      a_list = a_list->next;
-    }else if(cmp_list == b_list){
-      if(cmp_val_1 == 0){
-	break;
-      }
-
-      automation_length = g_list_position(b_list->next, c_list) + 1;
-      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
-
-      a_list = b_list->next;
-
-      b_list = g_list_nth(b_list,
-			  bisect_steps);
-    }
-  }
-  
-  return(retval);
-}
-
-GList*
-ags_automation_edit_find_last_drawn_func(AgsAutomationEdit *automation_edit,
-					 GList *automation)
-{
-  AgsCompositeEditor *composite_editor;
-  AgsCompositeToolbar *composite_toolbar;
-  AgsCompositeEdit *composite_edit;
-
-  GtkAdjustment *adjustment;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_list;
-  GList *automation_last;
-  GList *a_list, *b_list, *c_list;
-  GList *retval;
-
-  guint width;
-  gint automation_length;
-  gint bisect_steps;
-  gdouble zoom_factor;
-  gdouble x_offset;
-  gint nth_bisect;
-  
-  application_context = ags_application_context_get_instance();
-
-  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
-
-  composite_toolbar = composite_editor->toolbar;
-
-  composite_edit = composite_editor->automation_edit;
-
-  adjustment = gtk_scrollbar_get_adjustment(composite_edit->hscrollbar);
-
-  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) composite_toolbar->zoom));
-  
-  width = gtk_widget_get_width((GtkWidget *) automation_edit->drawing_area);
-
-  x_offset = (guint64) (AGS_AUTOMATION_DEFAULT_OFFSET * floor((zoom_factor * (gtk_adjustment_get_value(adjustment) + (double) width)) / (double) AGS_AUTOMATION_DEFAULT_OFFSET));
-
-  start_list = automation;
-
-  retval = NULL;
-  
-  automation_last = g_list_last(start_list);
-  automation_length = g_list_length(start_list);
-  
-  a_list = start_list;
-  b_list = g_list_nth(start_list,
-		      (guint) floor((double) automation_length / 2.0));
-  c_list = automation_last;
-  
-  bisect_steps = (guint) floor((automation_length) / 2.0);
-  nth_bisect = 0;
-
-  if(start_list == automation_last &&
-     start_list != NULL){
-    AgsTimestamp *cmp_timestamp;
-    
-    guint64 cmp_offset;
-
-    cmp_timestamp = ags_automation_get_timestamp(start_list->data);
-    
-    cmp_offset = ags_timestamp_get_ags_offset(cmp_timestamp);
-
-    if(x_offset <= cmp_offset){
-      retval = start_list;
-    }
-      
-    if(cmp_timestamp != NULL){
-      g_object_unref(cmp_timestamp);
-    }
-  
-    bisect_steps = 0;
-  }
-  
-  while(bisect_steps > 0){
-    AgsTimestamp *cmp_timestamp;
-    
-    GList *cmp_list;
-
-    gint cmp_val_0, cmp_val_1;
-    guint64 cmp_offset;
-
-    cmp_val_0 = 0;
-    cmp_val_1 = 0;
-
-    if(a_list == b_list){
-      b_list = b_list->next;
-    }
-    
-    if(a_list != NULL &&
-       b_list != NULL){
-      cmp_val_0 = ags_automation_edit_compare_x_offset_func(a_list->data,
-							    b_list->data,
-							    automation_edit,
-							    x_offset);
-    }else{
-      break;
-    }
-
-    cmp_list = a_list;
-    
-    if(cmp_val_0 <= 0){
-      cmp_list = a_list;
-    }else{
-      cmp_list = b_list;
-    }
-
-    if(b_list == c_list){
-      c_list = c_list->next;
-    }
-    
-    if(b_list != NULL &&
-       c_list != NULL){
-      cmp_val_1 = ags_automation_edit_compare_x_offset_func(b_list->data,
-							    c_list->data,
-							    automation_edit,
-							    x_offset);
-    }else{
-      break;
-    }
-
-    if(cmp_val_1 <= 0){
-      cmp_list = b_list;
-    }
-
-    if(cmp_list != NULL){
-      cmp_timestamp = ags_automation_get_timestamp(cmp_list->data);
-
-      cmp_offset = ags_timestamp_get_ags_offset(cmp_timestamp);
-
-      if(x_offset <= cmp_offset){
-	retval = cmp_list;
-      }
-      
-      if(cmp_timestamp != NULL){
-	g_object_unref(cmp_timestamp);
-      }
-    }
-
-    nth_bisect++;
-
-    if(cmp_list == a_list){
-      if(cmp_val_0 == 0){
-	break;
-      }
-
-      automation_length = g_list_position(a_list, b_list) + 1;
-      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
-
-      c_list = b_list->prev;
-
-      b_list = g_list_nth(a_list,
-			  bisect_steps);
-
-      a_list = a_list->next;
-    }else if(cmp_list == b_list){
-      if(cmp_val_1 == 0){
-	break;
-      }
-
-      automation_length = g_list_position(b_list->next, c_list) + 1;
-      bisect_steps = (gint) floor((double) (automation_length) / 2.0);
-
-      a_list = b_list->next;
-
-      b_list = g_list_nth(b_list,
-			  bisect_steps);
-    }
-  }
-  
-  return(retval);
-}
-
 void
 ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr)
 {
@@ -3301,9 +2972,9 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   gdouble y;
   gdouble map_height;
   gdouble width, height;
-  guint control_width;
-  guint i, j;
-  guint j_set;
+  gint control_width;
+  gint i, j;
+  gint j_set;
   gboolean dark_theme;
   gboolean fg_success;
   gboolean bg_success;
@@ -3332,8 +3003,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   gtk_widget_get_allocation(GTK_WIDGET(automation_edit->drawing_area),
 			    &allocation);
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   toolbar = composite_editor->toolbar;
 
@@ -3436,7 +3106,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   map_height = (gdouble) height;
 
   control_width = (gint) (gui_scale_factor * (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH) * (tact / (gui_scale_factor * tact));
-  i = control_width - (guint) x_offset % control_width;
+  i = control_width - (gint) x_offset % control_width;
   
   cairo_set_source_rgba(cr,
 			fg_color.red,
@@ -3446,7 +3116,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit, cairo_t *cr
   
   if(i < width &&
      tact > 1.0 ){
-    j_set = ((guint) x_offset / control_width + 1) % ((guint) tact);
+    j_set = ((gint) x_offset / control_width + 1) % ((gint) tact);
 
     cairo_set_dash(cr,
 		   &segment_dashes,
@@ -3624,7 +3294,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit, cairo_t *c
   y = 0.0;
   x = (position) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)));
 
-  width = (double) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH));
+  width = (double) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH));
   height = automation_edit->step_count * automation_edit->control_height;
 
   /* push group */
@@ -3732,14 +3402,13 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   g_range = allocation.height;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
 
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
@@ -3753,7 +3422,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit, cairo_t *cr)
   upper = automation_edit->upper;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
     
     val = automation_edit->cursor_position_y;
     
@@ -3895,8 +3564,7 @@ ags_automation_edit_draw_selection(AgsAutomationEdit *automation_edit, cairo_t *
 			    &allocation);
 
   /* zoom */
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
     
   composite_toolbar = composite_editor->toolbar;
 
@@ -4005,8 +3673,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   gdouble g_range;
   gdouble c_range;
   gint allocation_width, allocation_height;
-  gint x, y;
-  gint a_x, b_x;
+  gdouble x, y;
+  gdouble a_x, b_x;
   gdouble a_y, b_y;
   double width, height;
   gboolean dark_theme;
@@ -4028,8 +3696,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   /* scale factor */
   gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   if(composite_editor->selected_machine == NULL){
     return;
@@ -4094,37 +3761,35 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   allocation_width = gtk_widget_get_width((GtkWidget *) automation_edit->drawing_area);
   allocation_height = gtk_widget_get_height((GtkWidget *) automation_edit->drawing_area);
 
-  g_range = allocation_height;
+  g_range = (gdouble) allocation_height;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
+    c_range = (gdouble) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT);
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
   
   /* get offset and dimensions */
-  if((double) AGS_AUTOMATION_DEFAULT_LENGTH > zoom_factor * (double) allocation_width){
-    viewport_x = zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
-  }else{
-    viewport_x = 0.0;
-  }
+  viewport_x = zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
   
   viewport_y = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
 
-  g_object_get(acceleration_a,
-	       "x", &a_x,
-	       "y", &a_y,
-	       NULL);
- 
-  x = (guint) ((double) a_x - viewport_x);
+  a_x = (gdouble) ags_acceleration_get_x(acceleration_a);
+  a_y = ags_acceleration_get_y(acceleration_a);
 
+  if(a_x - viewport_x >= 0.0){
+    x = a_x - viewport_x;
+  }else{
+    x = 0.0;
+  }
+  
   lower = automation_edit->lower;
   upper = automation_edit->upper;
 
   a_y -= lower;
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
+    step_count = ((gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
     
     val = a_y;
     
@@ -4132,44 +3797,36 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   }else{
     y = allocation_height - (((a_y) / c_range) * g_range);
   }
-  
-  if(acceleration_b != NULL){
-    g_object_get(acceleration_b,
-		 "x", &b_x,
-		 NULL);
 
-    if((double) b_x < (double) viewport_x + (zoom_factor * (double) allocation_width)){
-      width = ((double) b_x - a_x);
+  width = (zoom_factor * (double) allocation_width);
 
-      if(a_x < viewport_x){
-	x = 0;
-	width = b_x - viewport_x;
-      }
-
-      if((double) x + (double) width > viewport_x + (zoom_factor * (double) allocation_width)){
-	width = zoom_factor * (double) allocation_width;
-	width -= x;
-      }
-    }else{
-      if(a_x < viewport_x){
-	x = 0;
-
-	width = (gint) (zoom_factor * (double) allocation_width);
-      }else{
-	width = (gint) viewport_x + (zoom_factor * (double) allocation_width) - a_x;
-      }
-    }
+  if(viewport_x + width - a_x >= 0.0){
+    width = viewport_x + width - a_x;
   }else{
-    if(viewport_x > a_x){
-      x = 0;
-      width = zoom_factor * (double) allocation_width;
-    }else{
-      width = (gint) viewport_x + (zoom_factor * (double) allocation_width) - a_x;
+    //NOTE:JK: overflow not-visible greater
+    
+    return;
+  }
+  
+  height = (double) allocation_height - y;
+  
+  if(AGS_IS_ACCELERATION(acceleration_b)){
+    b_x = (gdouble) ags_acceleration_get_x(acceleration_b);
+
+    if(b_x < a_x){
+      g_warning("inconsistent data");
+      
+      return;
+    }
+    
+    width = (gdouble) (b_x - a_x);
+    
+    //NOTE:JK: overflow visible smaller
+    if(a_x - viewport_x < 0.0){
+      width = b_x - viewport_x;
     }
   }
-
-  height = allocation_height - y;
-
+  
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
     gdouble tmp;
 
@@ -4190,13 +3847,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
       return;
     }
 
-    x = 0;
-  }else if(x > allocation_width){
+    x = 0.0;
+  }else if(x > (double) allocation_width){
     return;
-  }
-
-  if(x + width > allocation_width){
-    width = (double) allocation_width - x;
   }
   
   if(y < 0.0){
@@ -4206,12 +3859,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
       height += y;
       y = 0.0;
     }
-  }else if(y > allocation_height){
+  }else if(y > (double) allocation_height){
     return;
-  }
-
-  if(y + height > allocation_height){
-    height = (double) allocation_height;
   }
 
   /* draw acceleration - dot */
@@ -4222,7 +3871,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 			opacity * fg_color.alpha);
   
   cairo_arc(cr,
-	    (double) x, (double) y,
+	    x, y,
 	    automation_edit->point_radius,
 	    0.0,
 	    2.0 * M_PI);
@@ -4236,7 +3885,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 			fg_color.blue,
 			opacity * fg_color.alpha);
   cairo_rectangle(cr,
-		  (double) x, (double) y,
+		  x, y,
 		  width, height);
   cairo_fill(cr);
 
@@ -4245,8 +3894,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     double selected_x, selected_y;
     double selected_width, selected_height;
 
-    selected_x = x - automation_edit->selected_acceleration_border;
-    selected_y = y - automation_edit->selected_acceleration_border;
+    selected_x = ((x - automation_edit->selected_acceleration_border) > 0) ? (x - automation_edit->selected_acceleration_border): 0;
+    selected_y = ((y - automation_edit->selected_acceleration_border) > 0) ? (y - automation_edit->selected_acceleration_border): 0;
 
     selected_width = width + (2.0 * (double) automation_edit->selected_acceleration_border);
     selected_height = height + (2.0 * (double) automation_edit->selected_acceleration_border);
@@ -4285,8 +3934,8 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
     /* draw selected acceleration - area */
     cairo_rectangle(cr,
-		    selected_x, selected_y,
-		    selected_width, selected_height);
+		    x, y,
+		    width, height);
     cairo_fill(cr);
   }
 }
@@ -4305,7 +3954,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   AgsAcceleration *last_acceleration;
   
   AgsTimestamp *timestamp;
-  AgsTimestamp *current_timestamp;    
+  AgsTimestamp *automation_timestamp;    
   
   AgsApplicationContext *application_context;
 
@@ -4313,15 +3962,18 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   GtkAllocation allocation;
 
-  guint width;
+  gdouble width;
   gdouble zoom_factor;
   gdouble x_offset;
   gdouble opacity;
-  guint x0, x1;
-  guint offset;
-  guint line;
+  gdouble x0, x1;
+  gdouble offset;
+  gdouble automation_offset;
+  gdouble acceleration_offset;
+  gint line;
   gint i, i_stop;
   gboolean initial_play_port;
+  gboolean is_first_drawn;
   
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
     return;
@@ -4339,8 +3991,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
   /* zoom */
   i_stop = 0;
   
-  composite_editor = (AgsCompositeEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_edit,
-								    AGS_TYPE_COMPOSITE_EDITOR);
+  composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
   if(composite_editor->selected_machine == NULL){
     return;
@@ -4376,7 +4027,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 
   /* get visisble region */
   x0 = zoom_factor * gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
-  x1 = zoom_factor * (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) + allocation.width);
+  x1 = zoom_factor * (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) + (double) allocation.width);
 
   /* draw automation */
   timestamp = ags_timestamp_new();
@@ -4413,16 +4064,17 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
 					   i)) != -1)){
     AgsChannel *start_output, *start_input;
     AgsChannel *nth_channel;
+    AgsAutomation *first_automation;
+    AgsAcceleration *first_drawn;
     AgsAcceleration *first_match;
     AgsAcceleration *last_match;
 
-    GList *start_list, *list;
-    GList *first_drawn;
-    GList *last_drawn;
-    GList *first_start_acceleration, *first_acceleration;
-    GList *last_start_acceleration, *last_acceleration;
     GList *start_play_port, *play_port;
     GList *start_recall_port, *recall_port;
+    GList *start_list, *list;
+    GList *next_list;
+    GList *next_link;
+    GList *start_acceleration, *acceleration;
     
   ags_automation_edit_draw_automation_LOOP:      
 
@@ -4564,7 +4216,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     play_port = start_play_port;
 
     while(play_port != NULL){
-      guint line;
+      gint line;
 
       line = ags_port_get_line(play_port->data);
 
@@ -4584,200 +4236,148 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     if(play_port != NULL){
       start_list = ags_port_get_automation(play_port->data);
     }
+
+    list = start_list;
+
+    first_automation = NULL;
     
-    first_drawn = ags_automation_edit_find_first_drawn_func(automation_edit,
-							    start_list);
-
-    last_drawn = ags_automation_edit_find_last_drawn_func(automation_edit,
-							  start_list);
-
-    list = ags_automation_find_near_timestamp(start_list, i,
-					      timestamp);
+    first_drawn = NULL;
     
     first_match = NULL;
-    
-    first_acceleration =
-      first_start_acceleration = NULL;
-    
-    if(first_drawn != NULL){
-      first_acceleration =
-	first_start_acceleration = ags_automation_get_acceleration(first_drawn->data);
-    }
-
-    if(first_acceleration != NULL){
-      first_match = first_acceleration->data;
-    }
-    
-    while(first_acceleration != NULL){
-      if(ags_acceleration_get_x(first_acceleration->data) >= x0){
-	goto ags_automation_edit_draw_automation_LOOP_FIRST_END;
-      }
-      
-      first_match = first_acceleration->data;
-
-      first_acceleration = first_acceleration->next;
-    }
-
-  ags_automation_edit_draw_automation_LOOP_FIRST_END:
-
-    if(first_acceleration != NULL){
-      first_acceleration = first_acceleration->next;
-    }
-    
     last_match = NULL;
-    
-    last_acceleration =
-      last_start_acceleration = NULL;
 
-    if(last_drawn != NULL){
-      last_acceleration =
-	last_start_acceleration = ags_automation_get_acceleration(last_drawn->data);
-    }
+    is_first_drawn = FALSE;
 
-    if(last_acceleration != NULL){
-      last_match = last_acceleration->data;
-    }
+    while((list = ags_automation_find_specifier_with_type_and_line(list,
+								   automation_edit->control_name,
+								   automation_edit->channel_type,
+								   i)) != NULL){
+      automation_timestamp = ags_automation_get_timestamp(list->data);
     
-    while(last_acceleration != NULL){
-      if(ags_acceleration_get_x(last_acceleration->data) >= x1){
-	goto ags_automation_edit_draw_automation_LOOP_LAST_END;
+      automation_offset = (double) ags_timestamp_get_ags_offset(automation_timestamp);
+
+      if(automation_offset >= x1){
+	break;
       }
-      
-      last_match = last_acceleration->data;
 
-      last_acceleration = last_acceleration->next;
-    }
+      acceleration =
+	start_acceleration = ags_automation_get_acceleration(list->data);
 
-  ags_automation_edit_draw_automation_LOOP_LAST_END:
-
-    if(first_match != NULL &&
-       first_match != last_match){
-      GList *start_next_acceleration;
-      GList *next_link;
-
-      next_link = first_acceleration;
-      start_next_acceleration = NULL;
-      
-      if(next_link == NULL &&
-	 first_drawn != NULL){
+      if(automation_offset + (guint64) AGS_AUTOMATION_DEFAULT_OFFSET < x0){
 	GList *tmp_list;
-
-	tmp_list = first_drawn->next;
+	
+	tmp_list = g_list_last(start_acceleration);
 
 	if(tmp_list != NULL){
-	  start_next_acceleration = ags_automation_get_acceleration(tmp_list->data);
-	  next_link = start_next_acceleration;
+	  first_drawn = tmp_list->data;
 	}
-      }
 
-      ags_automation_edit_draw_acceleration(automation_edit,
-					    first_match, ((next_link != NULL) ? next_link->data: NULL),
-					    cr,
-					    opacity);
-      
-      g_list_free_full(start_next_acceleration,
-		       g_object_unref);
-    }
-    
-    while(list != NULL){
-      AgsAutomation *automation;
-
-      GList *start_list_acceleration, *list_acceleration;
-      
-      automation = AGS_AUTOMATION(list->data);
-
-      current_timestamp = NULL;
-      
-      g_object_get(automation,
-		   "timestamp", &current_timestamp,
-		   NULL);
-
-      start_list_acceleration = NULL;
-
-      if(ags_timestamp_get_ags_offset(current_timestamp) >= x1){
-	goto ags_automation_edit_draw_automation_INNER_LOOP_END;
+	g_list_free_full(start_acceleration,
+			 (GDestroyNotify) g_object_unref);
+	
+	/* iterate */
+	list = list->next;
+	
+	continue;	
       }
       
-      list_acceleration =
-	start_list_acceleration = ags_automation_get_acceleration(automation);
+      while(acceleration != NULL) {
+	acceleration_offset = (double) ags_acceleration_get_x(acceleration->data);
 
-      while(list_acceleration != NULL){
-	GList *start_next_acceleration;
-	GList *next_link;
+	if(acceleration_offset < x0){
+	  first_drawn = acceleration->data;
 
-	start_next_acceleration = NULL;
-	next_link = list_acceleration->next;
+	  /* iterate */
+	  acceleration = acceleration->next;
+
+	  continue;	
+	}
+
+	if(acceleration_offset >= x1){
+	  break;
+	}
+	
+	next_link = acceleration->next;
 
 	if(next_link == NULL){
-	  GList *tmp_list;
+	  next_list = list->next;
+	    
+	  while((next_list = ags_automation_find_specifier_with_type_and_line(next_list,
+									      automation_edit->control_name,
+									      automation_edit->channel_type,
+									      i)) != NULL){
+	    if(AGS_AUTOMATION(next_list->data)->acceleration != NULL){
+	      next_link = AGS_AUTOMATION(next_list->data)->acceleration;
+	    }
 
-	  tmp_list = list->next;
-	  
-	  if(tmp_list != NULL){
-	    start_next_acceleration = ags_automation_get_acceleration(tmp_list->data);
-	    next_link = start_next_acceleration;
+	    if(next_link != NULL &&
+	       AGS_ACCELERATION(acceleration->data)->x < AGS_ACCELERATION(next_link->data)->x){
+	      break;
+	    }
+	    
+	    next_list = next_list->next;
 	  }
 	}
 
-#if 0
-	g_message("found accel[%d] @ line = %d", AGS_ACCELERATION(list_acceleration->data)->x, automation->line);
-#endif
-	
-	if(list_acceleration->data != first_match &&
-	   list_acceleration->data != last_match &&
-	   next_link != NULL){
-	  ags_automation_edit_draw_acceleration(automation_edit,
-						list_acceleration->data, next_link->data,
-						cr,
-						opacity);
+	if(first_automation == NULL){
+	  first_automation = list->data;
 	}
 
-	g_list_free_full(start_next_acceleration,
-			 g_object_unref);
+	if(next_link != NULL &&
+	   AGS_ACCELERATION(acceleration->data)->x >= AGS_ACCELERATION(next_link->data)->x){
+	  next_link = NULL;
+	}
+
+	if(first_match == NULL){
+	  first_match = acceleration->data;
+	}
 	
+	last_match = acceleration->data;
+	
+#if 0
+	if(next_link != NULL &&
+	    AGS_ACCELERATION(acceleration->data)->x < AGS_ACCELERATION(next_link->data)->x){
+	  g_message("draw accel[%d] @ x = %d next[%d] @ x = %d", i, AGS_ACCELERATION(acceleration->data)->x, i, AGS_ACCELERATION(next_link->data)->x);
+	}else{
+	  g_message("draw accel[%d] @ x = %d next = (null)", i, AGS_ACCELERATION(acceleration->data)->x);
+	}
+#endif	
+	  
+	ags_automation_edit_draw_acceleration(automation_edit,
+					      acceleration->data, ((next_link != NULL) ? next_link->data: NULL),
+					      cr,
+					      opacity);
+
 	/* iterate */
-	list_acceleration = list_acceleration->next;
+	acceleration = acceleration->next;
       }
-      
-    ags_automation_edit_draw_automation_INNER_LOOP_END:
 
-      g_object_unref(current_timestamp);
+      g_list_free_full(start_acceleration,
+		       (GDestroyNotify) g_object_unref);
       
-      g_list_free_full(start_list_acceleration,
-		       g_object_unref);
-
       /* iterate */
       list = list->next;
     }
 
-  ags_automation_edit_draw_automation_LOOP_END:
-
-    if(last_match != NULL){
-      GList *start_next_acceleration;
-      GList *next_link;
-
-      next_link = last_acceleration;
-      start_next_acceleration = NULL;
+    if(!is_first_drawn &&
+       first_drawn != NULL){
+      is_first_drawn = TRUE;
       
-      if(next_link == NULL &&
-	 list != NULL){
-	GList *tmp_list;
+      if(first_drawn != first_match){
+	ags_automation_edit_draw_acceleration(automation_edit,
+					      first_drawn, first_match,
+					      cr,
+					      opacity);
 
-	tmp_list = list->next;
-
-	if(tmp_list != NULL){	    
-	  start_next_acceleration = ags_automation_get_acceleration(tmp_list->data);
-	  next_link = start_next_acceleration;
+	
+#if 0
+	if(first_match != NULL){
+	  g_message("draw first[%d] @ x = %d next[%d] @ x = %d", i, first_drawn->x, i, first_match->x);
+	}else{
+	  g_message("draw first[%d] @ x = %d next = (null)", i, first_drawn->x);
 	}
+#endif	
       }
-      
-      ags_automation_edit_draw_acceleration(automation_edit,
-					    last_match, ((next_link != NULL) ? next_link->data: NULL),
-					    cr,
-					    opacity);
-
-      g_list_free_full(start_next_acceleration,
-		       g_object_unref);
     }
     
     g_list_free_full(start_list,
@@ -4790,7 +4390,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit, cairo_t 
     }
   }
   
-  g_object_unref(timestamp);  
+  g_object_unref(timestamp);
 }
 
 void

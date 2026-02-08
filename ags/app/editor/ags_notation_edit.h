@@ -95,13 +95,18 @@ struct _AgsNotationEdit
 {
   GtkGrid grid;
 
-  guint flags;
-  guint connectable_flags;
-  guint mode;
+  AgsNotationEditFlags flags;
+  AgsConnectableFlags connectable_flags;
+  AgsNotationEditMode mode;
 
-  guint button_mask;
-  guint key_mask;
+  AgsNotationEditButtonMask button_mask;
+  AgsNotationEditKeyMask key_mask;
 
+  GtkEventController *key_event_controller;
+  GtkEventController *gesture_click_event_controller;
+  GtkEventController *motion_event_controller;
+  GtkEventController *gesture_swipe_event_controller;
+  
   guint note_offset;
   guint note_offset_absolute;
   
@@ -118,10 +123,10 @@ struct _AgsNotationEdit
 
   guint selected_note_border;
   
-  guint selection_x0;
-  guint selection_x1;
-  guint selection_y0;
-  guint selection_y1;
+  gint selection_x0;
+  gint selection_x1;
+  gint selection_y0;
+  gint selection_y1;
 
   AgsNote *current_note;
   
@@ -131,11 +136,6 @@ struct _AgsNotationEdit
 
   GtkScrollbar *vscrollbar;
   GtkScrollbar *hscrollbar;
-
-  GtkEventController *key_controller;
-  GtkEventController *gesture_controller;
-  GtkEventController *motion_controller;
-  GtkEventController *swipe_controller;
 
   guint note_offset_256th;
   guint note_offset_256th_absolute;

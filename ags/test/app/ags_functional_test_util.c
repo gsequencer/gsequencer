@@ -4114,7 +4114,7 @@ ags_functional_test_util_notation_edit_add_point_driver_program(guint n_params,
   event_x = (x0 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width);
   event_y = (y * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_height);
 
-  g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_controller,
+  g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_click_event_controller,
 			"pressed",
 			1,
 			(event_x - viewport_x) / zoom_factor,
@@ -4122,7 +4122,7 @@ ags_functional_test_util_notation_edit_add_point_driver_program(guint n_params,
 
   event_x = (x1 * AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->control_width);
 
-  g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_controller,
+  g_signal_emit_by_name(AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->gesture_click_event_controller,
 			"released",
 			1,
 			(event_x - viewport_x) / zoom_factor,

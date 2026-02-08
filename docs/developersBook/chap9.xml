@@ -179,7 +179,7 @@
 
       <mediaobject>
 	<imageobject>
-	  <imagedata fileref="../images/AGS_recall_lifecycle.png" format="PNG" align="right" />
+	  <imagedata width="25%" scalefit="1" fileref="../images/AGS_recall_lifecycle.png" format="PNG" align="center" />
 	</imageobject>
 	<caption align="left">
 	  AgsRecall life-cycle
