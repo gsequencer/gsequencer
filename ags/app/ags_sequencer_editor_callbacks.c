@@ -76,7 +76,7 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   }else if(AGS_IS_OSS_MIDIIN(sequencer)){
     str = "oss";
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
-    str = "core-audio";
+    str = "core-midi";
   }else if(AGS_IS_JACK_MIDIIN(sequencer)){
     str = "jack";
   }

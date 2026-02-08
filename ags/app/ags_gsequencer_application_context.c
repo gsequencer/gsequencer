@@ -4304,9 +4304,9 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     }
 
     if(sequencer != NULL){
+      g_object_ref(sequencer);
       gsequencer_application_context->sequencer = g_list_append(gsequencer_application_context->sequencer,
 								sequencer);
-      g_object_ref(sequencer);
 
       /* device */
       str = ags_config_get_value(config,

@@ -1129,8 +1129,6 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
   g_message("input set device - %s", device);
   
   /* get some fields */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
   start_core_audio_port = 
     core_audio_port = g_list_copy(core_audio_midiin->core_audio_port);
 

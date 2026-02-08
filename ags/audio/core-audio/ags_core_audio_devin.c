@@ -1623,8 +1623,6 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
   g_message("input set device - %s", device);
   
   /* get some fields */
-  g_rec_mutex_lock(core_audio_devin_mutex);
-
   start_core_audio_port = 
     core_audio_port = g_list_copy(core_audio_devin->core_audio_port);
 

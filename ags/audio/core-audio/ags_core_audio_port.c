@@ -2633,6 +2633,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       ItemCount sources_count;
       SInt32 uid;
 
+      core_audio_port->midi_client = 0;
+      
       retval = MIDIClientCreate(CFSTR("Advanced Gtk+ Sequencer - Core MIDI to System Sounds"),
 				NULL,
 				core_audio_port,
@@ -2644,11 +2646,12 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       
       sources_count = MIDIGetNumberOfSources();
 
-      for(i = 0; i < sources_count; i++){
-	endpoint = MIDIGetSource(i);
+      for(i = 0; i < (gint) sources_count; i++){
+	endpoint = MIDIGetSource((ItemCount) i);
 
 	if(endpoint != 0){
 	  current_uid = NULL;
+	  uid = 0;
       
 	  retval = MIDIObjectGetIntegerProperty(endpoint, kMIDIPropertyUniqueID, &uid);
 
@@ -2664,9 +2667,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				[str_uid UTF8String]);
 	    
 	  if(!g_ascii_strcasecmp(str, port_name)){
-	    core_audio_port->midi_port_number = i;
+	    core_audio_port->midi_port_number = (unsigned int) i;
 	    
-	    core_audio_port->midi_input_endpoint = endpoint;
+	    core_audio_port->midi_input_endpoint = (MIDIObjectRef) endpoint;
 
 	    g_free(str);
 	    
@@ -2677,7 +2680,9 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	}
       }
       
-      // Objective-C block      
+      // Objective-C block
+      core_audio_port->midi_port = 0;
+      
       retval = MIDIInputPortCreateWithProtocol(core_audio_port->midi_client,
 					       CFSTR("Input port"),
 					       kMIDIProtocol_2_0,
@@ -2868,6 +2873,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       if(retval != noErr){
 	goto ags_core_audio_port_register_END;
       }
+
+      g_message("connected MIDI port source");
 #endif
     }
   }
