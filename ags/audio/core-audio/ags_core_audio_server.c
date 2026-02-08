@@ -1736,7 +1736,7 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
     
     ags_core_audio_port_register(core_audio_port,
 				 card_id->data,
-				 TRUE, FALSE,
+				 FALSE, TRUE,
 				 FALSE);
 
     g_object_set(default_client,
