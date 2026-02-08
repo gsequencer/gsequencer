@@ -7,6 +7,7 @@ ags (8.3.1)
 ags (8.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored audio and MIDI preferences
 	* improved Core Audio soundcard configuration
 	* improved Core Audio sequencer configuration
 	* improved ags_core_audio_port_register() MIDI setup

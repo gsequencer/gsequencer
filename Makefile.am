@@ -587,6 +587,10 @@ userdocimages = \
 	docs/images/ags_export_window.png \
 	docs/images/ags_hybrid_fm_synth.png \
 	docs/images/ags_hybrid_synth.png \
+	docs/images/ags_stargazer_synth.png \
+	docs/images/ags_quantum_synth.png \
+	docs/images/ags_raven_synth.png \
+	docs/images/ags_modular_synth.png \
 	docs/images/ags_machine_properties-input.png \
 	docs/images/ags_machine_properties-resize_channels.png \
 	docs/images/ags_navigation.png \

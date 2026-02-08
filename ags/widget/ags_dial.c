@@ -744,7 +744,7 @@ ags_dial_dispose(GObject *gobject)
 void
 ags_dial_finalize(GObject *gobject)
 {
-  gtk_widget_unparent(AGS_DIAL(gobject)->box);
+  gtk_widget_unparent((GtkWidget *) AGS_DIAL(gobject)->box);
   
   /* call parent */
   G_OBJECT_CLASS(ags_dial_parent_class)->finalize(gobject);

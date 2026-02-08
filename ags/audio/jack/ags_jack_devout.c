@@ -1592,6 +1592,7 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
   }
 
   g_free(jack_devout->card_uri);
+
   jack_devout->card_uri = g_strdup(device);
 
   /* apply name to port */
