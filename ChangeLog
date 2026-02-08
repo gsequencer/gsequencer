@@ -1,3 +1,9 @@
+ags (8.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_jack_server_register_soundcard_with_params()
+	* implemented ags_pulse_server_register_soundcard_with_params()
+
 ags (8.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
