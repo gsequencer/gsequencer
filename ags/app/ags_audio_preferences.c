@@ -239,7 +239,7 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 				(GtkWidget *) audio_preferences->soundcard_editor_box);
 
   /*  */
-  audio_preferences->add_menu_button = gtk_menu_button_new();
+  audio_preferences->add_menu_button = (GtkMenuButton *) gtk_menu_button_new();
   gtk_box_prepend(preferences->action_area,
 		  (GtkWidget *) audio_preferences->add_menu_button);
   

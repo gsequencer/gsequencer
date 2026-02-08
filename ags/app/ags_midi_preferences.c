@@ -217,7 +217,7 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 				(GtkWidget *) midi_preferences->sequencer_editor_box);
 
   /*  */
-  midi_preferences->add_menu_button = gtk_menu_button_new();
+  midi_preferences->add_menu_button = (GtkMenuButton *) gtk_menu_button_new();
   gtk_box_prepend(preferences->action_area,
 		  (GtkWidget *) midi_preferences->add_menu_button);
   

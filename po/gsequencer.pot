@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 8.2.12\n"
+"Project-Id-Version: gsequencer 8.3.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-01-25 15:24+0100\n"
+"POT-Creation-Date: 2026-02-08 04:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -224,21 +224,21 @@ msgstr ""
 msgid "bulk input"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4071
+#: ags/app/ags_gsequencer_application_context.c:4077
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4082
+#: ags/app/ags_gsequencer_application_context.c:4088
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4280
+#: ags/app/ags_gsequencer_application_context.c:4286
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application_context.c:4290
+#: ags/app/ags_gsequencer_application_context.c:4296
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -394,15 +394,8 @@ msgstr ""
 msgid "MIDI card"
 msgstr ""
 
-#: ags/app/ags_sequencer_editor.c:280 ags/app/editor/ags_pattern_envelope.c:827
-#: ags/app/editor/ags_envelope_editor.c:218 ags/app/ags_soundcard_editor.c:305
-msgid "_Add"
-msgstr ""
-
-#: ags/app/ags_sequencer_editor.c:284 ags/app/ags_sequencer_editor.c:289
-#: ags/app/editor/ags_pattern_envelope.c:832
-#: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:309
-#: ags/app/ags_soundcard_editor.c:652
+#: ags/app/ags_sequencer_editor.c:268 ags/app/editor/ags_pattern_envelope.c:832
+#: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:627
 msgid "_Remove"
 msgstr ""
 
@@ -969,6 +962,11 @@ msgstr ""
 msgid "move down"
 msgstr ""
 
+#: ags/app/editor/ags_pattern_envelope.c:827
+#: ags/app/editor/ags_envelope_editor.c:218
+msgid "_Add"
+msgstr ""
+
 #: ags/app/editor/ags_envelope_dialog.c:261
 msgid "envelope info"
 msgstr ""
@@ -1052,11 +1050,11 @@ msgstr ""
 msgid "input pads count"
 msgstr ""
 
-#: ags/app/ags_resize_editor.c:243 ags/app/ags_soundcard_editor.c:465
+#: ags/app/ags_resize_editor.c:243 ags/app/ags_soundcard_editor.c:440
 msgid "format"
 msgstr ""
 
-#: ags/app/ags_resize_editor.c:283 ags/app/ags_soundcard_editor.c:397
+#: ags/app/ags_resize_editor.c:283 ags/app/ags_soundcard_editor.c:372
 msgid "samplerate"
 msgstr ""
 
@@ -1087,7 +1085,7 @@ msgstr ""
 msgid "playback"
 msgstr ""
 
-#: ags/app/ags_navigation.c:297 ags/app/ags_audio_preferences.c:300
+#: ags/app/ags_navigation.c:297 ags/app/ags_audio_preferences.c:356
 msgid "stop"
 msgstr ""
 
@@ -1335,43 +1333,51 @@ msgstr ""
 msgid "midi device"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:237
+#: ags/app/ags_audio_preferences.c:249
+msgid "add output soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:254
+msgid "add input soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:293
 msgid "JACK driver"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:262
+#: ags/app/ags_audio_preferences.c:318
 msgid "JACK server"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:296
+#: ags/app/ags_audio_preferences.c:352
 msgid "start"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:317
+#: ags/app/ags_soundcard_editor.c:289
 msgid "capability"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:363 ags/app/import/ags_track_mapper.c:371
+#: ags/app/ags_soundcard_editor.c:338 ags/app/import/ags_track_mapper.c:371
 msgid "audio channels"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:431
+#: ags/app/ags_soundcard_editor.c:406
 msgid "buffer size"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:519
+#: ags/app/ags_soundcard_editor.c:494
 msgid "use cache"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:537
+#: ags/app/ags_soundcard_editor.c:512
 msgid "cache buffer size"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:572
+#: ags/app/ags_soundcard_editor.c:547
 msgid "WASAPI share mode"
 msgstr ""
 
-#: ags/app/ags_soundcard_editor.c:610
+#: ags/app/ags_soundcard_editor.c:585
 msgid "WASAPI buffer size"
 msgstr ""
 
@@ -2036,6 +2042,10 @@ msgstr ""
 
 #: ags/app/ags_plugin_browser.c:252
 msgid "plugin type"
+msgstr ""
+
+#: ags/app/ags_midi_preferences.c:227
+msgid "add input sequencer"
 msgstr ""
 
 #: ags/app/ags_online_help_window_callbacks.c:86

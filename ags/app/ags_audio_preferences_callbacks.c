@@ -120,7 +120,7 @@ ags_audio_preferences_add_output_soundcard_callback(GAction *action, GVariant *p
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();
 
-  gtk_combo_box_set_active(soundcard_editor->capability,
+  gtk_combo_box_set_active((GtkComboBox *) soundcard_editor->capability,
 			   0);
   
   /* determine backend */
@@ -462,7 +462,7 @@ ags_audio_preferences_add_input_soundcard_callback(GAction *action, GVariant *pa
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();
 
-  gtk_combo_box_set_active(soundcard_editor->capability,
+  gtk_combo_box_set_active((GtkComboBox *) soundcard_editor->capability,
 			   1);
 
   /* determine backend */
