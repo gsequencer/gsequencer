@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-* Copyright (C) 2005-2022 Joël Krähemann
+* Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,6 +88,7 @@ void
 ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
 
   ags_scale_box_parent_class = g_type_class_peek_parent(scale_box);
 
@@ -96,7 +97,13 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
 
   gobject->dispose = ags_scale_box_dispose;
   gobject->finalize = ags_scale_box_finalize;
+  
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) scale_box;
 
+  gtk_widget_class_set_css_name(widget,
+				"ags-scale-box");
+  
   /* AgsScaleBox */
   scale_box->child_width_request = NULL;
   scale_box->child_height_request = NULL;

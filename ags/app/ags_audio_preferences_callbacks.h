@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,7 +37,11 @@ void ags_audio_preferences_notify_parent_callback(GObject *gobject,
 						  GParamSpec *pspec,
 						  gpointer user_data);
 
-void ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_output_soundcard_callback(GAction *action, GVariant *parameter,
+							 AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_input_soundcard_callback(GAction *action, GVariant *parameter,
+							AgsAudioPreferences *audio_preferences);
+
 void ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *soundcard_editor,
 							    AgsAudioPreferences *audio_preferences);
 

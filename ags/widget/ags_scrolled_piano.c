@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,13 +69,20 @@ void
 ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano)
 {
   GObjectClass *gobject;
-
+  GtkWidgetClass *widget;
+  
   ags_scrolled_piano_parent_class = g_type_class_peek_parent(scrolled_piano);
 
   /* GObjectClass */
   gobject = (GObjectClass *) scrolled_piano;
 
   gobject->finalize = ags_scrolled_piano_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) scrolled_piano;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-scrolled-piano");
 }
 
 void

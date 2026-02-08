@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,6 +42,7 @@ void ags_dial_get_property(GObject *gobject,
 			   GValue *value,
 			   GParamSpec *param_spec);
 void ags_dial_dispose(GObject *gobject);
+void ags_dial_finalize(GObject *gobject);
 
 void ags_dial_realize(GtkWidget *widget);
 void ags_dial_unrealize(GtkWidget *widget);
@@ -240,6 +241,7 @@ ags_dial_class_init(AgsDialClass *dial)
   gobject->get_property = ags_dial_get_property;
 
   gobject->dispose = ags_dial_dispose;
+  gobject->finalize = ags_dial_finalize;
   
   /* properties */
   /**
@@ -432,6 +434,9 @@ ags_dial_class_init(AgsDialClass *dial)
 
   gtk_widget_class_set_accessible_role(widget,
 				       GTK_ACCESSIBLE_ROLE_SLIDER);
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-dial");
   
   /* AgsDialClass */
   dial->value_changed = NULL;
@@ -532,6 +537,11 @@ ags_dial_init(AgsDial *dial)
   dial->gravity_y = 0.0;
   dial->current_x = 0.0;
   dial->current_y = 0.0;
+
+  dial->box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+				     6);
+  gtk_widget_set_parent((GtkWidget *) dial->box,
+			(GtkWidget *) dial);
 }
 
 void
@@ -729,6 +739,15 @@ ags_dial_dispose(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_dial_parent_class)->dispose(gobject);
+}
+
+void
+ags_dial_finalize(GObject *gobject)
+{
+  gtk_widget_unparent((GtkWidget *) AGS_DIAL(gobject)->box);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_dial_parent_class)->finalize(gobject);
 }
 
 void
@@ -1540,7 +1559,7 @@ ags_dial_draw(AgsDial *dial,
 
   GValue value = {0,};
   
-  style_context = gtk_widget_get_style_context((GtkWidget *) dial);
+  style_context = gtk_widget_get_style_context((GtkWidget *) dial->box);
 
   settings = gtk_settings_get_default();
 
@@ -1571,6 +1590,32 @@ ags_dial_draw(AgsDial *dial,
 	       NULL);
   
   /* colors */
+  if(!dark_theme){
+    gdk_rgba_parse(&fg_color,
+		   "#101010");
+      
+    gdk_rgba_parse(&bg_color,
+		   "#cbd5d9");
+    
+    gdk_rgba_parse(&shadow_color,
+		   "#ffffff40");
+
+    gdk_rgba_parse(&text_color,
+		   "#1a1a1a");
+  }else{
+    gdk_rgba_parse(&fg_color,
+		   "#cbd5d9");
+      
+    gdk_rgba_parse(&bg_color,
+		   "#101010");
+      
+    gdk_rgba_parse(&shadow_color,
+		   "#202020");
+
+    gdk_rgba_parse(&text_color,
+		   "#e5e5e5");
+  }
+
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",
 					      &fg_color);
@@ -1587,6 +1632,7 @@ ags_dial_draw(AgsDial *dial,
 						"theme_text_color",
 						&text_color);
 
+#if 0
   if(!fg_success ||
      !bg_success ||
      !shadow_success){
@@ -1615,7 +1661,8 @@ ags_dial_draw(AgsDial *dial,
     gdk_rgba_parse(&text_color,
 		   "#1a1a1a");
   }
-
+#endif
+  
   widget_width = gtk_widget_get_width((GtkWidget *) dial);
   widget_height = gtk_widget_get_height((GtkWidget *) dial);
 
@@ -1828,8 +1875,8 @@ ags_dial_draw(AgsDial *dial,
 			  1.0,
 			  1.0 / 3.0);
   }
-  
-  cairo_line_to(cr,
+
+  cairo_move_to(cr,
 		padding_left + 1.0 + button_width + margin_left + radius,
 		padding_top + radius + 2.0 * outline_strength - 2.0 - outline_strength);
   cairo_line_to(cr,
@@ -1847,8 +1894,8 @@ ags_dial_draw(AgsDial *dial,
 	    0.35 * M_PI,
 	    0.65 * M_PI);
   cairo_fill(cr);
-
-  cairo_line_to(cr,
+  
+  cairo_move_to(cr,
 		padding_left + 1.0 + cos((0.65 * M_PI) / (0.35 * M_PI)) + button_width + margin_left + radius,
 		padding_top + -1 * sin((0.35 * M_PI) / (0.65 * M_PI)) + radius + 2.0 * outline_strength - 1.0);
   cairo_line_to(cr,

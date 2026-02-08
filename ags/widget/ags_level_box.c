@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,6 +88,7 @@ void
 ags_level_box_class_init(AgsLevelBoxClass *level_box)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
 
   ags_level_box_parent_class = g_type_class_peek_parent(level_box);
 
@@ -97,6 +98,12 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
   gobject->dispose = ags_level_box_dispose;
   gobject->finalize = ags_level_box_finalize;
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) level_box;
+  
+  gtk_widget_class_set_css_name(widget,
+				"ags-level-box");
+  
   /* AgsLevelBox */
   level_box->child_width_request = NULL;
   level_box->child_height_request = NULL;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3912,11 +3912,17 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
       if(!g_ascii_strncasecmp(backend,
 			      "core-audio",
 			      10)){
-	GValue *param_value = g_new0(GValue,
-				     4);
+	GValue *param_value;
 		
-	gchar **param_strv = (gchar **) g_malloc(5 * sizeof(gchar *));
+	gchar **param_strv;
 
+	ags_core_audio_server_connect_client(core_audio_server);
+
+	param_value = g_new0(GValue,
+			     4);
+
+	param_strv =  (gchar **) g_malloc(5 * sizeof(gchar *));
+	
 	param_strv[0] = g_strdup("pcm-channels");
 	param_strv[1] = g_strdup("buffer-size");
 	param_strv[2] = g_strdup("format");
@@ -4298,9 +4304,9 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
     }
 
     if(sequencer != NULL){
+      g_object_ref(sequencer);
       gsequencer_application_context->sequencer = g_list_append(gsequencer_application_context->sequencer,
 								sequencer);
-      g_object_ref(sequencer);
 
       /* device */
       str = ags_config_get_value(config,
@@ -4747,9 +4753,11 @@ ags_gsequencer_application_context_setup(AgsApplicationContext *application_cont
   gsequencer_application_context->thread_pool = NULL;
 
   /* launch */
+#if 0
   if(has_core_audio){
     ags_core_audio_server_connect_client(core_audio_server);
   }
+#endif
 
   if(has_pulse){
     ags_pulse_server_connect_client(pulse_server);

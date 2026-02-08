@@ -90,7 +90,7 @@
 	  envelope presets and apply to selected notes.
 	</listitem>
       </itemizedlist>
-	  
+      
     </listitem>
     <listitem>
       <para>
@@ -107,7 +107,7 @@
 	  Midi dialog allows you to assign MIDI sequencers to an instrument.
 	</listitem>
       </itemizedlist>
-	  
+      
     </listitem>
     <listitem>
       <para>
@@ -119,7 +119,7 @@
 	  Audio export does export your wave data into an audio file without any effect processing.
 	</listitem>
       </itemizedlist>	  
-	  
+      
     </listitem>    
     <listitem>
       <para>
@@ -480,22 +480,22 @@
   
   <sect1>
     <title>MIDI dialog</title>
-      <mediaobject>
-	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../&images;/ags_midi_dialog.png" format="PNG" />
-	</imageobject>
-	<caption>
-	  <para>
-	    The MIDI dialog screenshot
-	  </para>
-	</caption>
-      </mediaobject>
-      <para>
-	The MIDI dialog allows you to select the MIDI sequencer to assign of the current machine. The MIDI
-	channel is the MIDI channel assigned to the MIDI device, useful with multiple devices. Upto 16
-	devices are allowed. You might want to perform start and end key. Further you can adjust the start
-	and end channel.
-      </para>    
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_midi_dialog.png" format="PNG" />
+      </imageobject>
+      <caption>
+	<para>
+	  The MIDI dialog screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      The MIDI dialog allows you to select the MIDI sequencer to assign of the current machine. The MIDI
+      channel is the MIDI channel assigned to the MIDI device, useful with multiple devices. Upto 16
+      devices are allowed. You might want to perform start and end key. Further you can adjust the start
+      and end channel.
+    </para>    
   </sect1>
   
   <sect1>
@@ -880,7 +880,7 @@
     </para>
 
     <para>
-     Attack is the first frame after key on to start output.
+      Attack is the first frame after key on to start output.
     </para>
 
     <para>
@@ -1037,7 +1037,7 @@
     <para>
       The high-pass filter is disabled by default.
     </para>
-        
+    
     <para>
       There is a chorus, which provides additional controls.
     </para>
@@ -1207,6 +1207,188 @@
       The synth is compute just-in-time.
     </para>
   </sect1>
+
+  <sect1>
+    <title>Stargazer Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_stargazer_synth.png" format="PNG" />
+      </imageobject>
+      <caption>
+	<para>
+	  The stargazer synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      Produce audio data using 2 oscillators, those can be phase modulated with attack and phase tuples.
+      It has additional controls to modify pitch, chorus, tremolo and vibrato effect processors.
+    </para>
+
+    <para>
+      In order to enable phase modulation for the first oscillator, you need to check
+      &quot;OSC 1 - sync enabled&quot;. The &quot;OSC 1 - sync factor&quot; applies to every tuples
+      attack. The tuples maximum value is 2 times Pi for attack and phase. The LFO applies to the
+      phase reset.
+    </para>
+
+    <para>
+      The pitch tuning does additional frequency shift.
+    </para>
+
+    <para>
+      There is a chorus, which provides additional controls.
+    </para>
+    
+    <para>
+      The tremolo modifies volume by a LFO.
+    </para>
+    
+    <para>
+      The vibrato modifies frequency by a LFO.
+    </para>
+    
+    <para>
+      The synth is compute just-in-time.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Quantum Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_quantum_synth.png" format="PNG" />
+      </imageobject>
+      <caption>
+	<para>
+	  The quantum synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      Produce audio data using 2 oscillators, providing frequency and volume sequencers with 8 steps. If a control
+      is 0.0 following controls are ignored. those can be phase modulated with attack and phase tuples.
+      It has additional controls to modify pitch, chorus, tremolo and vibrato effect processors.
+    </para>
+
+    <para>
+      In order to enable phase modulation for the first oscillator, you need to check
+      &quot;OSC 1 - sync enabled&quot;. The &quot;OSC 1 - sync factor&quot; applies to every tuples
+      attack. The tuples maximum value is 2 times Pi for attack and phase. The LFO applies to the
+      phase reset.
+    </para>
+
+    <para>
+      The pitch tuning does additional frequency shift.
+    </para>
+
+    <para>
+      There is a chorus, which provides additional controls.
+    </para>
+    
+    <para>
+      The tremolo modifies volume by a LFO.
+    </para>
+    
+    <para>
+      The vibrato modifies frequency by a LFO.
+    </para>
+    
+    <para>
+      The synth is compute just-in-time.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Raven Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_raven_synth.png" format="PNG" />
+      </imageobject>
+      <caption>
+	<para>
+	  The raven synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      Produce audio data using 2 oscillators, those can be phase modulated with attack and phase tuples.
+      Per oscillator a low-pass filter and amplifier. It has additional controls to modify pitch, chorus, tremolo
+      and vibrato effect processors.
+    </para>
+
+    <para>
+      In order to enable phase modulation for the first oscillator, you need to check
+      &quot;OSC 1 - sync enabled&quot;. The &quot;OSC 1 - sync factor&quot; applies to every tuples
+      attack. The tuples maximum value is 2 times Pi for attack and phase. The LFO applies to the
+      phase reset.
+    </para>
+
+    <para>
+      The low-pass filter cut-off frequency is given in Hertz.
+    </para>
+
+    <para>
+      The amplifier gives you control over 4 bands and filter gain.
+    </para>
+
+    <para>
+      The pitch tuning does additional frequency shift.
+    </para>
+
+    <para>
+      There is a chorus, which provides additional controls.
+    </para>
+    
+    <para>
+      The tremolo modifies volume by a LFO.
+    </para>
+    
+    <para>
+      The vibrato modifies frequency by a LFO.
+    </para>
+    
+    <para>
+      The synth is compute just-in-time.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Modular Synth</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_modular_synth.png" format="PNG" />
+      </imageobject>
+      <caption>
+	<para>
+	  The modular synth screenshot
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      Produce audio data using 2 oscillators, those controls and pitch tuning and volume control can be varied
+      by 2 envelope, 2 LFOs and one pink noise. The sends are assigned by a boolean matrix to receivers. Pitch
+      tuning and main volume. A low-pass filter and amplifier. It has additional controls to modify chorus effect
+      processor.
+    </para>
+    
+    <para>
+      The low-pass filter cut-off frequency is given in Hertz.
+    </para>
+
+    <para>
+      The amplifier gives you control over 4 bands and filter gain.
+    </para>
+
+    <para>
+      There is a chorus, which provides additional controls.
+    </para>
+  </sect1>
+
   
   <sect1>
     <title>Audiorec</title>

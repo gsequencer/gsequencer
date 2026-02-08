@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,7 @@
 #include <ags/app/ags_sequencer_editor.h>
 
 #include <ags/config.h>
+#include <ags/i18n.h>
 
 void ags_midi_preferences_class_init(AgsMidiPreferencesClass *midi_preferences);
 void ags_midi_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -151,8 +152,23 @@ ags_midi_preferences_applicable_interface_init(AgsApplicableInterface *applicabl
 void
 ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 {
+  AgsPreferences *preferences;
+
   GtkScrolledWindow *scrolled_window;
+
+  GMenuModel *add_popup;
+  GMenu *menu;
+  GMenuItem *item;
   
+  GSimpleActionGroup *action_group;
+  GSimpleAction *action;
+  
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
+
   gtk_orientable_set_orientation(GTK_ORIENTABLE(midi_preferences),
 				 GTK_ORIENTATION_VERTICAL);
 
@@ -163,6 +179,20 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 		   G_CALLBACK(ags_midi_preferences_notify_parent_callback), NULL);
 
   midi_preferences->connectable_flags = 0;
+  
+  /* action group */
+  action_group = g_simple_action_group_new();
+  gtk_widget_insert_action_group((GtkWidget *) preferences,
+				 "midi_preferences",
+				 G_ACTION_GROUP(action_group));
+
+  /* add input sequencer */
+  action = g_simple_action_new("add_input_sequencer",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_midi_preferences_add_input_sequencer_callback), midi_preferences);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
 
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
@@ -187,6 +217,24 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 				(GtkWidget *) midi_preferences->sequencer_editor_box);
 
   /*  */
+  midi_preferences->add_menu_button = (GtkMenuButton *) gtk_menu_button_new();
+  gtk_box_prepend(preferences->action_area,
+		  (GtkWidget *) midi_preferences->add_menu_button);
+  
+  menu = (GMenu *) g_menu_new();
+  add_popup = G_MENU_MODEL(menu);
+
+  item = g_menu_item_new(i18n("add input sequencer"),
+			 "midi_preferences.add_input_sequencer");
+  g_menu_append_item(menu,
+		     item);
+  
+  gtk_menu_button_set_menu_model(midi_preferences->add_menu_button,
+				 add_popup);
+
+  gtk_widget_set_visible((GtkWidget *) midi_preferences->add_menu_button,
+			 FALSE);
+  
   midi_preferences->add = NULL;  
 }
 
@@ -224,11 +272,6 @@ ags_midi_preferences_connect(AgsConnectable *connectable)
   }
 
   midi_preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-  
-  if(midi_preferences->add != NULL){
-    g_signal_connect(G_OBJECT(midi_preferences->add), "clicked",
-		     G_CALLBACK(ags_midi_preferences_add_callback), midi_preferences);
-  }
 }
 
 void
@@ -243,14 +286,6 @@ ags_midi_preferences_disconnect(AgsConnectable *connectable)
   }
 
   midi_preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-
-  if(midi_preferences->add != NULL){
-    g_object_disconnect(G_OBJECT(midi_preferences->add),
-			"any_signal::clicked",
-			G_CALLBACK(ags_midi_preferences_add_callback),
-			midi_preferences,
-			NULL);
-  }
 }
 
 void

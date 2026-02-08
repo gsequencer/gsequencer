@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -348,6 +348,12 @@ ags_file_widget_class_init(AgsFileWidgetClass *file_widget)
   g_object_class_install_property(gobject,
 				  PROP_FILE_MAGIC_EXECUTABLE,
 				  param_spec);
+
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) file_widget;
+  
+  gtk_widget_class_set_css_name(widget,
+				"ags-file-widget");  
 
   /* AgsFileWidget */
   file_widget->refresh = ags_file_widget_real_refresh;

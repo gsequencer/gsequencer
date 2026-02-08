@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,6 +53,9 @@ struct _AgsAudioPreferences
   GList *soundcard_editor;
   
   GtkBox *soundcard_editor_box;
+  
+  GtkMenuButton *add_menu_button;
+  GMenuModel *add_menu_button_model;
   
   GtkButton *add;
   

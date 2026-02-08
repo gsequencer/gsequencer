@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,17 +44,12 @@ ags_preferences_notebook_switch_page_callback(GtkNotebook *notebook,
     return;
   }
   
+  gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add_menu_button);
+  gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add_menu_button);
+  
   if(page_n == 0){
-    gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
-
-    gtk_widget_show((GtkWidget *) preferences->audio_preferences->add);
+    gtk_widget_show((GtkWidget *) preferences->audio_preferences->add_menu_button);
   }else if(page_n == 1){
-    gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
-
-    gtk_widget_show((GtkWidget *) preferences->midi_preferences->add);
-  }else{
-    gtk_widget_hide((GtkWidget *) preferences->audio_preferences->add);
-
-    gtk_widget_hide((GtkWidget *) preferences->midi_preferences->add);
+    gtk_widget_show((GtkWidget *) preferences->midi_preferences->add_menu_button);
   }
 }

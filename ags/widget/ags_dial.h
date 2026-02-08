@@ -100,6 +100,8 @@ struct _AgsDial
   gdouble gravity_y;
   gdouble current_x;
   gdouble current_y;
+
+  GtkBox *box;
 };
 
 struct _AgsDialClass

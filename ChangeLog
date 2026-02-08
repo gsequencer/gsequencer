@@ -1,3 +1,22 @@
+ags (8.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_jack_server_register_soundcard_with_params()
+	* implemented ags_pulse_server_register_soundcard_with_params()
+
+ags (8.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored audio and MIDI preferences
+	* improved Core Audio soundcard configuration
+	* improved Core Audio sequencer configuration
+	* improved ags_core_audio_port_register() MIDI setup
+	* improved ags_pitch_2x_alias_util.c check division by 0.0
+	* improved ags_pitch_4x_alias_util.c check division by 0.0
+	* improved ags_pitch_16x_alias_util.c check division by 0.0
+	* added css-name of widgets for ags/widget/*
+	* added user's handbook content, missing new synths and screenshots
+
 ags (8.2.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

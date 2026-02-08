@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,8 +45,6 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 			    "core-audio",
 			    11)){
       ags_soundcard_editor_load_core_audio_card(soundcard_editor);
-
-      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "pulse",
 				  6)){
@@ -54,32 +52,22 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 			       0);
 
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
-
-      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "jack",
 				  5)){
       ags_soundcard_editor_load_jack_card(soundcard_editor);
-
-      gtk_widget_show((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "wasapi",
 				  6)){      
       ags_soundcard_editor_load_wasapi_card(soundcard_editor);
-
-      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
-
-      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
-
-      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }
   }
 }
@@ -158,19 +146,10 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 }
 
 void
-ags_soundcard_editor_add_port_callback(GtkWidget *button,
-				       AgsSoundcardEditor *soundcard_editor)
+ags_soundcard_editor_capability_changed_callback(GtkComboBox *combo,
+						 AgsSoundcardEditor *soundcard_editor)
 {
-  ags_soundcard_editor_add_port(soundcard_editor,
-				NULL);
-}
-
-void
-ags_soundcard_editor_remove_port_callback(GtkWidget *button,
-					  AgsSoundcardEditor *soundcard_editor)
-{
-  ags_soundcard_editor_remove_port(soundcard_editor,
-				   gtk_combo_box_text_get_active_text(soundcard_editor->card));
+  ags_soundcard_editor_load_core_audio_card(soundcard_editor);
 }
 
 void

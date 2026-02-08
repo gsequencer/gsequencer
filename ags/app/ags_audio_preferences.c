@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -152,16 +152,30 @@ ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *applicab
 void
 ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 {
+  AgsPreferences *preferences;
+
   GtkScrolledWindow *scrolled_window;
   GtkGrid *grid;
   GtkBox *hbox;
   GtkLabel *label;
 
-  AgsConfig *config;
+  GMenuModel *add_popup;
+  GMenu *menu;
+  GMenuItem *item;
   
-  gchar *str;  
+  AgsConfig *config;
+  AgsApplicationContext *application_context;
+  
+  GSimpleActionGroup *action_group;
+  GSimpleAction *action;
+  
+  gchar *str;
+  
+  application_context = ags_application_context_get_instance();
 
   config = ags_config_get_instance();
+  
+  preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
   
   gtk_orientable_set_orientation(GTK_ORIENTABLE(audio_preferences),
 				 GTK_ORIENTATION_VERTICAL);
@@ -175,6 +189,28 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   audio_preferences->flags = 0;
   audio_preferences->connectable_flags = 0;
 
+  /* action group */
+  action_group = g_simple_action_group_new();
+  gtk_widget_insert_action_group((GtkWidget *) preferences,
+				 "audio_preferences",
+				 G_ACTION_GROUP(action_group));
+
+  /* add output soundcard */
+  action = g_simple_action_new("add_output_soundcard",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_audio_preferences_add_output_soundcard_callback), audio_preferences);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
+  /* add input soundcard */
+  action = g_simple_action_new("add_input_soundcard",
+			       NULL);
+  g_signal_connect(action, "activate",
+		   G_CALLBACK(ags_audio_preferences_add_input_soundcard_callback), audio_preferences);
+  g_action_map_add_action(G_ACTION_MAP(action_group),
+			  G_ACTION(action));
+  
   /* scrolled window */
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new();
 
@@ -203,6 +239,26 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 				(GtkWidget *) audio_preferences->soundcard_editor_box);
 
   /*  */
+  audio_preferences->add_menu_button = (GtkMenuButton *) gtk_menu_button_new();
+  gtk_box_prepend(preferences->action_area,
+		  (GtkWidget *) audio_preferences->add_menu_button);
+  
+  menu = (GMenu *) g_menu_new();
+  add_popup = G_MENU_MODEL(menu);
+
+  item = g_menu_item_new(i18n("add output soundcard"),
+			 "audio_preferences.add_output_soundcard");
+  g_menu_append_item(menu,
+		     item);
+  
+  item = g_menu_item_new(i18n("add input soundcard"),
+			 "audio_preferences.add_input_soundcard");
+  g_menu_append_item(menu,
+		     item);
+  
+  gtk_menu_button_set_menu_model(audio_preferences->add_menu_button,
+				 add_popup);
+  
   audio_preferences->add = NULL;
   
   /*  */
@@ -350,12 +406,7 @@ ags_audio_preferences_connect(AgsConnectable *connectable)
   }
 
   audio_preferences->connectable_flags |= AGS_CONNECTABLE_CONNECTED;
-  
-  if(audio_preferences->add != NULL){
-    g_signal_connect(G_OBJECT(audio_preferences->add), "clicked",
-		     G_CALLBACK(ags_audio_preferences_add_callback), audio_preferences);
-  }
-      
+        
   /* experimental */
   if(audio_preferences->start_jack != NULL){
     g_signal_connect(G_OBJECT(audio_preferences->start_jack), "clicked",
@@ -380,14 +431,6 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
   }
 
   audio_preferences->connectable_flags &= (~AGS_CONNECTABLE_CONNECTED);
-
-  if(audio_preferences->add != NULL){
-    g_object_disconnect(G_OBJECT(audio_preferences->add),
-			"any_signal::clicked",
-			G_CALLBACK(ags_audio_preferences_add_callback),
-			audio_preferences,
-			NULL);
-  }
 
   /* experimental */
   if(audio_preferences->start_jack != NULL){

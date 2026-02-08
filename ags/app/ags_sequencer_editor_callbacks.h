@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,11 +38,6 @@ void ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 
 void ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 						AgsSequencerEditor *sequencer_editor);
-
-void ags_sequencer_editor_add_source_callback(GtkWidget *button,
-					      AgsSequencerEditor *sequencer_editor);
-void ags_sequencer_editor_remove_source_callback(GtkWidget *button,
-						 AgsSequencerEditor *sequencer_editor);
 
 G_END_DECLS
 

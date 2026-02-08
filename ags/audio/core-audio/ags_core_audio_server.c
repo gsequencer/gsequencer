@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,10 @@
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
+
+#include <ags/config.h>
+
+#include <ags/config.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_devin.h>
@@ -1080,7 +1084,8 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
   AgsCoreAudioDevin *core_audio_devin;
 
   AgsApplicationContext *application_context;
-
+  AgsConfig *config;
+  
   GObject *soundcard;
 
 #ifdef AGS_WITH_CORE_AUDIO
@@ -1089,6 +1094,13 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
   gpointer graph;
 #endif
 
+  GList *start_card_id, *card_id;
+  GList *start_card_name, *card_name;
+
+  gchar *soundcard_group;
+  gchar *str_card_id, *str_card_name;
+  gchar *capability;
+  gchar *conf_device;
   gchar *str;  
 
   guint n_soundcards;
@@ -1106,6 +1118,9 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 
   application_context = ags_application_context_get_instance();
 
+  /* config */
+  config = ags_config_get_instance();
+  
   /* get core audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
@@ -1133,6 +1148,8 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     
     ags_core_audio_client_open((AgsCoreAudioClient *) default_client,
 			       "ags-default-client");
+    ags_core_audio_client_activate(default_client);
+    
     initial_set = TRUE;    
   }
 
@@ -1174,22 +1191,113 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
       }
     }
   }
+
+  soundcard_group = g_strdup("soundcard");
+
+  conf_device = NULL;
+  
+  for(i = 0; ; i++){
+    gchar *backend;
+    gchar *device;
+
+    if(!g_key_file_has_group(config->key_file,
+			     soundcard_group)){
+      if(i == 0){
+	g_free(soundcard_group);    
+	soundcard_group = g_strdup_printf("%s-%d",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+    
+    backend = ags_config_get_value(config,
+				   soundcard_group,
+				   "backend");
+
+    capability = ags_config_get_value(config,
+				      soundcard_group,
+				      "capability");
+
+    is_output = TRUE;
+
+    if(capability != NULL &&
+       !g_ascii_strncasecmp(capability,
+			    "capture",
+			    8)){
+      is_output = FALSE;
+    }
+
+    /* device */
+    device = ags_config_get_value(config,
+				  soundcard_group,
+				  "device");
+
+    if(backend != NULL){
+      if(!g_ascii_strncasecmp(backend,
+			      "core-audio",
+			      10)){
+	conf_device = device;
+	
+	break;
+      }
+    }
+    
+    g_free(soundcard_group);    
+    soundcard_group = g_strdup_printf("%s-%d",
+				      AGS_CONFIG_SOUNDCARD,
+				      i);
+  }
+
+  g_free(soundcard_group);
   
   /* the soundcard */
   if(is_output){
     core_audio_devout = ags_core_audio_devout_new();
     soundcard = (GObject *) core_audio_devout;
 
-    str = g_strdup_printf("ags-core-audio-devout-%d",
-			  n_soundcards);
+    start_card_id = NULL;
+    start_card_name = NULL;
+
+    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
+			     &start_card_id, &start_card_name);
     
+    card_id = start_card_id;
+    card_name = start_card_name;
+
+    while(card_id != NULL){
+      if(!g_ascii_strcasecmp(card_name->data, conf_device)){
+	break;
+      }
+      
+      card_id = card_id->next;
+      card_name = card_name->next;
+    }
+
+    if(card_id == NULL){
+      card_id = start_card_id;
+      card_name = start_card_name;
+    }
+    
+    str_card_id = NULL;
+    str_card_name = NULL;
+
+    if(card_id != NULL){
+      str_card_id = card_id->data;
+      str_card_name = card_name->data;
+    }
+  
     g_object_set(AGS_CORE_AUDIO_DEVOUT(core_audio_devout),
 		 "core-audio-client", default_client,
-		 "device", str,
 		 "format", format,
 		 NULL);
-    g_free(str);
-        
+
+    ags_soundcard_set_device(AGS_SOUNDCARD(core_audio_devout),
+			     str_card_name);
+    
     /* register ports */      
     core_audio_port = ags_core_audio_port_new((GObject *) default_client);
 
@@ -1202,9 +1310,6 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     ags_core_audio_port_set_samplerate(core_audio_port,
 				       samplerate);
     
-    str = g_strdup_printf("ags-soundcard%d",
-			  n_soundcards);
-    
     g_object_set(core_audio_port,
 		 "core-audio-device", core_audio_devout,
 		 NULL);
@@ -1216,11 +1321,11 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 		 NULL);
     
     core_audio_devout->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
-    core_audio_devout->port_name[0] = g_strdup(str);
+    core_audio_devout->port_name[0] = g_strdup(str_card_id);
     core_audio_devout->port_name[1] = NULL;
     
     ags_core_audio_port_register(core_audio_port,
-				 str,
+				 str_card_id,
 				 TRUE, FALSE,
 				 TRUE);
 
@@ -1236,20 +1341,57 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     core_audio_server->n_soundcards += 1;
 
     g_rec_mutex_unlock(core_audio_server_mutex);
+
+    g_list_free_full(start_card_id,
+		     (GDestroyNotify) g_free);
+
+    g_list_free_full(start_card_name,
+		     (GDestroyNotify) g_free);
   }else{
     core_audio_devin = ags_core_audio_devin_new();
     soundcard = (GObject *) core_audio_devin;
 
-    str = g_strdup_printf("ags-core-audio-devin-%d",
-			  n_soundcards);
+    start_card_id = NULL;
+    start_card_name = NULL;
+
+    ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devin),
+			     &start_card_id, &start_card_name);
     
+    card_id = start_card_id;
+    card_name = start_card_name;
+
+    if(conf_device != NULL){
+      while(card_id != NULL){
+	if(!g_ascii_strcasecmp(card_name->data, conf_device)){
+	  break;
+	}
+      
+	card_id = card_id->next;
+	card_name = card_name->next;
+      }
+    }
+    
+    if(card_id == NULL){
+      card_id = start_card_id;
+      card_name = start_card_name;
+    }
+
+    str_card_id = NULL;
+    str_card_name = NULL;
+
+    if(card_id != NULL){
+      str_card_id = card_id->data;
+      str_card_name = card_name->data;
+    }
+
     g_object_set(AGS_CORE_AUDIO_DEVIN(core_audio_devin),
 		 "core-audio-client", default_client,
-		 "device", str,
 		 "format", format,
-		 NULL);
-    g_free(str);
-        
+		 NULL);    
+
+    ags_soundcard_set_device(AGS_SOUNDCARD(core_audio_devin),
+			     str_card_name);
+    
     /* register ports */      
     core_audio_port = ags_core_audio_port_new((GObject *) default_client);
 
@@ -1262,9 +1404,6 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     ags_core_audio_port_set_samplerate(core_audio_port,
 				       samplerate);
 
-    str = g_strdup_printf("ags-soundcard%d",
-			  n_soundcards);
-    
     g_object_set(core_audio_port,
 		 "core-audio-device", core_audio_devin,
 		 NULL);
@@ -1276,11 +1415,11 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
 		 NULL);
     
     core_audio_devin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
-    core_audio_devin->port_name[0] = g_strdup(str);
+    core_audio_devin->port_name[0] = g_strdup(str_card_id);
     core_audio_devin->port_name[1] = NULL;
     
     ags_core_audio_port_register(core_audio_port,
-				 str,
+				 str_card_id,
 				 TRUE, FALSE,
 				 FALSE);
 
@@ -1296,6 +1435,12 @@ ags_core_audio_server_register_soundcard_with_params(AgsSoundServer *sound_serve
     core_audio_server->n_soundcards += 1;
 
     g_rec_mutex_unlock(core_audio_server_mutex);
+    
+    g_list_free_full(start_card_id,
+		     (GDestroyNotify) g_free);
+
+    g_list_free_full(start_card_name,
+		     (GDestroyNotify) g_free);
   }
   
   return(soundcard);
@@ -1330,7 +1475,7 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
 	       NULL);
 
   if(default_client == NULL){
-    g_warning("GSequencer - no CoreAudio client");
+    g_warning("GSequencer - no Core Audio client");
     
     return;
   }
@@ -1345,7 +1490,7 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
     while(list != NULL){
       ags_core_audio_port_unregister(list->data);
       ags_core_audio_client_remove_port(default_client,
-				   list->data);
+					list->data);
     
       list = list->next;
     }
@@ -1362,7 +1507,7 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
     while(list != NULL){
       ags_core_audio_port_unregister(list->data);
       ags_core_audio_client_remove_port(default_client,
-				   list->data);
+					list->data);
     
       list = list->next;
     }
@@ -1417,6 +1562,9 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
   AgsCoreAudioMidiin *core_audio_midiin;
 
   AgsApplicationContext *application_context;
+  AgsConfig *config;
+  
+  GObject *sequencer;
 
 #ifdef AGS_WITH_CORE_AUDIO
   AUGraph *graph;
@@ -1424,15 +1572,25 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
   gpointer graph;
 #endif
 
-  gchar *str;
+  GList *start_card_id, *card_id;
+  GList *start_card_name, *card_name;
+  
+  gchar *sequencer_group;
+  gchar *str_card_id, *str_card_name;
+  gchar *capability;
+  gchar *conf_device;
+  gchar *str;  
 
   guint n_sequencers;
+  gboolean initial_set;
+  guint i;
 
   GRecMutex *core_audio_server_mutex;
   GRecMutex *core_audio_client_mutex;
   
   if(is_output){
     g_warning("GSequencer - MIDI output not implemented");
+    
     return(NULL);
   }
   
@@ -1440,9 +1598,15 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
 
   application_context = ags_application_context_get_instance();
 
+  /* config */
+  config = ags_config_get_instance();
+  
   /* get core-audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
+    /* the default client */
+  initial_set = FALSE;
+  
   /* get some fields */
   g_rec_mutex_lock(core_audio_server_mutex);
 
@@ -1452,17 +1616,10 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
   
   g_rec_mutex_unlock(core_audio_server_mutex);
 
-  core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(default_client);
-
-#ifdef AGS_WITH_CORE_AUDIO
-  if(n_sequencers >= MIDIGetNumberOfDestinations()){
-    return(NULL);
-  }
-#endif
-  
   /* the default client */
   if(default_client == NULL){
     default_client = ags_core_audio_client_new((GObject *) core_audio_server);
+    
     g_object_set(core_audio_server,
 		 "default-core-audio-client", default_client,
 		 NULL);
@@ -1470,8 +1627,14 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
 				     (GObject *) default_client);
     
     ags_core_audio_client_open((AgsCoreAudioClient *) default_client,
-			       "ags-default-client");    
+			       "ags-default-client");
+    ags_core_audio_client_activate(default_client);
+    
+    initial_set = TRUE;    
   }
+
+  /* get core audio client mutex */
+  core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(default_client);
 
   /* get graph */
   g_rec_mutex_lock(core_audio_client_mutex);
@@ -1487,59 +1650,146 @@ ags_core_audio_server_register_sequencer_with_params(AgsSoundServer *sound_serve
   }
 #endif
   
-  core_audio_midiin = ags_core_audio_midiin_new();
+  sequencer = NULL;
 
-  str = g_strdup_printf("ags-core-audio-midiin-%d",
-			n_sequencers);
+  sequencer_group = g_strdup("sequencer");
 
-  g_object_set(AGS_CORE_AUDIO_MIDIIN(core_audio_midiin),
-	       "core-audio-client", default_client,
-	       "device", str,
-	       NULL);
-
-  g_free(str);
+  conf_device = NULL;
   
-  /* register sequencer */  
-  core_audio_port = ags_core_audio_port_new((GObject *) default_client);
-  core_audio_port->midi_port_number = n_sequencers;
-  g_object_set(core_audio_port,
-	       "core-audio-device", core_audio_midiin,
-	       NULL);
-  ags_core_audio_client_add_port(default_client,
-				 (GObject *) core_audio_port);
+  for(i = 0; ; i++){
+    gchar *backend;
+    gchar *device;
 
-  g_object_set(core_audio_midiin,
-	       "core-audio-port", core_audio_port,
-	       NULL);
+    if(!g_key_file_has_group(config->key_file,
+			     sequencer_group)){
+      if(i == 0){
+	g_free(sequencer_group);    
+	sequencer_group = g_strdup_printf("%s-%d",
+					  AGS_CONFIG_SEQUENCER,
+					  i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+    
+    backend = ags_config_get_value(config,
+				   sequencer_group,
+				   "backend");
 
-  str = g_strdup_printf("ags-sequencer%d",
-			n_sequencers);
+    /* device */
+    device = ags_config_get_value(config,
+				  sequencer_group,
+				  "device");
 
-#ifdef AGS_DEBUG
-  g_message("%s", str);
-#endif
+    if(backend != NULL){
+      if(!g_ascii_strncasecmp(backend,
+			      "core-midi",
+			      10)){
+	conf_device = device;
+	
+	break;
+      }
+    }
+    
+    g_free(sequencer_group);    
+    sequencer_group = g_strdup_printf("%s-%d",
+				      AGS_CONFIG_SEQUENCER,
+				      i);
+  }
 
-  core_audio_midiin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
-  core_audio_midiin->port_name[0] = g_strdup(str);
-  core_audio_midiin->port_name[1] = NULL;
+  g_free(sequencer_group);
   
-  ags_core_audio_port_register(core_audio_port,
-			       str,
-			       FALSE, TRUE,
-			       FALSE);
+  /* the sequencer */
+  if(!is_output){
+    core_audio_midiin = ags_core_audio_midiin_new();
+    sequencer = (GObject *) core_audio_midiin;
 
-  g_object_set(default_client,
-	       "device", core_audio_midiin,
-	       NULL);
+    start_card_id = NULL;
+    start_card_name = NULL;
 
-  /* increment n-sequencers */
-  g_rec_mutex_lock(core_audio_server_mutex);
+    ags_sequencer_list_cards(AGS_SEQUENCER(core_audio_midiin),
+			     &start_card_id, &start_card_name);
+    
+    card_id = start_card_id;
+    card_name = start_card_name;
 
-  core_audio_server->n_sequencers += 1;
+    if(conf_device != NULL){
+      while(card_id != NULL){
+	if(conf_device != NULL &&
+	   !g_ascii_strcasecmp(card_name->data, conf_device)){
+	  break;
+	}
+      
+	card_id = card_id->next;
+	card_name = card_name->next;
+      }
+    }
 
-  g_rec_mutex_unlock(core_audio_server_mutex);
+    if(card_id == NULL){
+      card_id = start_card_id;
+      card_name = start_card_name;
+    }
+
+    str_card_id = NULL;
+    str_card_name = NULL;
+
+    if(card_id != NULL){
+      str_card_id = card_id->data;
+      str_card_name = card_name->data;
+    }
+    
+    g_object_set(AGS_CORE_AUDIO_MIDIIN(core_audio_midiin),
+		 "core-audio-client", default_client,
+		 NULL);
+
+    
+    ags_sequencer_set_device(AGS_SEQUENCER(core_audio_midiin),
+			     str_card_name);
+    
+    /* register ports */      
+    core_audio_port = ags_core_audio_port_new((GObject *) default_client);
+
+    g_object_set(core_audio_port,
+		 "core-audio-device", core_audio_midiin,
+		 NULL);
+    
+    ags_core_audio_client_add_port(default_client,
+				   (GObject *) core_audio_port);
+
+    g_object_set(core_audio_midiin,
+		 "core-audio-port", core_audio_port,
+		 NULL);
+    
+    core_audio_midiin->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
+    core_audio_midiin->port_name[0] = g_strdup(str_card_id);
+    core_audio_midiin->port_name[1] = NULL;
+    
+    ags_core_audio_port_register(core_audio_port,
+				 str_card_id,
+				 FALSE, TRUE,
+				 FALSE);
+
+    g_object_set(default_client,
+		 "device", core_audio_midiin,
+		 NULL);
+
+    /* increment n-sequencers */
+    g_rec_mutex_lock(core_audio_server_mutex);
+
+    core_audio_server->n_sequencers += 1;
+
+    g_rec_mutex_unlock(core_audio_server_mutex);
+    
+    g_list_free_full(start_card_id,
+		     (GDestroyNotify) g_free);
+
+    g_list_free_full(start_card_name,
+		     (GDestroyNotify) g_free);
+  }
   
-  return((GObject *) core_audio_midiin);
+  return(sequencer);
 }
 
 void
@@ -1565,31 +1815,32 @@ ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
 	       NULL);
 
   if(default_client == NULL){
-    g_warning("GSequencer - no core audio client");
+    g_warning("GSequencer - no Core Audio client");
     
     return;
   }
 
-  g_object_get(sequencer,
-	       "core-audio-port", &list_start,
-	       NULL);
+  if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
+    g_object_get(sequencer,
+		 "core-audio-port", &list_start,
+		 NULL);
 
-  list = list_start;
+    list = list_start;
 
-  while(list != NULL){
-    ags_core_audio_port_unregister(list->data);
-    ags_core_audio_client_remove_port(default_client,
-				list->data);
+    while(list != NULL){
+      ags_core_audio_port_unregister(list->data);
+      ags_core_audio_client_remove_port(default_client,
+					list->data);
     
+      list = list->next;
+    }
 
-    list = list->next;
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
-
-  g_list_free_full(list_start,
-		   g_object_unref);
-
+  
   ags_core_audio_client_remove_device(default_client,
-				sequencer);
+				      sequencer);
   
   g_object_get(default_client,
 	       "port", &port,
@@ -1628,16 +1879,32 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
   AgsCoreAudioPort *core_audio_port;
 
   AgsApplicationContext *application_context;
-
+  AgsConfig *config;
+  
+  GObject *soundcard;
+  
 #ifdef AGS_WITH_CORE_AUDIO
   AUGraph *graph;
 #else
   gpointer graph;
 #endif
 
-  gchar *str;
-  
+  GList *start_card_id, *card_id;
+  GList *start_card_name, *card_name;
+
+  gchar *soundcard_group;
+  gchar *str_card_id, *str_card_name;
+  gchar *capability;
+  gchar *conf_device;
+  gchar *str;  
+
   guint n_soundcards;
+  guint pcm_channels;
+  guint buffer_size;
+  AgsSoundcardFormat format;
+  guint samplerate;
+  gboolean initial_set;
+  gboolean is_output;
   guint i;
   
   GRecMutex *core_audio_server_mutex;
@@ -1649,6 +1916,9 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
 
   application_context = ags_application_context_get_instance();
 
+  /* config */
+  config = ags_config_get_instance();
+  
   /* get core audio server mutex */
   core_audio_server_mutex = AGS_CORE_AUDIO_SERVER_GET_OBJ_MUTEX(core_audio_server);
 
@@ -1673,6 +1943,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
     
     ags_core_audio_client_open((AgsCoreAudioClient *) core_audio_server->default_client,
 			       "ags-default-client");
+    ags_core_audio_client_activate(default_client);
   }
 
   /* get core audio client mutex */
@@ -1691,13 +1962,108 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
     g_warning("ags_core_audio_server.c - can't open core audio client");
   }
 #endif
+  soundcard_group = g_strdup("soundcard");
+
+  conf_device = NULL;
+  
+  for(i = 0; ; i++){
+    gchar *backend;
+    gchar *device;
+
+    if(!g_key_file_has_group(config->key_file,
+			     soundcard_group)){
+      if(i == 0){
+	g_free(soundcard_group);    
+	soundcard_group = g_strdup_printf("%s-%d",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+    
+    backend = ags_config_get_value(config,
+				   soundcard_group,
+				   "backend");
+
+    capability = ags_config_get_value(config,
+				      soundcard_group,
+				      "capability");
+
+    is_output = TRUE;
+
+    if(capability != NULL &&
+       !g_ascii_strncasecmp(capability,
+			    "capture",
+			    8)){
+      is_output = FALSE;
+    }
+
+    /* device */
+    device = ags_config_get_value(config,
+				  soundcard_group,
+				  "device");
+
+    if(backend != NULL){
+      if(!g_ascii_strncasecmp(backend,
+			      "core-audio",
+			      10)){
+	conf_device = device;
+	
+	break;
+      }
+    }
+    
+    g_free(soundcard_group);    
+    soundcard_group = g_strdup_printf("%s-%d",
+				      AGS_CONFIG_SOUNDCARD,
+				      i);
+  }
+
+  g_free(soundcard_group);
   
   /* the soundcard */
   core_audio_devout = ags_core_audio_devout_new();
+
+  start_card_id = NULL;
+  start_card_name = NULL;
+
+  ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
+			   &start_card_id, &start_card_name);
+    
+  card_id = start_card_id;
+  card_name = start_card_name;
+
+  while(card_id != NULL){
+    if(!g_ascii_strcasecmp(card_name->data, conf_device)){
+      break;
+    }
+      
+    card_id = card_id->next;
+    card_name = card_name->next;
+  }
+
+  if(card_id == NULL){
+    card_id = start_card_id;
+    card_name = start_card_name;
+  }  
+
+  str_card_id = NULL;
+  str_card_name = NULL;
+
+  if(card_id != NULL){
+    str_card_id = card_id->data;
+    str_card_name = card_name->data;
+  }
+  
   g_object_set(AGS_CORE_AUDIO_DEVOUT(core_audio_devout),
 	       "core-audio-client", default_client,
-	       "device", "ags-default-devout",
 	       NULL);
+  
+  ags_soundcard_set_device(AGS_SOUNDCARD(core_audio_devout),
+			   str_card_name);
   
   /* register ports */
   core_audio_port = ags_core_audio_port_new((GObject *) default_client);
@@ -1710,23 +2076,15 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
   g_object_set(core_audio_devout,
 	       "core-audio-port", core_audio_port,
 	       NULL);
-
-  str = g_strdup_printf("ags-default-soundcard");
-
-#ifdef AGS_DEBUG
-  g_message("%s", str);
-#endif    
   
   core_audio_devout->port_name = (gchar **) g_malloc(2 * sizeof(gchar *));
-  core_audio_devout->port_name[0] = g_strdup(str);
+  core_audio_devout->port_name[0] = g_strdup(str_card_id);
   core_audio_devout->port_name[1] = NULL;
   
   ags_core_audio_port_register(core_audio_port,
-			       str,
+			       str_card_id,
 			       TRUE, FALSE,
 			       TRUE);
-
-  g_free(str);
 
   g_object_set(default_client,
 	       "device", core_audio_devout,
@@ -2009,7 +2367,9 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 
   GRecMutex *core_audio_client_mutex;
   
-  if(!AGS_IS_CORE_AUDIO_SERVER(core_audio_server)){
+  if(!AGS_IS_CORE_AUDIO_SERVER(core_audio_server) ||
+     ags_core_audio_client_test_flags((AgsCoreAudioClient *) core_audio_server->default_client,
+				      AGS_CORE_AUDIO_CLIENT_ACTIVATED)){
     return;
   }
 
@@ -2027,7 +2387,7 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 
     /* open */
     ags_core_audio_client_open((AgsCoreAudioClient *) client->data,
-			 client_name);
+			       client_name);
     ags_core_audio_client_activate(client->data);
 
     g_free(client_name);

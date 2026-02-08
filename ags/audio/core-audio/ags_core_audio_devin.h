@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,6 +24,19 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
+
+#include <ags/ags_api_config.h>
+
+#if defined(AGS_WITH_CORE_AUDIO)  
+#include <AudioToolbox/AudioToolbox.h>
+
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <AudioUnit/AudioComponent.h>
+
+#include <Foundation/Foundation.h>
+#include <CoreFoundation/CoreFoundation.h>
+#endif
 
 G_BEGIN_DECLS
 
@@ -194,6 +207,15 @@ struct _AgsCoreAudioDevin
   guint note_256th_attack_of_16th_pulse_position;
 
   gdouble note_256th_delay_counter;
+
+  gchar *device_id;
+  gchar *device_name;
+
+#if defined(AGS_WITH_CORE_AUDIO)
+  AudioDeviceID audio_device;
+#else
+  guint32 audio_device;
+#endif
 };
 
 struct _AgsCoreAudioDevinClass

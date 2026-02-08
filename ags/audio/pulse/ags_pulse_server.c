@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -77,6 +77,9 @@ GList* ags_pulse_server_get_sequencer(AgsSoundServer *sound_server,
 				      gchar *client_uuid);
 GObject* ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 					     gboolean is_output);
+GObject* ags_pulse_server_register_soundcard_with_params(AgsSoundServer *sound_server,
+							 gboolean is_output,
+							 gchar **param_strv, GValue *param_value);
 void ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
 					   GObject *soundcard);
 GObject* ags_pulse_server_register_sequencer(AgsSoundServer *sound_server,
@@ -274,6 +277,7 @@ ags_pulse_server_sound_server_interface_init(AgsSoundServerInterface *sound_serv
   sound_server->set_sequencer = ags_pulse_server_set_sequencer;
   sound_server->get_sequencer = ags_pulse_server_get_sequencer;
   sound_server->register_soundcard = ags_pulse_server_register_soundcard;
+  sound_server->register_soundcard_with_params = ags_pulse_server_register_soundcard_with_params;
   sound_server->unregister_soundcard = ags_pulse_server_unregister_soundcard;
   sound_server->register_sequencer = ags_pulse_server_register_sequencer;
   sound_server->unregister_sequencer = ags_pulse_server_unregister_sequencer;
@@ -1058,6 +1062,20 @@ GObject*
 ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 				    gboolean is_output)
 {
+  GObject *soundcard;
+  
+  soundcard = ags_sound_server_register_soundcard_with_params(sound_server,
+							      is_output,
+							      NULL, NULL);
+
+  return(soundcard);
+}
+
+GObject*
+ags_pulse_server_register_soundcard_with_params(AgsSoundServer *sound_server,
+						gboolean is_output,
+						gchar **param_strv, GValue *param_value)
+{
   AgsPulseServer *pulse_server;
   AgsPulseClient *default_client;
   AgsPulsePort *pulse_port;
@@ -1065,6 +1083,7 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
   AgsPulseDevin *pulse_devin;
 
   AgsApplicationContext *application_context;
+  AgsConfig *config;
 
   GObject *soundcard;
   
@@ -1074,9 +1093,17 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
   gpointer context;
 #endif
 
-  gchar *str;  
+  gchar *soundcard_group;
+  gchar *str_card_id, *str_card_name;
+  gchar *capability;
+  gchar *conf_device;
+  gchar *str;   
 
   guint n_soundcards;
+  guint pcm_channels;
+  guint buffer_size;
+  AgsSoundcardFormat format;
+  guint samplerate;
   gboolean initial_set;
   guint i;  
 
@@ -1087,6 +1114,9 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
   application_context= ags_application_context_get_instance();
 
+  /* config */
+  config = ags_config_get_instance();
+  
   /* get pulse server mutex */
   pulse_server_mutex = AGS_PULSE_SERVER_GET_OBJ_MUTEX(pulse_server);
 
@@ -1143,7 +1173,89 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   soundcard = NULL;
+  
+  pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
 
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_FLOAT;
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  if(param_strv != NULL){
+    for(i = 0; i < 5 && param_strv[i] != NULL; i++){
+      if(!g_ascii_strncasecmp(param_strv[i], "pcm-channels", 12)){
+	pcm_channels = g_value_get_uint(param_value + i);
+      }else if(!g_ascii_strncasecmp(param_strv[i], "buffer-size", 11)){
+	buffer_size = g_value_get_uint(param_value + i);
+      }else if(!g_ascii_strncasecmp(param_strv[i], "format", 6)){
+	format = g_value_get_uint(param_value + i);
+      }else if(!g_ascii_strncasecmp(param_strv[i], "samplerate", 10)){
+	samplerate = g_value_get_uint(param_value + i);
+      }
+    }
+  }
+
+  soundcard_group = g_strdup("soundcard");
+
+  conf_device = NULL;
+  
+  for(i = 0; ; i++){
+    gchar *backend;
+    gchar *device;
+
+    if(!g_key_file_has_group(config->key_file,
+			     soundcard_group)){
+      if(i == 0){
+	g_free(soundcard_group);    
+	soundcard_group = g_strdup_printf("%s-%d",
+					  AGS_CONFIG_SOUNDCARD,
+					  i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+    
+    backend = ags_config_get_value(config,
+				   soundcard_group,
+				   "backend");
+
+    capability = ags_config_get_value(config,
+				      soundcard_group,
+				      "capability");
+
+    is_output = TRUE;
+
+    if(capability != NULL &&
+       !g_ascii_strncasecmp(capability,
+			    "capture",
+			    8)){
+      is_output = FALSE;
+    }
+
+    /* device */
+    device = ags_config_get_value(config,
+				  soundcard_group,
+				  "device");
+
+    if(backend != NULL){
+      if(!g_ascii_strncasecmp(backend,
+			      "core-audio",
+			      10)){
+	conf_device = device;
+	
+	break;
+      }
+    }
+    
+    g_free(soundcard_group);    
+    soundcard_group = g_strdup_printf("%s-%d",
+				      AGS_CONFIG_SOUNDCARD,
+				      i);
+  }
+
+  g_free(soundcard_group);
+  
   /* the soundcard */
   if(is_output){
     pulse_devout = ags_pulse_devout_new();
