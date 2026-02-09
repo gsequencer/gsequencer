@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -383,9 +383,31 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_real_load_defaults(AgsConfig *config)
 {
-
-  GRecMutex *config_mutex;
+#if defined(AGS_WITH_CORE_AUDIO)
+  AudioDeviceID *audio_devices;
   
+  NSString *device_uid = @"";
+
+  AudioObjectPropertyAddress devices_property_address;
+  AudioObjectPropertyAddress streams_property_address;
+  
+  struct AudioStreamBasicDescription stream_desc;
+#endif
+  
+  gchar *device;
+    
+#if defined(AGS_WITH_CORE_AUDIO)  
+  int device_count;
+  int stream_count;
+  int is_mic;
+  int is_speaker;
+  UInt32 prop_size;
+  int i;
+  OSStatus error;
+#endif
+  
+  GRecMutex *config_mutex;
+ 
   config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* load defaults */
@@ -408,617 +430,701 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", NULL);
 #elif defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "core-audio");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-core-audio-devout-0");
+
+  device = NULL;
+
+  devices_property_address.mSelector = kAudioHardwarePropertyDevices;
+  devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
+  devices_property_address.mElement = kAudioObjectPropertyElementMain;
+
+  streams_property_address.mSelector = kAudioDevicePropertyStreams;
+  streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
+
+  error = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size);
+  
+  if(error == noErr){
+    device_count = prop_size / sizeof(AudioDeviceID);
+    
+    audio_devices = (AudioDeviceID *) malloc(prop_size);
+    
+    error = AudioObjectGetPropertyData(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size, audio_devices);
+    
+    if(error == noErr){
+      for(i = 0; i < device_count; i++){
+	NSString *current_manufacturer, *current_name, *current_uid;
+	
+	prop_size = sizeof(CFStringRef);
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceManufacturerCFString;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_manufacturer);
+	
+	if(error != noErr){
+	  current_manufacturer = @"";
+	  
+	  //	  continue;
+	}
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceNameCFString;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_name);
+	
+	if(error != noErr){
+	  current_name = @"";
+
+	  //	  continue;
+	}
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceUID;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_uid);
+	
+	if(error != noErr){
+	  current_uid = @"";
+	  
+	  //	  continue;
+	}
+	
+	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
+	  device_uid = current_uid;
+	}
+
+	is_speaker = 0;
+
+	error = AudioObjectGetPropertyDataSize(audio_devices[i], 
+					       &streams_property_address, 
+					       0, 
+					       NULL, 
+					       &prop_size);
+	
+	stream_count = prop_size / sizeof(AudioStreamID);
+
+	if(stream_count > 0){
+	  is_speaker = YES;
+	}
+
+	//	g_message("found %s device: %s - %s <%s>", (is_speaker ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
+
+	if(is_speaker){
+	  device = g_strdup_printf("%s - %s", [current_manufacturer UTF8String], [current_name UTF8String]);
+
+	  break;
+	}
+      }
+    
+      free(audio_devices);
+    }
+  
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", device);
+
+    g_free(device);
 #elif defined(AGS_WITH_PULSE)
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
 #elif defined(AGS_WITH_ALSA)
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "alsa");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "default");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "alsa");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "default");
 #elif defined(AGS_WITH_OSS)
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "oss");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "/dev/dsp");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "oss");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "/dev/dsp");
 #endif
   
 #if defined(AGS_WITH_WASAPI)
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "512");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-buffer-size", "2048");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-share-mode", "exclusive");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "512");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-buffer-size", "2048");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "wasapi-share-mode", "exclusive");
 #elif defined(AGS_WITH_CORE_AUDIO)
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "8192");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "8192");
 
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 #else
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "8192");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "8192");
 
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+    ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 #endif
   
-  //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
-  //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
+    //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");
+    //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
 
-  ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense", "true");
-
-  g_rec_mutex_unlock(config_mutex);
-}
-
-/**
- * ags_config_load_defaults:
- * @config: the #AgsConfig
- *
- * Load configuration from default values.
- *
- * Since: 3.0.0
- */
-void
-ags_config_load_defaults(AgsConfig *config)
-{
-  g_return_if_fail(AGS_IS_CONFIG(config));
-
-  g_object_ref(G_OBJECT(config));
-  g_signal_emit(G_OBJECT(config),
-		config_signals[LOAD_DEFAULTS], 0);
-  g_object_unref(G_OBJECT(config));
-}
-
-/**
- * ags_config_load_from_file:
- * @config: the #AgsConfig
- * @filename: the configuration file
- *
- * Load configuration from @filename.
- *
- * Since: 3.0.0
- */
-void
-ags_config_load_from_file(AgsConfig *config, gchar *filename)
-{
-  GFile *file;
-
-  GRecMutex *config_mutex;
-
-  if(!AGS_IS_CONFIG(config)){
-    return;
-  }
-  
-  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
-
-  file = g_file_new_for_path(filename);
-
-  g_message("loading preferences for: %s", filename);
-
-  if(!g_file_query_exists(file,
-			  NULL)){
-    ags_config_load_defaults(config);
-  }else{
-    GKeyFile *key_file;
-
-    gchar **groups, **groups_start;
-    gchar **keys, **keys_start;
-    gchar *value;
-
-    GError *error;
-
-    g_rec_mutex_lock(config_mutex);
-
-    error = NULL;
-    
-    key_file = g_key_file_new();
-    g_key_file_load_from_file(key_file,
-			      filename,
-			      G_KEY_FILE_NONE,
-			      &error);
-
-    if(error != NULL){
-      g_warning("%s", error->message);
-
-      g_error_free(error);
-    }
-
-    groups =
-      groups_start = g_key_file_get_groups(key_file,
-					   NULL);
-
-    while(*groups != NULL){
-      keys =
-	keys_start = g_key_file_get_keys(key_file,
-					 *groups,
-					 NULL,
-					 NULL);
-
-      while(*keys != NULL){
-	value = g_key_file_get_value(key_file,
-				     *groups,
-				     *keys,
-				     NULL);
-	ags_config_set_value(config,
-			     *groups,
-			     *keys,
-			     value);
-	
-	keys++;
-      }
-
-      g_strfreev(keys_start);
-
-      groups++;
-    }
-
-    g_strfreev(groups_start);
-    g_key_file_unref(key_file);
+    ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense", "true");
 
     g_rec_mutex_unlock(config_mutex);
   }
 
-  g_object_unref(file);
-}
+  /**
+   * ags_config_load_defaults:
+   * @config: the #AgsConfig
+   *
+   * Load configuration from default values.
+   *
+   * Since: 3.0.0
+   */
+  void
+    ags_config_load_defaults(AgsConfig *config)
+  {
+    g_return_if_fail(AGS_IS_CONFIG(config));
 
-/**
- * ags_config_load_from_data:
- * @config: the #AgsConfig
- * @buffer: the data buffer
- * @buffer_length: the size of the buffer
- *
- * Read configuration in memory.
- *
- * Since: 3.0.0
- */
-void
-ags_config_load_from_data(AgsConfig *config,
-			  char *buffer, gsize buffer_length)
-{
-
-  GRecMutex *config_mutex;
-
-  if(!AGS_IS_CONFIG(config)){
-    return;
+    g_object_ref(G_OBJECT(config));
+    g_signal_emit(G_OBJECT(config),
+		  config_signals[LOAD_DEFAULTS], 0);
+    g_object_unref(G_OBJECT(config));
   }
-  
-  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
-  /* load from data */
-  //#ifdef AGS_DEBUG
-  g_message("loading preferences from data[0x%x]", (unsigned int) buffer);
-  //#endif
-  
-  if(buffer == NULL){
-    ags_config_load_defaults(config);
-  }else{
-    GKeyFile *key_file;
+  /**
+   * ags_config_load_from_file:
+   * @config: the #AgsConfig
+   * @filename: the configuration file
+   *
+   * Load configuration from @filename.
+   *
+   * Since: 3.0.0
+   */
+  void
+    ags_config_load_from_file(AgsConfig *config, gchar *filename)
+  {
+    GFile *file;
 
-    gchar **groups, **groups_start;
-    gchar **keys, **keys_start;
-    gchar *value;
+    GRecMutex *config_mutex;
 
-    GError *error;
-
-    g_rec_mutex_lock(config_mutex);
-
-    error = NULL;
-
-    key_file = g_key_file_new();
-    g_key_file_load_from_data(key_file,
-			      buffer,
-			      buffer_length,
-			      G_KEY_FILE_NONE,
-			      &error);
-
-    if(error != NULL){
-      g_warning("%s", error->message);
-
-      g_error_free(error);
+    if(!AGS_IS_CONFIG(config)){
+      return;
     }
-    
-    groups =
-      groups_start = g_key_file_get_groups(key_file,
-					   NULL);
-
-    while(*groups != NULL){
-      keys =
-	keys_start = g_key_file_get_keys(key_file,
-					 *groups,
-					 NULL,
-					 NULL);
-
-      while(*keys != NULL){
-	value = g_key_file_get_value(key_file,
-				     *groups,
-				     *keys,
-				     NULL);
-	ags_config_set_value(config,
-			     *groups,
-			     *keys,
-			     value);
-	
-	keys++;
-      }
-
-      g_strfreev(keys_start);
-
-      groups++;
-    }
-
-    g_strfreev(groups_start);
-    g_key_file_unref(key_file);
-
-    g_rec_mutex_unlock(config_mutex);
-  }
-}
-
-/**
- * ags_config_to_data:
- * @config: the #AgsConfig
- * @buffer: the data buffer
- * @buffer_length: the size of the buffer
- *
- * Save configuration.
- *
- * Since: 3.0.0
- */
-void
-ags_config_to_data(AgsConfig *config,
-		   char **buffer, gsize *buffer_length)
-{
-  gchar *data;
-  gsize length;
-
-  GError *error;
-
-  GRecMutex *config_mutex;
-
-  if(!AGS_IS_CONFIG(config)){
-    return;
-  }
   
-  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
+    config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
-  /* to data */
-  g_rec_mutex_lock(config_mutex);
+    file = g_file_new_for_path(filename);
 
-  error = NULL;
-  data = g_key_file_to_data(config->key_file,
-			    &length,
-			    &error);
+    g_message("loading preferences for: %s", filename);
 
-  if(error != NULL){
-    g_warning("%s", error->message);
-
-    g_error_free(error);
-  }
-
-  if(buffer != NULL){
-    *buffer = data;
-  }
-
-  if(buffer_length != NULL){
-    *buffer_length = length;
-  }
-
-  g_rec_mutex_unlock(config_mutex);
-}
-
-/**
- * ags_config_save:
- * @config: the #AgsConfig
- *
- * Save configuration.
- *
- * Since: 3.0.0
- */
-void
-ags_config_save(AgsConfig *config)
-{
-#if defined(AGS_W32API)
-  AgsApplicationContext *application_context;
-#else
-  struct passwd *pw;
-
-  uid_t uid;
-#endif
-  
-  gchar *path, *filename;
-  gchar *content;
-#if defined(AGS_W32API)
-  gchar *app_dir;
-#endif
-
-  gsize length;
-
-  GError *error;
-
-  GRecMutex *config_mutex;
-
-  if(!AGS_IS_CONFIG(config)){
-    return;
-  }
-  
-  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
-
-  /* save */
-  g_rec_mutex_lock(config_mutex);
-
-  /* open conf dir */
-#if defined(AGS_W32API)
-  app_dir = NULL;
-
-  application_context = ags_application_context_get_instance();
-
-  if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
-    app_dir = g_strndup(application_context->argv[0],
-			strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
-  }
-  
-  path = g_strdup_printf("%s\\etc\\gsequencer",
-			 g_get_current_dir());
-    
-  if(!g_file_test(path,
-		  G_FILE_TEST_IS_DIR)){
-    g_free(path);
-
-    if(g_path_is_absolute(app_dir)){
-      path = g_strdup_printf("%s\\%s",
-			     app_dir,
-			     "\\etc\\gsequencer");
+    if(!g_file_query_exists(file,
+			    NULL)){
+      ags_config_load_defaults(config);
     }else{
-      path = g_strdup_printf("%s\\%s\\%s",
-			     g_get_current_dir(),
-			     app_dir,
-			     "\\etc\\gsequencer");
+      GKeyFile *key_file;
+
+      gchar **groups, **groups_start;
+      gchar **keys, **keys_start;
+      gchar *value;
+
+      GError *error;
+
+      g_rec_mutex_lock(config_mutex);
+
+      error = NULL;
+    
+      key_file = g_key_file_new();
+      g_key_file_load_from_file(key_file,
+				filename,
+				G_KEY_FILE_NONE,
+				&error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	g_error_free(error);
+      }
+
+      groups =
+	groups_start = g_key_file_get_groups(key_file,
+					     NULL);
+
+      while(*groups != NULL){
+	keys =
+	  keys_start = g_key_file_get_keys(key_file,
+					   *groups,
+					   NULL,
+					   NULL);
+
+	while(*keys != NULL){
+	  value = g_key_file_get_value(key_file,
+				       *groups,
+				       *keys,
+				       NULL);
+	  ags_config_set_value(config,
+			       *groups,
+			       *keys,
+			       value);
+	
+	  keys++;
+	}
+
+	g_strfreev(keys_start);
+
+	groups++;
+      }
+
+      g_strfreev(groups_start);
+      g_key_file_unref(key_file);
+
+      g_rec_mutex_unlock(config_mutex);
+    }
+
+    g_object_unref(file);
+  }
+
+  /**
+   * ags_config_load_from_data:
+   * @config: the #AgsConfig
+   * @buffer: the data buffer
+   * @buffer_length: the size of the buffer
+   *
+   * Read configuration in memory.
+   *
+   * Since: 3.0.0
+   */
+  void
+    ags_config_load_from_data(AgsConfig *config,
+			      char *buffer, gsize buffer_length)
+  {
+
+    GRecMutex *config_mutex;
+
+    if(!AGS_IS_CONFIG(config)){
+      return;
+    }
+  
+    config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
+
+    /* load from data */
+    //#ifdef AGS_DEBUG
+    g_message("loading preferences from data[0x%x]", (unsigned int) buffer);
+    //#endif
+  
+    if(buffer == NULL){
+      ags_config_load_defaults(config);
+    }else{
+      GKeyFile *key_file;
+
+      gchar **groups, **groups_start;
+      gchar **keys, **keys_start;
+      gchar *value;
+
+      GError *error;
+
+      g_rec_mutex_lock(config_mutex);
+
+      error = NULL;
+
+      key_file = g_key_file_new();
+      g_key_file_load_from_data(key_file,
+				buffer,
+				buffer_length,
+				G_KEY_FILE_NONE,
+				&error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	g_error_free(error);
+      }
+    
+      groups =
+	groups_start = g_key_file_get_groups(key_file,
+					     NULL);
+
+      while(*groups != NULL){
+	keys =
+	  keys_start = g_key_file_get_keys(key_file,
+					   *groups,
+					   NULL,
+					   NULL);
+
+	while(*keys != NULL){
+	  value = g_key_file_get_value(key_file,
+				       *groups,
+				       *keys,
+				       NULL);
+	  ags_config_set_value(config,
+			       *groups,
+			       *keys,
+			       value);
+	
+	  keys++;
+	}
+
+	g_strfreev(keys_start);
+
+	groups++;
+      }
+
+      g_strfreev(groups_start);
+      g_key_file_unref(key_file);
+
+      g_rec_mutex_unlock(config_mutex);
     }
   }
 
-  g_free(app_dir);
+  /**
+   * ags_config_to_data:
+   * @config: the #AgsConfig
+   * @buffer: the data buffer
+   * @buffer_length: the size of the buffer
+   *
+   * Save configuration.
+   *
+   * Since: 3.0.0
+   */
+  void
+    ags_config_to_data(AgsConfig *config,
+		       char **buffer, gsize *buffer_length)
+  {
+    gchar *data;
+    gsize length;
 
-  filename = g_strdup_printf("%s\\%s",
-			     path,
-			     AGS_DEFAULT_CONFIG);
+    GError *error;
+
+    GRecMutex *config_mutex;
+
+    if(!AGS_IS_CONFIG(config)){
+      return;
+    }
+  
+    config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
+
+    /* to data */
+    g_rec_mutex_lock(config_mutex);
+
+    error = NULL;
+    data = g_key_file_to_data(config->key_file,
+			      &length,
+			      &error);
+
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      g_error_free(error);
+    }
+
+    if(buffer != NULL){
+      *buffer = data;
+    }
+
+    if(buffer_length != NULL){
+      *buffer_length = length;
+    }
+
+    g_rec_mutex_unlock(config_mutex);
+  }
+
+  /**
+   * ags_config_save:
+   * @config: the #AgsConfig
+   *
+   * Save configuration.
+   *
+   * Since: 3.0.0
+   */
+  void
+    ags_config_save(AgsConfig *config)
+  {
+#if defined(AGS_W32API)
+    AgsApplicationContext *application_context;
 #else
-  uid = getuid();
-  pw = getpwuid(uid);
+    struct passwd *pw;
+
+    uid_t uid;
+#endif
+  
+    gchar *path, *filename;
+    gchar *content;
+#if defined(AGS_W32API)
+    gchar *app_dir;
+#endif
+
+    gsize length;
+
+    GError *error;
+
+    GRecMutex *config_mutex;
+
+    if(!AGS_IS_CONFIG(config)){
+      return;
+    }
+  
+    config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
+
+    /* save */
+    g_rec_mutex_lock(config_mutex);
+
+    /* open conf dir */
+#if defined(AGS_W32API)
+    app_dir = NULL;
+
+    application_context = ags_application_context_get_instance();
+
+    if(strlen(application_context->argv[0]) > strlen("\\gsequencer.exe")){
+      app_dir = g_strndup(application_context->argv[0],
+			  strlen(application_context->argv[0]) - strlen("\\gsequencer.exe"));
+    }
+  
+    path = g_strdup_printf("%s\\etc\\gsequencer",
+			   g_get_current_dir());
+    
+    if(!g_file_test(path,
+		    G_FILE_TEST_IS_DIR)){
+      g_free(path);
+
+      if(g_path_is_absolute(app_dir)){
+	path = g_strdup_printf("%s\\%s",
+			       app_dir,
+			       "\\etc\\gsequencer");
+      }else{
+	path = g_strdup_printf("%s\\%s\\%s",
+			       g_get_current_dir(),
+			       app_dir,
+			       "\\etc\\gsequencer");
+      }
+    }
+
+    g_free(app_dir);
+
+    filename = g_strdup_printf("%s\\%s",
+			       path,
+			       AGS_DEFAULT_CONFIG);
+#else
+    uid = getuid();
+    pw = getpwuid(uid);
 
 #if !defined(AGS_MACOS_SANDBOX)
-  path = g_strdup_printf("%s/%s",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
+    path = g_strdup_printf("%s/%s",
+			   pw->pw_dir,
+			   AGS_DEFAULT_DIRECTORY);
 #else
-  path = g_strdup_printf("%s/Library/Containers/%s/Data/%s",
-			 pw->pw_dir,
-			 AGS_DEFAULT_BUNDLE_ID,
-			 AGS_DEFAULT_DIRECTORY);
+    path = g_strdup_printf("%s/Library/Containers/%s/Data/%s",
+			   pw->pw_dir,
+			   AGS_DEFAULT_BUNDLE_ID,
+			   AGS_DEFAULT_DIRECTORY);
 #endif
   
-  filename = g_strdup_printf("%s/%s",
-			     path,
-			     AGS_DEFAULT_CONFIG);
+    filename = g_strdup_printf("%s/%s",
+			       path,
+			       AGS_DEFAULT_CONFIG);
 #endif    
-  if(!g_mkdir_with_parents(path,
-			   0755)){
-    /* get content */
-    error = NULL;
+    if(!g_mkdir_with_parents(path,
+			     0755)){
+      /* get content */
+      error = NULL;
 
-    content = g_key_file_to_data(config->key_file,
-				 &length,
-				 &error);
+      content = g_key_file_to_data(config->key_file,
+				   &length,
+				   &error);
     
-    if(error != NULL){
-      g_warning("%s", error->message);
+      if(error != NULL){
+	g_warning("%s", error->message);
 
-      g_error_free(error);
+	g_error_free(error);
       
-      //TODO:JK: do recovery
-      goto ags_config_save_END;
-    }
+	//TODO:JK: do recovery
+	goto ags_config_save_END;
+      }
 
-    /* write content */
+      /* write content */
+      error = NULL;
+
+      g_file_set_contents(filename,
+			  content,
+			  length,
+			  &error);
+
+      if(error != NULL){
+	g_warning("%s", error->message);
+
+	g_error_free(error);
+      }
+    }
+    
+  ags_config_save_END:
+    g_free(filename);
+    g_free(path);
+
+    g_rec_mutex_unlock(config_mutex);
+  }
+
+  void
+    ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
+  {
+    GRecMutex *config_mutex;
+  
+    config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
+
+    /* set value */
+    g_rec_mutex_lock(config_mutex);
+  
+    g_key_file_set_value(config->key_file, group, key, value);
+
+    g_rec_mutex_unlock(config_mutex);
+  }
+
+  /**
+   * ags_config_set_value:
+   * @config: the #AgsConfig
+   * @group: the config group identifier
+   * @key: the key of the property
+   * @value: the value to set
+   *
+   * Set config by @group and @key, applying @value.
+   *
+   * Since: 3.0.0
+   */
+  void
+    ags_config_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
+  {
+    g_return_if_fail(AGS_IS_CONFIG(config));
+
+    g_object_ref(G_OBJECT(config));
+    g_signal_emit(G_OBJECT(config),
+		  config_signals[SET_VALUE], 0,
+		  group, key, value);
+    g_object_unref(G_OBJECT(config));
+  }
+
+  gchar*
+    ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
+  {
+    gchar *str;
+    GError *error;
+  
+    GRecMutex *config_mutex;
+  
+    config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
+
+    /* get value */
+    g_rec_mutex_lock(config_mutex);
+  
     error = NULL;
 
-    g_file_set_contents(filename,
-			content,
-			length,
-			&error);
+    str = g_key_file_get_value(config->key_file, group, key, &error);
 
     if(error != NULL){
-      g_warning("%s", error->message);
-
+      //    g_warning("%s", error->message);
+    
       g_error_free(error);
     }
+  
+    g_rec_mutex_unlock(config_mutex);
+
+    return(str);
   }
+
+  /**
+   * ags_config_get_value:
+   * @config: the #AgsConfig
+   * @group: the config group identifier
+   * @key: the key of the property
+   *
+   * Retrieve config by @group and @key.
+   *
+   * Returns: (transfer full): the property's value
+   *
+   * Since: 3.0.0
+   */
+  gchar*
+    ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
+  {
+    gchar *value;
+
+    g_return_val_if_fail(AGS_IS_CONFIG(config), NULL);
+
+    g_object_ref(G_OBJECT(config));
+    g_signal_emit(G_OBJECT(config),
+		  config_signals[GET_VALUE], 0,
+		  group, key,
+		  &value);
+    g_object_unref(G_OBJECT(config));
+
+    return(value);
+  }
+
+  /**
+   * ags_config_clear:
+   * @config: the #AgsConfig
+   *
+   * Clears configuration.
+   *
+   * Since: 3.0.0
+   */
+  void
+    ags_config_clear(AgsConfig *config)
+  {
+    gchar **group;
+
+    gsize n_group;
+    guint i;
+
+    GRecMutex *config_mutex;
+
+    if(!AGS_IS_CONFIG(config)){
+      return;
+    }
     
-ags_config_save_END:
-  g_free(filename);
-  g_free(path);
-
-  g_rec_mutex_unlock(config_mutex);
-}
-
-void
-ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
-{
-  GRecMutex *config_mutex;
+    config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
   
-  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
+    /* clear */
+    g_rec_mutex_lock(config_mutex);
 
-  /* set value */
-  g_rec_mutex_lock(config_mutex);
-  
-  g_key_file_set_value(config->key_file, group, key, value);
+    group = g_key_file_get_groups(config->key_file,
+				  &n_group);
 
-  g_rec_mutex_unlock(config_mutex);
-}
+    for(i = 0; i < n_group; i++){
+      g_key_file_remove_group(config->key_file,
+			      group[i],
+			      NULL);
+    }
 
-/**
- * ags_config_set_value:
- * @config: the #AgsConfig
- * @group: the config group identifier
- * @key: the key of the property
- * @value: the value to set
- *
- * Set config by @group and @key, applying @value.
- *
- * Since: 3.0.0
- */
-void
-ags_config_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
-{
-  g_return_if_fail(AGS_IS_CONFIG(config));
-
-  g_object_ref(G_OBJECT(config));
-  g_signal_emit(G_OBJECT(config),
-		config_signals[SET_VALUE], 0,
-		group, key, value);
-  g_object_unref(G_OBJECT(config));
-}
-
-gchar*
-ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
-{
-  gchar *str;
-  GError *error;
-  
-  GRecMutex *config_mutex;
-  
-  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
-
-  /* get value */
-  g_rec_mutex_lock(config_mutex);
-  
-  error = NULL;
-
-  str = g_key_file_get_value(config->key_file, group, key, &error);
-
-  if(error != NULL){
-//    g_warning("%s", error->message);
-    
-    g_error_free(error);
-  }
-  
-  g_rec_mutex_unlock(config_mutex);
-
-  return(str);
-}
-
-/**
- * ags_config_get_value:
- * @config: the #AgsConfig
- * @group: the config group identifier
- * @key: the key of the property
- *
- * Retrieve config by @group and @key.
- *
- * Returns: (transfer full): the property's value
- *
- * Since: 3.0.0
- */
-gchar*
-ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
-{
-  gchar *value;
-
-  g_return_val_if_fail(AGS_IS_CONFIG(config), NULL);
-
-  g_object_ref(G_OBJECT(config));
-  g_signal_emit(G_OBJECT(config),
-		config_signals[GET_VALUE], 0,
-		group, key,
-		&value);
-  g_object_unref(G_OBJECT(config));
-
-  return(value);
-}
-
-/**
- * ags_config_clear:
- * @config: the #AgsConfig
- *
- * Clears configuration.
- *
- * Since: 3.0.0
- */
-void
-ags_config_clear(AgsConfig *config)
-{
-  gchar **group;
-
-  gsize n_group;
-  guint i;
-
-  GRecMutex *config_mutex;
-
-  if(!AGS_IS_CONFIG(config)){
-    return;
-  }
-    
-  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
-  
-  /* clear */
-  g_rec_mutex_lock(config_mutex);
-
-  group = g_key_file_get_groups(config->key_file,
-				&n_group);
-
-  for(i = 0; i < n_group; i++){
-    g_key_file_remove_group(config->key_file,
-    			    group[i],
-    			    NULL);
+    g_rec_mutex_unlock(config_mutex);
   }
 
-  g_rec_mutex_unlock(config_mutex);
-}
+  /**
+   * ags_config_get_instance:
+   *
+   * Get config instance.
+   *
+   * Returns: (transfer none): the config instance
+   *
+   * Since: 3.0.0
+   */
+  AgsConfig*
+    ags_config_get_instance()
+  {
+    static GMutex mutex;
 
-/**
- * ags_config_get_instance:
- *
- * Get config instance.
- *
- * Returns: (transfer none): the config instance
- *
- * Since: 3.0.0
- */
-AgsConfig*
-ags_config_get_instance()
-{
-  static GMutex mutex;
+    g_mutex_lock(&mutex);
 
-  g_mutex_lock(&mutex);
+    if(ags_config == NULL){
+      ags_config = ags_config_new();
+    }
 
-  if(ags_config == NULL){
-    ags_config = ags_config_new();
+    g_mutex_unlock(&mutex);
+
+    return(ags_config);
   }
 
-  g_mutex_unlock(&mutex);
+  /**
+   * ags_config_new:
+   *
+   * Create a new instance of #AgsConfig.
+   *
+   * Returns: the new #AgsConfig.
+   *
+   * Since: 3.0.0
+   */
+  AgsConfig*
+    ags_config_new()
+  {
+    AgsConfig *config;
 
-  return(ags_config);
-}
+    config = (AgsConfig *) g_object_new(AGS_TYPE_CONFIG,
+					NULL);
 
-/**
- * ags_config_new:
- *
- * Create a new instance of #AgsConfig.
- *
- * Returns: the new #AgsConfig.
- *
- * Since: 3.0.0
- */
-AgsConfig*
-ags_config_new()
-{
-  AgsConfig *config;
-
-  config = (AgsConfig *) g_object_new(AGS_TYPE_CONFIG,
-				      NULL);
-
-  return(config);
-}
+    return(config);
+  }
