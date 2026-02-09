@@ -31,6 +31,17 @@
 
 #include <ags/config.h>
 
+#if defined(AGS_WITH_CORE_AUDIO)  
+#include <AudioToolbox/AudioToolbox.h>
+
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <AudioUnit/AudioComponent.h>
+
+#include <Foundation/Foundation.h>
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #if !defined(AGS_W32API)
 #include <pwd.h>
 #endif
