@@ -37,10 +37,35 @@ void ags_audio_preferences_notify_parent_callback(GObject *gobject,
 						  GParamSpec *pspec,
 						  gpointer user_data);
 
-void ags_audio_preferences_add_output_soundcard_callback(GAction *action, GVariant *parameter,
-							 AgsAudioPreferences *audio_preferences);
-void ags_audio_preferences_add_input_soundcard_callback(GAction *action, GVariant *parameter,
-							AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_alsa_output_soundcard_callback(GAction *action, GVariant *parameter,
+							      AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_alsa_input_soundcard_callback(GAction *action, GVariant *parameter,
+							     AgsAudioPreferences *audio_preferences);
+
+void ags_audio_preferences_add_oss_output_soundcard_callback(GAction *action, GVariant *parameter,
+							     AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_oss_input_soundcard_callback(GAction *action, GVariant *parameter,
+							    AgsAudioPreferences *audio_preferences);
+
+void ags_audio_preferences_add_jack_output_soundcard_callback(GAction *action, GVariant *parameter,
+							      AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_jack_input_soundcard_callback(GAction *action, GVariant *parameter,
+							     AgsAudioPreferences *audio_preferences);
+
+void ags_audio_preferences_add_pulse_output_soundcard_callback(GAction *action, GVariant *parameter,
+							       AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_pulse_input_soundcard_callback(GAction *action, GVariant *parameter,
+							      AgsAudioPreferences *audio_preferences);
+
+void ags_audio_preferences_add_core_audio_output_soundcard_callback(GAction *action, GVariant *parameter,
+								    AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_core_audio_input_soundcard_callback(GAction *action, GVariant *parameter,
+								   AgsAudioPreferences *audio_preferences);
+
+void ags_audio_preferences_add_wasapi_output_soundcard_callback(GAction *action, GVariant *parameter,
+								AgsAudioPreferences *audio_preferences);
+void ags_audio_preferences_add_wasapi_input_soundcard_callback(GAction *action, GVariant *parameter,
+							       AgsAudioPreferences *audio_preferences);
 
 void ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *soundcard_editor,
 							    AgsAudioPreferences *audio_preferences);
