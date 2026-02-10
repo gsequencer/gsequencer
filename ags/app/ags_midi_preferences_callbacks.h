@@ -37,8 +37,35 @@ void ags_midi_preferences_notify_parent_callback(GObject *gobject,
 						 GParamSpec *pspec,
 						 gpointer user_data);
 
-void ags_midi_preferences_add_input_sequencer_callback(GAction *action, GVariant *parameter,
-						       AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_alsa_output_sequencer_callback(GAction *action, GVariant *parameter,
+							     AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_alsa_input_sequencer_callback(GAction *action, GVariant *parameter,
+							    AgsMidiPreferences *midi_preferences);
+
+void ags_midi_preferences_add_oss_output_sequencer_callback(GAction *action, GVariant *parameter,
+							    AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_oss_input_sequencer_callback(GAction *action, GVariant *parameter,
+							   AgsMidiPreferences *midi_preferences);
+
+void ags_midi_preferences_add_jack_output_sequencer_callback(GAction *action, GVariant *parameter,
+							     AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_jack_input_sequencer_callback(GAction *action, GVariant *parameter,
+							    AgsMidiPreferences *midi_preferences);
+
+void ags_midi_preferences_add_pulse_output_sequencer_callback(GAction *action, GVariant *parameter,
+							      AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_pulse_input_sequencer_callback(GAction *action, GVariant *parameter,
+							     AgsMidiPreferences *midi_preferences);
+
+void ags_midi_preferences_add_core_midi_output_sequencer_callback(GAction *action, GVariant *parameter,
+								  AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_core_midi_input_sequencer_callback(GAction *action, GVariant *parameter,
+								 AgsMidiPreferences *midi_preferences);
+
+void ags_midi_preferences_add_wasapi_output_sequencer_callback(GAction *action, GVariant *parameter,
+							       AgsMidiPreferences *midi_preferences);
+void ags_midi_preferences_add_wasapi_input_sequencer_callback(GAction *action, GVariant *parameter,
+							      AgsMidiPreferences *midi_preferences);
 
 void ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *sequencer_editor,
 							   AgsMidiPreferences *midi_preferences);

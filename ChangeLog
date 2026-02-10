@@ -1,3 +1,10 @@
+ags (8.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed remove soundcard
+	* improved default config on macOS
+	* modified Makefile.am to build libags, libags_thread and libags_server with `clang -x objective-c`
+
 ags (8.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

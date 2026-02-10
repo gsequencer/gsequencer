@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,19 @@
 
 #include <ags/object/ags_config.h>
 
+#include <ags/config.h>
+
+#if defined(AGS_WITH_CORE_AUDIO)  
+#include <AudioToolbox/AudioToolbox.h>
+
+#include <AudioUnit/AudioUnit.h>
+#include <AudioUnit/AUComponent.h>
+#include <AudioUnit/AudioComponent.h>
+
+#include <Foundation/Foundation.h>
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_application_context.h>
 
@@ -29,13 +42,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <ags/config.h>
-
 #if !defined(AGS_W32API)
 #include <pwd.h>
 #endif
 
-#include <ags/config.h>
 #include <ags/i18n.h>
 
 void ags_config_class_init(AgsConfigClass *config_class);
@@ -383,9 +393,31 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 void
 ags_config_real_load_defaults(AgsConfig *config)
 {
-
-  GRecMutex *config_mutex;
+#if defined(AGS_WITH_CORE_AUDIO)
+  AudioDeviceID *audio_devices;
   
+  NSString *device_uid = @"";
+
+  AudioObjectPropertyAddress devices_property_address;
+  AudioObjectPropertyAddress streams_property_address;
+  
+  struct AudioStreamBasicDescription stream_desc;
+#endif
+  
+  gchar *device;
+    
+#if defined(AGS_WITH_CORE_AUDIO)  
+  int device_count;
+  int stream_count;
+  int is_mic;
+  int is_speaker;
+  UInt32 prop_size;
+  int i;
+  OSStatus error;
+#endif
+  
+  GRecMutex *config_mutex;
+ 
   config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* load defaults */
@@ -408,7 +440,92 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", NULL);
 #elif defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "core-audio");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-core-audio-devout-0");
+
+  device = NULL;
+
+  devices_property_address.mSelector = kAudioHardwarePropertyDevices;
+  devices_property_address.mScope = kAudioObjectPropertyScopeGlobal;
+  devices_property_address.mElement = kAudioObjectPropertyElementMain;
+
+  streams_property_address.mSelector = kAudioDevicePropertyStreams;
+  streams_property_address.mScope = kAudioDevicePropertyScopeOutput;
+
+  error = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size);
+  
+  if(error == noErr){
+    device_count = prop_size / sizeof(AudioDeviceID);
+    
+    audio_devices = (AudioDeviceID *) malloc(prop_size);
+    
+    error = AudioObjectGetPropertyData(kAudioObjectSystemObject, &devices_property_address, 0, NULL, &prop_size, audio_devices);
+    
+    if(error == noErr){
+      for(i = 0; i < device_count; i++){
+	NSString *current_manufacturer, *current_name, *current_uid;
+	
+	prop_size = sizeof(CFStringRef);
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceManufacturerCFString;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_manufacturer);
+	
+	if(error != noErr){
+	  current_manufacturer = @"";
+	  
+	  //	  continue;
+	}
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceNameCFString;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_name);
+	
+	if(error != noErr){
+	  current_name = @"";
+
+	  //	  continue;
+	}
+	
+	devices_property_address.mSelector = kAudioDevicePropertyDeviceUID;
+	error = AudioObjectGetPropertyData(audio_devices[i], &devices_property_address, 0, NULL, &prop_size, &current_uid);
+	
+	if(error != noErr){
+	  current_uid = @"";
+	  
+	  //	  continue;
+	}
+	
+	if([current_manufacturer isEqualToString:@"Apple Inc."] && [current_name isEqualToString:@"Built-in Output"]){
+	  device_uid = current_uid;
+	}
+
+	is_speaker = 0;
+
+	error = AudioObjectGetPropertyDataSize(audio_devices[i], 
+					       &streams_property_address, 
+					       0, 
+					       NULL, 
+					       &prop_size);
+	
+	stream_count = prop_size / sizeof(AudioStreamID);
+
+	if(stream_count > 0){
+	  is_speaker = YES;
+	}
+
+	//	g_message("found %s device: %s - %s <%s>", (is_speaker ? "output": "input"),  [current_manufacturer UTF8String], [current_name UTF8String], [current_uid UTF8String]);
+
+	if(is_speaker){
+	  device = g_strdup_printf("%s - %s", [current_manufacturer UTF8String], [current_name UTF8String]);
+
+	  break;
+	}
+      }
+    }
+    
+    free(audio_devices);
+  }
+    
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", device);
+
+  g_free(device);
 #elif defined(AGS_WITH_PULSE)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
@@ -837,7 +954,7 @@ ags_config_save(AgsConfig *config)
     }
   }
     
-ags_config_save_END:
+ ags_config_save_END:
   g_free(filename);
   g_free(path);
 
@@ -900,7 +1017,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
   str = g_key_file_get_value(config->key_file, group, key, &error);
 
   if(error != NULL){
-//    g_warning("%s", error->message);
+    //    g_warning("%s", error->message);
     
     g_error_free(error);
   }
@@ -971,8 +1088,8 @@ ags_config_clear(AgsConfig *config)
 
   for(i = 0; i < n_group; i++){
     g_key_file_remove_group(config->key_file,
-    			    group[i],
-    			    NULL);
+			    group[i],
+			    NULL);
   }
 
   g_rec_mutex_unlock(config_mutex);

@@ -48,7 +48,7 @@ struct _AgsAudioPreferences
   GtkBox box;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GList *soundcard_editor;
   
@@ -70,6 +70,10 @@ struct _AgsAudioPreferencesClass
 };
 
 GType ags_audio_preferences_get_type(void);
+
+void ags_audio_preferences_add_soundcard(AgsAudioPreferences *audio_preferences,
+					 gchar *backend,
+					 gboolean is_output);
 
 GList* ags_audio_preferences_get_soundcard_editor(AgsAudioPreferences *audio_preferences);
 void ags_audio_preferences_add_soundcard_editor(AgsAudioPreferences *audio_preferences,

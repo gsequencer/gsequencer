@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 8.3.1\n"
+"Project-Id-Version: gsequencer 8.3.2\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-02-08 14:29+0100\n"
+"POT-Creation-Date: 2026-02-10 12:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1085,7 +1085,7 @@ msgstr ""
 msgid "playback"
 msgstr ""
 
-#: ags/app/ags_navigation.c:297 ags/app/ags_audio_preferences.c:356
+#: ags/app/ags_navigation.c:297 ags/app/ags_audio_preferences.c:511
 msgid "stop"
 msgstr ""
 
@@ -1333,23 +1333,63 @@ msgstr ""
 msgid "midi device"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:249
-msgid "add output soundcard"
+#: ags/app/ags_audio_preferences.c:343
+msgid "add ALSA output soundcard"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:254
-msgid "add input soundcard"
+#: ags/app/ags_audio_preferences.c:348
+msgid "add ALSA input soundcard"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:293
+#: ags/app/ags_audio_preferences.c:355
+msgid "add OSSv4 output soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:360
+msgid "add OSSv4 input soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:367
+msgid "add JACK output soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:372
+msgid "add JACK input soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:379
+msgid "add Pulseaudio output soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:384
+msgid "add Pulseaudio input soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:391
+msgid "add Core Audio output soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:396
+msgid "add Core Audio input soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:403
+msgid "add WASAPI output soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:408
+msgid "add WASAPI input soundcard"
+msgstr ""
+
+#: ags/app/ags_audio_preferences.c:448
 msgid "JACK driver"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:318
+#: ags/app/ags_audio_preferences.c:473
 msgid "JACK server"
 msgstr ""
 
-#: ags/app/ags_audio_preferences.c:352
+#: ags/app/ags_audio_preferences.c:507
 msgid "start"
 msgstr ""
 
@@ -2044,8 +2084,24 @@ msgstr ""
 msgid "plugin type"
 msgstr ""
 
-#: ags/app/ags_midi_preferences.c:227
-msgid "add input sequencer"
+#: ags/app/ags_midi_preferences.c:274
+msgid "add ALSA input sequencer"
+msgstr ""
+
+#: ags/app/ags_midi_preferences.c:281
+msgid "add OSSv4 input sequencer"
+msgstr ""
+
+#: ags/app/ags_midi_preferences.c:288
+msgid "add JACK input sequencer"
+msgstr ""
+
+#: ags/app/ags_midi_preferences.c:298
+msgid "add Core Midi input sequencer"
+msgstr ""
+
+#: ags/app/ags_midi_preferences.c:305
+msgid "add WASAPI input sequencer"
 msgstr ""
 
 #: ags/app/ags_online_help_window_callbacks.c:86
