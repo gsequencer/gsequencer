@@ -201,10 +201,8 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_widget_set_halign((GtkWidget *) sequencer_editor->backend,
 			GTK_ALIGN_FILL);
 
-  gtk_grid_attach(grid,
-		  (GtkWidget *) sequencer_editor->backend,
-		  1, 0,
-		  1, 1);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
+			   0);
 
 #ifdef AGS_WITH_CORE_AUDIO
   gtk_combo_box_text_append_text(sequencer_editor->backend,
@@ -225,10 +223,15 @@ ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor)
   gtk_combo_box_text_append_text(sequencer_editor->backend,
 				 "jack");
 #endif
-
-  gtk_combo_box_set_active(GTK_COMBO_BOX(sequencer_editor->backend),
-			   0);
   
+  gtk_widget_set_sensitive((GtkWidget *) sequencer_editor->backend,
+			   FALSE);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) sequencer_editor->backend,
+		  1, 0,
+		  1, 1);
+
   /* MIDI card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("MIDI card"),

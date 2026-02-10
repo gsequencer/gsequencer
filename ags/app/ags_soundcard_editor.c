@@ -250,6 +250,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			   0);
 
+  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->backend,
+			   FALSE);
+  
   y0++;
   
   /* sound card */
