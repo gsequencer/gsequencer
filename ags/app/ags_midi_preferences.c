@@ -545,6 +545,8 @@ ags_midi_preferences_add_sequencer(AgsMidiPreferences *midi_preferences,
 				   gchar *backend,
 				   gboolean is_output)
 {
+  g_return_if_fail(backend != NULL);
+  
   if(is_output){
     //empty    
   }
