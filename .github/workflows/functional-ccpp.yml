@@ -28,4 +28,6 @@ jobs:
     - name: make ags-integration-unit-test
       run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make ags-integration-unit-test
     - name: make ags-integration-functional-test
-      run: xvfb-run --server-args="-screen 0 1920x1080x24" -a make ags-integration-functional-test
+      run: |
+        pulseaudio --start --exit-idle-time=-1
+        xvfb-run --server-args="-screen 0 1920x1080x24" -a make ags-integration-functional-test
