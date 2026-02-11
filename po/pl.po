@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-02-10 12:41+0100\n"
+"POT-Creation-Date: 2026-02-11 06:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ags/app/ags_connection_editor_bulk.c:172
-#: ags/app/ags_connection_editor_bulk.c:283 ags/app/ags_soundcard_editor.c:257
+#: ags/app/ags_connection_editor_bulk.c:283 ags/app/ags_soundcard_editor.c:260
 #: ags/app/ags_export_soundcard.c:259
 msgid "soundcard"
 msgstr "karta dźwiękowa"
@@ -408,12 +408,12 @@ msgstr "domyślne"
 msgid "backend"
 msgstr ""
 
-#: ags/app/ags_sequencer_editor.c:234
+#: ags/app/ags_sequencer_editor.c:237
 msgid "MIDI card"
 msgstr "karta MIDI"
 
-#: ags/app/ags_sequencer_editor.c:268 ags/app/editor/ags_pattern_envelope.c:832
-#: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:627
+#: ags/app/ags_sequencer_editor.c:271 ags/app/editor/ags_pattern_envelope.c:832
+#: ags/app/editor/ags_envelope_editor.c:222 ags/app/ags_soundcard_editor.c:630
 #, fuzzy
 msgid "_Remove"
 msgstr "przemieść x"
@@ -1095,11 +1095,11 @@ msgstr "pady wyjściowe: "
 msgid "input pads count"
 msgstr "pady wejściowe: "
 
-#: ags/app/ags_resize_editor.c:243 ags/app/ags_soundcard_editor.c:440
+#: ags/app/ags_resize_editor.c:243 ags/app/ags_soundcard_editor.c:443
 msgid "format"
 msgstr "format"
 
-#: ags/app/ags_resize_editor.c:283 ags/app/ags_soundcard_editor.c:372
+#: ags/app/ags_resize_editor.c:283 ags/app/ags_soundcard_editor.c:375
 msgid "samplerate"
 msgstr "częstotliwośc próbkowania"
 
@@ -1465,31 +1465,31 @@ msgstr "JACK serwer"
 msgid "start"
 msgstr "start"
 
-#: ags/app/ags_soundcard_editor.c:289
+#: ags/app/ags_soundcard_editor.c:292
 msgid "capability"
 msgstr "możliwosci"
 
-#: ags/app/ags_soundcard_editor.c:338 ags/app/import/ags_track_mapper.c:371
+#: ags/app/ags_soundcard_editor.c:341 ags/app/import/ags_track_mapper.c:371
 msgid "audio channels"
 msgstr "kanały audio"
 
-#: ags/app/ags_soundcard_editor.c:406
+#: ags/app/ags_soundcard_editor.c:409
 msgid "buffer size"
 msgstr "rozmiar bufora"
 
-#: ags/app/ags_soundcard_editor.c:494
+#: ags/app/ags_soundcard_editor.c:497
 msgid "use cache"
 msgstr "użyj pamięci podręcznej"
 
-#: ags/app/ags_soundcard_editor.c:512
+#: ags/app/ags_soundcard_editor.c:515
 msgid "cache buffer size"
 msgstr "rozmiar bufora pamięci podręcznej"
 
-#: ags/app/ags_soundcard_editor.c:547
+#: ags/app/ags_soundcard_editor.c:550
 msgid "WASAPI share mode"
 msgstr "tryb współdzielenia WASAPI"
 
-#: ags/app/ags_soundcard_editor.c:585
+#: ags/app/ags_soundcard_editor.c:588
 msgid "WASAPI buffer size"
 msgstr "rozmiar bufora WASAPI"
 

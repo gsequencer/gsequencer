@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -707,11 +707,9 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   /* delay and attack */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(jack_devout));
 
-  jack_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					    sizeof(gdouble));
+  jack_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(gdouble));
   
-  jack_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					   sizeof(guint));
+  jack_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
 
   jack_devout->note_256th_delay = absolute_delay / 16.0;
 
@@ -774,10 +772,23 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   
   jack_devout->note_256th_offset = 0;
 
-  if(jack_devout->note_256th_delay >= 1.0){
-    jack_devout->note_256th_offset_last = 0;
-  }else{
-    jack_devout->note_256th_offset_last = (guint) floor(1.0 / jack_devout->note_256th_delay);
+  if(jack_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = jack_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(jack_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      jack_devout->note_256th_offset_last = jack_devout->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (jack_devout->note_256th_delay * (double) buffer_size));
+    }
   }
 }
 
@@ -1989,10 +2000,34 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
   jack_devout->delay_counter = 0.0;
   jack_devout->tic_counter = 0;
 
+  jack_devout->note_offset = jack_devout->start_note_offset;
+  jack_devout->note_offset_absolute = jack_devout->start_note_offset;
+
   jack_devout->note_256th_attack_of_16th_pulse = 0;
   jack_devout->note_256th_attack_of_16th_pulse_position = 0;
 
   jack_devout->note_256th_delay_counter = 0.0;
+
+  jack_devout->note_256th_offset = 16 * jack_devout->start_note_offset;
+
+  if(jack_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = jack_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(jack_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      jack_devout->note_256th_offset_last = jack_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (jack_devout->note_256th_delay * (double) buffer_size));
+    }
+  }
 
   jack_devout->flags |= (AGS_JACK_DEVOUT_INITIALIZED |
 			 AGS_JACK_DEVOUT_START_PLAY |
