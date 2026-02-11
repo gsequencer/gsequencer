@@ -1,3 +1,8 @@
+ags (8.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* extended functional test machine add and destroy added Stargazer, Quantum, Raven and Modular synth
+
 ags (8.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
