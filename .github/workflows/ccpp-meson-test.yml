@@ -20,4 +20,6 @@ jobs:
     - name: ninja
       run: cd build && ninja
     - name: meson test
-      run: cd build && xvfb-run --server-args="-screen 0 1920x1080x24" -a meson test -t 1000
+      run: |
+        pulseaudio --start --exit-idle-time=-1
+        cd build && xvfb-run --server-args="-screen 0 1920x1080x24" -a meson test -t 1000
