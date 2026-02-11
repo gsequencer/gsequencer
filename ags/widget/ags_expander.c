@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,6 +125,9 @@ ags_expander_class_init(AgsExpanderClass *expander)
   
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) expander;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-expander");  
 }
 
 void

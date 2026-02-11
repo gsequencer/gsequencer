@@ -701,7 +701,6 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
     }
     
     g_object_run_dispose((GObject *) playback->channel_thread[sound_scope]);
-    g_object_unref((GObject *) playback->channel_thread[sound_scope]);
   }
 
   /* set new */

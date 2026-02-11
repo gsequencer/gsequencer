@@ -1427,7 +1427,7 @@ ags_chorus_util_set_offset_256th(AgsChorusUtil *chorus_util,
  * ags_chorus_util_compute_s8:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of signed 8 bit data.
+ * Compute chorus of @chorus_util of signed 8 bit data.
  *
  * Since: 3.13.4
  */
@@ -1598,7 +1598,7 @@ ags_chorus_util_compute_s8(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute_s16:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of signed 16 bit data.
+ * Compute chorus of @chorus_util of signed 16 bit data.
  *
  * Since: 3.13.4
  */
@@ -1769,7 +1769,7 @@ ags_chorus_util_compute_s16(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute_s24:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of signed 24 bit data.
+ * Compute chorus of @chorus_util of signed 24 bit data.
  *
  * Since: 3.13.4
  */
@@ -1940,7 +1940,7 @@ ags_chorus_util_compute_s24(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute_s32:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of signed 32 bit data.
+ * Compute chorus of @chorus_util of signed 32 bit data.
  *
  * Since: 3.13.4
  */
@@ -2111,7 +2111,7 @@ ags_chorus_util_compute_s32(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute_s64:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of signed 64 bit data.
+ * Compute chorus of @chorus_util of signed 64 bit data.
  *
  * Since: 3.13.4
  */
@@ -2282,7 +2282,7 @@ ags_chorus_util_compute_s64(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute_float:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of floating point data.
+ * Compute chorus of @chorus_util of floating point data.
  *
  * Since: 3.13.4
  */
@@ -2453,7 +2453,7 @@ ags_chorus_util_compute_float(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute_double:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of double precision floating point data.
+ * Compute chorus of @chorus_util of double precision floating point data.
  *
  * Since: 3.13.4
  */
@@ -2624,7 +2624,7 @@ ags_chorus_util_compute_double(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute_complex:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util of complex data.
+ * Compute chorus of @chorus_util of complex data.
  *
  * Since: 3.13.4
  */
@@ -2796,7 +2796,7 @@ ags_chorus_util_compute_complex(AgsChorusUtil *chorus_util)
  * ags_chorus_util_compute:
  * @chorus_util: the #AgsChorusUtil-struct
  * 
- * Choralize @chorus_util.
+ * Compute chorus of @chorus_util.
  *
  * Since: 3.13.4
  */

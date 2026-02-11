@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -90,7 +90,8 @@ void
 ags_notebook_class_init(AgsNotebookClass *notebook)
 {
   GObjectClass *gobject;
-
+  GtkWidgetClass *widget;
+  
   GParamSpec *param_spec;
 
   ags_notebook_parent_class = g_type_class_peek_parent(notebook);
@@ -103,6 +104,12 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
 
   gobject->finalize = ags_notebook_finalize;
 
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) notebook;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-notebook");
+  
   /* properties */
   /**
    * AgsNotebook:tab-width:

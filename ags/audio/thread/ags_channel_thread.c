@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -496,8 +496,12 @@ ags_channel_thread_finalize(GObject *gobject)
 void
 ags_channel_thread_start(AgsThread *thread)
 {
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
+    return;
+  }
+  
 #ifdef AGS_DEBUG
-  g_message("channel thread start");
+  g_message("channel thread start - 0x%x", thread);
 #endif
   
   /* reset status */
@@ -583,14 +587,9 @@ ags_channel_thread_run(AgsThread *thread)
 
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
-  processing = FALSE;
-  
-  task_launcher = NULL;
-  
-  g_object_get(channel_thread,
-	       "processing", &processing,
-	       "task-launcher", &task_launcher,
-	       NULL);
+  processing = ags_channel_thread_get_processing(channel_thread);
+
+  task_launcher = ags_channel_thread_get_task_launcher(channel_thread);
   
   ags_task_launcher_run(task_launcher);
 
@@ -740,7 +739,7 @@ ags_channel_thread_stop(AgsThread *thread)
   channel_thread = AGS_CHANNEL_THREAD(thread);
 
 #ifdef AGS_DEBUG
-  g_message("channel thread stop");
+  g_message("channel thread stop - 0x%x", thread);
 #endif
   
   /* call parent */
@@ -842,6 +841,8 @@ ags_channel_thread_get_processing(AgsChannelThread *channel_thread)
     return(FALSE);
   }
 
+  processing = FALSE;
+  
   g_object_get(channel_thread,
 	       "processing", &processing,
 	       NULL);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,67 +32,115 @@ ags_audio_preferences_notify_parent_callback(GObject *gobject,
 					     GParamSpec *pspec,
 					     gpointer user_data)
 {
-  AgsAudioPreferences *audio_preferences;
-
-  audio_preferences = (AgsAudioPreferences *) gobject;
-  
-  if(audio_preferences->add == NULL) {
-    AgsPreferences *preferences;
-
-    AgsApplicationContext *application_context;
-    
-    application_context = ags_application_context_get_instance();
-
-    preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
-    
-    audio_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
-    gtk_box_prepend(preferences->action_area,
-		    (GtkWidget *) audio_preferences->add);
-  }
+  //empty
 }
 
 void
-ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio_preferences)
+ags_audio_preferences_add_alsa_output_soundcard_callback(GAction *action, GVariant *parameter,
+							 AgsAudioPreferences *audio_preferences)
 {
-  AgsSoundcardEditor *soundcard_editor;
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "alsa",
+				      TRUE);
+}
 
-  AgsThread *main_loop;
-  
-  AgsApplicationContext *application_context;
+void
+ags_audio_preferences_add_alsa_input_soundcard_callback(GAction *action, GVariant *parameter,
+							AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "alsa",
+				      FALSE);
+}
 
-  GObject *soundcard;
+void
+ags_audio_preferences_add_oss_output_soundcard_callback(GAction *action, GVariant *parameter,
+							AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "oss",
+				      TRUE);
+}
 
-  GList *start_list, *list;
+void
+ags_audio_preferences_add_oss_input_soundcard_callback(GAction *action, GVariant *parameter,
+						       AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "oss",
+				      FALSE);
+}
 
-  application_context = ags_application_context_get_instance();
+void
+ags_audio_preferences_add_jack_output_soundcard_callback(GAction *action, GVariant *parameter,
+							 AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "jack",
+				      TRUE);
+}
 
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+void
+ags_audio_preferences_add_jack_input_soundcard_callback(GAction *action, GVariant *parameter,
+							AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "jack",
+				      FALSE);
+}
 
-  /* soundcard */
-  soundcard = NULL;
-  
-  /* soundcard editor */
-  soundcard_editor = ags_soundcard_editor_new();
+void
+ags_audio_preferences_add_pulse_output_soundcard_callback(GAction *action, GVariant *parameter,
+							  AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "pulse",
+				      TRUE);
+}
 
-  if(soundcard != NULL){
-    soundcard_editor->soundcard = soundcard;
-    soundcard_editor->soundcard_thread = (GObject *) ags_thread_find_type(main_loop,
-									  AGS_TYPE_SOUNDCARD_THREAD);
-   }
-  
-  ags_audio_preferences_add_soundcard_editor(audio_preferences,
-					     soundcard_editor);
-  
-  ags_applicable_reset(AGS_APPLICABLE(soundcard_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(soundcard_editor));
+void
+ags_audio_preferences_add_pulse_input_soundcard_callback(GAction *action, GVariant *parameter,
+							 AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "pulse",
+				      FALSE);
+}
 
-  g_signal_connect(soundcard_editor->remove, "clicked",
-		   G_CALLBACK(ags_audio_preferences_remove_soundcard_editor_callback), audio_preferences);
+void
+ags_audio_preferences_add_core_audio_output_soundcard_callback(GAction *action, GVariant *parameter,
+							       AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "core-audio",
+				      TRUE);
+}
 
-  gtk_widget_show((GtkWidget *) soundcard_editor);
+void
+ags_audio_preferences_add_core_audio_input_soundcard_callback(GAction *action, GVariant *parameter,
+							      AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "core-audio",
+				      FALSE);
+}
 
-  /* reset default card */  
-  g_object_unref(main_loop);  
+void
+ags_audio_preferences_add_wasapi_output_soundcard_callback(GAction *action, GVariant *parameter,
+							   AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "wasapi",
+				      TRUE);
+}
+
+void
+ags_audio_preferences_add_wasapi_input_soundcard_callback(GAction *action, GVariant *parameter,
+							  AgsAudioPreferences *audio_preferences)
+{
+  ags_audio_preferences_add_soundcard(audio_preferences,
+				      "wasapi",
+				      FALSE);
 }
 
 void
@@ -105,12 +153,7 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   
   soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SOUNDCARD_EDITOR);
-
-  if(!AGS_IS_JACK_DEVOUT(soundcard_editor->soundcard)){
-    ags_soundcard_editor_remove_soundcard(soundcard_editor,
-					  soundcard_editor->soundcard);
-  }
-
+  
   ags_audio_preferences_remove_soundcard_editor(audio_preferences,
 						soundcard_editor);
 }

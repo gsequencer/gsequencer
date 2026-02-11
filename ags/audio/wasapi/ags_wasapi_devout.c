@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -736,11 +736,9 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   /* delay and attack */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(wasapi_devout));
 
-  wasapi_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					      sizeof(gdouble));
+  wasapi_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(gdouble));
   
-  wasapi_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					     sizeof(guint));
+  wasapi_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
 
   wasapi_devout->note_256th_delay = absolute_delay / 16.0;
 
@@ -796,10 +794,23 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   
   wasapi_devout->note_256th_offset = 0;
 
-  if(wasapi_devout->note_256th_delay >= 1.0){
-    wasapi_devout->note_256th_offset_last = 0;
-  }else{
-    wasapi_devout->note_256th_offset_last = (guint) floor(1.0 / wasapi_devout->note_256th_delay);
+  if(wasapi_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = wasapi_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(wasapi_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      wasapi_devout->note_256th_offset_last = wasapi_devout->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devout->note_256th_delay * (double) buffer_size));
+    }
   }
 }
 
@@ -1840,10 +1851,34 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
   wasapi_devout->delay_counter = 0.0;
   wasapi_devout->tic_counter = 0;
   
+  wasapi_devout->note_offset = wasapi_devout->start_note_offset;
+  wasapi_devout->note_offset_absolute = wasapi_devout->start_note_offset;
+
   wasapi_devout->note_256th_attack_of_16th_pulse = 0;
   wasapi_devout->note_256th_attack_of_16th_pulse_position = 0;
 
   wasapi_devout->note_256th_delay_counter = 0.0;
+
+  wasapi_devout->note_256th_offset = 16 * wasapi_devout->start_note_offset;
+
+  if(wasapi_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = wasapi_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(wasapi_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      wasapi_devout->note_256th_offset_last = wasapi_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devout->note_256th_delay * (double) buffer_size));
+    }
+  }
   
 #ifdef AGS_WITH_WASAPI
   wasapi_devout->flags |= AGS_WASAPI_DEVOUT_INITIALIZED;

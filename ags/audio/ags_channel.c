@@ -9994,7 +9994,7 @@ ags_channel_real_play_recall(AgsChannel *channel,
 				     AGS_SOUND_STAGING_RUN_POST |
 				     AGS_SOUND_STAGING_DO_FEEDBACK |
 				     AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
-				     AGS_SOUND_STAGING_DONE |
+				     // AGS_SOUND_STAGING_DONE |
 				     AGS_SOUND_STAGING_CANCEL |
 				     AGS_SOUND_STAGING_REMOVE |
 				     AGS_SOUND_STAGING_FINI);

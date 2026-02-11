@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -171,6 +171,9 @@ ags_icon_link_class_init(AgsIconLinkClass *icon_link)
   widget = (GtkWidgetClass *) icon_link;
 
   widget->snapshot = ags_icon_link_snapshot;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-icon-link");  
 
   /* AgsIconLinkClass */  
   icon_link->delete_event = NULL;

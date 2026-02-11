@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,26 +37,18 @@ ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 			    "alsa",
 			    5)){
       ags_sequencer_editor_load_alsa_card(sequencer_editor);
-
-      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_sequencer_editor_load_oss_card(sequencer_editor);
-
-      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "core-midi",
 				  10)){
       ags_sequencer_editor_load_core_midi_card(sequencer_editor);
-
-      gtk_widget_show((GtkWidget *) sequencer_editor->source_hbox);
     }else if(!g_ascii_strncasecmp(str,
 			    "jack",
 			    5)){
       ags_sequencer_editor_load_jack_card(sequencer_editor);
-
-      gtk_widget_show((GtkWidget *) sequencer_editor->source_hbox);
     }
   }
 }
@@ -84,7 +76,7 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   }else if(AGS_IS_OSS_MIDIIN(sequencer)){
     str = "oss";
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
-    str = "core-audio";
+    str = "core-midi";
   }else if(AGS_IS_JACK_MIDIIN(sequencer)){
     str = "jack";
   }
@@ -119,20 +111,4 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
     ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
 			     card);
   }
-}
-
-void
-ags_sequencer_editor_add_source_callback(GtkWidget *button,
-					 AgsSequencerEditor *sequencer_editor)
-{
-  ags_sequencer_editor_add_source(sequencer_editor,
-				  NULL);
-}
-
-void
-ags_sequencer_editor_remove_source_callback(GtkWidget *button,
-					    AgsSequencerEditor *sequencer_editor)
-{
-  ags_sequencer_editor_remove_source(sequencer_editor,
-				     gtk_combo_box_text_get_active_text(sequencer_editor->card));
 }

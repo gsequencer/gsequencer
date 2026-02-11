@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -257,6 +257,9 @@ ags_scale_class_init(AgsScaleClass *scale)
   
   widget->snapshot = ags_scale_snapshot;
 
+  gtk_widget_class_set_css_name(widget,
+				"ags-scale");
+  
   /* AgsScaleClass */  
   scale->value_changed = NULL;
 

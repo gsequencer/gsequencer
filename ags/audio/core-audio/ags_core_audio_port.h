@@ -116,16 +116,16 @@ struct _AgsCoreAudioPort
   AudioQueueBufferRef buf_ref[16];
   AudioQueueBufferRef record_buf_ref[16];
   
-  MIDIClientRef *midi_client;
-  MIDIPortRef *midi_port;
+  MIDIClientRef midi_client;
+  MIDIPortRef midi_port;
 #else
   gpointer aq_ref;
   gpointer data_format;
 
   gpointer buffer;
   
-  gpointer midi_client;
-  gpointer midi_port;
+  guint32 midi_client;
+  guint32 midi_port;
 #endif
 
   unsigned int midi_port_number;
@@ -155,6 +155,8 @@ struct _AgsCoreAudioPort
   AudioObjectPropertyAddress input_property_address;
   AudioObjectID input_device; 
   AudioDeviceIOProcID input_proc_id;
+
+  MIDIObjectRef midi_input_endpoint;
 #else
   guint32 output_samplerate_property_address[3];
   guint32 output_buffer_size_property_address[3];
@@ -171,6 +173,8 @@ struct _AgsCoreAudioPort
   guint32 input_property_address[3];
   gint64 input_device;
   gint64 input_proc_id;
+
+  guint32 midi_input_endpoint;
 #endif
 
   AgsAudioBufferUtil *audio_buffer_util;

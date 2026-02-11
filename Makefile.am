@@ -587,6 +587,10 @@ userdocimages = \
 	docs/images/ags_export_window.png \
 	docs/images/ags_hybrid_fm_synth.png \
 	docs/images/ags_hybrid_synth.png \
+	docs/images/ags_stargazer_synth.png \
+	docs/images/ags_quantum_synth.png \
+	docs/images/ags_raven_synth.png \
+	docs/images/ags_modular_synth.png \
 	docs/images/ags_machine_properties-input.png \
 	docs/images/ags_machine_properties-resize_channels.png \
 	docs/images/ags_navigation.png \
@@ -790,7 +794,14 @@ defexecdir = $(libdir)
 defexec_DATA =
 
 # library libags
-libags_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
+if WITH_OSXAPI
+libags_la_CPPFLAGS = -x objective-c -framework Cocoa
+else
+libags_la_CPPFLAGS = -std=gnu11
+endif
+
+libags_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_CPPFLAGS)
+
 libags_la_CFLAGS =  $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread
@@ -814,7 +825,14 @@ endif
 endif
 
 # library libags-thread
-libags_thread_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
+if WITH_OSXAPI
+libags_thread_la_CPPFLAGS = -x objective-c -framework Cocoa
+else
+libags_thread_la_CPPFLAGS = -std=gnu11
+endif
+
+libags_thread_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_THREAD_CPPFLAGS)
+
 libags_thread_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(W32API_CFLAGS)
 libags_thread_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread
@@ -838,7 +856,14 @@ endif
 endif
 
 # library libags-server
-libags_server_la_CPPFLAGS = -std=gnu11 $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
+if WITH_OSXAPI
+libags_server_la_CPPFLAGS = -x objective-c -framework Cocoa
+else
+libags_server_la_CPPFLAGS = -std=gnu11
+endif
+
+libags_server_la_CPPFLAGS += $(CPPFLAGS) $(LIBAGS_SERVER_CPPFLAGS)
+
 libags_server_la_CFLAGS = $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(W32API_CFLAGS)
 libags_server_la_LDFLAGS = $(LDFLAGS) -version-info 8:0:0 -pthread

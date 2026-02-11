@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,11 +47,15 @@ struct _AgsMidiPreferences
 {
   GtkBox box;
 
-  guint connectable_flags;
+  guint flags;
+  AgsConnectableFlags connectable_flags;
 
   GList *sequencer_editor;
   
   GtkBox *sequencer_editor_box;
+
+  GtkMenuButton *add_menu_button;
+  GMenuModel *add_menu_button_model;
 
   GtkButton *add;
 };
@@ -62,6 +66,10 @@ struct _AgsMidiPreferencesClass
 };
 
 GType ags_midi_preferences_get_type(void);
+
+void ags_midi_preferences_add_sequencer(AgsMidiPreferences *midi_preferences,
+					gchar *backend,
+					gboolean is_output);
 
 GList* ags_midi_preferences_get_sequencer_editor(AgsMidiPreferences *midi_preferences);
 void ags_midi_preferences_add_sequencer_editor(AgsMidiPreferences *midi_preferences,

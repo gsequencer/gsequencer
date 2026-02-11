@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -300,6 +300,9 @@ ags_piano_class_init(AgsPianoClass *piano)
   
   widget->snapshot = ags_piano_snapshot;
 
+  gtk_widget_class_set_css_name(widget,
+				"ags-piano");
+  
   /* AgsPianoClass */
   piano->key_pressed = ags_piano_real_key_pressed;
   piano->key_released = ags_piano_real_key_released;

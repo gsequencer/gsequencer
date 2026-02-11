@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -48,11 +48,14 @@ struct _AgsAudioPreferences
   GtkBox box;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GList *soundcard_editor;
   
   GtkBox *soundcard_editor_box;
+  
+  GtkMenuButton *add_menu_button;
+  GMenuModel *add_menu_button_model;
   
   GtkButton *add;
   
@@ -67,6 +70,10 @@ struct _AgsAudioPreferencesClass
 };
 
 GType ags_audio_preferences_get_type(void);
+
+void ags_audio_preferences_add_soundcard(AgsAudioPreferences *audio_preferences,
+					 gchar *backend,
+					 gboolean is_output);
 
 GList* ags_audio_preferences_get_soundcard_editor(AgsAudioPreferences *audio_preferences);
 void ags_audio_preferences_add_soundcard_editor(AgsAudioPreferences *audio_preferences,

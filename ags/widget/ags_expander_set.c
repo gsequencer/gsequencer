@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -94,7 +94,7 @@ void
 ags_expander_set_class_init(AgsExpanderSetClass *expander_set)
 {
   GObjectClass *gobject;
-  //  GtkWidgetClass *widget;
+  GtkWidgetClass *widget;
   GParamSpec *param_spec;
 
   ags_expander_set_parent_class = g_type_class_peek_parent(expander_set);
@@ -108,7 +108,10 @@ ags_expander_set_class_init(AgsExpanderSetClass *expander_set)
   gobject->finalize = ags_expander_set_finalize;
 
   /* GtkWidgetClass */
-  //  widget = (GtkWidgetClass *) expander_set;
+  widget = (GtkWidgetClass *) expander_set;
+  
+  gtk_widget_class_set_css_name(widget,
+				"ags-expander-set");  
 }
 
 void

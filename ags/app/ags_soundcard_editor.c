@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -250,6 +250,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			   0);
 
+  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->backend,
+			   FALSE);
+  
   y0++;
   
   /* sound card */
@@ -278,40 +281,12 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		   GTK_WIDGET(soundcard_editor->card),
-		   1, y0,
-		   1, 1);
-
-  y0++;
-  
-  /* port */
-  soundcard_editor->port_hbox = NULL;
-  soundcard_editor->add_port = NULL;
-  soundcard_editor->remove_port = NULL;
-
-  soundcard_editor->port_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						       AGS_UI_PROVIDER_DEFAULT_SPACING);
-
-  gtk_widget_set_valign((GtkWidget *) soundcard_editor->port_hbox,
-			GTK_ALIGN_FILL);
-  gtk_widget_set_halign((GtkWidget *) soundcard_editor->port_hbox,
-			GTK_ALIGN_FILL);
-
-  gtk_grid_attach(grid,
-		  GTK_WIDGET(soundcard_editor->port_hbox),
-		  2, y0,
+		  GTK_WIDGET(soundcard_editor->card),
+		  1, y0,
 		  1, 1);
 
-  soundcard_editor->add_port = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Add"));
-  gtk_box_append((GtkBox *) soundcard_editor->port_hbox,
-		 (GtkWidget *) soundcard_editor->add_port);
-  
-  soundcard_editor->remove_port = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
-  gtk_box_append((GtkBox *) soundcard_editor->port_hbox,
-		 (GtkWidget *) soundcard_editor->remove_port);
-
   y0++;
-  
+    
   /* capability */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("capability"),
@@ -355,6 +330,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			   0);
+
+  gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->capability,
+			   FALSE);
   
   y0++;
 
@@ -526,9 +504,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		   GTK_WIDGET(soundcard_editor->use_cache),
-		   0, y0,
-		   2, 1);
+		  GTK_WIDGET(soundcard_editor->use_cache),
+		  0, y0,
+		  2, 1);
 
   y0++;
   
@@ -633,9 +611,9 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		   GTK_WIDGET(soundcard_editor->wasapi_buffer_size),
-		   1, y0,
-		   1, 1);
+		  GTK_WIDGET(soundcard_editor->wasapi_buffer_size),
+		  1, y0,
+		  1, 1);
 
   y0++;
 #else
@@ -646,7 +624,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   soundcard_editor->wasapi_buffer_size = NULL;
 #endif
   
-/*  */
+  /*  */
   //  soundcard_editor->remove = NULL;
 
   soundcard_editor->remove = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Remove"));
@@ -705,14 +683,7 @@ ags_soundcard_editor_connect(AgsConnectable *connectable)
 
   g_signal_connect_after(G_OBJECT(soundcard_editor->card), "changed",
 			 G_CALLBACK(ags_soundcard_editor_card_changed_callback), soundcard_editor);
-
-  /* add / remove port */
-  g_signal_connect(G_OBJECT(soundcard_editor->add_port), "clicked",
-		   G_CALLBACK(ags_soundcard_editor_add_port_callback), soundcard_editor);
-
-  g_signal_connect(G_OBJECT(soundcard_editor->remove_port), "clicked",
-		   G_CALLBACK(ags_soundcard_editor_remove_port_callback), soundcard_editor);
-
+  
   /* presets */
   g_signal_connect_after(G_OBJECT(soundcard_editor->audio_channels), "changed",
 			 G_CALLBACK(ags_soundcard_editor_audio_channels_changed_callback), soundcard_editor);
@@ -750,19 +721,6 @@ ags_soundcard_editor_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(soundcard_editor->card),
 		      "any_signal::changed",
 		      G_CALLBACK(ags_soundcard_editor_card_changed_callback),
-		      soundcard_editor,
-		      NULL);
-
-  /* add / remove port */
-  g_object_disconnect(G_OBJECT(soundcard_editor->add_port),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_soundcard_editor_add_port_callback),
-		      soundcard_editor,
-		      NULL);
-
-  g_object_disconnect(G_OBJECT(soundcard_editor->remove_port),
-		      "any_signal::clicked",
-		      G_CALLBACK(ags_soundcard_editor_remove_port_callback),
 		      soundcard_editor,
 		      NULL);
 
@@ -900,24 +858,24 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 			    11)){
       use_core_audio = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-			    "pulse",
-			    6)){
+				  "pulse",
+				  6)){
       use_pulse = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-			    "jack",
-			    5)){
+				  "jack",
+				  5)){
       use_jack = TRUE;
 
       use_wasapi = FALSE;
       use_core_audio = FALSE;
       use_pulse = FALSE;
     }else if(!g_ascii_strncasecmp(backend,
-			    "wasapi",
-			    7)){
+				  "wasapi",
+				  7)){
       use_wasapi = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-			    "alsa",
-			    5)){
+				  "alsa",
+				  5)){
       use_alsa = TRUE;
 
       use_wasapi = FALSE;
@@ -1068,39 +1026,41 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 #ifdef AGS_DEBUG
   g_message("%s", device);
 #endif
-  
-  if(use_core_audio){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_pulse){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_jack){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_wasapi){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_alsa){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }else if(use_oss){
-    ags_config_set_value(config,
-			 soundcard_group,
-			 "device",
-			 device);
-  }
 
+  if(soundcard_editor->soundcard != NULL){
+    if(use_core_audio){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_pulse){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_jack){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_wasapi){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_alsa){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }else if(use_oss){
+      ags_config_set_value(config,
+			   soundcard_group,
+			   "device",
+			   device);
+    }
+  }
+  
   if(AGS_IS_PULSE_DEVOUT(soundcard_editor->soundcard) ||
      AGS_IS_CORE_AUDIO_DEVOUT(soundcard_editor->soundcard)){
     ags_config_set_value(config,
@@ -1146,7 +1106,8 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   GObject *soundcard;
 
   GList *start_list;	
-  GList *card_id, *card_id_start, *card_name, *card_name_start;
+  GList *card_id, *start_card_id;
+  GList *card_name, *start_card_name;
 
   gchar *backend, *device, *tmp;
 #if defined AGS_WITH_WASAPI
@@ -1300,7 +1261,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       -1);
 #endif
       
-      //      ags_soundcard_editor_load_core_audio_card(soundcard_editor);
+      // ags_soundcard_editor_load_core_audio_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "pulse",
 				  6)){
@@ -1370,16 +1331,16 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard));
   
   card_id = 
-    card_id_start = NULL;
+    start_card_id = NULL;
 
   card_name = 
-    card_name_start = NULL;
+    start_card_name = NULL;
 
   ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard),
-			   &card_id_start, &card_name_start);
+			   &start_card_id, &start_card_name);
 
-  card_id = card_id_start;
-  card_name = card_name_start;
+  card_id = start_card_id;
+  card_name = start_card_name;
   
   nth = 0;
   found_card = FALSE;
@@ -1388,7 +1349,11 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 
   while(card_id != NULL){
     //FIXME:JK: work-around for alsa-handle
+#ifdef AGS_WITH_CORE_AUDIO
+    tmp = card_name->data;
+#else
     tmp = card_id->data;
+#endif
         
     if(tmp != NULL &&
        device != NULL){
@@ -1423,12 +1388,11 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->card),
 			   nth);
 
-  if(card_id_start != NULL){
-    g_list_free_full(card_id_start,
-		     g_free);
-    g_list_free_full(card_name_start,
-		     g_free);
-  }
+  g_list_free_full(start_card_id,
+		   (GDestroyNotify) g_free);
+
+  g_list_free_full(start_card_name,
+		   (GDestroyNotify) g_free);
 
   /* capability */
   switch(capability){
@@ -1672,1071 +1636,39 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 }
 
 void
-ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
-			      gchar *device)
-{
-  AgsPulseServer *pulse_server;
-  AgsPulseDevout *pulse_devout;
-
-  AgsJackServer *jack_server;
-  AgsJackDevout *jack_devout;
-
-  AgsCoreAudioServer *core_audio_server;
-  AgsCoreAudioDevout *core_audio_devout;
-
-  AgsThread *main_loop;
-  AgsThread *soundcard_thread, *default_soundcard_thread;
-  AgsThread *export_thread;
-  
-  AgsApplicationContext *application_context;
-
-  GObject *soundcard;
-  
-  GType server_type;
-  
-  GList *start_sound_server, *sound_server;
-  GList *start_soundcard;
-  GList *card_name, *card_uri;
-
-  gchar *backend;
-
-  guint pcm_channels;
-  guint buffer_size;
-  AgsSoundcardFormat format;
-  guint samplerate;
-  gboolean use_core_audio, use_pulse, use_jack;
-  gboolean is_output;
-  gboolean initial_soundcard;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  core_audio_server = NULL;
-  core_audio_devout = NULL;
-  
-  pulse_server = NULL;
-  pulse_devout = NULL;
-  
-  jack_server = NULL;
-  jack_devout = NULL;
-
-  soundcard = NULL;
-    
-  server_type = G_TYPE_NONE;
-  
-  backend = NULL;
-
-  use_core_audio = FALSE;
-  use_pulse = FALSE;
-  use_jack = FALSE;
-
-  is_output = (gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->capability)) == 0) ? TRUE: FALSE;
-  
-  initial_soundcard = FALSE;
-
-  /* determine backend */
-  backend = gtk_combo_box_text_get_active_text(soundcard_editor->backend);
-
-  if(backend != NULL){
-    if(!g_ascii_strncasecmp(backend,
-			    "core-audio",
-			    11)){
-      server_type = AGS_TYPE_CORE_AUDIO_SERVER;
-      
-      use_core_audio = TRUE;
-    }else if(!g_ascii_strncasecmp(backend,
-			    "pulse",
-			    6)){
-      server_type = AGS_TYPE_PULSE_SERVER;
-      
-      use_pulse = TRUE;
-    }else if(!g_ascii_strncasecmp(backend,
-			    "jack",
-			    5)){
-      server_type = AGS_TYPE_JACK_SERVER;
-
-      use_jack = TRUE;
-    }
-  }
-
-  /* presets */
-  pcm_channels = gtk_spin_button_get_value_as_int(soundcard_editor->audio_channels);
-  samplerate = gtk_spin_button_get_value_as_int(soundcard_editor->samplerate);
-  buffer_size = gtk_spin_button_get_value_as_int(soundcard_editor->buffer_size);
-  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-
-  switch(gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->format))){
-  case 0:
-    {
-      format = AGS_SOUNDCARD_SIGNED_8_BIT;
-    }
-    break;
-  case 1:
-    {
-      format = AGS_SOUNDCARD_SIGNED_16_BIT;
-    }
-    break;
-  case 2:
-    {
-      format = AGS_SOUNDCARD_SIGNED_24_BIT;
-    }
-    break;
-  case 3:
-    {
-      format = AGS_SOUNDCARD_SIGNED_32_BIT;
-    }
-    break;
-  case 4:
-    {
-      format = AGS_SOUNDCARD_SIGNED_64_BIT;
-    }
-    break;
-  case 5:
-    {
-      format = AGS_SOUNDCARD_FLOAT;
-    }
-    break;
-  case 6:
-    {
-      format = AGS_SOUNDCARD_DOUBLE;
-    }
-    break;
-  }
-  
-  
-  /* create soundcard */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if((sound_server = ags_list_util_find_type(start_sound_server,
-					     server_type)) != NULL){
-    if(use_core_audio){
-      GValue *param_value = g_new0(GValue,
-				   4);
-	
-      gchar **param_strv = (gchar **) g_malloc(5 * sizeof(gchar *));
-
-      param_strv[0] = g_strdup("pcm-channels");
-      param_strv[1] = g_strdup("buffer-size");
-      param_strv[2] = g_strdup("format");
-      param_strv[3] = g_strdup("samplerate");
-      param_strv[4] = NULL;
-
-      g_value_init(param_value, G_TYPE_UINT);
-      g_value_set_uint(param_value,
-		       pcm_channels);
-	
-      g_value_init(param_value + 1, G_TYPE_UINT);
-      g_value_set_uint(param_value + 1,
-		       buffer_size);
-
-      g_value_init(param_value + 2, G_TYPE_UINT);
-      g_value_set_uint(param_value + 2,
-		       format);
-
-      g_value_init(param_value + 3, G_TYPE_UINT);
-      g_value_set_uint(param_value + 3,
-		       samplerate);
-      
-      core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
-
-      core_audio_devout = (AgsCoreAudioDevout *) ags_sound_server_register_soundcard_with_params(AGS_SOUND_SERVER(core_audio_server),
-												 is_output,
-												 (gchar **) param_strv, param_value);
-      soundcard = (GObject *) core_audio_devout;
-
-      g_strfreev(param_strv);
-      g_free(param_value);
-    }else if(use_pulse){
-      pulse_server = AGS_PULSE_SERVER(sound_server->data);
-
-      pulse_devout = (AgsPulseDevout *) ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
-									    is_output);
-      soundcard = (GObject *) pulse_devout;
-    }else if(use_jack){
-      jack_server = AGS_JACK_SERVER(sound_server->data);
-
-      jack_devout = (AgsJackDevout *) ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
-									  is_output);
-      soundcard = (GObject *) jack_devout;
-    }
-  }else{
-    g_warning("sound server not found");
-
-    g_list_free_full(start_sound_server,
-		     g_object_unref);
-    
-    return;
-  }
-
-  if(soundcard == NULL){
-    g_list_free_full(start_sound_server,
-		     g_object_unref);
-
-    return;
-  }
-  
-  /* add new */
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  
-  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
-    initial_soundcard = TRUE;
-  }
-
-  soundcard_editor->soundcard = soundcard;
-
-  if(soundcard != NULL){
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-    g_list_foreach(start_soundcard,
-		   (GFunc) g_object_unref,
-		   NULL);
-  
-    start_soundcard = g_list_append(start_soundcard,
-				    soundcard);
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				     start_soundcard);
-
-    /* add AgsAudio to AgsSoundcard */
-#if 0
-    if(initial_soundcard){
-      GList *start_machine, *machine;
-      GList *start_list, *list;
-    
-      machine = 
-	start_machine = ags_window_get_machine(window);
-
-      while(machine != NULL){
-	g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
-  
-	list =
-	  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-	g_list_foreach(start_list,
-		       (GFunc) g_object_unref,
-		       NULL);
-      
-	list = g_list_append(start_list,
-			     AGS_MACHINE(machine->data)->audio);
-	ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-				     start_list);
-
-	machine = machine->next;
-      }
-      g_list_free(start_machine);
-    }
-#endif
-      
-    g_object_ref(soundcard);
-
-    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard,
-							      ags_soundcard_get_capability(AGS_SOUNDCARD(soundcard)));
-    soundcard_editor->soundcard_thread = (GObject *) soundcard_thread;
-  
-    ags_thread_add_child_extended(main_loop,
-				  soundcard_thread,
-				  TRUE, TRUE);
-
-    if((default_soundcard_thread = (AgsThread *) ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
-      ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
-						      (GObject *) soundcard_thread);
-    }else{
-      g_object_unref(default_soundcard_thread);
-    }
-
-    /* export thread */
-    export_thread = (AgsThread *) ags_export_thread_new(soundcard,
-							NULL);
-    ags_thread_add_child_extended(main_loop,
-				  (AgsThread *) export_thread,
-				  TRUE, TRUE);
-  }
-  
-  /*  */
-  card_name = NULL;
-  card_uri = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(soundcard),
-			   &card_uri, &card_name);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_uri != NULL){
-    if(card_uri->data != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_uri->data);
-    }
-    
-    card_uri = card_uri->next;
-  }
-
-  /* unref */
-  g_object_unref(main_loop);
-}
-
-void
-ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
-				 gchar *device)
-{
-  AgsCoreAudioServer *core_audio_server;
-  AgsCoreAudioDevout *core_audio_devout;
-
-  AgsPulseServer *pulse_server;
-  AgsPulseDevout *pulse_devout;
-
-  AgsJackServer *jack_server;
-  AgsJackDevout *jack_devout;
-
-  AgsApplicationContext *application_context;
-  AgsThread *main_loop;
-
-  GObject *soundcard;
-
-  GType server_type;
-
-  GList *start_machine, *machine;
-  GList *start_sound_server, *sound_server;
-  GList *start_list, *list;
-  GList *card_id;
-
-  gchar *backend;
-  
-  gboolean use_core_audio, use_pulse, use_jack;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  core_audio_server = NULL;
-  core_audio_devout = NULL;
-  
-  pulse_server = NULL;
-  pulse_devout = NULL;
-  
-  jack_server = NULL;
-  jack_devout = NULL;
-
-  soundcard = NULL;
-
-  server_type = G_TYPE_NONE;
-  
-  backend = NULL;
-
-  use_core_audio = FALSE;
-  use_pulse = FALSE;
-  use_jack = FALSE;
-
-  /* determine backend */
-  backend = gtk_combo_box_text_get_active_text(soundcard_editor->backend);
-
-  if(backend != NULL){
-    if(!g_ascii_strncasecmp(backend,
-			    "core-audio",
-			    6)){
-      server_type = AGS_TYPE_CORE_AUDIO_SERVER;
-      
-      use_core_audio = TRUE;
-    }else if(!g_ascii_strncasecmp(backend,
-				  "pulse",
-				  6)){
-      server_type = AGS_TYPE_PULSE_SERVER;
-      
-      use_pulse = TRUE;
-    }else if(!g_ascii_strncasecmp(backend,
-				  "jack",
-				  5)){
-      server_type = AGS_TYPE_JACK_SERVER;
-
-      use_jack = TRUE;
-    }
-  }
-  
-  /* destroy soundcard */
-  start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if((sound_server = ags_list_util_find_type(start_sound_server,
-					     server_type)) == NULL){    
-    g_list_free_full(start_sound_server,
-		     g_object_unref);
-    
-    g_warning("sound server not found");
-    
-    return;
-  }
-
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  list =
-    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  while(list != NULL){
-    if(use_core_audio){
-      if(AGS_IS_CORE_AUDIO_DEVOUT(list->data) &&
-	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
-			     device)){
-	core_audio_devout = list->data;
-	soundcard = (GObject *) core_audio_devout;
-
-	break;
-      }
-    }else if(use_pulse){
-      if(AGS_IS_PULSE_DEVOUT(list->data) &&
-	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
-			     device)){
-	pulse_devout = list->data;
-	soundcard = (GObject *) pulse_devout;
-
-	break;
-      }
-    }else if(use_jack){
-      if(AGS_IS_JACK_DEVOUT(list->data) &&
-	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
-			     device)){
-	jack_devout = list->data;
-	soundcard = (GObject *) jack_devout;
-	
-	break;
-      }
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free_full(start_list,
-		   g_object_unref);
-  
-  if(soundcard == NULL){
-    return;
-  }
-
-  /* remove AgsSoundcard from AgsAudio */
-#if 0    
-  machine = 
-    start_machine = ags_window_get_machine(window);
-  
-  while(machine != NULL){
-    if(AGS_MACHINE(machine->data)->audio->soundcard == soundcard){
-      g_object_set(AGS_MACHINE(machine->data)->audio,
-		   "soundcard", NULL,
-		   NULL);
-
-      g_object_unref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
-    }
-    
-    machine = machine->next;
-  }
-
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-			       NULL);
-  g_list_free(start_machine);
-#endif
-  
-  /*  */
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-  gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
-			   -1);
-
-#if 0
-  if(server != NULL){
-    ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(server),
-					  soundcard);
-  }
-#endif
-  
-  /* remove */
-  if(soundcard == soundcard_editor->soundcard){
-    soundcard_editor->soundcard = NULL;
-  }
-    
-#if 0  
-  if(soundcard != NULL){
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				     g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
-						   soundcard));
-    g_object_unref(soundcard);
-  }
-  
-  if(soundcard_editor->soundcard_thread != NULL){
-    ags_thread_stop((AgsThread *) soundcard_editor->soundcard_thread);
-
-    ags_thread_remove_child(main_loop,
-			    (AgsThread *) soundcard_editor->soundcard_thread);
-    
-    //    g_object_unref(soundcard_editor->soundcard_thread);
-    
-    soundcard_editor->soundcard_thread = NULL;
-  }
-#endif
-
-  /* unref */
-  g_object_unref(main_loop);
-}
-
-void
-ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
-				   GObject *soundcard)
-{
-  AgsThread *main_loop;
-  AgsThread *soundcard_thread, *default_soundcard_thread;
-  AgsThread *export_thread;
-  
-  AgsApplicationContext *application_context;
-
-  GList *start_list;
-  
-  gboolean initial_soundcard;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  if(soundcard == NULL ||
-     AGS_IS_CORE_AUDIO_DEVOUT(soundcard) ||
-     AGS_IS_PULSE_DEVOUT(soundcard) ||
-     AGS_IS_JACK_DEVOUT(soundcard)){
-    return;
-  }
-
-  if((AGS_SOUNDCARD_EDITOR_BLOCK_ADD & (soundcard_editor->flags)) != 0){
-    return;
-  }
-
-  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_ADD;
-
-  application_context = ags_application_context_get_instance();
-
-  initial_soundcard = FALSE;
-  
-  if(AGS_IS_ALSA_DEVOUT(soundcard)){
-    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			     "hw:0,0");
-  }else if(AGS_IS_OSS_DEVOUT(soundcard)){
-    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
-			     "/dev/dsp0");
-  }else if(AGS_IS_WASAPI_DEVOUT(soundcard)){
-    //nothing
-  }else{
-    g_warning("unknown soundcard implementation");
-  }
-  
-  /*  */
-  start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  if(g_list_find(start_list,
-		 soundcard) != NULL){
-    soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_ADD);
-
-    g_list_free_full(start_list,
-		     g_object_unref);
-    
-    return;
-  }
-
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  if(start_list == NULL){
-    initial_soundcard = TRUE;
-  }
-  
-  soundcard_editor->soundcard = soundcard;
-
-  g_list_foreach(start_list,
-		 (GFunc) g_object_unref,
-		 NULL);
-
-  start_list = g_list_append(start_list,
-			     soundcard);
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				   start_list);
-
-  /* add AgsAudio to AgsSoundcard */
-#if 0
-  if(initial_soundcard){
-    GList *start_machine, *machine;
-    GList *list;
-    
-    machine = 
-      start_machine = ags_window_get_machine(window);
-
-    while(machine != NULL){
-      g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
-  
-      list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-      list = g_list_prepend(list,
-			    AGS_MACHINE(machine->data)->audio);
-      ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-				   list);
-
-      g_object_set(AGS_MACHINE(machine->data)->audio,
-		   "soundcard", soundcard,
-		   NULL);
-      
-      machine = machine->next;
-    }
-
-  
-    g_list_free(start_machine);
-  }
-#endif
-  
-  g_object_ref(soundcard);
-
-  soundcard_thread = (AgsThread *) ags_soundcard_thread_new(soundcard,
-							    ags_soundcard_get_capability(AGS_SOUNDCARD(soundcard)));
-  soundcard_editor->soundcard_thread = (GObject *) soundcard_thread;
-  
-  ags_thread_add_child_extended(main_loop,
-				soundcard_thread,
-				TRUE, TRUE);
-
-  if((default_soundcard_thread = (AgsThread *) ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context))) == NULL){
-    ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
-						    (GObject *) soundcard_thread);
-  }else{
-    g_object_unref(default_soundcard_thread);
-  }
-  
-  /* export thread */
-  export_thread = (AgsThread *) ags_export_thread_new(soundcard,
-						      NULL);
-  ags_thread_add_child_extended(main_loop,
-				(AgsThread *) export_thread,
-				TRUE, TRUE);
-
-  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_ADD);
-
-  /* unref */
-  g_object_unref(main_loop);
-}
-
-void
-ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
-				      GObject *soundcard)
-{
-  AgsThread *main_loop;
-  AgsThread *soundcard_thread;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_machine, *machine;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  if(soundcard == NULL ||
-     AGS_IS_CORE_AUDIO_DEVOUT(soundcard) ||
-     AGS_IS_PULSE_DEVOUT(soundcard) ||
-     AGS_IS_JACK_DEVOUT(soundcard)){
-    return;
-  }
-  
-  application_context = ags_application_context_get_instance();
-
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  /* remove AgsSoundcard from AgsAudio */
-#if 0
-  machine = 
-    start_machine = ags_window_get_machine(window);
-  
-  while(machine != NULL){
-    if(AGS_MACHINE(machine->data)->audio->soundcard == soundcard){
-      g_object_set(AGS_MACHINE(machine->data)->audio,
-		   "soundcard", NULL,
-		   NULL);
-
-      g_object_unref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
-    }
-    
-    machine = machine->next;
-  }
-
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-			       NULL);
-  g_list_free(start_machine);
-#endif
-  
-  /*  */  
-  if(soundcard == soundcard_editor->soundcard){
-    soundcard_editor->soundcard = NULL;
-  }
-  
-#if 0
-  if(soundcard != NULL){
-    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(application_context),
-				     g_list_remove(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
-						   soundcard));
-    g_object_unref(soundcard);
-  }
-#endif
-
-#if 0
-  if(soundcard_editor->soundcard_thread != NULL){
-    ags_thread_stop((AgsThread *) soundcard_editor->soundcard_thread);
-
-    ags_thread_remove_child(main_loop,
-			    (AgsThread *) soundcard_editor->soundcard_thread);
-    
-    //    g_object_unref(soundcard_editor->soundcard_thread);
-    
-    soundcard_editor->soundcard_thread = NULL;
-  }
-#endif
-
-  /* unref */
-  g_object_unref(main_loop);
-}
-
-void
 ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsCoreAudioDevout *core_audio_devout;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_soundcard, *soundcard;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  /* create soundcard */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if(sound_server == NULL){
-    g_warning("sound server not found");
-
-    return;
-  }
-
-  soundcard =
-   start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  core_audio_devout = NULL;
-  
-  while(soundcard != NULL){
-    if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard->data)){
-      core_audio_devout = soundcard->data;
-      break;
-    }
-    
-    soundcard = soundcard->next;
-  }
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(core_audio_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* unref */
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-  
-  g_list_free_full(start_soundcard,
-		   g_object_unref);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsPulseDevout *pulse_devout;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_soundcard, *soundcard;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  /* create soundcard */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if(sound_server == NULL){
-    g_warning("sound server not found");
-
-    return;
-  }
-
-  soundcard =
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  pulse_devout = NULL;
-  
-  while(soundcard != NULL){
-    if(AGS_IS_PULSE_DEVOUT(soundcard->data)){
-      pulse_devout = soundcard->data;
-      break;
-    }
-    
-    soundcard = soundcard->next;
-  }
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(pulse_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* unref */
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-  
-  g_list_free_full(start_soundcard,
-		   g_object_unref);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsJackDevout *jack_devout;
-
-  AgsApplicationContext *application_context;
-
-  GList *start_sound_server, *sound_server;
-  GList *start_soundcard, *soundcard;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  application_context = ags_application_context_get_instance();
-
-  /* create soundcard */
-  sound_server =
-    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-
-  if(sound_server == NULL){
-    g_warning("sound server not found");
-
-    return;
-  }
-
-  soundcard =
-    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  jack_devout = NULL;
-  
-  while(soundcard != NULL){
-    if(AGS_IS_JACK_DEVOUT(soundcard->data)){
-      jack_devout = soundcard->data;
-      break;
-    }
-    
-    soundcard = soundcard->next;
-  }
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(jack_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id->data != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* unref */
-  g_list_free_full(start_sound_server,
-		   g_object_unref);
-  
-  g_list_free_full(start_soundcard,
-		   g_object_unref);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_wasapi_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsAudioPreferences *audio_preferences;
-  
-  AgsWasapiDevout *wasapi_devout;
-
-  GList *start_list;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-
-  if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
-    return;
-  }
-
-  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
-
-  /*  */
-  wasapi_devout = g_object_new(AGS_TYPE_WASAPI_DEVOUT,
-			       NULL);
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(wasapi_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id != NULL){
-      if(card_id->data != NULL){
-	gtk_combo_box_text_append_text(soundcard_editor->card,
-				       card_id->data);
-      }else{
-	gtk_combo_box_text_append_text(soundcard_editor->card,
-				       "(null)");
-      }
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* remove previous */
-  if(soundcard_editor->soundcard != NULL){
-    ags_soundcard_editor_remove_soundcard(soundcard_editor,
-					  (GObject *) soundcard_editor->soundcard);
-  }
-
-  /* add new */
-  ags_soundcard_editor_add_soundcard(soundcard_editor,
-				     (GObject *) wasapi_devout);
-
-  /*  */  
-  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_alsa_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsAudioPreferences *audio_preferences;
-
-  AgsAlsaDevout *alsa_devout;
-
-  GList *start_list;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-  
-  if((AGS_SOUNDCARD_EDITOR_BLOCK_LOAD & (soundcard_editor->flags)) != 0){
-    return;
-  }
-
-  soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_LOAD;
-
-  /*  */
-  alsa_devout = g_object_new(AGS_TYPE_ALSA_DEVOUT,
-			NULL);
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(alsa_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* remove previous */
-  if(soundcard_editor->soundcard != NULL){
-    ags_soundcard_editor_remove_soundcard(soundcard_editor,
-					  (GObject *) soundcard_editor->soundcard);
-  }
-
-  /* add new */
-  ags_soundcard_editor_add_soundcard(soundcard_editor,
-				     (GObject *) alsa_devout);
-
-  /*  */  
-  soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_LOAD);
+  //empty
 }
 
 void
 ags_soundcard_editor_load_oss_card(AgsSoundcardEditor *soundcard_editor)
 {
-  AgsAudioPreferences *audio_preferences;
-
-  AgsOssDevout *oss_devout;
-
-  GList *start_list;
-  GList *card_id;
-
-  if(!AGS_IS_SOUNDCARD_EDITOR(soundcard_editor)){
-    return;
-  }
-  
-  /*  */
-  oss_devout = g_object_new(AGS_TYPE_OSS_DEVOUT,
-			    NULL);
-
-  card_id = NULL;
-  ags_soundcard_list_cards(AGS_SOUNDCARD(oss_devout),
-			   &card_id, NULL);
-
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card))));
-
-  while(card_id != NULL){
-    if(card_id != NULL){
-      gtk_combo_box_text_append_text(soundcard_editor->card,
-				     card_id->data);
-    }
-    
-    card_id = card_id->next;
-  }
-
-  /* remove previous */
-  if(soundcard_editor->soundcard != NULL){
-    ags_soundcard_editor_remove_soundcard(soundcard_editor,
-					  (GObject *) soundcard_editor->soundcard);
-  }
-
-  /* add new */
-  ags_soundcard_editor_add_soundcard(soundcard_editor,
-				     (GObject *) oss_devout);
-
-  /*  */
+  //empty
 }
 
 void

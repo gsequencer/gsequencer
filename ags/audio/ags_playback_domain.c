@@ -597,7 +597,6 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
     }
     
     g_object_run_dispose((GObject *) playback_domain->audio_thread[sound_scope]);
-    g_object_unref((GObject *) playback_domain->audio_thread[sound_scope]);
   }
 
   if(thread != NULL){

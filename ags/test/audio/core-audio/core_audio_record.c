@@ -160,6 +160,9 @@ main(int argc, char **argv)
   host_get_clock_service(mach_host_self(), SYSTEM_CLOCK, &cclock);
 
   clock_get_time(cclock, &start_time);
+
+  current_time.tv_sec = 0;
+  current_time.tv_nsec = 0;
   
   while(current_time.tv_sec > start_time.tv_sec + duration){
     clock_get_time(cclock, &current_time);

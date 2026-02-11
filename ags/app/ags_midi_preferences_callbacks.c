@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,67 +32,116 @@ void
 ags_midi_preferences_notify_parent_callback(GObject *gobject,
 					    GParamSpec *pspec,
 					    gpointer user_data)
-{  
-  AgsMidiPreferences *midi_preferences;
-
-  midi_preferences = (AgsMidiPreferences *) gobject;
-  
-  if(midi_preferences->add == NULL) {
-    AgsPreferences *preferences;
-    
-    AgsApplicationContext *application_context;
-    
-    application_context = ags_application_context_get_instance();
-    
-    preferences = (AgsPreferences *) ags_ui_provider_get_preferences(AGS_UI_PROVIDER(application_context));
-    
-    midi_preferences->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
-    gtk_box_prepend(preferences->action_area,
-		    (GtkWidget *) midi_preferences->add);
-  }
+{
+  //empty
 }
 
 void
-ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_preferences)
+ags_midi_preferences_add_alsa_output_sequencer_callback(GAction *action, GVariant *parameter,
+							AgsMidiPreferences *midi_preferences)
 {
-  AgsSequencerEditor *sequencer_editor;
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "alsa",
+				     TRUE);
+}
 
-  AgsThread *main_loop;
-  
-  AgsApplicationContext *application_context;
+void
+ags_midi_preferences_add_alsa_input_sequencer_callback(GAction *action, GVariant *parameter,
+						       AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "alsa",
+				     FALSE);
+}
 
-  GObject *sequencer;
+void
+ags_midi_preferences_add_oss_output_sequencer_callback(GAction *action, GVariant *parameter,
+						       AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "oss",
+				     TRUE);
+}
 
-  GList *start_list, *list;
+void
+ags_midi_preferences_add_oss_input_sequencer_callback(GAction *action, GVariant *parameter,
+						      AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "oss",
+				     FALSE);
+}
 
-  application_context = ags_application_context_get_instance();
+void
+ags_midi_preferences_add_jack_output_sequencer_callback(GAction *action, GVariant *parameter,
+							AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "jack",
+				     TRUE);
+}
 
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  
-  /* sequencer */
-  sequencer = NULL;
-  
-  /* sequencer editor */
-  sequencer_editor = ags_sequencer_editor_new();
+void
+ags_midi_preferences_add_jack_input_sequencer_callback(GAction *action, GVariant *parameter,
+						       AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "jack",
+				     FALSE);
+}
 
-  if(sequencer != NULL){
-    sequencer_editor->sequencer = sequencer;
-    sequencer_editor->sequencer_thread = (GObject *) ags_thread_find_type(main_loop,
-									  AGS_TYPE_SEQUENCER_THREAD);
-  }
+void
+ags_midi_preferences_add_pulse_output_sequencer_callback(GAction *action, GVariant *parameter,
+							 AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "pulse",
+				     TRUE);
+}
 
-  ags_midi_preferences_add_sequencer_editor(midi_preferences,
-					    sequencer_editor);
-  
-  ags_applicable_reset(AGS_APPLICABLE(sequencer_editor));
-  ags_connectable_connect(AGS_CONNECTABLE(sequencer_editor));
+void
+ags_midi_preferences_add_pulse_input_sequencer_callback(GAction *action, GVariant *parameter,
+							AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "pulse",
+				     FALSE);
+}
 
-  g_signal_connect(sequencer_editor->remove, "clicked",
-		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
+void
+ags_midi_preferences_add_core_midi_output_sequencer_callback(GAction *action, GVariant *parameter,
+							     AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "core-midi",
+				     TRUE);
+}
 
-  gtk_widget_show((GtkWidget *) sequencer_editor);
+void
+ags_midi_preferences_add_core_midi_input_sequencer_callback(GAction *action, GVariant *parameter,
+							    AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "core-midi",
+				     FALSE);
+}
 
-  g_object_unref(G_OBJECT(main_loop));
+void
+ags_midi_preferences_add_wasapi_output_sequencer_callback(GAction *action, GVariant *parameter,
+							  AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "wasapi",
+				     TRUE);
+}
+
+void
+ags_midi_preferences_add_wasapi_input_sequencer_callback(GAction *action, GVariant *parameter,
+							 AgsMidiPreferences *midi_preferences)
+{
+  ags_midi_preferences_add_sequencer(midi_preferences,
+				     "wasapi",
+				     FALSE);
 }
 
 void
@@ -103,11 +152,6 @@ ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
   
   sequencer_editor = (AgsSequencerEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SEQUENCER_EDITOR);
-
-  if(!AGS_IS_JACK_DEVOUT(sequencer_editor->sequencer)){
-    ags_sequencer_editor_remove_sequencer(sequencer_editor,
-					  sequencer_editor->sequencer);
-  }
 
   ags_midi_preferences_remove_sequencer_editor(midi_preferences,
 					       sequencer_editor);

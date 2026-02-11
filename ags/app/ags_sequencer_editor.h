@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,12 +42,20 @@ G_BEGIN_DECLS
 typedef struct _AgsSequencerEditor AgsSequencerEditor;
 typedef struct _AgsSequencerEditorClass AgsSequencerEditorClass;
 
+typedef enum{
+  AGS_SEQUENCER_EDITOR_BLOCK_RESET   = 1 <<  1,
+  AGS_SEQUENCER_EDITOR_BLOCK_BACKEND = 1 <<  2,
+  AGS_SEQUENCER_EDITOR_BLOCK_CARD    = 1 <<  3,
+  AGS_SEQUENCER_EDITOR_BLOCK_ADD     = 1 <<  4,
+  AGS_SEQUENCER_EDITOR_BLOCK_LOAD    = 1 <<  5,
+}AgsSequencerEditorFlags;
+
 struct _AgsSequencerEditor
 {
   GtkBox box;
 
   guint flags;
-  guint connectable_flags;
+  AgsConnectableFlags connectable_flags;
   
   GObject *sequencer;
   GObject *sequencer_thread;
@@ -70,16 +78,6 @@ struct _AgsSequencerEditorClass
 };
 
 GType ags_sequencer_editor_get_type(void);
-
-void ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
-				     gchar *device);
-void ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
-					gchar *device);
-
-void ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
-					GObject *sequencer);
-void ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
-					   GObject *sequencer);
 
 void ags_sequencer_editor_load_alsa_card(AgsSequencerEditor *sequencer_editor);
 void ags_sequencer_editor_load_oss_card(AgsSequencerEditor *sequencer_editor);

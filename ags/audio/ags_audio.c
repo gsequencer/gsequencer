@@ -13708,7 +13708,7 @@ ags_audio_real_play_recall(AgsAudio *audio,
 						    AGS_SOUND_STAGING_RUN_POST |
 						    AGS_SOUND_STAGING_DO_FEEDBACK |
 						    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE |
-						    AGS_SOUND_STAGING_DONE |
+						    // AGS_SOUND_STAGING_DONE |
 						    AGS_SOUND_STAGING_CANCEL |
 						    AGS_SOUND_STAGING_REMOVE |
 						    AGS_SOUND_STAGING_FINI);
@@ -14478,6 +14478,8 @@ ags_audio_real_start(AgsAudio *audio,
     return(NULL);
   }
 
+  //  g_message("audio start - 0x%x", audio);
+  
   application_context = ags_application_context_get_instance();
 
   audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
@@ -14987,6 +14989,8 @@ ags_audio_real_stop(AgsAudio *audio,
     return;
   }
 
+  //  g_message("audio stop - 0x%x", audio);
+  
   list = recall_id;
 
   while(list != NULL){
@@ -15008,13 +15012,14 @@ ags_audio_real_stop(AgsAudio *audio,
 	       "output-playback", &start_output_playback,
 	       NULL);
 
+  /* run stage cancel */
   if(sound_scope >= 0){
-    ags_audio_recursive_run_stage(audio,
-				  sound_scope, AGS_SOUND_STAGING_DONE);
+    //    ags_audio_recursive_run_stage(audio,
+    //				  sound_scope, AGS_SOUND_STAGING_DONE);
 
     /* cancel */
     ags_audio_recursive_run_stage(audio,
-				  sound_scope, staging_flags);
+    				  sound_scope, staging_flags);
 
     /* clean - fini */
     ags_audio_recursive_run_stage(audio,
@@ -15023,15 +15028,16 @@ ags_audio_real_stop(AgsAudio *audio,
     /* stop thread */
     audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							sound_scope);
-
+    
     if(audio_thread != NULL){
+      /* unset processing */
       ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 				      FALSE);
-
+      
       ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
 						       (GObject *) audio,
 						       sound_scope);
-
+      
       g_object_unref(audio_thread);
     }
 
@@ -15050,13 +15056,14 @@ ags_audio_real_stop(AgsAudio *audio,
 						       sound_scope);
 
       if(channel_thread != NULL){
+	/* unset processing */
 	ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					  FALSE);
-
+	
 	ags_audio_tree_dispatcher_remove_dispatch_source(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
 							 (GObject *) audio,
 							 sound_scope);
-							 
+	  
 	g_object_unref(channel_thread);
       }
 
@@ -15082,8 +15089,8 @@ ags_audio_real_stop(AgsAudio *audio,
     }
   }else{
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
-      ags_audio_recursive_run_stage(audio,
-				    sound_scope, AGS_SOUND_STAGING_DONE);
+      //      ags_audio_recursive_run_stage(audio,
+      //			    sound_scope, AGS_SOUND_STAGING_DONE);
 
       /* cancel */
       ags_audio_recursive_run_stage(audio,
@@ -15100,13 +15107,14 @@ ags_audio_real_stop(AgsAudio *audio,
 							  i);
 
       if(audio_thread != NULL){
+	/* unset processing */
 	ags_audio_thread_set_processing((AgsAudioThread *) audio_thread,
 					FALSE);
-
+	
 	ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
 							 (GObject *) audio,
 							 sound_scope);
-
+      
 	g_object_unref(audio_thread);
       }
 
@@ -15125,12 +15133,14 @@ ags_audio_real_stop(AgsAudio *audio,
 							 i);
 
 	if(channel_thread != NULL){
+	  /* unset processing */
 	  ags_channel_thread_set_processing((AgsChannelThread *) channel_thread,
 					    FALSE);
-
+	  
 	  ags_audio_tree_dispatcher_remove_dispatch_source(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
 							   (GObject *) audio,
 							   sound_scope);
+	  
 	  g_object_unref(channel_thread);
 	}
 
@@ -15166,6 +15176,11 @@ ags_audio_real_stop(AgsAudio *audio,
 			       (GObject *) list->data);
     
     list = list->next;
+  }
+
+  /* audio processing */
+  if(audio->recall_id == NULL){
+
   }
 
   /* remove audio from AgsAudioLoop */
