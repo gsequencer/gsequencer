@@ -1679,12 +1679,12 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
       ags_sound_resource_seek(AGS_SOUND_RESOURCE(sample),
 			      0, G_SEEK_SET);
 
-      g_printf("SFZ fill cache ...");
+      // g_printf("SFZ fill cache ...\n");
       
       for(k = 0; k < sample_frame_count; ){
 	current_cache = cache;
 
-	g_printf(".");      
+	//	g_printf(".");      
       
 	switch(sample_format){
 	case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -1741,7 +1741,7 @@ ags_sfz_synth_util_load_instrument(AgsSFZSynthUtil *sfz_synth_util)
       
       g_rec_mutex_unlock(sfz_sample_mutex);
 
-      g_printf("\n");
+      //      g_printf("\n");
     }
     
     sfz_synth_util->sfz_orig_buffer_length[i] = sample_frame_count;

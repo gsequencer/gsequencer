@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -698,11 +698,9 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   /* delay and attack */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devout));
   
-  alsa_devout->delay = (gdouble *) malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD *
-					  sizeof(gdouble));
+  alsa_devout->delay = (gdouble *) g_malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(gdouble));
   
-  alsa_devout->attack = (guint *) malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(guint));
+  alsa_devout->attack = (guint *) g_malloc(2 * (int) AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
 
   alsa_devout->note_256th_delay = absolute_delay / 16.0;
 
@@ -755,10 +753,23 @@ ags_alsa_devout_init(AgsAlsaDevout *alsa_devout)
   
   alsa_devout->note_256th_offset = 0;
 
-  if(alsa_devout->note_256th_delay >= 1.0){
-    alsa_devout->note_256th_offset_last = 0;
-  }else{
-    alsa_devout->note_256th_offset_last = (guint) floor(1.0 / alsa_devout->note_256th_delay);
+  if(alsa_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = alsa_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(alsa_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
+    }
   }
 }
 
@@ -2547,9 +2558,39 @@ ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
 #endif
 #endif
 
+  /*  */
   alsa_devout->tact_counter = 0.0;
   alsa_devout->delay_counter = 0.0;
   alsa_devout->tic_counter = 0;
+
+  alsa_devout->note_offset = alsa_devout->start_note_offset;
+  alsa_devout->note_offset_absolute = alsa_devout->start_note_offset;
+
+  alsa_devout->note_256th_attack_of_16th_pulse = 0;
+  alsa_devout->note_256th_attack_of_16th_pulse_position = 0;
+
+  alsa_devout->note_256th_delay_counter = 0.0;
+
+  alsa_devout->note_256th_offset = 16 * alsa_devout->start_note_offset;
+
+  if(alsa_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = alsa_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(alsa_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      alsa_devout->note_256th_offset_last = alsa_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devout->note_256th_delay * (double) buffer_size));
+    }
+  }
 
   alsa_devout->backend_buffer_mode = AGS_ALSA_DEVOUT_BACKEND_BUFFER_0;
     
@@ -2560,11 +2601,6 @@ ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
   alsa_devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
 
   alsa_devout->poll_timeout = -1;
-
-  alsa_devout->note_256th_attack_of_16th_pulse = 0;
-  alsa_devout->note_256th_attack_of_16th_pulse_position = 0;
-
-  alsa_devout->note_256th_delay_counter = 0.0;
   
   g_rec_mutex_unlock(alsa_devout_mutex);
 }

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -673,11 +673,9 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   /* delay and attack */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devin));
 
-  alsa_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(gdouble));
+  alsa_devin->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(gdouble));
   
-  alsa_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					sizeof(guint));
+  alsa_devin->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
 
   alsa_devin->note_256th_delay = absolute_delay / 16.0;
 
@@ -723,10 +721,23 @@ ags_alsa_devin_init(AgsAlsaDevin *alsa_devin)
   
   alsa_devin->note_256th_offset = 0;
 
-  if(alsa_devin->note_256th_delay >= 1.0){
-    alsa_devin->note_256th_offset_last = 0;
-  }else{
-    alsa_devin->note_256th_offset_last = (guint) floor(1.0 / alsa_devin->note_256th_delay);
+  if(alsa_devin->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = alsa_devin->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(alsa_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devin->note_256th_delay * (double) buffer_size));
+    }
   }
 }
 
@@ -2380,6 +2391,35 @@ ags_alsa_devin_device_record_init(AgsSoundcard *soundcard,
   alsa_devin->delay_counter = 0.0;
   alsa_devin->tic_counter = 0;
   
+  alsa_devin->note_offset = alsa_devin->start_note_offset;
+  alsa_devin->note_offset_absolute = alsa_devin->start_note_offset;
+
+  alsa_devin->note_256th_attack_of_16th_pulse = 0;
+  alsa_devin->note_256th_attack_of_16th_pulse_position = 0;
+
+  alsa_devin->note_256th_delay_counter = 0.0;
+
+  alsa_devin->note_256th_offset = 16 * alsa_devin->start_note_offset;
+
+  if(alsa_devin->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = alsa_devin->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(alsa_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      alsa_devin->note_256th_offset_last = alsa_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (alsa_devin->note_256th_delay * (double) buffer_size));
+    }
+  }
+
   alsa_devin->backend_buffer_mode = AGS_ALSA_DEVIN_BACKEND_BUFFER_0;
     
 #ifdef AGS_WITH_ALSA
@@ -2387,11 +2427,6 @@ ags_alsa_devin_device_record_init(AgsSoundcard *soundcard,
 #endif
 
   alsa_devin->app_buffer_mode = AGS_ALSA_DEVIN_APP_BUFFER_0;
-
-  alsa_devin->note_256th_attack_of_16th_pulse = 0;
-  alsa_devin->note_256th_attack_of_16th_pulse_position = 0;
-
-  alsa_devin->note_256th_delay_counter = 0.0;
   
   g_rec_mutex_unlock(alsa_devin_mutex);
 }

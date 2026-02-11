@@ -776,12 +776,25 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
   
   core_audio_devin->note_256th_offset = 0;
 
-  if(core_audio_devin->note_256th_delay >= 1.0){
-    core_audio_devin->note_256th_offset_last = 0;
-  }else{
-    core_audio_devin->note_256th_offset_last = (guint) floor(1.0 / core_audio_devin->note_256th_delay);
-  }
+  if(core_audio_devin->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = core_audio_devin->buffer_size;
 
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(core_audio_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      core_audio_devin->note_256th_offset_last = core_audio_devin->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (core_audio_devin->note_256th_delay * (double) buffer_size));
+    }
+  }
+  
   /* audio device */
   core_audio_devin->device_id = NULL;
   core_audio_devin->device_name = NULL;
@@ -2177,10 +2190,34 @@ ags_core_audio_devin_port_init(AgsSoundcard *soundcard,
   core_audio_devin->delay_counter = 0.0;
   core_audio_devin->tic_counter = 0;
 
+  core_audio_devin->note_offset = core_audio_devin->start_note_offset;
+  core_audio_devin->note_offset_absolute = core_audio_devin->start_note_offset;
+
   core_audio_devin->note_256th_attack_of_16th_pulse = 0;
   core_audio_devin->note_256th_attack_of_16th_pulse_position = 0;
 
   core_audio_devin->note_256th_delay_counter = 0.0;
+
+  core_audio_devin->note_256th_offset = 16 * core_audio_devin->start_note_offset;
+
+  if(core_audio_devin->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = core_audio_devin->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(core_audio_devin),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      core_audio_devin->note_256th_offset_last = core_audio_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (core_audio_devin->note_256th_delay * (double) buffer_size));
+    }
+  }
 
   core_audio_devin->flags |= (AGS_CORE_AUDIO_DEVIN_INITIALIZED |
 			       AGS_CORE_AUDIO_DEVIN_START_RECORD |

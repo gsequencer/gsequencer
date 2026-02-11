@@ -1,3 +1,12 @@
+ags (8.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsRecall::done() is not part of staging program
+	* fixed ags-fx-pattern audio processor to start properly
+	* fixed stop audio and channel thread processing with correct staging program
+	* improved ALSA, OSSv4, jack, Pulseaudio, Core Audio and WASAPI counter initialization
+	* improved not sensitive backend of soundcard and sequencer editor
+
 ags (8.3.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

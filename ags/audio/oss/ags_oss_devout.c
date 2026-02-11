@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -717,11 +717,9 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   /* delay and attack */
   absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(oss_devout));
 
-  oss_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					   sizeof(gdouble));
+  oss_devout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(gdouble));
   
-  oss_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-					  sizeof(guint));
+  oss_devout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
 
   oss_devout->note_256th_delay = absolute_delay / 16.0;
 
@@ -772,10 +770,23 @@ ags_oss_devout_init(AgsOssDevout *oss_devout)
   
   oss_devout->note_256th_offset = 0;
 
-  if(oss_devout->note_256th_delay >= 1.0){
-    oss_devout->note_256th_offset_last = 0;
-  }else{
-    oss_devout->note_256th_offset_last = (guint) floor(1.0 / oss_devout->note_256th_delay);
+  if(oss_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = oss_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(oss_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      oss_devout->note_256th_offset_last = oss_devout->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (oss_devout->note_256th_delay * (double) buffer_size));
+    }
   }
 }
 
@@ -2236,6 +2247,35 @@ ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
   oss_devout->delay_counter = 0.0;
   oss_devout->tic_counter = 0;
 
+  oss_devout->note_offset = oss_devout->start_note_offset;
+  oss_devout->note_offset_absolute = oss_devout->start_note_offset;
+
+  oss_devout->note_256th_attack_of_16th_pulse = 0;
+  oss_devout->note_256th_attack_of_16th_pulse_position = 0;
+
+  oss_devout->note_256th_delay_counter = 0.0;
+
+  oss_devout->note_256th_offset = 16 * oss_devout->start_note_offset;
+
+  if(oss_devout->note_256th_delay < 1.0){
+    guint buffer_size;
+    guint note_256th_attack_lower, note_256th_attack_upper;
+    guint i;
+    
+    buffer_size = oss_devout->buffer_size;
+
+    note_256th_attack_lower = 0;
+    note_256th_attack_upper = 0;
+    
+    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(oss_devout),
+					&note_256th_attack_lower,
+					&note_256th_attack_upper);
+    
+    if(note_256th_attack_lower < note_256th_attack_upper){
+      oss_devout->note_256th_offset_last = oss_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (oss_devout->note_256th_delay * (double) buffer_size));
+    }
+  }
+
   oss_devout->backend_buffer_mode = AGS_OSS_DEVOUT_BACKEND_BUFFER_0;
   
 #ifdef AGS_WITH_OSS
@@ -2245,11 +2285,6 @@ ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
   oss_devout->app_buffer_mode = AGS_OSS_DEVOUT_APP_BUFFER_0;
 
   oss_devout->poll_timeout = -1;
-
-  oss_devout->note_256th_attack_of_16th_pulse = 0;
-  oss_devout->note_256th_attack_of_16th_pulse_position = 0;
-
-  oss_devout->note_256th_delay_counter = 0.0;
   
   g_rec_mutex_unlock(oss_devout_mutex);
 }

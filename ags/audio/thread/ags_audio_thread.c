@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -520,8 +520,12 @@ ags_audio_thread_finalize(GObject *gobject)
 void
 ags_audio_thread_start(AgsThread *thread)
 {
+  if(ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
+    return;
+  }
+
 #ifdef AGS_DEBUG
-  g_message("audio thread start");
+  g_message("audio thread start - 0x%x", thread);
 #endif
   
   /* reset status */
@@ -615,14 +619,9 @@ ags_audio_thread_run(AgsThread *thread)
   
   thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
-  processing = FALSE;
+  processing = ags_audio_thread_get_processing(audio_thread);
   
-  task_launcher = NULL;
-  
-  g_object_get(audio_thread,
-	       "processing", &processing,
-	       "task-launcher", &task_launcher,
-	       NULL);
+  task_launcher = ags_audio_thread_get_task_launcher(audio_thread);
   
   ags_task_launcher_run(task_launcher);
   
@@ -860,7 +859,7 @@ void
 ags_audio_thread_stop(AgsThread *thread)
 {
   AgsAudioThread *audio_thread;
-  
+
   AgsThread *child, *next_child;
 
   if(!ags_thread_test_status_flags(thread, AGS_THREAD_STATUS_RUNNING)){
@@ -868,7 +867,7 @@ ags_audio_thread_stop(AgsThread *thread)
   }
 
 #ifdef AGS_DEBUG
-  g_message("audio thread stop");    
+  g_message("audio thread stop - 0x%x", thread);
 #endif
   
   audio_thread = AGS_AUDIO_THREAD(thread);
@@ -889,7 +888,7 @@ ags_audio_thread_stop(AgsThread *thread)
 
     child = next_child;
   }
-
+  
   /* ensure synced */
   g_mutex_lock(&(audio_thread->done_mutex));
 
@@ -1197,6 +1196,8 @@ ags_audio_thread_get_processing(AgsAudioThread *audio_thread)
   if(!AGS_IS_AUDIO_THREAD(audio_thread)){
     return(FALSE);
   }
+
+  processing = FALSE;
 
   g_object_get(audio_thread,
 	       "processing", &processing,
