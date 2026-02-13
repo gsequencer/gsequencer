@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -99,6 +99,7 @@ void
 ags_mixer_class_init(AgsMixerClass *mixer)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_mixer_parent_class = g_type_class_peek_parent(mixer);
@@ -108,6 +109,12 @@ ags_mixer_class_init(AgsMixerClass *mixer)
 
   gobject->finalize = ags_mixer_finalize;
 
+  /* GtkWidgetClass */
+  widget = (GtkWidget *) mixer;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-mixer");
+  
   /* AgsMachine */
   machine = (AgsMachineClass *) mixer;
 

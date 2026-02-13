@@ -118,6 +118,7 @@ void
 ags_raven_synth_class_init(AgsRavenSynthClass *raven_synth)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_raven_synth_parent_class = g_type_class_peek_parent(raven_synth);
@@ -127,6 +128,12 @@ ags_raven_synth_class_init(AgsRavenSynthClass *raven_synth)
 
   gobject->finalize = ags_raven_synth_finalize;
 
+  /* GtkWidgetClass */
+  widget = (GtkWidget *) raven_synth;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-raven-synth");
+  
   /* AgsMachineClass */
   machine = (AgsMachineClass *) raven_synth;
 
