@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1414,6 +1414,14 @@ ags_functional_test_util_header_bar_menu_button_click_driver_program(guint n_par
     ags_app_action_util_add_hybrid_synth();
   }else if(!g_ascii_strncasecmp(action, "app.add_hybrid_fm_synth", 23)){
     ags_app_action_util_add_hybrid_fm_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_stargazer_synth", 23)){
+    ags_app_action_util_add_stargazer_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_quantum_synth", 21)){
+    ags_app_action_util_add_quantum_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_raven_synth", 19)){
+    ags_app_action_util_add_raven_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_modular_synth", 21)){
+    ags_app_action_util_add_modular_synth();
   }else if(!g_ascii_strncasecmp(action, "app.add_ffplayer", 16)){
     ags_app_action_util_add_ffplayer();
   }else if(!g_ascii_strncasecmp(action, "app.add_sf2_synth", 17)){
@@ -3197,6 +3205,70 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       
       g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_hybrid_fm_synth",
  				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Stargazer Synth",
+				  15)){
+      static gchar* stargazer_synth_path[] = {
+	"Stargazer Synth",
+	NULL
+      };
+      
+      path_strv = stargazer_synth_path;
+      
+      action = "app.add_stargazer_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_stargazer_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Quantum Synth",
+				  13)){
+      static gchar* quantum_synth_path[] = {
+	"Quantum Synth",
+	NULL
+      };
+      
+      path_strv = quantum_synth_path;
+      
+      action = "app.add_quantum_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_quantum_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Raven Synth",
+				  11)){
+      static gchar* raven_synth_path[] = {
+	"Raven Synth",
+	NULL
+      };
+      
+      path_strv = raven_synth_path;
+      
+      action = "app.add_raven_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_raven_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Modular Synth",
+				  13)){
+      static gchar* modular_synth_path[] = {
+	"Modular Synth",
+	NULL
+      };
+      
+      path_strv = modular_synth_path;
+      
+      action = "app.add_modular_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_modular_synth",
+				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FPlayer",
 				  8)){
