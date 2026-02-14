@@ -992,11 +992,12 @@ ags_server_real_start(AgsServer *server)
   /* get server mutex */
   server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
 
+#if 0    
   any_address = ags_server_test_flags(server, AGS_SERVER_ANY_ADDRESS);
   
   ip4_success = FALSE;
   ip6_success = FALSE;
-    
+  
   if(ags_server_test_flags(server, AGS_SERVER_INET4)){
     ip4_success = TRUE;
 
@@ -1006,7 +1007,7 @@ ags_server_real_start(AgsServer *server)
     error = NULL;      
     server->ip4_socket = g_socket_new(G_SOCKET_FAMILY_IPV4,
 				      G_SOCKET_TYPE_STREAM,
-				      G_SOCKET_PROTOCOL_TCP,
+				      G_SOCKET_PROTOCOL_DEFAULT,
 				      &error);
     server->ip4_fd = g_socket_get_fd(server->ip4_socket);
       
@@ -1047,9 +1048,9 @@ ags_server_real_start(AgsServer *server)
       
     error = NULL;      
     server->ip6_socket = g_socket_new(G_SOCKET_FAMILY_IPV6,
-					  G_SOCKET_TYPE_STREAM,
-					  G_SOCKET_PROTOCOL_TCP,
-					  &error);
+				      G_SOCKET_TYPE_STREAM,
+				      G_SOCKET_PROTOCOL_DEFAULT,
+				      &error);
     server->ip6_fd = g_socket_get_fd(server->ip6_socket);
 
     g_socket_set_listen_backlog(server->ip6_socket,
@@ -1114,7 +1115,8 @@ ags_server_real_start(AgsServer *server)
       g_error_free(error);
     }
   }
-
+#endif
+  
   front_controller = ags_front_controller_new();
   g_object_set(front_controller,
 	       "server", server,
@@ -1239,6 +1241,9 @@ ags_server_stop(AgsServer *server)
 gboolean
 ags_server_real_listen(AgsServer *server)
 {
+  gboolean any_address;
+  gboolean ip4_success, ip6_success;
+  
   GError *error;
 
   GRecMutex *server_mutex;
@@ -1249,7 +1254,52 @@ ags_server_real_listen(AgsServer *server)
   
   /* get  server mutex */
   server_mutex = AGS_SERVER_GET_OBJ_MUTEX(server);
+  
+  any_address = ags_server_test_flags(server, AGS_SERVER_ANY_ADDRESS);
+  
+  ip4_success = FALSE;
+  ip6_success = FALSE;
+    
+  if(ags_server_test_flags(server, AGS_SERVER_INET4)){
+    ip4_success = TRUE;
+  }
+  
+  if(ags_server_test_flags(server, AGS_SERVER_INET6)){    
+    ip6_success = TRUE;
+  }
+  
+  g_rec_mutex_lock(server_mutex);
 
+  if(any_address ||
+     (ip4_success && ip6_success)){
+    error = NULL;
+    soup_server_listen_all(server->soup_server,
+			   server->server_port,
+			   0,
+			   &error);
+  }else if(ip4_success){
+    error = NULL;
+    soup_server_listen_all(server->soup_server,
+			   server->server_port,
+			   SOUP_SERVER_LISTEN_IPV4_ONLY,
+			   &error);
+  }else if(ip6_success){
+    error = NULL;
+    soup_server_listen_all(server->soup_server,
+			   server->server_port,
+			   SOUP_SERVER_LISTEN_IPV6_ONLY,
+			   &error);
+  }
+  
+  g_rec_mutex_unlock(server_mutex);
+
+  if(error != NULL){
+    g_critical("AgsServer - %s", error->message);
+
+    g_error_free(error);
+  }
+  
+#if 0
   if(server->ip4_fd != -1){
     g_rec_mutex_lock(server_mutex);
 
@@ -1270,7 +1320,7 @@ ags_server_real_listen(AgsServer *server)
     error = NULL;
     soup_server_listen_socket(server->soup_server,
 			      server->ip4_socket,
-			      0,
+			      SOUP_SERVER_LISTEN_HTTPS,
 			      &error);
     
     g_rec_mutex_unlock(server_mutex);
@@ -1302,7 +1352,7 @@ ags_server_real_listen(AgsServer *server)
     error = NULL;
     soup_server_listen_socket(server->soup_server,
 			      server->ip6_socket,
-			      0,
+			      SOUP_SERVER_LISTEN_HTTPS,
 			      &error);
     
     g_rec_mutex_unlock(server_mutex);
@@ -1313,6 +1363,7 @@ ags_server_real_listen(AgsServer *server)
       g_error_free(error);
     }
   }  
+#endif
   
   return(FALSE);
 }
