@@ -15113,7 +15113,7 @@ ags_audio_real_stop(AgsAudio *audio,
 	
 	ags_audio_tree_dispatcher_remove_dispatch_source(((AgsAudioThread *) audio_thread)->audio_tree_dispatcher,
 							 (GObject *) audio,
-							 sound_scope);
+							 i);
       
 	g_object_unref(audio_thread);
       }
@@ -15139,7 +15139,7 @@ ags_audio_real_stop(AgsAudio *audio,
 	  
 	  ags_audio_tree_dispatcher_remove_dispatch_source(((AgsChannelThread *) channel_thread)->audio_tree_dispatcher,
 							   (GObject *) audio,
-							   sound_scope);
+							   i);
 	  
 	  g_object_unref(channel_thread);
 	}

@@ -1668,6 +1668,8 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
     return;
   }
 
+  start_list = NULL;
+  
   g_object_get(osc_server,
 	       "connection", &start_list,
 	       NULL);
