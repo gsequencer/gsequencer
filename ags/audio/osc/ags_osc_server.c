@@ -1736,8 +1736,6 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
       }
     }
     
-    g_object_unref(list->data);
-    
     list = list->next;
   }
       
