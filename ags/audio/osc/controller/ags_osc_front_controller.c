@@ -539,7 +539,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 		     (GDestroyNotify) g_object_unref);
 
     /* next */
-    g_mutex_lock(&(osc_front_controller->delegate_mutex));
+    g_rec_mutex_lock(osc_controller_mutex);
 
     if(osc_front_controller->message != NULL){
       time_now = g_get_monotonic_time();
@@ -557,7 +557,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       time_next = time_now + G_TIME_SPAN_SECOND / 30;
     }
     
-    g_mutex_unlock(&(osc_front_controller->delegate_mutex));
+    g_rec_mutex_unlock(osc_controller_mutex);
   }
 
   g_object_unref(osc_server);
