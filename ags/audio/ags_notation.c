@@ -3721,7 +3721,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 	  
     midi_note[i] = NULL;
   }
-  
+
+#if 0  
   midi_end_of_track_node = xmlNewNode(NULL,
 				      "midi-message");
 
@@ -3740,7 +3741,8 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 
   xmlAddChild(midi_track_node,
 	      midi_end_of_track_node);
-
+#endif
+  
   midi_builder = ags_midi_builder_new(NULL);
 
   ags_midi_builder_from_xml_doc(midi_builder,
@@ -3760,8 +3762,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
   g_list_free_full(start_note,
 		   (GDestroyNotify) g_object_unref);
 
-  g_object_run_dispose((GObject *) midi_builder);
-  g_object_unref(midi_builder);
+  g_object_unref((GObject *) midi_builder);
   
   return(buffer);
 }

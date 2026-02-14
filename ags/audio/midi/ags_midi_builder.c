@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_midi_builder_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
+void ags_midi_builder_dispose(GObject *gobject);
 void ags_midi_builder_finalize(GObject *gobject);
 
 void ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
@@ -229,6 +230,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
   gobject->set_property = ags_midi_builder_set_property;
   gobject->get_property = ags_midi_builder_get_property;  
 
+  gobject->dispose = ags_midi_builder_dispose;
   gobject->finalize = ags_midi_builder_finalize;
 
   /* properties */
@@ -888,6 +890,16 @@ ags_midi_builder_get_property(GObject *gobject,
   }
 }
 
+void
+ags_midi_builder_dispose(GObject *gobject)
+{
+  AgsMidiBuilder *midi_builder;
+    
+  midi_builder = (AgsMidiBuilder *) gobject;
+ 
+  /* call parent */
+  G_OBJECT_CLASS(ags_midi_builder_parent_class)->dispose(gobject);
+}
 void
 ags_midi_builder_finalize(GObject *gobject)
 {
@@ -3089,22 +3101,22 @@ ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
 					    node);
   }else if(!xmlStrncmp(node->name,
 		       "midi-track",
-		       12)){
+		       11)){
     ags_midi_builder_append_xml_node_track(midi_builder,
 					   node);
   }else if(!xmlStrncmp(node->name,
 		       "midi-message",
-		       12)){
+		       13)){
     ags_midi_builder_append_xml_node_message(midi_builder,
 					     node);
   }else if(!xmlStrncmp(node->name,
 		       "midi-system-common",
-		       12)){
+		       19)){
     ags_midi_builder_append_xml_node_system_common(midi_builder,
 						   node);
   }else if(!xmlStrncmp(node->name,
 		       "meta-event",
-		       12)){
+		       11)){
     ags_midi_builder_append_xml_node_meta_event(midi_builder,
 						node);
   }
@@ -3268,7 +3280,7 @@ ags_midi_builder_open_filename(AgsMidiBuilder *midi_builder,
  * 
  * Get SMF data of @midi_builder.
  * 
- * Returns: the SMF data
+ * Returns: (transfer none): the SMF data
  * 
  * Since: 3.2.0
  */
