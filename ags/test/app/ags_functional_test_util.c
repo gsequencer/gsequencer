@@ -34,9 +34,11 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
+#if defined(AGS_WITH_X11)
 #include <X11/Xlib.h>
 //FIXME:JK: a more portable solution needed
 // #include <X11/extensions/XTest.h>
+#endif
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -473,9 +475,9 @@ ags_functional_test_util_init(int *argc, char ***argv,
   }
 #endif
 
-  //#ifdef AGS_WITH_X11
+#if defined(AGS_WITH_X11)
   XInitThreads();
-  //#endif
+#endif
   
   /* parse command line parameter */
   filename = NULL;
@@ -1286,9 +1288,11 @@ ags_functional_test_util_fake_mouse_warp(gpointer display, guint screen, guint x
 {
   static const gulong delay = 1;
 
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeMotionEvent((Display *) display, screen, x, y, delay);
   XSync((Display *) display, 0);
+#endif
 }
 
 void
@@ -1296,9 +1300,11 @@ ags_functional_test_util_fake_mouse_button_press(gpointer display, guint button)
 {
   static const gulong delay = 1;
   
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeButtonEvent((Display *) display, button, 1, delay);
   XFlush((Display *) display);
+#endif
 }
 
 void
@@ -1306,9 +1312,11 @@ ags_functional_test_util_fake_mouse_button_release(gpointer display, guint butto
 {
   static const gulong delay = 1;
   
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeButtonEvent((Display *) display, button, 0, delay);
   XFlush((Display *) display);
+#endif
 }
 
 void
@@ -1316,10 +1324,12 @@ ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button)
 {
   static const gulong delay = 1;
   
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeButtonEvent((Display *) display, button, 1, delay);
   //  XTestFakeButtonEvent((Display *) display, button, 0, delay);
   XFlush((Display *) display);
+#endif
 }
 
 void

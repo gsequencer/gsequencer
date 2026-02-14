@@ -1162,6 +1162,11 @@ ags_functional_osc_xmlrpc_server_test_meter_controller()
   struct timespec timeout_delay;
   struct timespec idle_delay;  
 
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+
   gchar *login;
   gchar *security_token;
   gchar *resource_id;
