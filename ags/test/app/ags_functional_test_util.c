@@ -3952,7 +3952,7 @@ ags_functional_test_util_composite_toolbar_zoom(guint nth_zoom)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("nth_zoom");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
@@ -4024,7 +4024,7 @@ ags_functional_test_util_machine_selector_add(guint nth_machine)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("nth_machine");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
@@ -4089,7 +4089,7 @@ ags_functional_test_util_machine_selector_select(gchar *machine_str)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("machine_str");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
@@ -4325,7 +4325,7 @@ ags_functional_test_util_preferences_click_tab(guint nth_tab)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("nth_tab");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
