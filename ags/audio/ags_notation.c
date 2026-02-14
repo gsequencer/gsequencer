@@ -3591,7 +3591,10 @@ ags_notation_to_raw_midi(AgsNotation *notation,
       }
       
       /* key on */
-      midi_note[i] = note->data;
+      if(note_y > 0 &&
+	 note_y < 128){
+	midi_note[note_y] = note->data;
+      }
       
       midi_message_node = xmlNewNode(NULL,
 				     "midi-message");
@@ -3719,7 +3722,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 
     g_free(str);
 	  
-    midi_note[i] = NULL;
+    midi_note[current_index] = NULL;
   }
 
 #if 0  

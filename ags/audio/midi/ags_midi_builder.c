@@ -1086,7 +1086,10 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
 						  (midi_builder_track->length + length) * sizeof(guchar));
 
   current = midi_builder_track->data + midi_builder_track->length;
-  
+
+  prefix_length = midi_builder_track->length;
+
+#if 0
   if(current == NULL){
     prefix_length = 0;
     suffix_length = 0;
@@ -1105,8 +1108,9 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
       memmove(midi_builder_track->data + prefix_length + length, midi_builder_track->data + prefix_length, suffix_length);
     }
   }
-
-  memcpy(midi_builder_track->data + prefix_length, buffer, length);
+#endif
+  
+  memcpy(current, buffer, length);
 
   /* set data */
   midi_builder_track->length += length;
