@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-02-11 06:28+0100\n"
+"POT-Creation-Date: 2026-02-15 10:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -399,7 +399,7 @@ msgstr "włączone"
 msgid "sequence: "
 msgstr "sekwencje: "
 
-#: ags/app/export/ags_machine_mapper.c:242 ags/app/machine/ags_drum.c:362
+#: ags/app/export/ags_machine_mapper.c:242 ags/app/machine/ags_drum.c:365
 msgid "default"
 msgstr "domyślne"
 
@@ -1019,7 +1019,7 @@ msgstr "edytor"
 msgid "info"
 msgstr "info"
 
-#: ags/app/editor/ags_envelope_dialog.c:675 ags/app/machine/ags_drum.c:370
+#: ags/app/editor/ags_envelope_dialog.c:675 ags/app/machine/ags_drum.c:373
 msgid "pattern"
 msgstr "szablon"
 
@@ -1143,7 +1143,7 @@ msgstr ""
 msgid "skip forward"
 msgstr ""
 
-#: ags/app/ags_navigation.c:332 ags/app/machine/ags_drum.c:391
+#: ags/app/ags_navigation.c:332 ags/app/machine/ags_drum.c:394
 msgid "loop"
 msgstr "pętla"
 
@@ -1505,7 +1505,7 @@ msgstr ""
 msgid "program"
 msgstr "program"
 
-#: ags/app/machine/ags_matrix.c:384 ags/app/machine/ags_drum.c:471
+#: ags/app/machine/ags_matrix.c:384 ags/app/machine/ags_drum.c:474
 #: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1166
 #: ags/app/machine/ags_sf2_synth.c:1212 ags/app/machine/ags_fm_oscillator.c:267
 msgid "length"
@@ -1579,17 +1579,17 @@ msgstr "zaktualizuj"
 msgid "lower"
 msgstr "niżej"
 
-#: ags/app/machine/ags_drum.c:348
+#: ags/app/machine/ags_drum.c:351
 msgid "kit"
 msgstr "zestaw"
 
-#: ags/app/machine/ags_drum.c:365 ags/app/machine/ags_sfz_synth.c:349
+#: ags/app/machine/ags_drum.c:368 ags/app/machine/ags_sfz_synth.c:349
 #: ags/app/machine/ags_audiorec.c:295 ags/app/machine/ags_sf2_synth.c:357
 #: ags/app/machine/ags_ffplayer.c:403
 msgid "_Open"
 msgstr "Otwórz"
 
-#: ags/app/machine/ags_drum.c:398
+#: ags/app/machine/ags_drum.c:401
 msgid "run"
 msgstr "zacznij"
 
