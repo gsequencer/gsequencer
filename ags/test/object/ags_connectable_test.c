@@ -46,7 +46,7 @@ void ags_connectable_test_disconnect();
 void ags_connectable_test_connect_connection();
 void ags_connectable_test_disconnect_connection();
 
-GType connectable_test_types[39];
+GType connectable_test_types[56];
  
 /* The suite initialization function.
  * Opens the temporary file used by the tests.

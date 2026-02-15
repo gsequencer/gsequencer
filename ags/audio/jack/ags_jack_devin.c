@@ -3234,7 +3234,7 @@ ags_jack_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
   local_note_256th_attack = g_list_nth_data(jack_devin->note_256th_attack,
 					    nth_list);
 
-  for(i = 1; local_note_256th_attack[position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] + (guint) floor((double) i * note_256th_delay * (double) buffer_size) < buffer_size; i++){
+  for(i = 1; local_note_256th_attack[position_lower] + (i * note_256th_delay * buffer_size) < buffer_size; i++){
     if((position_upper + 1) % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD == 0){
       if(nth_list + 1 < 32){
 	local_note_256th_attack = g_list_nth_data(jack_devin->note_256th_attack,
