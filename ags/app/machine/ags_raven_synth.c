@@ -129,7 +129,7 @@ ags_raven_synth_class_init(AgsRavenSynthClass *raven_synth)
   gobject->finalize = ags_raven_synth_finalize;
 
   /* GtkWidgetClass */
-  widget = (GtkWidget *) raven_synth;
+  widget = (GtkWidgetClass *) raven_synth;
 
   gtk_widget_class_set_css_name(widget,
 				"ags-raven-synth");

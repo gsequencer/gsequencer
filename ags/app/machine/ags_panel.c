@@ -115,8 +115,8 @@ ags_panel_class_init(AgsPanelClass *panel)
   gobject->finalize = ags_panel_finalize;
 
   /* GtkWidgetClass */
-  widget = (GtkWidget *) panel;
-
+  widget = (GtkWidgetClass *) panel;
+  
   gtk_widget_class_set_css_name(widget,
 				"ags-panel");
 

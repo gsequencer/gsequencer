@@ -110,7 +110,7 @@ ags_mixer_class_init(AgsMixerClass *mixer)
   gobject->finalize = ags_mixer_finalize;
 
   /* GtkWidgetClass */
-  widget = (GtkWidget *) mixer;
+  widget = (GtkWidgetClass *) mixer;
 
   gtk_widget_class_set_css_name(widget,
 				"ags-mixer");
