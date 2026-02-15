@@ -50,30 +50,82 @@ void ags_functional_audio_config_test_file_setup();
 
 #define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_FILE_SETUP_FILENAME AGS_SRC_DIR "/" "ags_functional_audio_config_test.xml"
 
-#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=true\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+#if defined(__APPLE__)
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"					\
+  "simple-file=true\n"						\
+  "disable-feature=experimental\n"				\
+  "segmentation=4/4\n"						\
+  "\n"								\
+  "[thread]\n"							\
+  "model=super-threaded\n"					\
+  "super-threaded-scope=channel\n"				\
+  "lock-global=ags-thread\n"					\
+  "lock-parent=ags-recycling-thread\n"				\
+  "\n"								\
+  "[soundcard-0]\n"						\
+  "backend=core-audio\n"					\
+  "device=Apple Inc. - Built-in Output\n"			\
+  "samplerate=44100\n"						\
+  "buffer-size=1024\n"						\
+  "pcm-channels=2\n"						\
+  "dsp-channels=2\n"						\
+  "format=16\n"							\
+  "\n"								\
+  "[recall]\n"							\
+  "auto-sense=true\n"						\
   "\n"
+#elif defined(__FreeBSD__) || defined(__DragonFly__)
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"					\
+  "simple-file=true\n"						\
+  "disable-feature=experimental\n"				\
+  "segmentation=4/4\n"						\
+  "\n"								\
+  "[thread]\n"							\
+  "model=super-threaded\n"					\
+  "super-threaded-scope=channel\n"				\
+  "lock-global=ags-thread\n"					\
+  "lock-parent=ags-recycling-thread\n"				\
+  "\n"								\
+  "[soundcard-0]\n"						\
+  "backend=oss\n"						\
+  "device=/dev/dsp0\n"						\
+  "samplerate=44100\n"						\
+  "buffer-size=1024\n"						\
+  "pcm-channels=2\n"						\
+  "dsp-channels=2\n"						\
+  "format=16\n"							\
+  "\n"								\
+  "[recall]\n"							\
+  "auto-sense=true\n"						\
+  "\n"
+#else
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"					\
+  "simple-file=true\n"						\
+  "disable-feature=experimental\n"				\
+  "segmentation=4/4\n"						\
+  "\n"								\
+  "[thread]\n"							\
+  "model=super-threaded\n"					\
+  "super-threaded-scope=channel\n"				\
+  "lock-global=ags-thread\n"					\
+  "lock-parent=ags-recycling-thread\n"				\
+  "\n"								\
+  "[soundcard-0]\n"						\
+  "backend=alsa\n"						\
+  "device=default\n"						\
+  "samplerate=44100\n"						\
+  "buffer-size=1024\n"						\
+  "pcm-channels=2\n"						\
+  "dsp-channels=2\n"						\
+  "format=16\n"							\
+  "\n"								\
+  "[recall]\n"							\
+  "auto-sense=true\n"						\
+  "\n"
+#endif
 
 CU_pSuite pSuite = NULL;
 volatile gboolean is_available;

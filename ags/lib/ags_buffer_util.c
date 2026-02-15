@@ -939,7 +939,7 @@ ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
   
   limit = (buffer_size / 8) - ((buffer_size / 8) % 8);
 
-  for(; i < limit; i += 8){
+  for(; i < limit;){
     buffer[0] |= ((gint64) (0xff & cbuffer[0]) << 56);
     buffer[0] |= ((gint64) (0xff & cbuffer[1]) << 48);
     buffer[0] |= ((gint64) (0xff & cbuffer[2]) << 40);
@@ -1014,6 +1014,8 @@ ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
       
     buffer += 8;
     cbuffer += (8 * 8);
+
+    i += 8;
   }
 
   for(; i < buffer_size / 8; i++){

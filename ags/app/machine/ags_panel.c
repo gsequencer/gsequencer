@@ -104,6 +104,7 @@ void
 ags_panel_class_init(AgsPanelClass *panel)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_panel_parent_class = g_type_class_peek_parent(panel);
@@ -112,6 +113,12 @@ ags_panel_class_init(AgsPanelClass *panel)
   gobject = (GObjectClass *) panel;
 
   gobject->finalize = ags_panel_finalize;
+
+  /* GtkWidgetClass */
+  widget = (GtkWidget *) panel;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-panel");
 
   /* AgsMachine */
   machine = (AgsMachineClass *) panel;

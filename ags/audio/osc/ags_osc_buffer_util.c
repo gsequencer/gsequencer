@@ -417,12 +417,19 @@ ags_osc_buffer_util_get_string(AgsOscBufferUtil *osc_buffer_util,
   }
 
   offset = strchr(buffer, '\0');
-  count = offset - buffer;
+
+  count = 0;
+
+  if(offset != NULL){
+    count = offset - buffer;
+  }
   
   if(str != NULL){
     if(count > 0){
       tmp = (gchar *) malloc((count + 1) * sizeof(gchar));
-      memcpy(tmp, buffer, count + 1);
+      
+      memcpy(tmp, buffer, count);
+      tmp[count] = '\0';
     }else{
       tmp = NULL;
     }
