@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -409,7 +409,9 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 
     start_message = NULL;
     list =
-      start_list = g_list_copy(osc_front_controller->message);
+      start_list = g_list_copy_deep(osc_front_controller->message,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
     while(list != NULL){
       if(AGS_OSC_MESSAGE(list->data)->immediately){
@@ -439,7 +441,8 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     
     g_rec_mutex_unlock(osc_controller_mutex);
 
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     (GDestroyNotify) g_object_unref);
     
     message = 
       start_message = g_list_reverse(start_message);

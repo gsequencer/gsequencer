@@ -5765,8 +5765,10 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
 					nth_effect);
   
   /* click check button */
-  ags_functional_test_util_fake_check_button_click(member_editor_entry->check_button);
-
+  if(member_editor_entry != NULL){
+    ags_functional_test_util_fake_check_button_click(member_editor_entry->check_button);
+  }
+  
   /* click remove */
   ags_functional_test_util_fake_button_click(remove_button);
   
