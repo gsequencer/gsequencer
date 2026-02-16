@@ -234,7 +234,7 @@ ags_osc_util_slip_encode(guchar *osc_buffer,
   
   slip_buffer_length = (guint) AGS_OSC_UTIL_SLIP_CHUNK_LENGTH + 2;
   
-  slip_buffer = (guchar *) malloc((slip_buffer_length + 2) * sizeof(guchar));
+  slip_buffer = (guchar *) malloc((slip_buffer_length + 3) * sizeof(guchar));
 
   slip_buffer[0] = AGS_OSC_UTIL_SLIP_END;
   
@@ -270,6 +270,7 @@ ags_osc_util_slip_encode(guchar *osc_buffer,
   }
 
   slip_buffer[j] = AGS_OSC_UTIL_SLIP_END;
+  slip_buffer[j + 1] = '\0';
 
   if(returned_buffer_length != NULL){
     *returned_buffer_length = j + 1;
@@ -303,7 +304,7 @@ ags_osc_util_slip_decode(guchar *slip_buffer,
 
   buffer_length = slip_buffer_length;
 
-  osc_buffer = (guchar *) malloc(buffer_length * sizeof(guchar));
+  osc_buffer = (guchar *) malloc((buffer_length + 1) * sizeof(guchar));
 
   for(i = 0, j = 1; j < slip_buffer_length; i++, j++){
     switch(slip_buffer[j]){
@@ -325,6 +326,8 @@ ags_osc_util_slip_decode(guchar *slip_buffer,
     }
   }
 
+  osc_buffer[i] = '\0';
+  
   if(returned_buffer_length != NULL){
     *returned_buffer_length = i - 1;
   }

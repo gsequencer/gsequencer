@@ -1,3 +1,10 @@
+ags (8.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsLineMember::disconnect() signal detail
+	* fixed all ags_soundcard_get_note_256th_attack_position() implementations
+	* fixed osc buffer util 0 pad
+
 ags (8.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

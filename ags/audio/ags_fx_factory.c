@@ -700,7 +700,15 @@ ags_fx_factory_create_playback(AgsAudio *audio,
     
     return(NULL);
   }
-    
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
+  
   start_recall = NULL;
   
   g_object_get(audio,
@@ -1133,6 +1141,14 @@ ags_fx_factory_create_buffer(AgsAudio *audio,
     return(NULL);
   }
 
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
+
   start_recall = NULL;
   
   g_object_get(audio,
@@ -1547,6 +1563,14 @@ ags_fx_factory_create_volume(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -1982,6 +2006,14 @@ ags_fx_factory_create_tremolo(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -2417,6 +2449,14 @@ ags_fx_factory_create_low_pass(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -2852,6 +2892,14 @@ ags_fx_factory_create_high_pass(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -3287,6 +3335,14 @@ ags_fx_factory_create_peak(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -3709,6 +3765,14 @@ ags_fx_factory_create_eq10(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -4142,6 +4206,14 @@ ags_fx_factory_create_analyse(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -4575,6 +4647,14 @@ ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -5006,6 +5086,14 @@ ags_fx_factory_create_lfo(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -5441,6 +5529,14 @@ ags_fx_factory_create_envelope(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -5874,6 +5970,14 @@ ags_fx_factory_create_wah_wah(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -6307,6 +6411,14 @@ ags_fx_factory_create_pattern(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
     
   start_recall = NULL;
   
@@ -6703,6 +6815,14 @@ ags_fx_factory_create_notation(AgsAudio *audio,
     
     return(NULL);
   }
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
+  start_input = NULL;
+
+  audio_channels = 0;
   
   start_recall = NULL;
   
@@ -7117,12 +7237,18 @@ ags_fx_factory_create_synth(AgsAudio *audio,
     
     return(NULL);
   }
-  
-  start_recall = NULL;
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+  
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -7569,12 +7695,18 @@ ags_fx_factory_create_fm_synth(AgsAudio *audio,
     
     return(NULL);
   }
-  
-  start_recall = NULL;
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+  
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -8021,12 +8153,18 @@ ags_fx_factory_create_sf2_synth(AgsAudio *audio,
     
     return(NULL);
   }
-  
-  start_recall = NULL;
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+  
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -8473,12 +8611,18 @@ ags_fx_factory_create_sfz_synth(AgsAudio *audio,
     
     return(NULL);
   }
-  
-  start_recall = NULL;
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+  
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -8925,12 +9069,18 @@ ags_fx_factory_create_star_synth(AgsAudio *audio,
     
     return(NULL);
   }
-  
-  start_recall = NULL;
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+  
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -9378,11 +9528,17 @@ ags_fx_factory_create_seq_synth(AgsAudio *audio,
     return(NULL);
   }
   
-  start_recall = NULL;
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -9830,11 +9986,17 @@ ags_fx_factory_create_raven_synth(AgsAudio *audio,
     return(NULL);
   }
   
-  start_recall = NULL;
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -10282,11 +10444,17 @@ ags_fx_factory_create_modular_synth(AgsAudio *audio,
     return(NULL);
   }
   
-  start_recall = NULL;
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -10733,7 +10901,11 @@ ags_fx_factory_create_ladspa(AgsAudio *audio,
     
     return(NULL);
   }
-  
+
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
+
   start_recall = NULL;
 
   start_output = NULL;
@@ -11210,11 +11382,17 @@ ags_fx_factory_create_dssi(AgsAudio *audio,
     return(NULL);
   }
   
-  start_recall = NULL;
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -11697,11 +11875,17 @@ ags_fx_factory_create_lv2(AgsAudio *audio,
   
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) lv2_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
-  start_recall = NULL;
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -12278,11 +12462,17 @@ ags_fx_factory_create_vst3(AgsAudio *audio,
   
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) vst3_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
-  start_recall = NULL;
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
@@ -12860,11 +13050,17 @@ ags_fx_factory_create_audio_unit(AgsAudio *audio,
   
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin, AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
-  start_recall = NULL;
+  output_soundcard = NULL;
+
+  input_sequencer = NULL;
 
   start_output = NULL;
 
   start_input = NULL;
+
+  audio_channels = 0;
+
+  start_recall = NULL;
   
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
