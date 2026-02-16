@@ -3614,7 +3614,7 @@ ags_pulse_devout_get_note_256th_attack_position(AgsSoundcard *soundcard,
   local_note_256th_attack = g_list_nth_data(pulse_devout->note_256th_attack,
 					    nth_list);
 
-  for(i = 1, j = 0; local_note_256th_attack[position_lower] + (i * note_256th_delay * buffer_size) < buffer_size &&
+  for(i = 1, j = 0; local_note_256th_attack[position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] + (i * note_256th_delay * buffer_size) < buffer_size &&
 	(note_256th_delay < 1.0 &&
 	 i <= (guint) floor(1.0 / note_256th_delay)) &&
 	j < 2; i++){
