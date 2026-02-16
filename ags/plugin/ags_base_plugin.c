@@ -1270,7 +1270,8 @@ ags_base_plugin_set_plugin_port(AgsBasePlugin *base_plugin,
   
   GRecMutex *base_plugin_mutex;
 
-  if(!AGS_IS_BASE_PLUGIN(base_plugin)){
+  if(!AGS_IS_BASE_PLUGIN(base_plugin) ||
+     base_plugin->plugin_port == plugin_port){
     return;
   }
 
