@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -428,7 +428,7 @@ ags_osc_buffer_util_get_string(AgsOscBufferUtil *osc_buffer_util,
     if(count > 0){
       tmp = (gchar *) malloc((count + 1) * sizeof(gchar));
       
-      memcpy(tmp, buffer, count);
+      memcpy(tmp, buffer, count * sizeof(gchar));
       tmp[count] = '\0';
     }else{
       tmp = NULL;
@@ -1079,7 +1079,7 @@ ags_osc_buffer_util_put_message(AgsOscBufferUtil *osc_buffer_util,
 				 buffer,
 				 address_pattern, address_pattern_length);
 
-  buffer += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
+  buffer += (4 * ((guint) floor((double) address_pattern_length / 4.0) + 1));
   
   type_tag_length = strlen(type_tag);
   ags_osc_buffer_util_put_string(osc_buffer_util,
@@ -1121,6 +1121,10 @@ ags_osc_buffer_util_get_message(AgsOscBufferUtil *osc_buffer_util,
     return;
   }
 
+  str = NULL;
+  
+  length = 0;
+
   if(buffer[0] == '/'){
     ags_osc_buffer_util_get_string(osc_buffer_util,
 				   buffer,
@@ -1143,7 +1147,7 @@ ags_osc_buffer_util_get_message(AgsOscBufferUtil *osc_buffer_util,
     g_free(str);
   }
 
-  offset = (4 * (guint) ceil((double) (length + 1) / 4.0));
+  offset = 4 * ((guint) floor((double) length / 4.0) + 1);
 
   if(buffer[offset] == ','){
     ags_osc_buffer_util_get_string(osc_buffer_util,

@@ -171,6 +171,8 @@ struct TestDataMeter{
   gint *meter_packet_count;
 }meter_data;
 
+gboolean test_is_running;
+
 gpointer
 ags_functional_osc_xmlrpc_server_test_add_thread(gpointer data)
 {
@@ -201,6 +203,8 @@ ags_functional_osc_xmlrpc_server_test_add_thread(gpointer data)
   }
 
   /* add the tests to the suite */
+  test_is_running = FALSE;
+  
   if((CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing action controller", ags_functional_osc_xmlrpc_server_test_action_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing config controller", ags_functional_osc_xmlrpc_server_test_config_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing info controller", ags_functional_osc_xmlrpc_server_test_info_controller) == NULL) ||
@@ -208,11 +212,15 @@ ags_functional_osc_xmlrpc_server_test_add_thread(gpointer data)
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing node controller", ags_functional_osc_xmlrpc_server_test_node_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing renew controller", ags_functional_osc_xmlrpc_server_test_renew_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscXmlrpcServer providing status controller", ags_functional_osc_xmlrpc_server_test_status_controller) == NULL)){
+    test_is_running = TRUE;
+    
     CU_cleanup_registry();
       
     exit(CU_get_error());
   }
-  
+
+  test_is_running = FALSE;
+
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
@@ -421,6 +429,15 @@ ags_functional_osc_xmlrpc_server_test_websocket_callback(GObject *source_object,
   websocket_connection = soup_session_websocket_connect_finish(SOUP_SESSION(source_object),
 							       res,
 							       &error);
+
+  if(!test_is_running){
+    soup_websocket_connection_close(websocket_connection,
+				    SOUP_WEBSOCKET_CLOSE_NO_STATUS,
+				    NULL);
+    
+    return;
+  }
+  
   g_object_ref(websocket_connection);
   
   if(error != NULL){

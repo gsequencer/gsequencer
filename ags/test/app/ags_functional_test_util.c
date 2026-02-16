@@ -636,12 +636,13 @@ ags_functional_test_util_do_run(int argc, char **argv,
   AgsGSequencerApplication *gsequencer_app;
 
   AgsApplicationContext *application_context;
+  AgsConfig *config;
   AgsLog *log;
 
   GThread *thread;
 
   gchar *application_id;
-
+  
   GError *error;
 
   application_id = "org.nongnu.gsequencer.gsequencer";
@@ -1337,7 +1338,7 @@ ags_functional_test_util_fake_button_click(GtkButton *button)
 {
   gtk_widget_grab_focus(button);
   
-  g_signal_emit_by_name(button, "clicked");
+  g_signal_emit_by_name(button, "activate", NULL);
 }
 
 void

@@ -1352,13 +1352,13 @@ ags_line_member_disconnect(AgsConnectable *connectable)
 			NULL);
   }else if(line_member->widget_type == GTK_TYPE_CHECK_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::toggled",
+			"any_signal::notify::active",
 			G_CALLBACK(ags_line_member_check_button_toggled_callback),
 			line_member,
 			NULL);
   }else if(line_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
     g_object_disconnect(GTK_WIDGET(control),
-			"any_signal::toggled",
+			"any_signal::notify::active",
 			G_CALLBACK(ags_line_member_toggle_button_toggled_callback),
 			line_member,
 			NULL);
