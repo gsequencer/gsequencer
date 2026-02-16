@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#include <ags/config.h>
 
 #include <ags/test/app/ags_functional_test_util.h>
 
@@ -808,12 +808,12 @@ ags_functional_test_util_sync_driver_program(guint n_params,
 					     gchar **param_strv,
 					     GValue *param)
 {
-  gint *is_done;
+  gboolean *is_done;
   
   is_done = g_value_get_pointer(param);
 
-  ags_atomic_int_set(is_done,
-		   TRUE);
+  ags_atomic_boolean_set(is_done,
+			 TRUE);
 }
 
 void
@@ -821,10 +821,10 @@ ags_functional_test_util_sync()
 {
   AgsFunctionalTestUtilDriverProgram *driver_program;
 
-  gint is_done;
+  gboolean is_done;
   
-  ags_atomic_int_set(&is_done,
-		   FALSE);
+  ags_atomic_boolean_set(&is_done,
+			 FALSE);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -851,7 +851,7 @@ ags_functional_test_util_sync()
   ags_functional_test_util_add_driver_program(driver_program);
 
 
-  while(!ags_atomic_int_get(&is_done)){
+  while(!ags_atomic_boolean_get(&is_done)){
     g_usleep(1000000);
   }
 }
@@ -3435,10 +3435,14 @@ ags_functional_test_util_preferences_open_driver_program(guint n_params,
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+#if defined(__APPLE__)
+  ags_app_action_util_preferences();
+#else
   ags_functional_test_util_header_bar_menu_button_click(window->app_button,
 							path_strv,
 							"app.preferences");
-
+#endif
+  
   ags_functional_test_util_reaction_time_long();
 }
 
