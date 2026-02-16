@@ -866,20 +866,26 @@ ags_core_audio_devin_set_property(GObject *gobject,
       core_audio_devin->pcm_channels = pcm_channels;
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
+      
+      ags_core_audio_devin_realloc_buffer(core_audio_devin);
 
-#if 0
+      /* reset */
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
+	ags_core_audio_port_unregister(port->data);
+	
 	g_object_set(port->data,
 		     "pcm-channels", pcm_channels,
 		     NULL);
 
+	ags_core_audio_port_register(port->data,
+				     core_audio_devin->device_id,
+				     TRUE, FALSE,
+				     FALSE);
+	
 	port = port->next;
       }
-#endif
-      
-      ags_core_audio_devin_realloc_buffer(core_audio_devin);
     }
     break;
   case PROP_FORMAT:
@@ -902,19 +908,27 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
+      ags_core_audio_devin_realloc_buffer(core_audio_devin);
+
 #if 0
+      /* reset port */
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
+	ags_core_audio_port_unregister(port->data);
+	
 	g_object_set(port->data,
 		     "format", format,
 		     NULL);
 
+	ags_core_audio_port_register(port->data,
+				     core_audio_devin->device_id,
+				     TRUE, FALSE,
+				     FALSE);
+	
 	port = port->next;
       }
 #endif
-      
-      ags_core_audio_devin_realloc_buffer(core_audio_devin);
     }
     break;
   case PROP_BUFFER_SIZE:
@@ -937,20 +951,26 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
-#if 0
+      ags_core_audio_devin_realloc_buffer(core_audio_devin);
+      ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
+
+      /* reset port */
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
+	ags_core_audio_port_unregister(port->data);
+	
 	g_object_set(port->data,
 		     "buffer-size", buffer_size,
 		     NULL);
 
+	ags_core_audio_port_register(port->data,
+				     core_audio_devin->device_id,
+				     TRUE, FALSE,
+				     FALSE);
+	
 	port = port->next;
       }
-#endif
-
-      ags_core_audio_devin_realloc_buffer(core_audio_devin);
-      ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
     }
     break;
   case PROP_SAMPLERATE:
@@ -973,20 +993,26 @@ ags_core_audio_devin_set_property(GObject *gobject,
 
       g_rec_mutex_unlock(core_audio_devin_mutex);
 
-#if 0
+      ags_core_audio_devin_realloc_buffer(core_audio_devin);
+      ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
+
+      /* reset port */
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
+	ags_core_audio_port_unregister(port->data);
+	
 	g_object_set(port->data,
 		     "samplerate", samplerate,
 		     NULL);
 
+	ags_core_audio_port_register(port->data,
+				     core_audio_devin->device_id,
+				     TRUE, FALSE,
+				     FALSE);
+	
 	port = port->next;
       }
-#endif
-
-      ags_core_audio_devin_realloc_buffer(core_audio_devin);
-      ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
     }
     break;
   case PROP_BUFFER:
