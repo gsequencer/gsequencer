@@ -950,6 +950,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
       GList *port;
 
       guint buffer_size;
+      gboolean is_registered;
 
       buffer_size = g_value_get_uint(value);
 
@@ -1666,6 +1667,7 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
   int i;
   OSStatus error;
 #endif
+  gboolean is_registered;
 
   GRecMutex *core_audio_devin_mutex;
 
@@ -1695,8 +1697,14 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
   g_rec_mutex_unlock(core_audio_devin_mutex);
   
   /* unregister */
+  is_registered = FALSE;
+  
   if(start_core_audio_port != NULL){
-    ags_core_audio_port_unregister(start_core_audio_port->data);
+    is_registered = (ags_core_audio_port_test_flags((AgsCoreAudioPort *) start_core_audio_port->data, AGS_CORE_AUDIO_PORT_REGISTERED)) ? TRUE: FALSE;
+
+    if(is_registered){
+      ags_core_audio_port_unregister(start_core_audio_port->data);
+    }
   }
   
   g_free(core_audio_devin->device_name);
@@ -1808,11 +1816,13 @@ ags_core_audio_devin_set_device(AgsSoundcard *soundcard,
     g_object_set(start_core_audio_port->data,
 		 "port-name", str,
 		 NULL);
-    
-    ags_core_audio_port_register(start_core_audio_port->data,
-				 str,
-				 TRUE, FALSE,
-				 FALSE);
+
+    if(is_registered){
+      ags_core_audio_port_register(start_core_audio_port->data,
+				   str,
+				   TRUE, FALSE,
+				   FALSE);
+    }
   }
 
   g_list_free(start_core_audio_port);

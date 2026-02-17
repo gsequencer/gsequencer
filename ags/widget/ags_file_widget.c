@@ -3331,9 +3331,11 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 
       if(current_filename != NULL &&
 	 ((!strncmp(current_filename, ".", 2) == FALSE) &&
-	  (!strncmp(current_filename, "..", 3) == FALSE))){
+	  (!strncmp(current_filename, "..", 3) == FALSE)) &&
+	 strlen(current_filename) > 0 &&
+	 g_list_find_custom(start_filename, current_filename, (GCompareFunc) g_strcmp0) == NULL){
 	start_filename = g_list_insert_sorted(start_filename,
-					      current_filename,
+					      g_strdup(current_filename),
 					      (GCompareFunc) g_strcmp0);
       }
     }while(current_filename != NULL);
@@ -3352,8 +3354,14 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
     j = 2;
     
     for(i = 0; i < count; i++){
-      if(((gchar *) filename->data)[0] != '.' ||
-	 ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE)){
+      if(((gchar *) filename->data)[0] == '.'){
+	if((!strncmp(filename->data, ".", 2)) == FALSE &&
+	   (!strncmp(filename->data, "..", 3)) == FALSE &&
+	   ags_file_widget_test_flags(file_widget, AGS_FILE_WIDGET_HIDDEN_FILES_VISIBLE)){
+	  filename_strv[j] = g_strdup(filename->data);
+	  j++;
+	}
+      }else{
 	filename_strv[j] = g_strdup(filename->data);
 	j++;
       }
@@ -3375,7 +3383,8 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
 				    G_LIST_MODEL(multi_filename_string_list));
     }
     
-    g_list_free(start_filename);
+    g_list_free_full(start_filename,
+		     (GDestroyNotify) g_free);
 
     //  g_strfreev(filename_strv);
   }

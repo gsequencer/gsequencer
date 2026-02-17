@@ -19,6 +19,8 @@
 
 #include <ags/app/editor/ags_import_notation_smf_popover.h>
 
+#include <ags/ags_api_config.h>
+
 #include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
@@ -180,10 +182,18 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
   GtkBox *vbox;
   GtkBox *hbox;
   GtkLabel *label;
+  AgsFileWidget *file_widget;
   
   GtkEventController *event_controller;
 
   AgsApplicationContext *application_context;
+
+  gchar *recently_used_filename;
+  gchar *bookmark_filename;
+  gchar *home_path;
+  gchar *sandbox_path;
+  gchar *current_path;
+  gchar *str;
 
   application_context = ags_application_context_get_instance();
 
@@ -211,9 +221,9 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
 			GTK_ALIGN_FILL);
 
   gtk_widget_set_vexpand((GtkWidget *) vbox,
-			 TRUE);
+			 FALSE);
   gtk_widget_set_hexpand((GtkWidget *) vbox,
-			 TRUE);
+			 FALSE);
   
   gtk_popover_set_child((GtkPopover *) import_notation_smf_popover,
 			(GtkWidget *) vbox);
@@ -238,8 +248,8 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
 
   /* position x - spin button */
   import_notation_smf_popover->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-											   AGS_IMPORT_NOTATION_SMF_MAX_BEATS,
-											   1.0);
+											     AGS_IMPORT_NOTATION_SMF_MAX_BEATS,
+											     1.0);
   gtk_spin_button_set_value(import_notation_smf_popover->position_x,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,
@@ -251,6 +261,7 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
+#if 0
   /* position y - label */
   label = (GtkLabel *) gtk_label_new(i18n("import y"));
   gtk_box_append(hbox,
@@ -258,13 +269,14 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
 
   /* position y - spin button */
   import_notation_smf_popover->position_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-											   AGS_IMPORT_NOTATION_SMF_MAX_KEYS,
-											   1.0);
+											     AGS_IMPORT_NOTATION_SMF_MAX_KEYS,
+											     1.0);
   gtk_spin_button_set_value(import_notation_smf_popover->position_y,
 			    0.0);
   gtk_box_append(hbox,
 		 (GtkWidget *) import_notation_smf_popover->position_y);
-
+#endif
+  
   /* MIDI channel - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -303,8 +315,9 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
 		 (GtkWidget *) hbox);
 
   /* file widget */
-  import_notation_smf_popover->file_widget = ags_file_widget_new();
-
+  file_widget = 
+    import_notation_smf_popover->file_widget = ags_file_widget_new();
+  
   gtk_widget_set_valign((GtkWidget *) import_notation_smf_popover->file_widget,
 			GTK_ALIGN_FILL);
   gtk_widget_set_halign((GtkWidget *) import_notation_smf_popover->file_widget,
@@ -323,7 +336,136 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
 		 (GtkWidget *) import_notation_smf_popover->file_widget);
 
   import_notation_smf_popover->midi_doc = NULL;
+
+  home_path = ags_file_widget_get_home_path(file_widget);
+
+  sandbox_path = NULL;
   
+#if defined(AGS_MACOS_SANDBOX)
+  sandbox_path = g_strdup_printf("%s/Library/Containers/%s/Data",
+  				 home_path,
+				 AGS_DEFAULT_BUNDLE_ID);
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  if((str = getenv("HOME")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  if((str = getenv("SNAP_USER_DATA")) != NULL){
+    sandbox_path = g_strdup_printf("%s",
+				   str);
+  }
+
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   sandbox_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      sandbox_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
+  recently_used_filename = g_strdup_printf("%s/%s/gsequencer_app_recently_used.xml",
+					   home_path,
+					   AGS_DEFAULT_DIRECTORY);
+
+  bookmark_filename = g_strdup_printf("%s/%s/gsequencer_app_bookmark.xml",
+				      home_path,
+				      AGS_DEFAULT_DIRECTORY);
+#endif
+
+  /* recently-used */
+  ags_file_widget_set_recently_used_filename(file_widget,
+					     recently_used_filename);
+  
+  ags_file_widget_read_recently_used(file_widget);
+
+  /* bookmark */
+  ags_file_widget_set_bookmark_filename(file_widget,
+					bookmark_filename);
+
+  ags_file_widget_read_bookmark(file_widget);
+
+  /* current path */
+  current_path = NULL;
+  
+#if defined(AGS_MACOS_SANDBOX)
+  current_path = g_strdup_printf("%s/Music",
+				 home_path);
+#endif
+
+#if defined(AGS_FLATPAK_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  current_path = g_strdup(sandbox_path);
+#endif
+
+#if defined(AGS_SNAP_SANDBOX)
+  ags_file_widget_set_flags(file_widget,
+			    AGS_FILE_WIDGET_APP_SANDBOX);
+
+  current_path = g_strdup(sandbox_path);
+#endif
+  
+#if !defined(AGS_MACOS_SANDBOX) && !defined(AGS_FLATPAK_SANDBOX) && !defined(AGS_SNAP_SANDBOX)
+  current_path = g_strdup(home_path);
+#endif
+
+   ags_file_widget_set_current_path(file_widget,
+				    current_path);
+
+  g_free(current_path);
+
+  ags_file_widget_refresh(file_widget);
+  
+#if !defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_DESKTOP,
+			       NULL);
+
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_DOCUMENTS,
+			       NULL);  
+#endif
+  
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_FOLDER_MUSIC,
+			       NULL);
+
+#if !defined(AGS_MACOS_SANDBOX)
+  ags_file_widget_add_location(file_widget,
+			       AGS_FILE_WIDGET_LOCATION_OPEN_USER_HOME,
+			       NULL);
+#endif
+  
+  ags_file_widget_set_file_action(file_widget,
+				  AGS_FILE_WIDGET_OPEN);
+
+  ags_file_widget_set_default_bundle(file_widget,
+				     AGS_DEFAULT_BUNDLE_ID);
+
   /* buttons */
   import_notation_smf_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 								    AGS_UI_PROVIDER_DEFAULT_SPACING);
@@ -594,6 +736,8 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   if(gtk_check_button_get_active(import_notation_smf_popover->set_focus)){
     gtk_widget_grab_focus(widget);
   }
+
+  gtk_widget_queue_draw(widget);
 }
 
 void
@@ -652,6 +796,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 
   guint x, y, velocity;
   guint x_256th;
+  gboolean initial_offset;
 
   guint i, j;
 
@@ -814,6 +959,8 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
   xpath_object = xmlXPathEval((xmlChar *) "//midi-tracks/midi-track",
 			      xpath_context);
 
+  initial_offset = TRUE;
+  
   if(xpath_object->nodesetval != NULL){
     node = xpath_object->nodesetval->nodeTab;
     
@@ -879,6 +1026,7 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 							 tempo,
 							 (glong) bpm,
 							 delta_time);
+		  
 		  x -= first_offset;
 
 		  x_256th = ags_midi_util_delta_time_to_note_256th_offset(&midi_util,
@@ -887,8 +1035,19 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 									  tempo,
 									  (glong) bpm,
 									  delta_time);
-		  x_256th -= first_note_256th_offset;
-	  
+		  x_256th -= first_note_256th_offset;	  
+		  
+		  if(initial_offset){
+		    initial_offset = FALSE;
+		    
+		    first_offset = x - (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+    
+		    first_note_256th_offset = x_256th - (guint) (256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+
+		    x = (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+		    x_256th = (guint) (256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+		  }
+		  
 		  /* y */
 		  str = xmlGetProp(child,
 				   BAD_CAST "note");
