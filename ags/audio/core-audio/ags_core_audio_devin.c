@@ -852,6 +852,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
       GList *port;
       
       guint pcm_channels;
+      gboolean is_registered;
 
       pcm_channels = g_value_get_uint(value);
 
@@ -873,16 +874,22 @@ ags_core_audio_devin_set_property(GObject *gobject,
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
-	ags_core_audio_port_unregister(port->data);
+	is_registered = (ags_core_audio_port_test_flags((AgsCoreAudioPort *) port->data, AGS_CORE_AUDIO_PORT_REGISTERED)) ? TRUE: FALSE;
+
+	if(is_registered){
+	  ags_core_audio_port_unregister((AgsCoreAudioPort *) port->data);
+	}
 	
-	g_object_set(port->data,
+	g_object_set((GObject *) port->data,
 		     "pcm-channels", pcm_channels,
 		     NULL);
 
-	ags_core_audio_port_register(port->data,
-				     core_audio_devin->device_id,
-				     TRUE, FALSE,
-				     FALSE);
+	if(is_registered){
+	  ags_core_audio_port_register((AgsCoreAudioPort *) port->data,
+				       core_audio_devin->device_id,
+				       TRUE, FALSE,
+				       FALSE);
+	}
 	
 	port = port->next;
       }
@@ -893,6 +900,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
       GList *port;
 
       AgsSoundcardFormat format;
+      gboolean is_registered;
 
       format = g_value_get_uint(value);
 
@@ -915,16 +923,22 @@ ags_core_audio_devin_set_property(GObject *gobject,
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
-	ags_core_audio_port_unregister(port->data);
+	is_registered = (ags_core_audio_port_test_flags((AgsCoreAudioPort *) port->data, AGS_CORE_AUDIO_PORT_REGISTERED)) ? TRUE: FALSE;
+
+	if(is_registered){
+	  ags_core_audio_port_unregister((AgsCoreAudioPort *) port->data);
+	}
 	
-	g_object_set(port->data,
+	g_object_set((GObject *) port->data,
 		     "format", format,
 		     NULL);
 
-	ags_core_audio_port_register(port->data,
-				     core_audio_devin->device_id,
-				     TRUE, FALSE,
-				     FALSE);
+	if(is_registered){
+	  ags_core_audio_port_register((AgsCoreAudioPort *) port->data,
+				       core_audio_devin->device_id,
+				       TRUE, FALSE,
+				       FALSE);
+	}
 	
 	port = port->next;
       }
@@ -958,16 +972,22 @@ ags_core_audio_devin_set_property(GObject *gobject,
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
-	ags_core_audio_port_unregister(port->data);
+	is_registered = (ags_core_audio_port_test_flags((AgsCoreAudioPort *) port->data, AGS_CORE_AUDIO_PORT_REGISTERED)) ? TRUE: FALSE;
+
+	if(is_registered){	
+	  ags_core_audio_port_unregister((AgsCoreAudioPort *) port->data);
+	}
 	
-	g_object_set(port->data,
+	g_object_set((GObject *) port->data,
 		     "buffer-size", buffer_size,
 		     NULL);
 
-	ags_core_audio_port_register(port->data,
-				     core_audio_devin->device_id,
-				     TRUE, FALSE,
-				     FALSE);
+	if(is_registered){
+	  ags_core_audio_port_register((AgsCoreAudioPort *) port->data,
+				       core_audio_devin->device_id,
+				       TRUE, FALSE,
+				       FALSE);
+	}
 	
 	port = port->next;
       }
@@ -978,6 +998,7 @@ ags_core_audio_devin_set_property(GObject *gobject,
       GList *port;
 
       guint samplerate;
+      gboolean is_registered;
 
       samplerate = g_value_get_uint(value);
 
@@ -1000,16 +1021,22 @@ ags_core_audio_devin_set_property(GObject *gobject,
       port = core_audio_devin->core_audio_port;
 
       while(port != NULL){
-	ags_core_audio_port_unregister(port->data);
+	is_registered = (ags_core_audio_port_test_flags((AgsCoreAudioPort *) port->data, AGS_CORE_AUDIO_PORT_REGISTERED)) ? TRUE: FALSE;
+
+	if(is_registered){
+	  ags_core_audio_port_unregister((AgsCoreAudioPort *) port->data);
+	}
 	
-	g_object_set(port->data,
+	g_object_set((GObject *) port->data,
 		     "samplerate", samplerate,
 		     NULL);
 
-	ags_core_audio_port_register(port->data,
-				     core_audio_devin->device_id,
-				     TRUE, FALSE,
-				     FALSE);
+	if(is_registered){
+	  ags_core_audio_port_register((AgsCoreAudioPort *) port->data,
+				       core_audio_devin->device_id,
+				       TRUE, FALSE,
+				       FALSE);
+	}
 	
 	port = port->next;
       }
