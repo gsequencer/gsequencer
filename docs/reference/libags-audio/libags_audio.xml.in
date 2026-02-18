@@ -139,6 +139,7 @@
       <xi:include href="xml/ags_star_synth_util.xml"/>
       <xi:include href="xml/ags_seq_synth_util.xml"/>
       <xi:include href="xml/ags_raven_synth_util.xml"/>
+      <xi:include href="xml/ags_modular_synth_util.xml"/>
       <xi:include href="xml/ags_sfz_synth_util.xml"/>
       <xi:include href="xml/ags_lfo_synth_util.xml"/>
       <xi:include href="xml/ags_port_util.xml"/>
@@ -513,6 +514,13 @@
       <xi:include href="xml/ags_fx_raven_synth_channel.xml"/>
       <xi:include href="xml/ags_fx_raven_synth_channel_processor.xml"/>
       <xi:include href="xml/ags_fx_raven_synth_recycling.xml"/>
+
+      <xi:include href="xml/ags_fx_modular_synth_audio.xml"/>
+      <xi:include href="xml/ags_fx_modular_synth_audio_processor.xml"/>
+      <xi:include href="xml/ags_fx_modular_synth_audio_signal.xml"/>
+      <xi:include href="xml/ags_fx_modular_synth_channel.xml"/>
+      <xi:include href="xml/ags_fx_modular_synth_channel_processor.xml"/>
+      <xi:include href="xml/ags_fx_modular_synth_recycling.xml"/>
 
 @LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE@      
 
