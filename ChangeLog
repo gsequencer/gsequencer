@@ -1,3 +1,9 @@
+ags (8.3.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* enabled AgsImportNotationSMFPopover
+	* fixed AgsFileWidget use after free
+
 ags (8.3.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
