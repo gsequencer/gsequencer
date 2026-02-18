@@ -3332,8 +3332,7 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
       if(current_filename != NULL &&
 	 ((!strncmp(current_filename, ".", 2) == FALSE) &&
 	  (!strncmp(current_filename, "..", 3) == FALSE)) &&
-	 strlen(current_filename) > 0 &&
-	 g_list_find_custom(start_filename, current_filename, (GCompareFunc) g_strcmp0) == NULL){
+	 strlen(current_filename) > 0){
 	start_filename = g_list_insert_sorted(start_filename,
 					      g_strdup(current_filename),
 					      (GCompareFunc) g_strcmp0);
@@ -3386,7 +3385,7 @@ ags_file_widget_real_refresh(AgsFileWidget *file_widget)
     g_list_free_full(start_filename,
 		     (GDestroyNotify) g_free);
 
-    //  g_strfreev(filename_strv);
+    g_strfreev(filename_strv);
   }
 
   if(current_dir != NULL){
