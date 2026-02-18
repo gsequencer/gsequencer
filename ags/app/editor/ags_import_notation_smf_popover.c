@@ -784,8 +784,8 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 
   guint audio_channels;
   
-  guint first_offset;
-  guint first_note_256th_offset;
+  gint first_offset;
+  gint first_note_256th_offset;
   gdouble bpm;
 
   glong tempo;
@@ -973,9 +973,6 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 	guint midi_channel;
 
 	midi_channel = (guint) gtk_spin_button_get_value(import_notation_smf_popover->midi_channel);
-	  
-	midi_track_per_channel = xmlNewNode(NULL,
-					    "midi-track");
 
 	child = node[i]->children;
 	  
@@ -1092,8 +1089,8 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		      ags_timestamp_set_ags_offset(current_notation->timestamp,
 						   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
 	      
-		      start_notation = ags_notation_add(start_notation,
-							current_notation);
+		      ags_audio_add_notation(machine->audio,
+					     (GObject *) current_notation);
 		    }else{
 		      current_notation = notation->data;
 		    }
