@@ -1586,17 +1586,17 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
 
     if(sndfile->format == AGS_SOUNDCARD_DOUBLE){
       ags_audio_buffer_util_clear_double(sndfile->audio_buffer_util,
-					 sndfile->buffer, sndfile->info->channels,
-					 frame_count);
+					 sndfile->buffer, 1,
+					 sndfile->info->channels * frame_count);
     }else if(sndfile->format == AGS_SOUNDCARD_FLOAT){
       ags_audio_buffer_util_clear_float(sndfile->audio_buffer_util,
-					sndfile->buffer, sndfile->info->channels,
-					frame_count);
+					sndfile->buffer, 1,
+					sndfile->info->channels * frame_count);
     }else{
       ags_audio_buffer_util_clear_buffer(sndfile->audio_buffer_util,
-					 sndfile->buffer, sndfile->info->channels,
-					 frame_count, ags_audio_buffer_util_format_from_soundcard(sndfile->audio_buffer_util,
-												  sndfile->format));
+					 sndfile->buffer, 1,
+					 sndfile->info->channels * frame_count, ags_audio_buffer_util_format_from_soundcard(sndfile->audio_buffer_util,
+															    sndfile->format));
     }
     
     sndfile->offset += frame_count;

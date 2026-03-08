@@ -2046,7 +2046,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
   }else{
     g_message("ags_audio_file_open: unknown file type");
   }
-
+  
   g_free(filename);
 
   return(retval);
