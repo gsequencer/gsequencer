@@ -828,7 +828,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       bisect_head = FALSE;
     }
 
-    if(bisect_start_x == bisect_center_x){
+    if(x == bisect_center_x){
       if(bisect_center_audio_channel < audio_channel){
 	bisect_head = FALSE;
       }

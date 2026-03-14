@@ -1297,7 +1297,11 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
       }
     }
 
-    if(bisect_start_x == bisect_center_x){
+    if(x >= bisect_center_x){
+      bisect_head = FALSE;
+    }
+
+    if(x == bisect_center_x){
       if(bisect_center_line < line){
 	bisect_head = FALSE;
       }
@@ -1621,8 +1625,12 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	bisect_head = TRUE;
       }
     }
+
+    if(x >= bisect_center_x){
+      bisect_head = FALSE;
+    }
     
-    if(bisect_start_x == bisect_center_x){
+    if(x == bisect_center_x){
       if(ags_automation_get_line((AgsAutomation *) bisect_center->data) < line){
 	bisect_head = FALSE;
       }else if(bisect_center_line == line &&

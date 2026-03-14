@@ -776,7 +776,11 @@ ags_program_find_near_timestamp(GList *program,
       }
     }
 
-    if(bisect_start_x == bisect_center_x){
+    if(x >= bisect_center_x){
+      bisect_head = FALSE;
+    }
+
+    if(x == bisect_center_x){
       bisect_head = FALSE;
     }
     
@@ -1020,8 +1024,12 @@ ags_program_find_near_timestamp_extended(GList *program,
 	bisect_head = TRUE;
       }
     }
+
+    if(x >= bisect_center_x){
+      bisect_head = FALSE;
+    }
     
-    if(bisect_start_x == bisect_center_x){
+    if(x == bisect_center_x){
       if(g_strcmp0(control_name, AGS_PROGRAM(bisect_center->data)->control_name) < 0){
 	bisect_head = FALSE;
       }

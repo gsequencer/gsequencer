@@ -967,7 +967,11 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
     }
 
-    if(bisect_start_x == bisect_center_x){
+    if(x >= bisect_center_x){
+      bisect_head = FALSE;
+    }
+
+    if(x == bisect_center_x){
       if(ags_wave_get_line((AgsWave *) bisect_center->data) < line){
 	bisect_head = FALSE;
       }
