@@ -1,3 +1,8 @@
+ags (8.3.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation, automation, wave and program bisect
+
 ags (8.3.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
