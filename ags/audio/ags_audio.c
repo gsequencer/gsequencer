@@ -11092,6 +11092,8 @@ ags_audio_set_notation(AgsAudio *audio, GList *notation)
 void
 ags_audio_add_notation(AgsAudio *audio, GObject *notation)
 {
+  GList *matching_notation;
+  
   gboolean success;
   
   GRecMutex *audio_mutex;
@@ -11109,8 +11111,12 @@ ags_audio_add_notation(AgsAudio *audio, GObject *notation)
   
   g_rec_mutex_lock(audio_mutex);
 
+  matching_notation = ags_notation_find_near_timestamp(audio->notation, AGS_NOTATION(notation)->audio_channel,
+						       AGS_NOTATION(notation)->timestamp);
+  
   if(g_list_find(audio->notation,
-		 notation) == NULL){
+		 notation) == NULL &&
+     matching_notation == NULL){
     success = TRUE;
     
     g_object_ref(notation);

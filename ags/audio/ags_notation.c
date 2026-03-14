@@ -923,7 +923,7 @@ ags_notation_sort_func(gconstpointer a,
     
   if(offset_a == offset_b){
     g_object_get(a,
-		 "audio-channel", &audio_chnanel_a,
+		 "audio-channel", &audio_channel_a,
 		 NULL);
 
     g_object_get(b,

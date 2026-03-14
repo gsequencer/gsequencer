@@ -903,6 +903,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	}else{
 	  bisect_head = FALSE;
 	}
+      }
     }else{
       if(x >= bisect_end_x &&
 	 x < bisect_end_x + AGS_WAVE_DEFAULT_DURATION){
