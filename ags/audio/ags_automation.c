@@ -1222,13 +1222,17 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     
     /* check x */    	
     if(use_ags_offset){
-      if(bisect_end_x >= x &&
-	 bisect_end_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+      if(x >= bisect_end_x &&
+	 x < bisect_end_x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	if(bisect_end_line == line){
 	  current_match = bisect_end;
 	}
-
-	bisect_head = FALSE;
+	
+	if(bisect_end_line > line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
       }
     }else{
       if(bisect_end_x >= x &&
@@ -1236,34 +1240,46 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 	if(bisect_end_line == line){
 	  current_match = bisect_end;
 	}
-	
-	bisect_head = FALSE;
+		
+	if(bisect_end_line > line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
       }
     }
 	
     if(use_ags_offset){
-      if(bisect_center_x >= x &&
-	 bisect_center_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	if(bisect_center_line == line){
-	  current_match = bisect_center;
-	}
-
-	bisect_head = TRUE;
-      }
-    }else{
-      if(bisect_center_x >= x &&
-	 bisect_center_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+      if(x >= bisect_center_x &&
+	 x < bisect_center_x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	if(bisect_center_line == line){
 	  current_match = bisect_center;
 	}
 	
-	bisect_head = TRUE;
+	if(bisect_center_line <= line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
+      }
+    }else{
+      if(x >= bisect_center_x &&
+	 x < bisect_center_x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(bisect_center_line == line){
+	  current_match = bisect_center;
+	}
+	
+	if(bisect_center_line <= line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
       }
     }
     
     if(use_ags_offset){
-      if(bisect_start_x >= x &&
-	 bisect_start_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+      if(x >= bisect_start_x &&
+	 x < bisect_start_x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	if(bisect_start_line == line){
 	  current_match = bisect_start;
 	}
@@ -1271,8 +1287,8 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 	bisect_head = TRUE;
       }
     }else{
-      if(bisect_start_x >= x &&
-	 bisect_start_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+      if(x >= bisect_start_x &&
+	 x < bisect_start_x + AGS_AUTOMATION_DEFAULT_DURATION){
 	if(bisect_start_line == line){
 	  current_match = bisect_start;
 	}
@@ -1527,7 +1543,11 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	  current_match = bisect_end;
 	}
 
-	bisect_head = FALSE;
+	if(bisect_end_line > line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
       }
     }else{
       if(bisect_end_x >= x &&
@@ -1538,7 +1558,11 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	  current_match = bisect_end;
 	}
 	
-	bisect_head = FALSE;
+	if(bisect_end_line > line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
       }
     }
 	
@@ -1551,7 +1575,11 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	  current_match = bisect_center;
 	}
 
-	bisect_head = TRUE;
+	if(bisect_center_line <= line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
       }
     }else{
       if(bisect_center_x >= x &&
@@ -1562,7 +1590,11 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 	  current_match = bisect_center;
 	}
 	
-	bisect_head = TRUE;
+	if(bisect_center_line <= line){
+	  bisect_head = TRUE;
+	}else{
+	  bisect_head = FALSE;
+	}
       }
     }
     
@@ -1604,43 +1636,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
     }
     
     if(current_match != NULL){
-      AgsTimestamp *match_timestamp;
-      
-      guint64 match_x, current_x;
-      
-      if(bisect_match != NULL){
-	current_timestamp = ags_automation_get_timestamp(current_match->data);
-	match_timestamp = ags_automation_get_timestamp(bisect_match->data);
+      bisect_match = current_match;
 
-	match_x = 0;
-	current_x = 0;
-	
-	if(use_ags_offset){
-	  match_x = ags_timestamp_get_ags_offset(match_timestamp);
-	}else{
-	  match_x = ags_timestamp_get_unix_time(match_timestamp);
-	}
-
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	}
-	
-	if(current_x < match_x){
-	  bisect_match = current_match;
-	}
-
-	if(current_timestamp != NULL){
-	  g_object_unref(current_timestamp);
-	}
-	
-	if(match_timestamp != NULL){
-	  g_object_unref(match_timestamp);
-	}
-      }else{
-	bisect_match = current_match;
-      }
+      break;
     }
     
     /* iterate */

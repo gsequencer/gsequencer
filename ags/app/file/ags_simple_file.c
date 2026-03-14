@@ -17228,9 +17228,13 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "offset");
 
 	if(str != NULL){
-	  gobject->timestamp->timer.ags_offset.offset = g_ascii_strtoull(str,
-									 NULL,
-									 10);
+	  guint64 current_offset;
+
+	  current_offset = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+	  
+	  gobject->timestamp->timer.ags_offset.offset = (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor((double) current_offset / AGS_NOTATION_DEFAULT_OFFSET));
 
 	  xmlFree(str);
 
