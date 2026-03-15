@@ -1,3 +1,18 @@
+ags (8.3.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation, automation, wave and program bisect
+
+ags (8.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio export clear buffer
+
+ags (8.3.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed modular synth OSC-1
+
 ags (8.3.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

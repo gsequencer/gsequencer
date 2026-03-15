@@ -2296,17 +2296,16 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 		
   while((i = ags_notebook_next_active_tab(composite_editor->notation_edit->channel_selector,
 					  i)) != -1){
-    g_object_get(machine->audio,
-		 "notation", &start_notation,
-		 NULL);
+    start_notation = ags_audio_get_notation(machine->audio);
       
     notation = ags_notation_find_near_timestamp(start_notation, i,
 						timestamp);
 
     if(notation == NULL){
       current_notation = ags_notation_new((GObject *) machine->audio,
-				  i);
-      current_notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+					  i);
+      ags_timestamp_set_ags_offset(current_notation->timestamp,
+				   timestamp->timer.ags_offset.offset);
 	
       ags_audio_add_notation(machine->audio,
 			     (GObject *) current_notation);

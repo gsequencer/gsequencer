@@ -1084,15 +1084,15 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 								timestamp);
 	    
 		    if(notation == NULL){
-		      current_notation = ags_notation_new(NULL,
+		      current_notation = ags_notation_new((GObject *) machine->audio,
 							  j);
 		      ags_timestamp_set_ags_offset(current_notation->timestamp,
-						   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
+						   timestamp->timer.ags_offset.offset);
 	      
 		      ags_audio_add_notation(machine->audio,
 					     (GObject *) current_notation);
 		    }else{
-		      current_notation = notation->data;
+		      current_notation = AGS_NOTATION(notation->data);
 		    }
 
 		    /* add note */
