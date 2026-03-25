@@ -1,3 +1,9 @@
+ags (8.3.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: fixed notation clipboard
+	* fixed performance penalties of ags-fx-notation because of memory leak
+
 ags (8.3.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1724,6 +1724,11 @@ ags_notation_find_exact_note_256th_point(AgsNotation *notation,
   retval = NULL;
   
   while(note != NULL){
+    current_x0_256th = 0;
+    current_x1_256th = 0;
+
+    current_y = 0;
+    
     g_object_get(note->data,
 		 "x0-256th", &current_x0_256th,
 		 "x1-256th", &current_x1_256th,
@@ -2804,10 +2809,10 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
   char *endptr;
 
   guint64 timestamp_offset;
-  guint x_boundary_val, y_boundary_val;
-  guint x0_val, x1_val, y_val;
-  guint x0_256th_val, x1_256th_val;
-  guint base_x_difference, base_y_difference;
+  gint64 x_boundary_val, y_boundary_val;
+  gint64 x0_val, x1_val, y_val;
+  gint64 x0_256th_val, x1_256th_val;
+  gint64 base_x_difference, base_y_difference;
   gboolean subtract_x, subtract_y;
 
   node = root_node->children;
@@ -2891,14 +2896,16 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	  continue;
 	}
 
-	errno = 0;
-	x0_val = strtoul(x0, &endptr, 10);
+	//	errno = 0;
+	x0_val = g_ascii_strtoll(x0,
+				 &endptr,
+				 10);
 
-	if(errno == ERANGE){
-	  node = node->next;
+	//	if(errno == ERANGE){
+	//	  node = node->next;
 	  
-	  continue;
-	} 
+	//	  continue;
+	//	} 
 
 	if(x0 == endptr){
 	  node = node->next;
@@ -2915,14 +2922,16 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	  continue;
 	}
 
-	errno = 0;
-	x1_val = strtoul(x1, &endptr, 10);
+	//	errno = 0;
+	x1_val = g_ascii_strtoll(x1,
+				 &endptr,
+				 10);
 
-	if(errno == ERANGE){
-	  node = node->next;
+	//	if(errno == ERANGE){
+	//	  node = node->next;
 	  
-	  continue;
-	} 
+	//	  continue;
+	//	} 
 
 	if(x1 == endptr){
 	  node = node->next;
@@ -2936,12 +2945,14 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	x0_256th_val = 16 * x0_val;
 	
 	if(x0_256th != NULL){
-	  errno = 0;
-	  x0_256th_val = strtoul(x0_256th, &endptr, 10);
+	  //	  errno = 0;
+	  x0_256th_val = g_ascii_strtoll(x0_256th,
+					 &endptr,
+					 10);
 	  
-	  if(errno == ERANGE){
-	    x0_256th_val = 16 * x0_val;
-	  }
+	  //	  if(errno == ERANGE){
+	  //	    x0_256th_val = 16 * x0_val;
+	  //	  }
 	  
 	  if(x0_256th == endptr){
 	    x0_256th_val = 16 * x0_val;
@@ -2954,12 +2965,14 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	x1_256th_val = 16 * x1_val;
 	
 	if(x1_256th != NULL){
-	  errno = 0;
-	  x1_256th_val = strtoul(x1_256th, &endptr, 10);
+	  //	  errno = 0;
+	  x1_256th_val = g_ascii_strtoll(x1_256th,
+					 &endptr,
+					 10);
 
-	  if(errno == ERANGE){
-	    x1_256th_val = 16 * x1_val;
-	  } 
+	  //	  if(errno == ERANGE){
+	  //	    x1_256th_val = 16 * x1_val;
+	  //	  } 
 
 	  if(x1_256th == endptr){
 	    x1_256th_val = 16 * x1_val;
@@ -2975,14 +2988,16 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	  continue;
 	}
 
-	errno = 0;
-	y_val = strtoul(y, &endptr, 10);
+	//	errno = 0;
+	y_val = g_ascii_strtoll(y,
+				&endptr,
+				10);
 
-	if(errno == ERANGE){
-	  node = node->next;
+	//	if(errno == ERANGE){
+	//	  node = node->next;
 	  
-	  continue;
-	} 
+	//	  continue;
+	//	} 
 
 	if(y == endptr){
 	  node = node->next;
@@ -3070,6 +3085,8 @@ ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *nota
 	}
 	  
 	/* add note */
+	timestamp = NULL;
+	
 	g_object_get(notation,
 		     "timestamp", &timestamp,
 		     NULL);
