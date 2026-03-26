@@ -28,6 +28,7 @@
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
+#include <ags/audio/ags_amplifier10_util.h>
 #include <ags/audio/ags_volume_util.h>
 
 G_BEGIN_DECLS
@@ -48,7 +49,9 @@ struct _AgsFxEq10AudioSignal
 
   AgsAudioBufferUtil audio_buffer_util;
 
-  AgsVolumeUtil volume_util;  
+  AgsVolumeUtil volume_util;
+
+  AgsAmplifier10Util amplifier10_util;
 };
 
 struct _AgsFxEq10AudioSignalClass
