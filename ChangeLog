@@ -1,8 +1,9 @@
-ags (8.3.13)
+ags (8.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: fixed notation clipboard
-	* fixed performance penalties of ags-fx-notation because of memory leak
+	* implemented AgsAmplifier10Util
+	* fixed memory-leak of ags-fx-notation
+	* refactored ags-fx-eq10
 
 ags (8.3.12)
 

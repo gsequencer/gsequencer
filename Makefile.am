@@ -1401,6 +1401,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_synth_enums.h \
 	ags/audio/ags_acceleration.h \
 	ags/audio/ags_amplifier_util.h \
+	ags/audio/ags_amplifier10_util.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h \
@@ -1510,6 +1511,7 @@ libags_audio_c_sources = \
 	ags/audio/ags_synth_enums.c \
 	ags/audio/ags_acceleration.c \
 	ags/audio/ags_amplifier_util.c \
+	ags/audio/ags_amplifier10_util.c \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
 	ags/audio/ags_audio_buffer_util.c \
