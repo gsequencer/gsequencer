@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -510,8 +510,8 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
   /* pressure */
   fx_eq10_channel->pressure = g_object_new(AGS_TYPE_PORT,
 					   "plugin-name", ags_fx_eq10_channel_plugin_name,
-					   "specifier", "11/11",
-					   "control-port", "./pressure[0]",
+					   "specifier", "./pressure[0]",
+					   "control-port", "11/11",
 					   "port-value-is-pointer", FALSE,
 					   "port-value-type", G_TYPE_FLOAT,
 					   "port-value-size", sizeof(gfloat),

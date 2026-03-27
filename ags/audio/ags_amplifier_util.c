@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,44 +33,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ */
 
 #include <ags/audio/ags_amplifier_util.h>
 
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
-void ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
-		     guint nth_sect,
-		     gint k, gdouble f, gdouble b, gdouble g);
-void ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
-		      guint nth_sect,
-		      gint k, gdouble f, gdouble b, gdouble g);
-void ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
-		      guint nth_sect,
-		      gint k, gdouble f, gdouble b, gdouble g);
-void ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
-		      guint nth_sect,
-		      gint k, gdouble f, gdouble b, gdouble g);
-void ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
-		      guint nth_sect,
-		      gint k, gdouble f, gdouble b, gdouble g);
-void ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
-			guint nth_sect,
-			gint k, gdouble f, gdouble b, gdouble g);
-void ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
+static void ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
+			    guint nth_sect,
+			    gint k, gdouble f, gdouble b, gdouble g);
+static void ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
+			     guint nth_sect,
+			     gint k, gdouble f, gdouble b, gdouble g);
+static void ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
+			     guint nth_sect,
+			     gint k, gdouble f, gdouble b, gdouble g);
+static void ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
+			     guint nth_sect,
+			     gint k, gdouble f, gdouble b, gdouble g);
+static void ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
+			     guint nth_sect,
+			     gint k, gdouble f, gdouble b, gdouble g);
+static void ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
+			       guint nth_sect,
+			       gint k, gdouble f, gdouble b, gdouble g);
+static void ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
+				guint nth_sect,
+				gint k, gdouble f, gdouble b, gdouble g);
+static void ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
+				 guint nth_sect,
+				 gint k, gdouble f, gdouble b, gdouble g);
+
+static void ags_fil_proc(AgsAmplifierUtil *amplifier_util,
+			 AgsSoundcardFormat format,
 			 guint nth_sect,
 			 gint k, gdouble f, gdouble b, gdouble g);
-void ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
-			  guint nth_sect,
-			  gint k, gdouble f, gdouble b, gdouble g);
 
-void ags_fil_proc(AgsAmplifierUtil *amplifier_util,
-		  AgsSoundcardFormat format,
-		  guint nth_sect,
-		  gint k, gdouble f, gdouble b, gdouble g);
-
-gdouble exp2ap(gdouble x);
+static gdouble exp2ap(gdouble x);
 
 /**
  * SECTION:ags_amplifier_util
@@ -1034,7 +1034,7 @@ ags_amplifier_util_set_filter_gain(AgsAmplifierUtil *amplifier_util,
   amplifier_util->filter_gain = filter_gain;
 }
 
-void
+static void
 ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
 		guint nth_sect,
 		gint k, gdouble f, gdouble b, gdouble g)
@@ -1123,7 +1123,7 @@ ags_fil_proc_s8(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
@@ -1212,7 +1212,7 @@ ags_fil_proc_s16(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
@@ -1301,7 +1301,7 @@ ags_fil_proc_s24(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
@@ -1390,7 +1390,7 @@ ags_fil_proc_s32(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
 		 guint nth_sect,
 		 gint k, gdouble f, gdouble b, gdouble g)
@@ -1479,10 +1479,10 @@ ags_fil_proc_s64(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
-		    guint nth_sect,
-		    gint k, gdouble f, gdouble b, gdouble g)
+		   guint nth_sect,
+		   gint k, gdouble f, gdouble b, gdouble g)
 {
   gfloat *mix_buffer;
   gfloat *source;
@@ -1568,7 +1568,7 @@ ags_fil_proc_float(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
 		    guint nth_sect,
 		    gint k, gdouble f, gdouble b, gdouble g)
@@ -1657,7 +1657,7 @@ ags_fil_proc_double(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
 		     guint nth_sect,
 		     gint k, gdouble f, gdouble b, gdouble g)
@@ -1748,7 +1748,7 @@ ags_fil_proc_complex(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-void
+static void
 ags_fil_proc(AgsAmplifierUtil *amplifier_util,
 	     AgsSoundcardFormat format,
 	     guint nth_sect,
@@ -1759,7 +1759,13 @@ ags_fil_proc(AgsAmplifierUtil *amplifier_util,
      amplifier_util->source == NULL){
     return;
   }
+
+  amplifier_util->proc_sect[nth_sect].f = f;
   
+  amplifier_util->proc_sect[nth_sect].b = b;
+
+  amplifier_util->proc_sect[nth_sect].g = g;
+
   switch(amplifier_util->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -1820,7 +1826,7 @@ ags_fil_proc(AgsAmplifierUtil *amplifier_util,
   }
 }
 
-gdouble
+static gdouble
 exp2ap(gdouble x)
 {
   int i;
@@ -2047,8 +2053,8 @@ ags_amplifier_util_process_s8(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2267,8 +2273,8 @@ ags_amplifier_util_process_s16(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2487,8 +2493,8 @@ ags_amplifier_util_process_s24(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2707,8 +2713,8 @@ ags_amplifier_util_process_s32(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -2927,8 +2933,8 @@ ags_amplifier_util_process_s64(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -3147,8 +3153,8 @@ ags_amplifier_util_process_float(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -3367,8 +3373,8 @@ ags_amplifier_util_process_double(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**
@@ -3589,8 +3595,8 @@ ags_amplifier_util_process_complex(AgsAmplifierUtil *amplifier_util)
 					      destination, destination_stride, 0,
 					      amplifier_util->mix_buffer, 1, 0,
 					      buffer_length, ags_audio_buffer_util_get_copy_mode_from_format(NULL,
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format),
-												 ags_audio_buffer_util_format_from_soundcard(NULL, format)));
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format),
+													     ags_audio_buffer_util_format_from_soundcard(NULL, format)));
 }
 
 /**

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -107,6 +107,8 @@ ags_fx_eq10_audio_signal_init(AgsFxEq10AudioSignal *fx_eq10_audio_signal)
   AGS_RECALL(fx_eq10_audio_signal)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(fx_eq10_audio_signal)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(fx_eq10_audio_signal)->xml_type = "ags-fx-eq10-audio-signal";
+
+  fx_eq10_audio_signal->amplifier10_util = AGS_AMPLIFIER10_UTIL_INITIALIZER;
 }
 
 void
@@ -143,16 +145,6 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
   gdouble *output_buffer;
   gdouble *input_buffer;
-  gdouble *cache_28hz;
-  gdouble *cache_56hz;
-  gdouble *cache_112hz;
-  gdouble *cache_224hz;
-  gdouble *cache_448hz;
-  gdouble *cache_896hz;
-  gdouble *cache_1792hz;
-  gdouble *cache_3584hz;
-  gdouble *cache_7168hz;
-  gdouble *cache_14336hz;
 
   gint sound_scope;
 
@@ -212,7 +204,7 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 	       "buffer-size", &buffer_size,
 	       "format", &format,
 	       NULL);
-
+  
   /* copy mode */
   output_copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_eq10_audio_signal->audio_buffer_util),
 								     ags_audio_buffer_util_format_from_soundcard(&(fx_eq10_audio_signal->audio_buffer_util),
@@ -226,17 +218,6 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
   output_buffer = NULL;
   input_buffer = NULL;
-
-  cache_28hz = NULL;
-  cache_56hz = NULL;
-  cache_112hz = NULL;
-  cache_224hz = NULL;
-  cache_448hz = NULL;
-  cache_896hz = NULL;
-  cache_1792hz = NULL;
-  cache_3584hz = NULL;
-  cache_7168hz = NULL;
-  cache_14336hz = NULL;
   
   if(fx_eq10_channel != NULL){
     fx_eq10_channel_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_eq10_channel);
@@ -245,17 +226,6 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
     output_buffer = fx_eq10_channel->input_data[sound_scope]->output;
     input_buffer = fx_eq10_channel->input_data[sound_scope]->input;
-
-    cache_28hz = fx_eq10_channel->input_data[sound_scope]->cache_28hz;
-    cache_56hz = fx_eq10_channel->input_data[sound_scope]->cache_56hz;
-    cache_112hz = fx_eq10_channel->input_data[sound_scope]->cache_112hz;
-    cache_224hz = fx_eq10_channel->input_data[sound_scope]->cache_224hz;
-    cache_448hz = fx_eq10_channel->input_data[sound_scope]->cache_448hz;
-    cache_896hz = fx_eq10_channel->input_data[sound_scope]->cache_896hz;
-    cache_1792hz = fx_eq10_channel->input_data[sound_scope]->cache_1792hz;
-    cache_3584hz = fx_eq10_channel->input_data[sound_scope]->cache_3584hz;
-    cache_7168hz = fx_eq10_channel->input_data[sound_scope]->cache_7168hz;
-    cache_14336hz = fx_eq10_channel->input_data[sound_scope]->cache_14336hz;
 
     g_rec_mutex_unlock(fx_eq10_channel_mutex);
   }
@@ -477,555 +447,86 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
     g_value_unset(&value);
   }
 
+  ags_amplifier10_util_set_source(&(fx_eq10_audio_signal->amplifier10_util),
+				  input_buffer);
+  
+  ags_amplifier10_util_set_source_stride(&(fx_eq10_audio_signal->amplifier10_util),
+					 1);
+  
+  ags_amplifier10_util_set_destination(&(fx_eq10_audio_signal->amplifier10_util),
+				       output_buffer);  
+  
+  ags_amplifier10_util_set_destination_stride(&(fx_eq10_audio_signal->amplifier10_util),
+					      1);
+  
+  ags_amplifier10_util_set_buffer_length(&(fx_eq10_audio_signal->amplifier10_util),
+					 buffer_size);
+  
+  ags_amplifier10_util_set_format(&(fx_eq10_audio_signal->amplifier10_util),
+				  AGS_SOUNDCARD_DOUBLE);
+  
+  ags_amplifier10_util_set_samplerate(&(fx_eq10_audio_signal->amplifier10_util),
+				      samplerate);
+  
+  ags_amplifier10_util_set_amp_0_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_28hz);
+  
+  ags_amplifier10_util_set_amp_1_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_56hz);
+  
+  ags_amplifier10_util_set_amp_2_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_112hz);
+  
+  ags_amplifier10_util_set_amp_3_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_224hz);
+  
+  ags_amplifier10_util_set_amp_4_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_448hz);
+  
+  ags_amplifier10_util_set_amp_5_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_896hz);
+  
+  ags_amplifier10_util_set_amp_6_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_1792hz);
+  
+  ags_amplifier10_util_set_amp_7_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_3584hz);
+  
+  ags_amplifier10_util_set_amp_8_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_7168hz);
+  
+  ags_amplifier10_util_set_amp_9_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				      peak_14336hz);
+  
+  ags_amplifier10_util_set_filter_gain(&(fx_eq10_audio_signal->amplifier10_util),
+				       pressure);
+  
   if(fx_eq10_channel != NULL &&
      source != NULL &&
      source->stream_current != NULL){
     stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(source);
 
     g_rec_mutex_lock(fx_eq10_channel_mutex);
-
-    /* clear/copy - preserve trailing */
-    if(buffer_size > 8){
-      /* clear buffer */
-      ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
-					 input_buffer, 1,
-					 buffer_size - 2);
     
-      /* copy input */
-      g_rec_mutex_lock(stream_mutex);
+    /* clear/copy - preserve trailing */
+    /* clear buffer */
+    ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
+				       input_buffer, 1,
+				       buffer_size - 2);
+    
+    /* copy input */
+    g_rec_mutex_lock(stream_mutex);
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
-						  input_buffer, 1, 0,
-						  source->stream_current->data, 1, 0,
-						  buffer_size - 2, input_copy_mode);
+    ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
+						input_buffer, 1, 0,
+						source->stream_current->data, 1, 0,
+						buffer_size - 2, input_copy_mode);
       
-      g_rec_mutex_unlock(stream_mutex);
-    }
+    g_rec_mutex_unlock(stream_mutex);
 
     /* equalizer */
-    for(i = 0; i + AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE < buffer_size; i += AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE){
-      gdouble resonator;
-      gdouble frequency;
-    
-      /* 28Hz */
-      resonator = peak_28hz;
-      frequency = 2.0 * M_PI * 28.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_28hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_28hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_28hz[0] - (resonator * resonator) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_28hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_28hz[1] - (resonator * resonator) * cache_28hz[0];
-	cache_28hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_28hz[2] - (resonator * resonator) * cache_28hz[1];
-	cache_28hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_28hz[3] - (resonator * resonator) * cache_28hz[2];
-	cache_28hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_28hz[4] - (resonator * resonator) * cache_28hz[3];
-	cache_28hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_28hz[5] - (resonator * resonator) * cache_28hz[4];
-	cache_28hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_28hz[6] - (resonator * resonator) * cache_28hz[5];
-      }else{
-	cache_28hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_28hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_28hz[0] - (resonator * resonator) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_28hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_28hz[1] - (resonator * resonator) * cache_28hz[0];
-	cache_28hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_28hz[2] - (resonator * resonator) * cache_28hz[1];
-	cache_28hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_28hz[3] - (resonator * resonator) * cache_28hz[2];
-	cache_28hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_28hz[4] - (resonator * resonator) * cache_28hz[3];
-	cache_28hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_28hz[5] - (resonator * resonator) * cache_28hz[4];
-	cache_28hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_28hz[6] - (resonator * resonator) * cache_28hz[5];
-      }
+    ags_amplifier10_util_process(&(fx_eq10_audio_signal->amplifier10_util));
 
-      /* 56Hz */
-      resonator = peak_56hz;
-      frequency = 2.0 * M_PI * 56.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_56hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_56hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_56hz[0] - (resonator * resonator) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_56hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_56hz[1] - (resonator * resonator) * cache_56hz[0];
-	cache_56hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_56hz[2] - (resonator * resonator) * cache_56hz[1];
-	cache_56hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_56hz[3] - (resonator * resonator) * cache_56hz[2];
-	cache_56hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_56hz[4] - (resonator * resonator) * cache_56hz[3];
-	cache_56hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_56hz[5] - (resonator * resonator) * cache_56hz[4];
-	cache_56hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_56hz[6] - (resonator * resonator) * cache_56hz[5];
-      }else{
-	cache_56hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_56hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_56hz[0] - (resonator * resonator) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_56hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_56hz[1] - (resonator * resonator) * cache_56hz[0];
-	cache_56hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_56hz[2] - (resonator * resonator) * cache_56hz[1];
-	cache_56hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_56hz[3] - (resonator * resonator) * cache_56hz[2];
-	cache_56hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_56hz[4] - (resonator * resonator) * cache_56hz[3];
-	cache_56hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_56hz[5] - (resonator * resonator) * cache_56hz[4];
-	cache_56hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_56hz[6] - (resonator * resonator) * cache_56hz[5];
-      }
-
-      /* 112Hz */
-      resonator = peak_112hz;
-      frequency = 2.0 * M_PI * 112.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_112hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_112hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_112hz[0] - (resonator * resonator) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_112hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_112hz[1] - (resonator * resonator) * cache_112hz[0];
-	cache_112hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_112hz[2] - (resonator * resonator) * cache_112hz[1];
-	cache_112hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_112hz[3] - (resonator * resonator) * cache_112hz[2];
-	cache_112hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_112hz[4] - (resonator * resonator) * cache_112hz[3];
-	cache_112hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_112hz[5] - (resonator * resonator) * cache_112hz[4];
-	cache_112hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_112hz[6] - (resonator * resonator) * cache_112hz[5];
-      }else{
-	cache_112hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_112hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_112hz[0] - (resonator * resonator) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_112hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_112hz[1] - (resonator * resonator) * cache_112hz[0];
-	cache_112hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_112hz[2] - (resonator * resonator) * cache_112hz[1];
-	cache_112hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_112hz[3] - (resonator * resonator) * cache_112hz[2];
-	cache_112hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_112hz[4] - (resonator * resonator) * cache_112hz[3];
-	cache_112hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_112hz[5] - (resonator * resonator) * cache_112hz[4];
-	cache_112hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_112hz[6] - (resonator * resonator) * cache_112hz[5];
-      }
-
-      /* 224Hz */
-      resonator = peak_224hz;
-      frequency = 2.0 * M_PI * 224.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_224hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_224hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_224hz[0] - (resonator * resonator) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_224hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_224hz[1] - (resonator * resonator) * cache_224hz[0];
-	cache_224hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_224hz[2] - (resonator * resonator) * cache_224hz[1];
-	cache_224hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_224hz[3] - (resonator * resonator) * cache_224hz[2];
-	cache_224hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_224hz[4] - (resonator * resonator) * cache_224hz[3];
-	cache_224hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_224hz[5] - (resonator * resonator) * cache_224hz[4];
-	cache_224hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_224hz[6] - (resonator * resonator) * cache_224hz[5];
-      }else{
-	cache_224hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_224hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_224hz[0] - (resonator * resonator) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_224hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_224hz[1] - (resonator * resonator) * cache_224hz[0];
-	cache_224hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_224hz[2] - (resonator * resonator) * cache_224hz[1];
-	cache_224hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_224hz[3] - (resonator * resonator) * cache_224hz[2];
-	cache_224hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_224hz[4] - (resonator * resonator) * cache_224hz[3];
-	cache_224hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_224hz[5] - (resonator * resonator) * cache_224hz[4];
-	cache_224hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_224hz[6] - (resonator * resonator) * cache_224hz[5];
-      }
-
-      /* 448Hz */
-      resonator = peak_448hz;
-      frequency = 2.0 * M_PI * 448.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_448hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_448hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_448hz[0] - (resonator * resonator) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_448hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_448hz[1] - (resonator * resonator) * cache_448hz[0];
-	cache_448hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_448hz[2] - (resonator * resonator) * cache_448hz[1];
-	cache_448hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_448hz[3] - (resonator * resonator) * cache_448hz[2];
-	cache_448hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_448hz[4] - (resonator * resonator) * cache_448hz[3];
-	cache_448hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_448hz[5] - (resonator * resonator) * cache_448hz[4];
-	cache_448hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_448hz[6] - (resonator * resonator) * cache_448hz[5];
-      }else{
-	cache_448hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_448hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_448hz[0] - (resonator * resonator) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_448hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_448hz[1] - (resonator * resonator) * cache_448hz[0];
-	cache_448hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_448hz[2] - (resonator * resonator) * cache_448hz[1];
-	cache_448hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_448hz[3] - (resonator * resonator) * cache_448hz[2];
-	cache_448hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_448hz[4] - (resonator * resonator) * cache_448hz[3];
-	cache_448hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_448hz[5] - (resonator * resonator) * cache_448hz[4];
-	cache_448hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_448hz[6] - (resonator * resonator) * cache_448hz[5];
-      }
-
-      /* 896Hz */
-      resonator = peak_896hz;
-      frequency = 2.0 * M_PI * 896.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_896hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_896hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_896hz[0] - (resonator * resonator) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_896hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_896hz[1] - (resonator * resonator) * cache_896hz[0];
-	cache_896hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_896hz[2] - (resonator * resonator) * cache_896hz[1];
-	cache_896hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_896hz[3] - (resonator * resonator) * cache_896hz[2];
-	cache_896hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_896hz[4] - (resonator * resonator) * cache_896hz[3];
-	cache_896hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_896hz[5] - (resonator * resonator) * cache_896hz[4];
-	cache_896hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_896hz[6] - (resonator * resonator) * cache_896hz[5];
-      }else{
-	cache_896hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_896hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_896hz[0] - (resonator * resonator) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_896hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_896hz[1] - (resonator * resonator) * cache_896hz[0];
-	cache_896hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_896hz[2] - (resonator * resonator) * cache_896hz[1];
-	cache_896hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_896hz[3] - (resonator * resonator) * cache_896hz[2];
-	cache_896hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_896hz[4] - (resonator * resonator) * cache_896hz[3];
-	cache_896hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_896hz[5] - (resonator * resonator) * cache_896hz[4];
-	cache_896hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_896hz[6] - (resonator * resonator) * cache_896hz[5];
-      }
-
-      /* 1792Hz */
-      resonator = peak_1792hz;
-      frequency = 2.0 * M_PI * 1792.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_1792hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_1792hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[0] - (resonator * resonator) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_1792hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[1] - (resonator * resonator) * cache_1792hz[0];
-	cache_1792hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[2] - (resonator * resonator) * cache_1792hz[1];
-	cache_1792hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[3] - (resonator * resonator) * cache_1792hz[2];
-	cache_1792hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[4] - (resonator * resonator) * cache_1792hz[3];
-	cache_1792hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[5] - (resonator * resonator) * cache_1792hz[4];
-	cache_1792hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[6] - (resonator * resonator) * cache_1792hz[5];
-      }else{
-	cache_1792hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_1792hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[0] - (resonator * resonator) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_1792hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[1] - (resonator * resonator) * cache_1792hz[0];
-	cache_1792hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[2] - (resonator * resonator) * cache_1792hz[1];
-	cache_1792hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[3] - (resonator * resonator) * cache_1792hz[2];
-	cache_1792hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[4] - (resonator * resonator) * cache_1792hz[3];
-	cache_1792hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[5] - (resonator * resonator) * cache_1792hz[4];
-	cache_1792hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[6] - (resonator * resonator) * cache_1792hz[5];
-      }
-
-      /* 3584Hz */
-      resonator = peak_3584hz;
-      frequency = 2.0 * M_PI * 3584.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_3584hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_3584hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[0] - (resonator * resonator) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_3584hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[1] - (resonator * resonator) * cache_3584hz[0];
-	cache_3584hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[2] - (resonator * resonator) * cache_3584hz[1];
-	cache_3584hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[3] - (resonator * resonator) * cache_3584hz[2];
-	cache_3584hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[4] - (resonator * resonator) * cache_3584hz[3];
-	cache_3584hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[5] - (resonator * resonator) * cache_3584hz[4];
-	cache_3584hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[6] - (resonator * resonator) * cache_3584hz[5];
-      }else{
-	cache_3584hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_3584hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[0] - (resonator * resonator) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_3584hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[1] - (resonator * resonator) * cache_3584hz[0];
-	cache_3584hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[2] - (resonator * resonator) * cache_3584hz[1];
-	cache_3584hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[3] - (resonator * resonator) * cache_3584hz[2];
-	cache_3584hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[4] - (resonator * resonator) * cache_3584hz[3];
-	cache_3584hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[5] - (resonator * resonator) * cache_3584hz[4];
-	cache_3584hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[6] - (resonator * resonator) * cache_3584hz[5];
-      }
-
-      /* 7168Hz */
-      resonator = peak_7168hz;
-      frequency = 2.0 * M_PI * 7168.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_7168hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_7168hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[0] - (resonator * resonator) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_7168hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[1] - (resonator * resonator) * cache_7168hz[0];
-	cache_7168hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[2] - (resonator * resonator) * cache_7168hz[1];
-	cache_7168hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[3] - (resonator * resonator) * cache_7168hz[2];
-	cache_7168hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[4] - (resonator * resonator) * cache_7168hz[3];
-	cache_7168hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[5] - (resonator * resonator) * cache_7168hz[4];
-	cache_7168hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[6] - (resonator * resonator) * cache_7168hz[5];
-      }else{
-	cache_7168hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_7168hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[0] - (resonator * resonator) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_7168hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[1] - (resonator * resonator) * cache_7168hz[0];
-	cache_7168hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[2] - (resonator * resonator) * cache_7168hz[1];
-	cache_7168hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[3] - (resonator * resonator) * cache_7168hz[2];
-	cache_7168hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[4] - (resonator * resonator) * cache_7168hz[3];
-	cache_7168hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[5] - (resonator * resonator) * cache_7168hz[4];
-	cache_7168hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[6] - (resonator * resonator) * cache_7168hz[5];
-      }
-
-      /* 14336Hz */
-      resonator = peak_14336hz;
-      frequency = 2.0 * M_PI * 14336.0 / (gdouble) samplerate;
-    
-      if(i == 0){
-	cache_14336hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_14336hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[0] - (resonator * resonator) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_14336hz[2] = input_buffer[2] - (resonator * input_buffer[0]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[1] - (resonator * resonator) * cache_14336hz[0];
-	cache_14336hz[3] = input_buffer[3] - (resonator * input_buffer[1]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[2] - (resonator * resonator) * cache_14336hz[1];
-	cache_14336hz[4] = input_buffer[4] - (resonator * input_buffer[2]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[3] - (resonator * resonator) * cache_14336hz[2];
-	cache_14336hz[5] = input_buffer[5] - (resonator * input_buffer[3]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[4] - (resonator * resonator) * cache_14336hz[3];
-	cache_14336hz[6] = input_buffer[6] - (resonator * input_buffer[4]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[5] - (resonator * resonator) * cache_14336hz[4];
-	cache_14336hz[7] = input_buffer[7] - (resonator * input_buffer[5]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[6] - (resonator * resonator) * cache_14336hz[5];
-      }else{
-	cache_14336hz[0] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	cache_14336hz[1] = input_buffer[i + 1] - (resonator * input_buffer[i - 1]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[0] - (resonator * resonator) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	cache_14336hz[2] = input_buffer[i + 2] - (resonator * input_buffer[i]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[1] - (resonator * resonator) * cache_14336hz[0];
-	cache_14336hz[3] = input_buffer[i + 3] - (resonator * input_buffer[i + 1]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[2] - (resonator * resonator) * cache_14336hz[1];
-	cache_14336hz[4] = input_buffer[i + 4] - (resonator * input_buffer[i + 2]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[3] - (resonator * resonator) * cache_14336hz[2];
-	cache_14336hz[5] = input_buffer[i + 5] - (resonator * input_buffer[i + 3]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[4] - (resonator * resonator) * cache_14336hz[3];
-	cache_14336hz[6] = input_buffer[i + 6] - (resonator * input_buffer[i + 4]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[5] - (resonator * resonator) * cache_14336hz[4];
-	cache_14336hz[7] = input_buffer[i + 7] - (resonator * input_buffer[i + 5]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[6] - (resonator * resonator) * cache_14336hz[5];
-      }
-
-      /* clear/copy - handle trailing */
-      if(i == 0){
-	/* clear buffer */
-	ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
-					   input_buffer + (buffer_size - 3), 1,
-					   2);
-    
-	/* copy input */
-	g_rec_mutex_lock(stream_mutex);
-	
-	ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
-						    input_buffer, 1, buffer_size - 3,
-						    source->stream_current->data, 1, buffer_size - 3,
-						    2, input_copy_mode);
-
-	g_rec_mutex_unlock(stream_mutex);
-      }
-
-      /* fill output */
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_28hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_56hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_112hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_224hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_448hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_896hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_1792hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_3584hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_7168hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_14336hz, 1,
-						  AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE);
-    }
-
-    if(buffer_size >= 4){
-      for(; i + 1 < buffer_size; i++){
-	gdouble resonator;
-	gdouble frequency;
-      
-	/* clear buffer */
-	ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
-					   input_buffer + i, 1,
-					   1);
-      
-	/* copy input */
-	g_rec_mutex_lock(stream_mutex);
-	
-	ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
-						    input_buffer, 1, i,
-						    source->stream_current->data, 1, i,
-						    1, input_copy_mode);
-
-	g_rec_mutex_unlock(stream_mutex);
-
-	if(i == 0){
-	  resonator = peak_28hz;
-	  frequency = 2.0 * M_PI * 28.0 / (gdouble) samplerate;
-	  cache_28hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	
-	  resonator = peak_56hz;
-	  frequency = 2.0 * M_PI * 56.0 / (gdouble) samplerate;
-	  cache_56hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_112hz;
-	  frequency = 2.0 * M_PI * 112.0 / (gdouble) samplerate;
-	  cache_112hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_224hz;
-	  frequency = 2.0 * M_PI * 224.0 / (gdouble) samplerate;
-	  cache_224hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_448hz;
-	  frequency = 2.0 * M_PI * 448.0 / (gdouble) samplerate;
-	  cache_448hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_896hz;
-	  frequency = 2.0 * M_PI * 896.0 / (gdouble) samplerate;
-	  cache_896hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_1792hz;
-	  frequency = 2.0 * M_PI * 1792.0 / (gdouble) samplerate;
-	  cache_1792hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_3584hz;
-	  frequency = 2.0 * M_PI * 3584.0 / (gdouble) samplerate;
-	  cache_3584hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_7168hz;
-	  frequency = 2.0 * M_PI * 7168.0 / (gdouble) samplerate;
-	  cache_7168hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_14336hz;
-	  frequency = 2.0 * M_PI * 14336.0 / (gdouble) samplerate;
-	  cache_14336hz[0] = input_buffer[0] - (resonator * input_buffer[buffer_size - 2]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	}else if(i == 1){
-	  resonator = peak_28hz;
-	  frequency = 2.0 * M_PI * 28.0 / (gdouble) samplerate;
-	  cache_28hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_28hz[0] - (resonator * resonator) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_56hz;
-	  frequency = 2.0 * M_PI * 56.0 / (gdouble) samplerate;
-	  cache_56hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_56hz[0] - (resonator * resonator) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_112hz;
-	  frequency = 2.0 * M_PI * 112.0 / (gdouble) samplerate;
-	  cache_112hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_112hz[0] - (resonator * resonator) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_224hz;
-	  frequency = 2.0 * M_PI * 224.0 / (gdouble) samplerate;
-	  cache_224hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_224hz[0] - (resonator * resonator) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_448hz;
-	  frequency = 2.0 * M_PI * 448.0 / (gdouble) samplerate;
-	  cache_448hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_448hz[0] - (resonator * resonator) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_896hz;
-	  frequency = 2.0 * M_PI * 896.0 / (gdouble) samplerate;
-	  cache_896hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_896hz[0] - (resonator * resonator) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_1792hz;
-	  frequency = 2.0 * M_PI * 1792.0 / (gdouble) samplerate;
-	  cache_1792hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[0] - (resonator * resonator) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_3584hz;
-	  frequency = 2.0 * M_PI * 3584.0 / (gdouble) samplerate;
-	  cache_3584hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[0] - (resonator * resonator) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_7168hz;
-	  frequency = 2.0 * M_PI * 7168.0 / (gdouble) samplerate;
-	  cache_7168hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[0] - (resonator * resonator) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-
-	  resonator = peak_14336hz;
-	  frequency = 2.0 * M_PI * 14336.0 / (gdouble) samplerate;
-	  cache_14336hz[1] = input_buffer[1] - (resonator * input_buffer[buffer_size - 1]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[0] - (resonator * resonator) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1];
-	}else{
-	  resonator = peak_28hz;
-	  frequency = 2.0 * M_PI * 28.0 / (gdouble) samplerate;
-	  cache_28hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_28hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_56hz;
-	  frequency = 2.0 * M_PI * 56.0 / (gdouble) samplerate;
-	  cache_56hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_56hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_112hz;
-	  frequency = 2.0 * M_PI * 112.0 / (gdouble) samplerate;
-	  cache_112hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_112hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_224hz;
-	  frequency = 2.0 * M_PI * 224.0 / (gdouble) samplerate;
-	  cache_224hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_224hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_448hz;
-	  frequency = 2.0 * M_PI * 448.0 / (gdouble) samplerate;
-	  cache_448hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_448hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_896hz;
-	  frequency = 2.0 * M_PI * 896.0 / (gdouble) samplerate;
-	  cache_896hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_896hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_1792hz;
-	  frequency = 2.0 * M_PI * 1792.0 / (gdouble) samplerate;
-	  cache_1792hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_1792hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_3584hz;
-	  frequency = 2.0 * M_PI * 3584.0 / (gdouble) samplerate;
-	  cache_3584hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_3584hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_7168hz;
-	  frequency = 2.0 * M_PI * 7168.0 / (gdouble) samplerate;
-	  cache_7168hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_7168hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-
-	  resonator = peak_14336hz;
-	  frequency = 2.0 * M_PI * 14336.0 / (gdouble) samplerate;
-	  cache_14336hz[i % 8] = input_buffer[i] - (resonator * input_buffer[i - 2]) + (2.0 * resonator * cos(frequency)) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 1] - (resonator * resonator) * cache_14336hz[AGS_FX_EQ10_CHANNEL_INPUT_DATA_CACHE_SIZE - 2];
-	}
-      }
-
-      /* fill output */
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_28hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_56hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_112hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_224hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_448hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_896hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_1792hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_3584hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_7168hz + (i % 8), 1,
-						  1);
-
-      ags_audio_buffer_util_copy_double_to_double(&(fx_eq10_audio_signal->audio_buffer_util),
-						  output_buffer + i, 1,
-						  cache_14336hz + (i % 8), 1,
-						  1);
-    }
-
-    /* apply boost */
-    fx_eq10_audio_signal->volume_util.destination = output_buffer;
-    fx_eq10_audio_signal->volume_util.destination_stride = 1;
-    
-    fx_eq10_audio_signal->volume_util.source = output_buffer;
-    fx_eq10_audio_signal->volume_util.source_stride = 1;
-
-    fx_eq10_audio_signal->volume_util.buffer_length = buffer_size;
-    fx_eq10_audio_signal->volume_util.format = AGS_SOUNDCARD_DOUBLE;
-
-    fx_eq10_audio_signal->volume_util.volume = pressure;
-
-    ags_volume_util_compute(&(fx_eq10_audio_signal->volume_util));
-  
     /* clear buffer and copy output  */
     g_rec_mutex_lock(stream_mutex);
 
@@ -1043,6 +544,13 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_rec_mutex_unlock(fx_eq10_channel_mutex);
   }
+     
+  /* reset source and destination */
+  ags_amplifier10_util_set_source(&(fx_eq10_audio_signal->amplifier10_util),
+				  NULL);
+  
+  ags_amplifier10_util_set_destination(&(fx_eq10_audio_signal->amplifier10_util),
+				       NULL);
   
   if(source == NULL ||
      source->stream_current == NULL){
