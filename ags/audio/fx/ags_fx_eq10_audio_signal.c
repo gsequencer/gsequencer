@@ -170,6 +170,8 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
   GRecMutex *stream_mutex;
 
   fx_eq10_audio_signal = (AgsFxEq10AudioSignal *) recall;
+
+  fx_eq10_channel_mutex = NULL;
   
   stream_mutex = NULL;
   
