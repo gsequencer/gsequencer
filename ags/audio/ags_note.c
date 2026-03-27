@@ -1168,9 +1168,9 @@ ags_note_sort_func(gconstpointer a,
 
     if(a_y < b_y){
       return(-1);
-    }else{
-      return(1);
     }
+    
+    return(1);
   }
 
   if(a_x0 < b_x0){
