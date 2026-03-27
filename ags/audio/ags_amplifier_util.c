@@ -1759,7 +1759,13 @@ ags_fil_proc(AgsAmplifierUtil *amplifier_util,
      amplifier_util->source == NULL){
     return;
   }
+
+  amplifier_util->proc_sect[nth_sect].f = f;
   
+  amplifier_util->proc_sect[nth_sect].b = b;
+
+  amplifier_util->proc_sect[nth_sect].g = g;
+
   switch(amplifier_util->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {

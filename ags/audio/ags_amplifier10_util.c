@@ -479,7 +479,8 @@ void
 ags_amplifier10_util_set_format(AgsAmplifier10Util *amplifier10_util,
 				AgsSoundcardFormat format)
 {
-  if(amplifier10_util == NULL){
+  if(amplifier10_util == NULL ||
+     amplifier10_util->format == format){
     return;
   }
 
@@ -1796,7 +1797,7 @@ ags_fil_proc_s8(AgsAmplifier10Util *amplifier10_util,
 
   source = (gint8 *) amplifier10_util->source;
   source_stride = amplifier10_util->source_stride;
-
+  
   s1 = amplifier10_util->proc_sect[nth_sect].s1;
   s2 = amplifier10_util->proc_sect[nth_sect].s2;
   
@@ -2504,6 +2505,12 @@ ags_fil_proc(AgsAmplifier10Util *amplifier10_util,
      amplifier10_util->source == NULL){
     return;
   }
+
+  amplifier10_util->proc_sect[nth_sect].f = f;
+  
+  amplifier10_util->proc_sect[nth_sect].b = b;
+
+  amplifier10_util->proc_sect[nth_sect].g = g;
   
   switch(amplifier10_util->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2836,7 +2843,7 @@ ags_amplifier10_util_process_s8(AgsAmplifier10Util *amplifier10_util)
       sig[i] = (gint8) (g * (gdouble) aip[i * source_stride]);
     }
 
-    for(j = 0; j < AGS_AMPLIFIER10_UTIL_AMP_COUNT; j++){
+    for(j = 0; j < AGS_AMPLIFIER10_UTIL_AMP_COUNT; j++){     
       ags_fil_proc(amplifier10_util,
 		   format,
 		   j,

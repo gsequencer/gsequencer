@@ -4,6 +4,9 @@ ags (8.4.0)
 	* implemented AgsAmplifier10Util
 	* fixed memory-leak of ags-fx-notation
 	* refactored ags-fx-eq10
+	* refactored AgsEqualizer10
+	* refactored ags_notation_find_region()
+	* refactored ags_notation_find_offset()
 
 ags (8.3.12)
 

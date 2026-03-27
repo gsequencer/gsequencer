@@ -1837,18 +1837,24 @@ ags_notation_find_region(AgsNotation *notation,
       break;
     }
 
-    if((y0 < y1 && current_y >= y0 && current_y < y1) ||
-       (y0 >= y1 && current_y < y0 && current_y >= y1)){
-      region = g_list_prepend(region,
-			      note->data);
+    if(y0 < y1 && current_y >= y0 && current_y < y1){
+      region = g_list_insert_sorted(region,
+				    note->data,
+				    (GCompareFunc) ags_note_sort_func);
+    }else if(y0 > y1 && current_y < y0 && current_y >= y1){
+      region = g_list_insert_sorted(region,
+				    note->data,
+				    (GCompareFunc) ags_note_sort_func);
+    }else if(y0 == y1 && current_y == y0){
+      region = g_list_insert_sorted(region,
+				    note->data,
+				    (GCompareFunc) ags_note_sort_func);
     }
 
     note = note->next;
   }
 
   g_rec_mutex_unlock(notation_mutex);
-
-  region = g_list_reverse(region);
 
   return(region);
 }
@@ -1918,9 +1924,10 @@ ags_notation_find_offset(AgsNotation *notation,
       break;
     }
     
-    if(current_start_x == x){
-      retval = g_list_prepend(retval,
-			      current_start->data);
+    if(current_start_x == x){      
+      retval = g_list_insert_sorted(retval,
+				    current_start->data,
+				    (GCompareFunc) ags_note_sort_func);
       g_object_ref(current_start->data);
       
       break;
@@ -1935,8 +1942,9 @@ ags_notation_find_offset(AgsNotation *notation,
     }
 
     if(current_end_x == x){
-      retval = g_list_prepend(retval,
-			      current_end->data);
+      retval = g_list_insert_sorted(retval,
+				    current_end->data,
+				    (GCompareFunc) ags_note_sort_func);
       g_object_ref(current_end->data);
 
       break;
@@ -1947,8 +1955,9 @@ ags_notation_find_offset(AgsNotation *notation,
 		 NULL);
     
     if(current_x == x){
-      retval = g_list_prepend(retval,
-			      current->data);
+      retval = g_list_insert_sorted(retval,
+				    current->data,
+				    (GCompareFunc) ags_note_sort_func);
       g_object_ref(current->data);
       
       break;
@@ -2002,8 +2011,9 @@ ags_notation_find_offset(AgsNotation *notation,
 		   NULL);
     
       if(current_x == x){
-	retval = g_list_prepend(retval,
-				current->data);
+	retval = g_list_insert_sorted(retval,
+				      current->data,
+				      (GCompareFunc) ags_note_sort_func);
 	g_object_ref(current->data);
       }else{
 	break;
@@ -2023,8 +2033,9 @@ ags_notation_find_offset(AgsNotation *notation,
 		   NULL);
     
       if(current_x == x){
-	retval = g_list_prepend(retval,
-				current->data);
+	retval = g_list_insert_sorted(retval,
+				      current->data,
+				      (GCompareFunc) ags_note_sort_func);
 	g_object_ref(current->data);
       }else{
 	break;

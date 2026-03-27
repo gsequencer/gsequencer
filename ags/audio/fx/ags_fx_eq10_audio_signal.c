@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -205,15 +205,6 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       NULL);
   
-  ags_amplifier10_util_set_buffer_length(&(fx_eq10_audio_signal->amplifier10_util),
-					 buffer_size);
-  
-  ags_amplifier10_util_set_format(&(fx_eq10_audio_signal->amplifier10_util),
-				  AGS_SOUNDCARD_DOUBLE);
-  
-  ags_amplifier10_util_set_samplerate(&(fx_eq10_audio_signal->amplifier10_util),
-				      samplerate);
-  
   /* copy mode */
   output_copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_eq10_audio_signal->audio_buffer_util),
 								     ags_audio_buffer_util_format_from_soundcard(&(fx_eq10_audio_signal->audio_buffer_util),
@@ -238,11 +229,6 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_rec_mutex_unlock(fx_eq10_channel_mutex);
   }
-  
-  ags_amplifier10_util_set_source(&(fx_eq10_audio_signal->amplifier10_util),
-				  input_buffer);
-  ags_amplifier10_util_set_destination(&(fx_eq10_audio_signal->amplifier10_util),
-				       output_buffer);
   
   peak_28hz = 1.0;
   peak_56hz = 1.0;
@@ -460,6 +446,27 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_value_unset(&value);
   }
+
+  ags_amplifier10_util_set_source(&(fx_eq10_audio_signal->amplifier10_util),
+				  input_buffer);
+  
+  ags_amplifier10_util_set_source_stride(&(fx_eq10_audio_signal->amplifier10_util),
+					 1);
+  
+  ags_amplifier10_util_set_destination(&(fx_eq10_audio_signal->amplifier10_util),
+				       output_buffer);  
+  
+  ags_amplifier10_util_set_destination_stride(&(fx_eq10_audio_signal->amplifier10_util),
+					      1);
+  
+  ags_amplifier10_util_set_buffer_length(&(fx_eq10_audio_signal->amplifier10_util),
+					 buffer_size);
+  
+  ags_amplifier10_util_set_format(&(fx_eq10_audio_signal->amplifier10_util),
+				  AGS_SOUNDCARD_DOUBLE);
+  
+  ags_amplifier10_util_set_samplerate(&(fx_eq10_audio_signal->amplifier10_util),
+				      samplerate);
   
   ags_amplifier10_util_set_amp_0_gain(&(fx_eq10_audio_signal->amplifier10_util),
 				      peak_28hz);
@@ -502,22 +509,20 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
     g_rec_mutex_lock(fx_eq10_channel_mutex);
     
     /* clear/copy - preserve trailing */
-    if(buffer_size > 8){
-      /* clear buffer */
-      ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
-					 input_buffer, 1,
-					 buffer_size - 2);
+    /* clear buffer */
+    ags_audio_buffer_util_clear_double(&(fx_eq10_audio_signal->audio_buffer_util),
+				       input_buffer, 1,
+				       buffer_size - 2);
     
-      /* copy input */
-      g_rec_mutex_lock(stream_mutex);
+    /* copy input */
+    g_rec_mutex_lock(stream_mutex);
       
-      ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
-						  input_buffer, 1, 0,
-						  source->stream_current->data, 1, 0,
-						  buffer_size - 2, input_copy_mode);
+    ags_audio_buffer_util_copy_buffer_to_buffer(&(fx_eq10_audio_signal->audio_buffer_util),
+						input_buffer, 1, 0,
+						source->stream_current->data, 1, 0,
+						buffer_size - 2, input_copy_mode);
       
-      g_rec_mutex_unlock(stream_mutex);
-    }
+    g_rec_mutex_unlock(stream_mutex);
 
     /* equalizer */
     ags_amplifier10_util_process(&(fx_eq10_audio_signal->amplifier10_util));
@@ -539,6 +544,13 @@ ags_fx_eq10_audio_signal_real_run_inter(AgsRecall *recall)
 
     g_rec_mutex_unlock(fx_eq10_channel_mutex);
   }
+     
+  /* reset source and destination */
+  ags_amplifier10_util_set_source(&(fx_eq10_audio_signal->amplifier10_util),
+				  NULL);
+  
+  ags_amplifier10_util_set_destination(&(fx_eq10_audio_signal->amplifier10_util),
+				       NULL);
   
   if(source == NULL ||
      source->stream_current == NULL){
