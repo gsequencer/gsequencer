@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -662,9 +662,9 @@ ags_buffer_sort_func(gconstpointer a,
 
   if(a_x < b_x){
     return(-1);
-  }else{
-    return(1);
-  }  
+  }
+  
+  return(1);
 }
 
 /**
