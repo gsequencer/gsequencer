@@ -45,6 +45,8 @@ void ags_equalizer10_resize_pads(AgsMachine *machine, GType channel_type,
 
 void ags_equalizer10_map_recall(AgsMachine *machine);
 
+void ags_equalizer10_refresh_port(AgsMachine *machine);
+
 /**
  * SECTION:ags_equalizer10
  * @short_description: equalizer10 sequencer
@@ -115,6 +117,8 @@ ags_equalizer10_class_init(AgsEqualizer10Class *equalizer10)
   machine = (AgsMachineClass *) equalizer10;
 
   machine->map_recall = ags_equalizer10_map_recall;
+
+  machine->refresh_port = ags_equalizer10_refresh_port;
 }
 
 void
@@ -1364,6 +1368,272 @@ ags_equalizer10_find_specifier(GList *recall, gchar *specifier)
   }
 
   return(NULL);
+}
+
+void
+ags_equalizer10_refresh_port(AgsMachine *machine)
+{
+  AgsEqualizer10 *equalizer10;
+  
+  GList *start_play, *start_recall, *recall;
+
+  equalizer10 = (AgsEqualizer10 *) machine;
+  
+  start_play = ags_audio_get_play(machine->audio);
+  start_recall = ags_audio_get_recall(machine->audio);
+
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  machine->flags |= AGS_MACHINE_NO_UPDATE;
+
+  if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_EQ10_CHANNEL)) != NULL){
+    AgsPort *port;
+
+    /* eq10 peak 28Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-28hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_28hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 56Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-56hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_56hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 112Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-112hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_112hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 224Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-224hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_224hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 448Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-448hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_448hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 896Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-896hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_896hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 1792Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-1792hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_1792hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 3584Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-3584hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_3584hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 7168Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-7168hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_7168hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 peak 14336Hz */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "peak-14336hz", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->peak_14336hz,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+    
+    /* eq10 pressure */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "pressure", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      gtk_range_set_value(equalizer10->pressure,
+			  g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+  }
+  
+  machine->flags &= (~AGS_MACHINE_NO_UPDATE);
 }
 
 /**

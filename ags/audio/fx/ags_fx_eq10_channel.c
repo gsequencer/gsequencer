@@ -19,6 +19,8 @@
 
 #include <ags/audio/fx/ags_fx_eq10_channel.h>
 
+#include <ags/plugin/ags_plugin_port.h>
+
 #include <ags/audio/ags_audio_signal.h>
 
 #include <ags/i18n.h>
@@ -39,6 +41,18 @@ void ags_fx_eq10_channel_finalize(GObject *gobject);
 void ags_fx_eq10_channel_notify_buffer_size_callback(GObject *gobject,
 						     GParamSpec *pspec,
 						     gpointer user_data);
+
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_28hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_56hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_112hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_224hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_448hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_896hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_1792hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_3584hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_7168hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_peak_14336hz_plugin_port();
+static AgsPluginPort* ags_fx_eq10_channel_get_pressure_plugin_port();
 
 /**
  * SECTION:ags_fx_eq10_channel
@@ -359,6 +373,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 
   fx_eq10_channel->peak_28hz->port_value.ags_port_float = 1.0;
 
+  g_object_set(fx_eq10_channel->peak_28hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_28hz_plugin_port(),
+	       NULL);
+
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_28hz);
 
@@ -374,6 +392,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 					    NULL);
 
   fx_eq10_channel->peak_56hz->port_value.ags_port_float = 1.0;
+
+  g_object_set(fx_eq10_channel->peak_56hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_56hz_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_56hz);
@@ -391,6 +413,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 
   fx_eq10_channel->peak_112hz->port_value.ags_port_float = 1.0;
 
+  g_object_set(fx_eq10_channel->peak_112hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_112hz_plugin_port(),
+	       NULL);
+
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_112hz);
 
@@ -406,6 +432,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 					     NULL);
 
   fx_eq10_channel->peak_224hz->port_value.ags_port_float = 1.0;
+
+  g_object_set(fx_eq10_channel->peak_224hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_224hz_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_224hz);
@@ -423,6 +453,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 
   fx_eq10_channel->peak_448hz->port_value.ags_port_float = 1.0;
 
+  g_object_set(fx_eq10_channel->peak_448hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_448hz_plugin_port(),
+	       NULL);
+
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_448hz);
 
@@ -438,6 +472,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 					     NULL);
 
   fx_eq10_channel->peak_896hz->port_value.ags_port_float = 1.0;
+
+  g_object_set(fx_eq10_channel->peak_896hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_896hz_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_896hz);
@@ -455,6 +493,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 
   fx_eq10_channel->peak_1792hz->port_value.ags_port_float = 1.0;
 
+  g_object_set(fx_eq10_channel->peak_1792hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_1792hz_plugin_port(),
+	       NULL);
+
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_1792hz);
 
@@ -470,6 +512,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 					      NULL);
 
   fx_eq10_channel->peak_3584hz->port_value.ags_port_float = 1.0;
+
+  g_object_set(fx_eq10_channel->peak_3584hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_3584hz_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_3584hz);
@@ -487,6 +533,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 
   fx_eq10_channel->peak_7168hz->port_value.ags_port_float = 1.0;
 
+  g_object_set(fx_eq10_channel->peak_7168hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_7168hz_plugin_port(),
+	       NULL);
+
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_7168hz);
 
@@ -503,9 +553,12 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 
   fx_eq10_channel->peak_14336hz->port_value.ags_port_float = 1.0;
 
+  g_object_set(fx_eq10_channel->peak_14336hz,
+	       "plugin-port", ags_fx_eq10_channel_get_peak_14336hz_plugin_port(),
+	       NULL);
+  
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->peak_14336hz);
-
 
   /* pressure */
   fx_eq10_channel->pressure = g_object_new(AGS_TYPE_PORT,
@@ -519,6 +572,10 @@ ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel)
 					   NULL);
 
   fx_eq10_channel->pressure->port_value.ags_port_float = 1.0;
+
+  g_object_set(fx_eq10_channel->pressure,
+	       "plugin-port", ags_fx_eq10_channel_get_pressure_plugin_port(),
+	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_eq10_channel,
 		      fx_eq10_channel->pressure);
@@ -1185,6 +1242,435 @@ ags_fx_eq10_channel_notify_buffer_size_callback(GObject *gobject,
   }
   
   g_rec_mutex_unlock(recall_mutex);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_28hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_56hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_112hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_224hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_448hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_896hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_1792hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_3584hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_7168hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_peak_14336hz_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_eq10_channel_get_pressure_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      -20.0);
+    g_value_set_float(plugin_port->upper_value,
+		      20.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
 }
 
 /**

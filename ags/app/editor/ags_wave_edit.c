@@ -2485,7 +2485,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   /* get visisble region */
   x0 = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar));
-  x1 = (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) + allocation.width * zoom_factor);
+  x1 = (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar)) + ((double) allocation.width * zoom_factor));
 
   /* width and height */
   width = (gdouble) allocation.width;
@@ -2502,7 +2502,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   x_cut = x0;
 
   if(((((double) (x) / (double) samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - (double) x_cut < 0.0 ||
-     ((((double) (x) / (double) samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - (double) x_cut > (double) allocation.width){
+     ((((double) (x) / (double) samplerate * (bpm / 60.0) / delay_factor) * (gui_scale_factor * 64.0))) / zoom_factor - (double) x_cut > ((double) allocation.width * zoom_factor)){
     return;
   }
   
