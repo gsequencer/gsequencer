@@ -91,7 +91,7 @@ void ags_soundcard_test_get_loop_offset();
 #define AGS_SOUNDCARD_TEST_SET_LOOP_LOOP_RIGHT (16 * 4)
 #define AGS_SOUNDCARD_TEST_SET_DO_LOOP (TRUE)
   
-GType soundcard_test_types[10];
+GType soundcard_test_types[16];
 
 extern AgsApplicationContext *ags_application_context;
 

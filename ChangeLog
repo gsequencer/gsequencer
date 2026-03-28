@@ -1,3 +1,64 @@
+ags (8.3.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: fixed notation clipboard
+	* fixed performance penalties of ags-fx-notation because of memory leak
+
+ags (8.3.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* modified screenshot URLs in AppStream XML
+
+ags (8.3.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation, automation, wave and program bisect
+
+ags (8.3.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed audio export clear buffer
+
+ags (8.3.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed modular synth OSC-1
+
+ags (8.3.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_import_notation_smf_popover_parse()
+	* added modular synth util and ags-fx-modular-synth to API reference manual
+
+ags (8.3.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* enabled AgsImportNotationSMFPopover
+	* fixed AgsFileWidget use after free
+
+ags (8.3.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved apply presets to AgsCoreAudioPort
+
+ags (8.3.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsLineMember::disconnect() signal detail
+	* fixed all ags_soundcard_get_note_256th_attack_position() implementations
+	* fixed osc buffer util 0 pad
+
+ags (8.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_audio_stop() with sound_scope -1
+	* fixed functional server test
+	* fixed functional osc server test
+	* fixed functional osc xmlrpc server test
+	* improved unit-tests.mk to compile on macOS
+	* improved functional-tests.mk to compile on macOS
+	* extended functional test machine add and destroy added Stargazer, Quantum, Raven and Modular synth
+
 ags (8.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

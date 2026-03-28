@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -51,6 +51,10 @@ void ags_functional_machine_add_and_destroy_test_syncsynth();
 void ags_functional_machine_add_and_destroy_test_fm_syncsynth();
 void ags_functional_machine_add_and_destroy_test_hybrid_synth();
 void ags_functional_machine_add_and_destroy_test_hybrid_fm_synth();
+void ags_functional_machine_add_and_destroy_test_stargazer_synth();
+void ags_functional_machine_add_and_destroy_test_quantum_synth();
+void ags_functional_machine_add_and_destroy_test_raven_synth();
+void ags_functional_machine_add_and_destroy_test_modular_synth();
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_machine_add_and_destroy_test_ffplayer();
 void ags_functional_machine_add_and_destroy_test_sf2_synth();
@@ -112,7 +116,11 @@ ags_functional_machine_add_and_destroy_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSyncsynth", ags_functional_machine_add_and_destroy_test_syncsynth) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFMSyncsynth", ags_functional_machine_add_and_destroy_test_fm_syncsynth) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsHybridSynth", ags_functional_machine_add_and_destroy_test_hybrid_synth) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsHybridFMSynth", ags_functional_machine_add_and_destroy_test_hybrid_fm_synth) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsHybridFMSynth", ags_functional_machine_add_and_destroy_test_hybrid_fm_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsStargazerSynth", ags_functional_machine_add_and_destroy_test_stargazer_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsQuantumSynth", ags_functional_machine_add_and_destroy_test_quantum_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsRavenSynth", ags_functional_machine_add_and_destroy_test_raven_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsModularSynth", ags_functional_machine_add_and_destroy_test_modular_synth) == NULL)
 #ifdef AGS_WITH_LIBINSTPATCH
      ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL) ||
@@ -402,6 +410,82 @@ ags_functional_machine_add_and_destroy_test_hybrid_fm_synth()
 
   ags_functional_test_util_sync();
   AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_HYBRID_FM_SYNTH);
+
+  /* destroy synth */
+  ags_functional_test_util_machine_destroy(0);
+  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
+}
+
+void
+ags_functional_machine_add_and_destroy_test_stargazer_synth()
+{
+  /* add synth */
+  ags_functional_test_util_add_machine(NULL,
+				       "Stargazer Synth");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_STARGAZER_SYNTH);
+
+  /* destroy synth */
+  ags_functional_test_util_machine_destroy(0);
+  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
+}
+
+void
+ags_functional_machine_add_and_destroy_test_quantum_synth()
+{
+  /* add synth */
+  ags_functional_test_util_add_machine(NULL,
+				       "Quantum Synth");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_QUANTUM_SYNTH);
+
+  /* destroy synth */
+  ags_functional_test_util_machine_destroy(0);
+  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
+}
+
+void
+ags_functional_machine_add_and_destroy_test_raven_synth()
+{
+  /* add synth */
+  ags_functional_test_util_add_machine(NULL,
+				       "Raven Synth");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_RAVEN_SYNTH);
+
+  /* destroy synth */
+  ags_functional_test_util_machine_destroy(0);
+  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
+}
+
+void
+ags_functional_machine_add_and_destroy_test_modular_synth()
+{
+  /* add synth */
+  ags_functional_test_util_add_machine(NULL,
+				       "Modular Synth");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_MODULAR_SYNTH);
 
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);

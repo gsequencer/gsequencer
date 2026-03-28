@@ -397,11 +397,11 @@ ags_buffer_util_test_char_buffer_to_s64()
     0xff & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0)), (0xff00 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 8, (0xff0000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 16, (0xff000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 24, (0xff00000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 32, (0xff0000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 40, (0xff000000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 48, (0xff00000000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 56,
     0xff & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0)), (0xff00 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 8, (0xff0000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 16, (0xff000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 24, (0xff00000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 32, (0xff0000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 40, (0xff000000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 48, (0xff00000000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 56,
     0xff & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0)), (0xff00 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 8, (0xff0000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 16, (0xff000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 24, (0xff00000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 32, (0xff0000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 40, (0xff000000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 48, (0xff00000000000000 & (gint64) (-1 * G_MAXINT64 * (1.0 / 8.0))) >> 56,
-    0xff & (gint64) (-1 * G_MAXINT64), (0xff00 & (gint64) (-1 * G_MAXINT64)) >> 8, (0xff0000 & (gint64) (-1 * G_MAXINT64)) >> 16, (0xff000000 & (gint64) (-1 * G_MAXINT64)) >> 24, (0xff00000000 & (gint64) (-1 * G_MAXINT64)) >> 32, (0xff0000000000 & (gint64) (-1 * G_MAXINT64)) >> 40, (0xff000000000000 & (gint64) (-1 * G_MAXINT64)) >> 48,
+    0xff & (gint64) (-1 * G_MAXINT64), (0xff00 & (gint64) (-1 * G_MAXINT64)) >> 8, (0xff0000 & (gint64) (-1 * G_MAXINT64)) >> 16, (0xff000000 & (gint64) (-1 * G_MAXINT64)) >> 24, (0xff00000000 & (gint64) (-1 * G_MAXINT64)) >> 32, (0xff0000000000 & (gint64) (-1 * G_MAXINT64)) >> 40, (0xff000000000000 & (gint64) (-1 * G_MAXINT64)) >> 48, (0xff00000000000000 & (gint64) (-1 * G_MAXINT64)) >> 56,
   };
   gint64 *retval;
 
-  retval = ags_buffer_util_char_buffer_to_s64(source,
+  retval = ags_buffer_util_char_buffer_to_s64(&(source[0]),
 					      (8 * 17) * sizeof(guchar));
 
   CU_ASSERT(retval != NULL);

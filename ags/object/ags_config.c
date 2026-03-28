@@ -526,6 +526,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", device);
 
   g_free(device);
+
 #elif defined(AGS_WITH_PULSE)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
@@ -537,7 +538,31 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "/dev/dsp");
 #endif
   
-#if defined(AGS_WITH_WASAPI)
+#if defined(AGS_WITH_PULSE)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "512");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
+
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+#elif defined(AGS_WITH_ALSA)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
+
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+#elif defined(AGS_WITH_OSS)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
+
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
+#elif defined(AGS_WITH_WASAPI)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "512");
@@ -556,10 +581,10 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 #else
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "8192");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "false");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
 
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 #endif

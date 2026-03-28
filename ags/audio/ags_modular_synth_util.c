@@ -3138,6 +3138,13 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+  
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = modular_synth_util->buffer_length - (modular_synth_util->buffer_length % 8);
@@ -5099,6 +5106,13 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+  
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = modular_synth_util->buffer_length - (modular_synth_util->buffer_length % 8);
@@ -7056,6 +7070,13 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+  
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = modular_synth_util->buffer_length - (modular_synth_util->buffer_length % 8);
@@ -8989,6 +9010,13 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+  
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = modular_synth_util->buffer_length - (modular_synth_util->buffer_length % 8);
@@ -10922,6 +10950,13 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+  
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = modular_synth_util->buffer_length - (modular_synth_util->buffer_length % 8);
@@ -12853,6 +12888,13 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+  
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = modular_synth_util->buffer_length - (modular_synth_util->buffer_length % 8);
@@ -14786,6 +14828,13 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+  
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
 
 #if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
   i_stop = modular_synth_util->buffer_length - (modular_synth_util->buffer_length % 8);
@@ -16717,6 +16766,13 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 
     ags_noise_util_compute(modular_synth_util->noise_util);
   }
+
+  /* OSC-0 */
+  source = modular_synth_util->source;
+
+  offset = modular_synth_util->offset;
+
+  i = 0;
   
   for(; i < modular_synth_util->buffer_length;){
     /* OSC-0 */

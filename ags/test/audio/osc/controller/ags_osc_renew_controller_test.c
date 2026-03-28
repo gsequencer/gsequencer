@@ -305,14 +305,16 @@ ags_osc_renew_controller_test_set_data()
   
   GValue value = {0,};
   
-  static const guchar *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00\x00\x00";
-  static const guchar *magnitude_path = "/AgsSoundProvider/AgsAudio[\"test-spectrometer\"]/AgsInput[0-1]/AgsFxAnalyseChannel[0]/AgsPort[\"./magnitude[0]\"]:value";
+  static const guchar mute_message[] = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+  static const guchar magnitude_path[] = "/AgsSoundProvider/AgsAudio[\"test-spectrometer\"]/AgsInput[0-1]/AgsFxAnalyseChannel[0]/AgsPort[\"./magnitude[0]\"]:value";
 
-  static const guint mute_message_size = 128;
+  static const guint mute_message_size = sizeof(mute_message);
   
   osc_connection = ags_osc_connection_new(NULL);
   
   osc_renew_controller = ags_osc_renew_controller_new();
+
+  g_message("mute_message size = %d", mute_message_size);
 
   /* panel */
   message = (guchar *) malloc(mute_message_size * sizeof(guchar));
@@ -424,7 +426,7 @@ ags_osc_renew_controller_test_set_data()
   magnitude_message[11 + i] = ']';
   magnitude_message_size += (cache_buffer_size + 1);
 
-  padding = (4 * (guint) ceil((cache_buffer_size + 5) / 4.0)) - (cache_buffer_size + 4);
+  padding = (4 * ((guint) floor((cache_buffer_size + 4) / 4.0) + 1)) - (cache_buffer_size + 4);
 
   for(i = 0; i < padding; i++){
     magnitude_message[magnitude_message_size + i] = '\x00';
@@ -435,7 +437,7 @@ ags_osc_renew_controller_test_set_data()
   length = strlen(magnitude_path);
   memcpy(magnitude_message + magnitude_message_size, magnitude_path, (length) * sizeof(guchar));
 
-  padding = (4 * (guint) ceil((length + 1) / 4.0)) - length;
+  padding = (4 * ((guint) floor(length / 4.0) + 1)) - length;
 
   magnitude_message_size += length;
   

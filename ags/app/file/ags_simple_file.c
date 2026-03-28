@@ -3124,9 +3124,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
 	    matched_notation = NULL;
 	    
-	    if(current_notation != NULL &&
-	       ags_timestamp_get_ags_offset(timestamp) ==  ags_timestamp_get_ags_offset(AGS_NOTATION(current_notation->data)->timestamp) &&
-	       audio_channel == AGS_NOTATION(current_notation->data)->audio_channel){
+	    if(current_notation != NULL){
 	      matched_notation = current_notation->data;
 	    }else{
 	      matched_notation = ags_notation_new((GObject *) gobject->audio,
@@ -3142,6 +3140,9 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	    ags_notation_add_note(matched_notation,
 				  note->data,
 				  FALSE);
+	    
+	    g_list_free_full(current_start_notation,
+			     (GDestroyNotify) g_object_unref);
 	    
 	    note = note->next;
 	  }
@@ -17228,9 +17229,13 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "offset");
 
 	if(str != NULL){
-	  gobject->timestamp->timer.ags_offset.offset = g_ascii_strtoull(str,
-									 NULL,
-									 10);
+	  guint64 current_offset;
+
+	  current_offset = g_ascii_strtoull(str,
+					    NULL,
+					    10);
+	  
+	  gobject->timestamp->timer.ags_offset.offset = (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor((double) current_offset / AGS_NOTATION_DEFAULT_OFFSET));
 
 	  xmlFree(str);
 

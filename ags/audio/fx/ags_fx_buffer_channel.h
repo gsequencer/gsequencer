@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,6 +63,7 @@ struct _AgsFxBufferChannelInputData
   gpointer parent;
 
   GHashTable *destination;
+  GHashTable *destination_ref_count;
   GHashTable *resample_cache;
 };
 

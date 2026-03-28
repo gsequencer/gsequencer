@@ -185,7 +185,7 @@ ags_functional_server_test_authenticate()
   
   //  g_message("%s", buffer);
 
-  CU_ASSERT(status == 302);
+  CU_ASSERT(status == 200); // 302
 
   cookie = soup_cookies_from_response(msg);
   

@@ -50,6 +50,12 @@ struct _AgsFxBufferAudioSignal
   AgsAudioBufferUtil audio_buffer_util;
 
   AgsResampleUtil resample_util;
+  
+  GHashTable *destination_hash_table;
+  GHashTable *destination_ref_count_hash_table;
+
+  AgsRecycling *destination_recycling;
+  AgsAudioSignal *destination_audio_signal;
 };
 
 struct _AgsFxBufferAudioSignalClass

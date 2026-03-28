@@ -118,6 +118,7 @@ void
 ags_modular_synth_class_init(AgsModularSynthClass *modular_synth)
 {
   GObjectClass *gobject;
+  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_modular_synth_parent_class = g_type_class_peek_parent(modular_synth);
@@ -127,6 +128,12 @@ ags_modular_synth_class_init(AgsModularSynthClass *modular_synth)
 
   gobject->finalize = ags_modular_synth_finalize;
 
+  /* GtkWidget */
+  widget = (GtkWidgetClass *) modular_synth;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-modular-synth");
+  
   /* AgsMachineClass */
   machine = (AgsMachineClass *) modular_synth;
 

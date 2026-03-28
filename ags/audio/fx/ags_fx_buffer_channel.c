@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -155,6 +155,10 @@ ags_fx_buffer_channel_input_data_alloc()
   input_data->destination = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 						  g_object_unref,
 						  g_object_unref);
+
+  input_data->destination_ref_count = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							    g_object_unref,
+							    NULL);
 
   input_data->resample_cache = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 						     g_object_unref,

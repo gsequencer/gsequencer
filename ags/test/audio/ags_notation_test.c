@@ -33,6 +33,7 @@ int ags_notation_test_init_suite();
 int ags_notation_test_clean_suite();
 
 void ags_notation_test_find_near_timestamp();
+void ags_notation_test_find_near_timestamp_4800();
 void ags_notation_test_add_note();
 void ags_notation_test_remove_note();
 void ags_notation_test_remove_note_at_position();
@@ -52,6 +53,8 @@ void ags_notation_test_to_raw_midi();
 void ags_notation_test_from_raw_midi();
 
 #define AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_N_NOTATION (8)
+
+#define AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_4800_N_NOTATION (4)
 
 #define AGS_NOTATION_TEST_ADD_NOTE_WIDTH (1024)
 #define AGS_NOTATION_TEST_ADD_NOTE_HEIGHT (88)
@@ -152,11 +155,9 @@ ags_notation_test_find_near_timestamp()
 
     timestamp->timer.ags_offset.offset = i * AGS_NOTATION_DEFAULT_OFFSET;
 
-    list = g_list_prepend(list,
-			  notation[i]);
+    list = ags_notation_add(list,
+			    notation[i]);
   }
-
-  list = g_list_reverse(list);
 
   /* instantiate timestamp to check against */
   timestamp = ags_timestamp_new();
@@ -166,6 +167,47 @@ ags_notation_test_find_near_timestamp()
 
   /* assert find */
   for(i = 0; i < AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_N_NOTATION; i++){
+    timestamp->timer.ags_offset.offset = i * AGS_NOTATION_DEFAULT_OFFSET;
+    current = ags_notation_find_near_timestamp(list, 0,
+					       timestamp);
+
+    CU_ASSERT(current != NULL && current->data == notation[i]);
+  }  
+}
+
+void
+ags_notation_test_find_near_timestamp_4800()
+{
+  AgsNotation **notation;
+  AgsTimestamp *timestamp;
+
+  GList *list, *current;
+
+  guint i;
+  
+  notation = (AgsNotation **) malloc(AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_4800_N_NOTATION * sizeof(AgsNotation *));
+  list = NULL;
+
+  for(i = 0; i < AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_4800_N_NOTATION; i++){
+    /* nth notation */
+    notation[i] = ags_notation_new(audio,
+				   0);
+    timestamp = notation[i]->timestamp;
+
+    timestamp->timer.ags_offset.offset = i * AGS_NOTATION_DEFAULT_OFFSET;
+
+    list = ags_notation_add(list,
+			    notation[i]);
+  }
+
+  /* instantiate timestamp to check against */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  /* assert find */
+  for(i = 0; i < AGS_NOTATION_TEST_FIND_NEAR_TIMESTAMP_4800_N_NOTATION; i++){
     timestamp->timer.ags_offset.offset = i * AGS_NOTATION_DEFAULT_OFFSET;
     current = ags_notation_find_near_timestamp(list, 0,
 					       timestamp);
@@ -911,6 +953,7 @@ main(int argc, char **argv)
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsNotation find near timestamp", ags_notation_test_find_near_timestamp) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation find near timestamp 4800", ags_notation_test_find_near_timestamp_4800) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation add note", ags_notation_test_add_note) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation remove note", ags_notation_test_remove_note) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation remove note at position", ags_notation_test_remove_note_at_position) == NULL) ||

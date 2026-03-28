@@ -494,6 +494,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
       for(i = 0; i < port_count; i++){
 	/* create plugin port */
 	current_plugin_port = ags_plugin_port_new();
+
 	g_object_ref(current_plugin_port);
 	
 	plugin_port = g_list_prepend(plugin_port,

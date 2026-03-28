@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -132,6 +132,9 @@ ags_drum_class_init(AgsDrumClass *drum)
   widget = (GtkWidgetClass *) drum;
 
   widget->show = ags_drum_show;
+
+  gtk_widget_class_set_css_name(widget,
+				"ags-drum");
 
   /*  */
   machine = (AgsMachineClass *) drum;

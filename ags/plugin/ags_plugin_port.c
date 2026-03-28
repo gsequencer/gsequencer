@@ -801,6 +801,8 @@ ags_plugin_port_get_port_index(AgsPluginPort *plugin_port)
     return(0);
   }
 
+  port_index = 0;
+
   g_object_get(plugin_port,
 	       "port-index", &port_index,
 	       NULL);
@@ -849,6 +851,8 @@ ags_plugin_port_get_port_name(AgsPluginPort *plugin_port)
     return(NULL);
   }
 
+  port_name = NULL;
+  
   g_object_get(plugin_port,
 	       "port-name", &port_name,
 	       NULL);

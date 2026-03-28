@@ -285,6 +285,10 @@
 #include <ags/app/machine/ags_spectrometer.h>
 #include <ags/app/machine/ags_drum_input_pad_callbacks.h>
 #include <ags/app/machine/ags_hybrid_synth.h>
+#include <ags/app/machine/ags_stargazer_synth.h>
+#include <ags/app/machine/ags_quantum_synth.h>
+#include <ags/app/machine/ags_raven_synth.h>
+#include <ags/app/machine/ags_modular_synth.h>
 #include <ags/app/machine/ags_matrix_bulk_input.h>
 #include <ags/app/machine/ags_drum_callbacks.h>
 #include <ags/app/machine/ags_drum_input_line.h>

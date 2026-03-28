@@ -291,18 +291,20 @@ ags_osc_node_controller_test_get_data()
 
   GList *osc_response;
 
-  guint length;
+  gsize length;
   guint padding;
   gboolean success;
 
-  static const guchar *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
+  static const guchar volume_message[] = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00\x00";
 
-  static const guint volume_message_size = 120;
+  static const guint volume_message_size = sizeof(volume_message);
 
   osc_connection = ags_osc_connection_new(NULL);
   
   osc_node_controller = ags_osc_node_controller_new();
 
+  g_message("volume_message size = %d", volume_message_size);
+  
   /* drum */
   osc_response = ags_osc_node_controller_get_data(osc_node_controller,
 						  osc_connection,
@@ -335,8 +337,11 @@ ags_osc_node_controller_test_get_data()
     
     if(!success){      
       break; 
-   }
+    }
 
+    path = NULL;
+    length = 0;
+    
     ags_osc_buffer_util_get_string(&osc_buffer_util,
 				   AGS_OSC_RESPONSE(osc_response->data)->packet + 16,
 				   &path, &length);
@@ -347,8 +352,10 @@ ags_osc_node_controller_test_get_data()
       break;
     }
 
-    length = 4 * (guint) ceil((double) (length + 1) / 4.0);
+    length = 4 * ((guint) floor((double) length / 4.0) + 1);
 
+    volume = 0.0;
+    
     ags_osc_buffer_util_get_float(&osc_buffer_util,
 				  AGS_OSC_RESPONSE(osc_response->data)->packet + 16 + length,
 				  &volume);

@@ -718,17 +718,9 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
   g_rec_mutex_unlock(fx_ladspa_channel_mutex);
 
   /* get LADSPA port */
-  g_rec_mutex_lock(fx_ladspa_channel_mutex);
+  ladspa_port = NULL;
 
-  ladspa_port = fx_ladspa_channel->ladspa_port;
-
-  g_rec_mutex_unlock(fx_ladspa_channel_mutex);
-
-  start_plugin_port = NULL;
-  
-  g_object_get(ladspa_plugin,
-	       "plugin-port", &start_plugin_port,
-	       NULL);
+  start_plugin_port = ags_base_plugin_get_plugin_port((AgsBasePlugin *) ladspa_plugin);
   
   /* get control port count */
   plugin_port = start_plugin_port;
@@ -784,7 +776,7 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
   /*  */
   if(control_port_count > 0){
     ladspa_port = (AgsPort **) g_malloc((control_port_count + 1) * sizeof(AgsPort *));
-
+    
     plugin_port = start_plugin_port;
     
     for(nth = 0; nth < control_port_count && plugin_port != NULL;){
@@ -810,14 +802,9 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 	/* plugin name, specifier and control port */
 	plugin_name = g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id);
 
-	specifier = NULL;
-      
-	port_index = 0;
+	specifier = ags_plugin_port_get_port_name(current_plugin_port);
 
-	g_object_get(current_plugin_port,
-		     "port-name", &specifier,
-		     "port-index", &port_index,
-		     NULL);
+	port_index = ags_plugin_port_get_port_index(current_plugin_port);
 
 	control_port = g_strdup_printf("%u/%u",
 				       nth,
@@ -826,7 +813,7 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 	/* default value */
 	g_value_init(&default_value,
 		     G_TYPE_FLOAT);
-      
+
 	g_rec_mutex_lock(plugin_port_mutex);
       
 	g_value_copy(current_plugin_port->default_value,
@@ -902,7 +889,7 @@ ags_fx_ladspa_channel_load_port(AgsFxLadspaChannel *fx_ladspa_channel)
 
       plugin_port = plugin_port->next;
     }
-      
+
     ladspa_port[nth] = NULL;
   }
 

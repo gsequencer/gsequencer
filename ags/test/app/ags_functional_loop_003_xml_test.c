@@ -74,8 +74,8 @@ void ags_functional_loop_003_xml_test_file_setup();
   "\n"
 
 CU_pSuite pSuite = NULL;
-volatile gboolean is_available;
-volatile gboolean is_terminated;
+_Atomic gboolean is_available;
+_Atomic gboolean is_terminated;
 
 AgsGSequencerApplicationContext *gsequencer_application_context;
 

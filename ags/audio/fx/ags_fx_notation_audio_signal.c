@@ -333,8 +333,10 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
     if((!note_256th_mode && note_offset >= x0) ||
        (note_256th_mode && note_256th_offset_lower >= x0_256th)){
-      ags_audio_signal_add_stream(source);
-
+      if(note_offset <= x1 + 1){
+	ags_audio_signal_add_stream(source);
+      }
+      
 #if 0
       g_message("x0 = %d, y = %d", x0_256th, y);
 #endif

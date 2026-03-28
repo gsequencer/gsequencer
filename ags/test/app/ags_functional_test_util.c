@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "config.h"
+#include <ags/config.h>
 
 #include <ags/test/app/ags_functional_test_util.h>
 
@@ -34,9 +34,11 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkevents.h>
 
+#if defined(AGS_WITH_X11)
 #include <X11/Xlib.h>
 //FIXME:JK: a more portable solution needed
 // #include <X11/extensions/XTest.h>
+#endif
 
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -473,9 +475,9 @@ ags_functional_test_util_init(int *argc, char ***argv,
   }
 #endif
 
-  //#ifdef AGS_WITH_X11
+#if defined(AGS_WITH_X11)
   XInitThreads();
-  //#endif
+#endif
   
   /* parse command line parameter */
   filename = NULL;
@@ -634,12 +636,13 @@ ags_functional_test_util_do_run(int argc, char **argv,
   AgsGSequencerApplication *gsequencer_app;
 
   AgsApplicationContext *application_context;
+  AgsConfig *config;
   AgsLog *log;
 
   GThread *thread;
 
   gchar *application_id;
-
+  
   GError *error;
 
   application_id = "org.nongnu.gsequencer.gsequencer";
@@ -805,12 +808,12 @@ ags_functional_test_util_sync_driver_program(guint n_params,
 					     gchar **param_strv,
 					     GValue *param)
 {
-  gint *is_done;
+  gboolean *is_done;
   
   is_done = g_value_get_pointer(param);
 
-  ags_atomic_int_set(is_done,
-		   TRUE);
+  ags_atomic_boolean_set(is_done,
+			 TRUE);
 }
 
 void
@@ -818,10 +821,10 @@ ags_functional_test_util_sync()
 {
   AgsFunctionalTestUtilDriverProgram *driver_program;
 
-  gint is_done;
+  gboolean is_done;
   
-  ags_atomic_int_set(&is_done,
-		   FALSE);
+  ags_atomic_boolean_set(&is_done,
+			 FALSE);
 
   driver_program = g_new0(AgsFunctionalTestUtilDriverProgram,
 			  1);
@@ -848,7 +851,7 @@ ags_functional_test_util_sync()
   ags_functional_test_util_add_driver_program(driver_program);
 
 
-  while(!ags_atomic_int_get(&is_done)){
+  while(!ags_atomic_boolean_get(&is_done)){
     g_usleep(1000000);
   }
 }
@@ -1286,9 +1289,11 @@ ags_functional_test_util_fake_mouse_warp(gpointer display, guint screen, guint x
 {
   static const gulong delay = 1;
 
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeMotionEvent((Display *) display, screen, x, y, delay);
   XSync((Display *) display, 0);
+#endif
 }
 
 void
@@ -1296,9 +1301,11 @@ ags_functional_test_util_fake_mouse_button_press(gpointer display, guint button)
 {
   static const gulong delay = 1;
   
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeButtonEvent((Display *) display, button, 1, delay);
   XFlush((Display *) display);
+#endif
 }
 
 void
@@ -1306,9 +1313,11 @@ ags_functional_test_util_fake_mouse_button_release(gpointer display, guint butto
 {
   static const gulong delay = 1;
   
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeButtonEvent((Display *) display, button, 0, delay);
   XFlush((Display *) display);
+#endif
 }
 
 void
@@ -1316,10 +1325,12 @@ ags_functional_test_util_fake_mouse_button_click(gpointer display, guint button)
 {
   static const gulong delay = 1;
   
+#if defined(AGS_WITH_X11)
   //FIXME:JK: a more portable solution needed
   //  XTestFakeButtonEvent((Display *) display, button, 1, delay);
   //  XTestFakeButtonEvent((Display *) display, button, 0, delay);
   XFlush((Display *) display);
+#endif
 }
 
 void
@@ -1327,7 +1338,7 @@ ags_functional_test_util_fake_button_click(GtkButton *button)
 {
   gtk_widget_grab_focus(button);
   
-  g_signal_emit_by_name(button, "clicked");
+  g_signal_emit_by_name(button, "activate", NULL);
 }
 
 void
@@ -1414,6 +1425,14 @@ ags_functional_test_util_header_bar_menu_button_click_driver_program(guint n_par
     ags_app_action_util_add_hybrid_synth();
   }else if(!g_ascii_strncasecmp(action, "app.add_hybrid_fm_synth", 23)){
     ags_app_action_util_add_hybrid_fm_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_stargazer_synth", 23)){
+    ags_app_action_util_add_stargazer_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_quantum_synth", 21)){
+    ags_app_action_util_add_quantum_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_raven_synth", 19)){
+    ags_app_action_util_add_raven_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_modular_synth", 21)){
+    ags_app_action_util_add_modular_synth();
   }else if(!g_ascii_strncasecmp(action, "app.add_ffplayer", 16)){
     ags_app_action_util_add_ffplayer();
   }else if(!g_ascii_strncasecmp(action, "app.add_sf2_synth", 17)){
@@ -3198,6 +3217,70 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_hybrid_fm_synth",
  				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
+				  "Stargazer Synth",
+				  15)){
+      static gchar* stargazer_synth_path[] = {
+	"Stargazer Synth",
+	NULL
+      };
+      
+      path_strv = stargazer_synth_path;
+      
+      action = "app.add_stargazer_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_stargazer_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Quantum Synth",
+				  13)){
+      static gchar* quantum_synth_path[] = {
+	"Quantum Synth",
+	NULL
+      };
+      
+      path_strv = quantum_synth_path;
+      
+      action = "app.add_quantum_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_quantum_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Raven Synth",
+				  11)){
+      static gchar* raven_synth_path[] = {
+	"Raven Synth",
+	NULL
+      };
+      
+      path_strv = raven_synth_path;
+      
+      action = "app.add_raven_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_raven_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Modular Synth",
+				  13)){
+      static gchar* modular_synth_path[] = {
+	"Modular Synth",
+	NULL
+      };
+      
+      path_strv = modular_synth_path;
+      
+      action = "app.add_modular_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_modular_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
 				  "FPlayer",
 				  8)){
       static gchar* ffplayer_path[] = {
@@ -3352,10 +3435,14 @@ ags_functional_test_util_preferences_open_driver_program(guint n_params,
 
   window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
 
+#if defined(__APPLE__)
+  ags_app_action_util_preferences();
+#else
   ags_functional_test_util_header_bar_menu_button_click(window->app_button,
 							path_strv,
 							"app.preferences");
-
+#endif
+  
   ags_functional_test_util_reaction_time_long();
 }
 
@@ -3870,7 +3957,7 @@ ags_functional_test_util_composite_toolbar_zoom(guint nth_zoom)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("nth_zoom");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
@@ -3942,7 +4029,7 @@ ags_functional_test_util_machine_selector_add(guint nth_machine)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("nth_machine");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
@@ -4007,7 +4094,7 @@ ags_functional_test_util_machine_selector_select(gchar *machine_str)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("machine_str");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
@@ -4243,7 +4330,7 @@ ags_functional_test_util_preferences_click_tab(guint nth_tab)
   driver_program->param_strv = g_malloc(2 * sizeof(gchar *));
 
   driver_program->param_strv[0] = g_strdup("nth_tab");
-  driver_program->param_strv[2] = NULL;
+  driver_program->param_strv[1] = NULL;
 
   /* param value array */
   driver_program->param = g_new0(GValue,
@@ -5683,8 +5770,10 @@ ags_functional_test_util_machine_editor_dialog_effect_remove_driver_program(guin
 					nth_effect);
   
   /* click check button */
-  ags_functional_test_util_fake_check_button_click(member_editor_entry->check_button);
-
+  if(member_editor_entry != NULL){
+    ags_functional_test_util_fake_check_button_click(member_editor_entry->check_button);
+  }
+  
   /* click remove */
   ags_functional_test_util_fake_button_click(remove_button);
   

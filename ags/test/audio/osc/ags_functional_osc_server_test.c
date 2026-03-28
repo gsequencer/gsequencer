@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -121,6 +121,8 @@ GMainLoop *main_loop = NULL;
 
 AgsOscBufferUtil osc_buffer_util;  
 
+gboolean test_is_running;
+
 gpointer
 ags_functional_osc_server_test_add_thread(gpointer data)
 {
@@ -141,6 +143,8 @@ ags_functional_osc_server_test_add_thread(gpointer data)
   }
 
   /* add the tests to the suite */
+  test_is_running = TRUE;
+  
   if((CU_add_test(pSuite, "test of AgsOscServer providing action controller", ags_functional_osc_server_test_action_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer providing config controller", ags_functional_osc_server_test_config_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer providing info controller", ags_functional_osc_server_test_info_controller) == NULL) ||
@@ -148,10 +152,14 @@ ags_functional_osc_server_test_add_thread(gpointer data)
      (CU_add_test(pSuite, "test of AgsOscServer providing node controller", ags_functional_osc_server_test_node_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer providing renew controller", ags_functional_osc_server_test_renew_controller) == NULL) ||
      (CU_add_test(pSuite, "test of AgsOscServer providing status controller", ags_functional_osc_server_test_status_controller) == NULL)){
+    test_is_running = FALSE;
+    
     CU_cleanup_registry();      
 
     g_thread_exit(GINT_TO_POINTER(CU_get_error()));
   }
+
+  test_is_running = FALSE;
   
   /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
@@ -549,6 +557,11 @@ ags_functional_osc_server_test_meter_controller()
   struct timespec timeout_delay;
   struct timespec idle_delay;
   
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+
   guchar *buffer;
   guchar *packet;
 
@@ -673,6 +686,11 @@ ags_functional_osc_server_test_node_controller()
 {
   struct timespec start_time;
   struct timespec timeout_delay;
+  
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
 
   guchar *buffer;
   guchar *packet;
@@ -768,9 +786,9 @@ ags_functional_osc_server_test_renew_controller()
   guint buffer_length;
   gboolean retval;
 
-  static const guchar *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
+  static const guchar *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsFxVolumeChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00";
 
-  static const guint mute_message_size = 124;
+  static const guint mute_message_size = 120;
 
   CU_ASSERT(osc_server->ip4_fd != -1);
   CU_ASSERT(osc_client->ip4_fd != -1);
