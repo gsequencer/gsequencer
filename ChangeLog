@@ -1,3 +1,12 @@
+ags (8.4.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_wave_sort_func()
+	* fixed ags_notation_find_near_timestamp()
+	* fixed ags_automation_find_near_timestamp()
+	* fixed ags_wave_find_near_timestamp()
+	* minor improvements
+
 ags (8.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

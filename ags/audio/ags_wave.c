@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -894,39 +894,31 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     if(use_ags_offset){
       if(x >= bisect_end_x &&
 	 x < bisect_end_x + AGS_WAVE_DEFAULT_OFFSET){
-	if(ags_wave_get_line((AgsWave *) bisect_end->data) == line){
+	if(bisect_end_line == line){
 	  current_match = bisect_end;
 	}
 
-	if(bisect_end_line > line){
-	  bisect_head = TRUE;
-	}else{
-	  bisect_head = FALSE;
-	}
+	bisect_head = FALSE;
       }
     }else{
       if(x >= bisect_end_x &&
 	 x < bisect_end_x + AGS_WAVE_DEFAULT_DURATION){
-	if(ags_wave_get_line((AgsWave *) bisect_end->data) == line){
+	if(bisect_end_line == line){
 	  current_match = bisect_end;
 	}
 	
-	if(bisect_end_line > line){
-	  bisect_head = TRUE;
-	}else{
-	  bisect_head = FALSE;
-	}
+	bisect_head = FALSE;
       }
     }
 	
     if(use_ags_offset){
       if(x >= bisect_center_x &&
 	 x < bisect_center_x + AGS_WAVE_DEFAULT_OFFSET){
-	if(ags_wave_get_line((AgsWave *) bisect_center->data) == line){
+	if(bisect_center_line == line){
 	  current_match = bisect_center;
 	}
 	
-	if(bisect_end_line > line){
+	if(bisect_center_line <= line){
 	  bisect_head = TRUE;
 	}else{
 	  bisect_head = FALSE;
@@ -935,11 +927,11 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     }else{
       if(x >= bisect_center_x &&
 	 x < bisect_center_x + AGS_WAVE_DEFAULT_DURATION){
-	if(ags_wave_get_line((AgsWave *) bisect_center->data) == line){
+	if(bisect_center_line == line){
 	  current_match = bisect_center;
 	}
 	
-	if(bisect_end_line > line){
+	if(bisect_center_line <= line){
 	  bisect_head = TRUE;
 	}else{
 	  bisect_head = FALSE;
@@ -950,7 +942,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     if(use_ags_offset){
       if(x >= bisect_start_x &&
 	 x < bisect_start_x + AGS_WAVE_DEFAULT_OFFSET){
-	if(ags_wave_get_line((AgsWave *) bisect_start->data) == line){
+	if(bisect_start_line == line){
 	  current_match = bisect_start;
 	}
 	
@@ -959,7 +951,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     }else{
       if(x >= bisect_start_x &&
 	 x < bisect_start_x + AGS_WAVE_DEFAULT_DURATION){
-	if(ags_wave_get_line((AgsWave *) bisect_start->data) == line){
+	if(bisect_start_line == line){
 	  current_match = bisect_start;
 	}
 	
@@ -967,13 +959,17 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
     }
 
-    if(x >= bisect_center_x){
-      bisect_head = FALSE;
-    }
-
     if(x == bisect_center_x){
-      if(ags_wave_get_line((AgsWave *) bisect_center->data) < line){
+      if(bisect_center_line < line){
 	bisect_head = FALSE;
+      }else{
+	bisect_head = TRUE;
+      }
+    }else{ 
+      if(x > bisect_center_x){
+	bisect_head = FALSE;
+      }else{
+	bisect_head = TRUE;
       }
     }
     
@@ -984,7 +980,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     }
     
     /* iterate */
-    if(length <= 3){
+    if(length <= 1){
       has_more = FALSE;
     }
 
@@ -1046,7 +1042,14 @@ ags_wave_sort_func(gconstpointer a,
   AgsTimestamp *timestamp_a, *timestamp_b;
 
   guint64 offset_a, offset_b;
+  guint line_a, line_b;
 
+  timestamp_a = NULL;
+  timestamp_b = NULL;
+  
+  line_a = 0;
+  line_b = 0;
+  
   g_object_get(a,
 	       "timestamp", &timestamp_a,
 	       NULL);
@@ -1062,14 +1065,28 @@ ags_wave_sort_func(gconstpointer a,
   g_object_unref(timestamp_b);
     
   if(offset_a == offset_b){
-    return(0);
+    g_object_get(a,
+		 "line", &line_a,
+		 NULL);
+
+    g_object_get(b,
+		 "line", &line_b,
+		 NULL);
+    
+    if(line_a == line_b){
+      return(0);
+    }
+
+    if(line_a < line_b){
+      return(-1);
+    }
+
+    return(1);
   }else if(offset_a < offset_b){
     return(-1);
-  }else if(offset_a > offset_b){
-    return(1);
   }
-
-  return(0);
+  
+  return(1);
 }
 
 /**
@@ -1958,14 +1975,43 @@ GList*
 ags_wave_add(GList *wave,
 	     AgsWave *new_wave)
 {
+  AgsTimestamp *timestamp;
+
+  GList *list;
+  
+  guint line;
   
   if(!AGS_IS_WAVE(new_wave)){
     return(wave);
   }
   
+  timestamp = NULL;
+  
+  line = 0;
+
+  g_object_get(new_wave,
+	       "timestamp", &timestamp,
+	       "line", &line,
+	       NULL);
+
+  list = ags_wave_find_near_timestamp(wave, line,
+				      timestamp);
+
+  if(list != NULL &&
+     ags_timestamp_get_ags_offset(AGS_WAVE(list->data)->timestamp) == ags_timestamp_get_ags_offset(timestamp) &&
+     AGS_WAVE(list->data)->line == line){
+    g_critical("timestamp already present");
+
+    g_object_unref(timestamp);
+    
+    return(wave);
+  }
+  
   wave = g_list_insert_sorted(wave,
 			      new_wave,
-			      ags_wave_sort_func);
+			      (GCompareFunc) ags_wave_sort_func);
+  
+  g_object_unref(timestamp);
   
   return(wave);
 }
@@ -2230,10 +2276,6 @@ ags_wave_find_point(AgsWave *wave,
     g_object_get(current_start->data,
 		 "x", &current_start_x,
 		 NULL);
-
-    if(current_start_x > x){
-      break;
-    }
     
     if(current_start_x <= x &&
        current_start_x + buffer_size > x){
@@ -2242,14 +2284,13 @@ ags_wave_find_point(AgsWave *wave,
       break;
     }
     
+    if(current_start_x > x){
+      break;
+    }
+    
     g_object_get(current_end->data,
 		 "x", &current_end_x,
 		 NULL);
-
-    if(current_end_x + buffer_size < x){
-      break;
-    }
-
     
     if(current_end_x <= x &&
        current_end_x + buffer_size > x){
@@ -2258,6 +2299,10 @@ ags_wave_find_point(AgsWave *wave,
       break;
     }
 
+    if(current_end_x + buffer_size < x){
+      break;
+    }
+    
     g_object_get(current->data,
 		 "x", &current_x,
 		 NULL);
@@ -2271,6 +2316,9 @@ ags_wave_find_point(AgsWave *wave,
 
     if(length <= 3){
       break;
+    if(current_end_x + buffer_size < x){
+      break;
+    }
     }
 
     if(current_x < x){
@@ -2494,15 +2542,14 @@ ags_wave_find_region(AgsWave *wave,
       break;
     }
 
-    region = g_list_prepend(region,
-			    buffer->data);
+    region = g_list_insert_sorted(region,
+				  buffer->data,
+				  (GCompareFunc) ags_buffer_sort_func);
 
     buffer = buffer->next;
   }
 
   g_rec_mutex_unlock(wave_mutex);
-
-  region = g_list_reverse(region);
 
   return(region);
 }

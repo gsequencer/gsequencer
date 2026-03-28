@@ -755,11 +755,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	  current_match = bisect_end;
 	}
 
-	if(bisect_end_audio_channel > audio_channel){
-	  bisect_head = TRUE;
-	}else{
-	  bisect_head = FALSE;
-	}
+	bisect_head = FALSE;
       }
     }else{
       if(x >= bisect_end_x &&
@@ -768,11 +764,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	  current_match = bisect_end;
 	}
 	
-	if(bisect_end_audio_channel > audio_channel){
-	  bisect_head = TRUE;
-	}else{
-	  bisect_head = FALSE;
-	}
+	bisect_head = FALSE;
       }
     }
 	
@@ -824,13 +816,17 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       }
     }
 
-    if(x >= bisect_center_x){
-      bisect_head = FALSE;
-    }
-
     if(x == bisect_center_x){
       if(bisect_center_audio_channel < audio_channel){
 	bisect_head = FALSE;
+      }else{
+	bisect_head = TRUE;
+      }
+    }else{ 
+      if(x > bisect_center_x){
+	bisect_head = FALSE;
+      }else{
+	bisect_head = TRUE;
       }
     }
     
@@ -841,7 +837,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     }
     
     /* iterate */
-    if(length <= 3){
+    if(length <= 1){
       has_more = FALSE;
     }
 
@@ -942,10 +938,8 @@ ags_notation_sort_func(gconstpointer a,
       return(-1);
     }
 
-    return(1);    
-  }
-
-  if(offset_a < offset_b){
+    return(1);
+  }else if(offset_a < offset_b){
     return(-1);
   }
 
@@ -1283,19 +1277,22 @@ ags_notation_add(GList *notation,
 
   list = ags_notation_find_near_timestamp(notation, audio_channel,
 					  timestamp);
-  g_object_unref(timestamp);
   
   if(list != NULL &&
      ags_timestamp_get_ags_offset(AGS_NOTATION(list->data)->timestamp) == ags_timestamp_get_ags_offset(timestamp) &&
      AGS_NOTATION(list->data)->audio_channel == audio_channel){
     g_critical("timestamp already present");
+    
+    g_object_unref(timestamp);
 
     return(notation);
   }
   
   notation = g_list_insert_sorted(notation,
 				  new_notation,
-				  ags_notation_sort_func);
+				  (GCompareFunc) ags_notation_sort_func);
+  
+  g_object_unref(timestamp);
   
   return(notation);
 }
@@ -1659,16 +1656,16 @@ ags_notation_find_point(AgsNotation *notation,
 		 "x1", &current_x1,
 		 "y", &current_y,
 		 NULL);
-    
-    if(current_x0 > x){
-      break;
-    }
 
     if(x >= current_x0 &&
        x < current_x1 &&
        current_y == y){
       retval = note->data;
 
+      break;
+    }
+    
+    if(current_x0 > x){
       break;
     }
     
