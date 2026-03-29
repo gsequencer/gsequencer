@@ -215,7 +215,7 @@ ags_frame_clock_test_flags(AgsFrameClock *frame_clock,
     return(FALSE);
   }
   
-  /* get frame_clock mutex */
+  /* get frame clock mutex */
   frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
 
   /* test flags */
@@ -247,7 +247,7 @@ ags_frame_clock_set_flags(AgsFrameClock *frame_clock,
     return;
   }
   
-  /* get frame_clock mutex */
+  /* get frame clock mutex */
   frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
 
   /* set flags */
@@ -277,7 +277,7 @@ ags_frame_clock_unset_flags(AgsFrameClock *frame_clock,
     return;
   }
   
-  /* get frame_clock mutex */
+  /* get frame clock mutex */
   frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
 
   /* unset flags */
@@ -288,161 +288,708 @@ ags_frame_clock_unset_flags(AgsFrameClock *frame_clock,
   g_rec_mutex_unlock(frame_clock_mutex);
 }
 
+/**
+ * ags_frame_clock_get_buffer_size:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get buffer size of @frame_clock.
+ * 
+ * Returns: the buffer size
+ * 
+ * Since: 8.5.0
+ */
 guint
 ags_frame_clock_get_buffer_size(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint buffer_size;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get buffer size */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  buffer_size = frame_clock->buffer_size;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(buffer_size);
 }
 
+/**
+ * ags_frame_clock_set_buffer_size:
+ * @frame_clock: the #AgsFrameClock
+ * @buffer_size: the buffer size
+ *
+ * Set buffer size of @frame_clock.
+ * 
+ * Since: 8.5.0
+ */
 void
 ags_frame_clock_set_buffer_size(AgsFrameClock *frame_clock,
-				     guint buffer_size)
+				guint buffer_size)
 {
-  //TODO:JK: implement me
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* set buffer size */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  frame_clock->buffer_size = buffer_size;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
 }
 
+/**
+ * ags_frame_clock_get_samplerate:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get samplerate of @frame_clock.
+ * 
+ * Returns: the samplerate
+ * 
+ * Since: 8.5.0
+ */
 guint
 ags_frame_clock_get_samplerate(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint samplerate;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get samplerate */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  samplerate = frame_clock->samplerate;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(samplerate);
 }
 
+/**
+ * ags_frame_clock_set_samplerate:
+ * @frame_clock: the #AgsFrameClock
+ * @samplerate: the samplerate
+ *
+ * Set samplerate of @frame_clock.
+ * 
+ * Since: 8.5.0
+ */
 void
 ags_frame_clock_set_samplerate(AgsFrameClock *frame_clock,
-				    guint samplerate)
+			       guint samplerate)
 {
-  //TODO:JK: implement me
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* set samplerate */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  frame_clock->samplerate = samplerate;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
 }
 
+/**
+ * ags_frame_clock_get_bpm:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get bpm of @frame_clock.
+ * 
+ * Returns: the bpm
+ * 
+ * Since: 8.5.0
+ */
 gdouble
 ags_frame_clock_get_bpm(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint bpm;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0.0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0.0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get bpm */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  bpm = frame_clock->bpm;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(bpm);
 }
 
+/**
+ * ags_frame_clock_set_bpm:
+ * @frame_clock: the #AgsFrameClock
+ * @bpm: the bpm
+ *
+ * Set bpm of @frame_clock.
+ * 
+ * Since: 8.5.0
+ */
 void
 ags_frame_clock_set_bpm(AgsFrameClock *frame_clock,
-			     gdouble bpm)
+			gdouble bpm)
 {
-  //TODO:JK: implement me
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* set bpm */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  frame_clock->bpm = bpm;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
 }
 
+/**
+ * ags_frame_clock_get_absolute_frame_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get absolute frame offset of @frame_clock.
+ * 
+ * Returns: the absolute frame offset
+ * 
+ * Since: 8.5.0
+ */
 guint64
 ags_frame_clock_get_absolute_frame_offset(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint absolute_frame_offset;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get absolute frame offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  absolute_frame_offset = frame_clock->absolute_frame_offset;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(absolute_frame_offset);
 }
 
+/**
+ * ags_frame_clock_get_frame_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get frame offset of @frame_clock.
+ * 
+ * Returns: the frame offset
+ * 
+ * Since: 8.5.0
+ */
 guint64
 ags_frame_clock_get_frame_offset(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint frame_offset;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get frame offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  frame_offset = frame_clock->frame_offset;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(frame_offset);
 }
 
+/**
+ * ags_frame_clock_get_note_attack_position:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get note attack position of @frame_clock.
+ * 
+ * Returns: the note attack position
+ * 
+ * Since: 8.5.0
+ */
 guint
 ags_frame_clock_get_note_attack_position(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint note_attack_position;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get note attack position */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  note_attack_position = frame_clock->note_attack_position;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(note_attack_position);
 }
 
-void
-ags_frame_clock_get_note_256th_attack_position(AgsFrameClock *frame_clock,
-						    guint *note_256th_attack_position,
-						    guint *length)
-{
-  //TODO:JK: implement me
-}
-
+/**
+ * ags_frame_clock_get_has_16th_pulse:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get has 16th pulse of @frame_clock.
+ * 
+ * Returns: %TRUE if has 16th pulse, otherwise %FALSE
+ * 
+ * Since: 8.5.0
+ */
 gboolean
 ags_frame_clock_get_has_16th_pulse(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  gboolean has_16th_pulse;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(FALSE);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(FALSE);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get has 16th pulse */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  has_16th_pulse = frame_clock->has_16th_pulse;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(has_16th_pulse);
 }
 
+/**
+ * ags_frame_clock_get_loop:
+ * @frame_clock: the #AgsFrameClock
+ * @loop_left: (out): return location of loop left
+ * @loop_right: (out): return location of loop right
+ *
+ * Get loop of @frame_clock.
+ * 
+ * Returns: %TRUE if do loop, otherwise %FALSE
+ * 
+ * Since: 8.5.0
+ */
 gboolean
 ags_frame_clock_get_loop(AgsFrameClock *frame_clock,
-				  guint *loop_left,
-				  guint *loop_right)
+			 guint *loop_left,
+			 guint *loop_right)
 {
-  //TODO:JK: implement me
+  gboolean do_loop;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(FALSE);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(FALSE);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get loop */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  do_loop = frame_clock->do_loop;
+
+  if(loop_left != NULL){
+    loop_left[0] = frame_clock->loop_left;
+  }
+
+  if(loop_right != NULL){
+    loop_right[0] = frame_clock->loop_right;
+  }
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(do_loop);
 }
 
+/**
+ * ags_frame_clock_set_loop:
+ * @frame_clock: the #AgsFrameClock
+ * @do_loop: do loop if %TRUE, otherwise %FALSE
+ * @loop_left: loop left
+ * @loop_right: loop right
+ *
+ * Get loop of @frame_clock.
+ * 
+ * Returns: %TRUE if do loop, otherwise %FALSE
+ * 
+ * Since: 8.5.0
+ */
 void
 ags_frame_clock_set_loop(AgsFrameClock *frame_clock,
-			      gboolean do_loop,
-			      guint loop_left,
-			      guint loop_right)
+			 gboolean do_loop,
+			 guint loop_left,
+			 guint loop_right)
 {
-  //TODO:JK: implement me
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* set loop */
+  g_rec_mutex_lock(frame_clock_mutex);
+  
+  frame_clock->do_loop = do_loop;
+
+  frame_clock->loop_left = loop_left;
+  frame_clock->loop_right = loop_right;
+    
+  g_rec_mutex_unlock(frame_clock_mutex);
 }
 
+/**
+ * ags_frame_clock_get_absolute_note_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get absolute note offset of @frame_clock.
+ * 
+ * Returns: the absolute note offset
+ * 
+ * Since: 8.5.0
+ */
 guint
 ags_frame_clock_get_absolute_note_offset(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint absolute_note_offset;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get absolute note offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  absolute_note_offset = frame_clock->absolute_note_offset;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(absolute_note_offset);
 }
 
+/**
+ * ags_frame_clock_get_note_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get note offset of @frame_clock.
+ * 
+ * Returns: the note offset
+ * 
+ * Since: 8.5.0
+ */
 guint
 ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  guint note_offset;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get note offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  note_offset = frame_clock->note_offset;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(note_offset);
 }
 
+/**
+ * ags_frame_clock_get_note_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get note offset of @frame_clock.
+ * 
+ * Returns: the note offset
+ * 
+ * Since: 8.5.0
+ */
 guint
 ags_frame_clock_get_note_attack(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  GList *list;
+  
+  guint note_attack;
+  
+  GRecMutex *frame_clock_mutex;
 
-  return(0);
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get note attack */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  list = g_list_nth(frame_clock->note_attack,
+		    (guint) floor((double) frame_clock->note_attack_position / AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH));
+  
+  note_attack = 0;
+
+  if(list != NULL){
+    note_attack = ((guint *) list->data)[frame_clock->note_attack_position % (guint) AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH];
+  }
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(note_attack);
 }
 
+/**
+ * ags_frame_clock_get_absolute_note_256th_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get absolute note 256th offset of @frame_clock.
+ * 
+ * Returns: the absolute note 256th offset
+ * 
+ * Since: 8.5.0
+ */
 void
 ags_frame_clock_get_absolute_note_256th_offset(AgsFrameClock *frame_clock,
-						    guint *absolute_note_256th_offset,
-						    guint *length)
+					       guint *absolute_note_256th_offset,
+					       guint *length)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get absolute note 256th offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  if(absolute_note_256th_offset != NULL){
+    for(i = 0; i < frame_clock->absolute_note_256th_offset_length && i < 16; i++){
+      absolute_note_256th_offset[i] = frame_clock->absolute_note_256th_offset[i];
+    }
+  }
+
+  if(length != NULL){
+    length[0] = frame_clock->absolute_note_256th_offset_length;
+  }
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
 }
 
+/**
+ * ags_frame_clock_get_note_256th_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get note 256th offset of @frame_clock.
+ * 
+ * Returns: the note 256th offset
+ * 
+ * Since: 8.5.0
+ */
 void
 ags_frame_clock_get_note_256th_offset(AgsFrameClock *frame_clock,
-					   guint *note_256th_offset,
-					   guint *length)
+				      guint *note_256th_offset,
+				      guint *length)
 {
-  //TODO:JK: implement me
+  guint i;
+  
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get absolute note 256th offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  if(note_256th_offset != NULL){
+    for(i = 0; i < frame_clock->note_256th_offset_length && i < 16; i++){
+      note_256th_offset[i] = frame_clock->note_256th_offset[i];
+    }
+  }
+
+  if(length != NULL){
+    length[0] = frame_clock->note_256th_offset_length;
+  }
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
 }
 
+/**
+ * ags_frame_clock_get_note_256th_attack_position:
+ * @frame_clock: the #AgsFrameClock
+ * @note_256th_attack_position: (out): return location of note 256th attack position
+ * @length: (out): return location of array length, maximum 16 items
+ *
+ * Get note 256th attack position of @frame_clock.
+ * 
+ * Since: 8.5.0
+ */
+void
+ags_frame_clock_get_note_256th_attack_position(AgsFrameClock *frame_clock,
+					       guint *note_256th_attack_position,
+					       guint *length)
+{
+  guint i;
+  
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get note 256th attack position */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  if(note_256th_attack_position != NULL){
+    for(i = 0; i < frame_clock->note_256th_attack_position_length && i < 16; i++){
+      note_256th_attack_position[i] = frame_clock->note_256th_attack_position[i];
+    }
+  }
+
+  if(length != NULL){
+    length[0] = frame_clock->note_256th_attack_position_length;
+  }
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
+}
+
+/**
+ * ags_frame_clock_get_note_256th_attack:
+ * @frame_clock: the #AgsFrameClock
+ * @note_256th_attack: (out): return location of note 256th attack
+ * @length: (out): return location of array length, maximum 16 items
+ *
+ * Get note 256th attack of @frame_clock.
+ * 
+ * Since: 8.5.0
+ */
 void
 ags_frame_clock_get_note_256th_attack(AgsFrameClock *frame_clock,
-					   guint *note_256th_attack,
-					   guint *length)
+				      guint *note_256th_attack,
+				      guint *length)
 {
-  //TODO:JK: implement me
+  GList *list;
+  
+  guint i;
+  
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get note attack */
+  g_rec_mutex_lock(frame_clock_mutex);
+  
+  if(note_256th_attack != NULL){
+    for(i = 0; i < frame_clock->note_256th_attack_position_length && i < 16; i++){
+      list = g_list_nth(frame_clock->note_256th_attack,
+			(guint) floor((double) (frame_clock->note_256th_attack_position + i) / AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH));
+
+      if(list != NULL){
+	note_256th_attack[i] = ((guint *) list->data)[(frame_clock->note_256th_attack_position + i) % (guint) AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH];
+      }
+    }
+  }
+
+  if(length != NULL){
+    length[0] = frame_clock->note_256th_attack_position_length;
+  }
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
 }
 
 void
 ags_frame_clock_from_string(AgsFrameClock *frame_clock,
-				 gchar *str)
+			    gchar *str)
 {
   //TODO:JK: implement me
 }

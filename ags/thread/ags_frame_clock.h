@@ -94,7 +94,8 @@ struct _AgsFrameClock
   guint note_256th_offset[16];
   guint note_256th_offset_length;
 
-  guint note_256th_attack_position;
+  guint note_256th_attack_position[16];
+  guint note_256th_attack_position_length;
   
   GList *note_256th_attack;
 };
@@ -139,10 +140,6 @@ guint64 ags_frame_clock_get_frame_offset(AgsFrameClock *frame_clock);
 
 guint ags_frame_clock_get_note_attack_position(AgsFrameClock *frame_clock);
 
-void ags_frame_clock_get_note_256th_attack_position(AgsFrameClock *frame_clock,
-						    guint *note_256th_attack_position,
-						    guint *length);
-
 gboolean ags_frame_clock_get_has_16th_pulse(AgsFrameClock *frame_clock);
 
 gboolean ags_frame_clock_get_loop(AgsFrameClock *frame_clock,
@@ -166,6 +163,10 @@ void ags_frame_clock_get_absolute_note_256th_offset(AgsFrameClock *frame_clock,
 void ags_frame_clock_get_note_256th_offset(AgsFrameClock *frame_clock,
 					   guint *note_256th_offset,
 					   guint *length);
+
+void ags_frame_clock_get_note_256th_attack_position(AgsFrameClock *frame_clock,
+						    guint *note_256th_attack_position,
+						    guint *length);
 
 void ags_frame_clock_get_note_256th_attack(AgsFrameClock *frame_clock,
 					   guint *note_256th_attack,
