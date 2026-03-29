@@ -1374,13 +1374,17 @@ void
 ags_equalizer10_refresh_port(AgsMachine *machine)
 {
   AgsEqualizer10 *equalizer10;
+
+  AgsChannel *input;
   
   GList *start_play, *start_recall, *recall;
 
   equalizer10 = (AgsEqualizer10 *) machine;
+
+  input = ags_audio_get_input(machine->audio);
   
-  start_play = ags_audio_get_play(machine->audio);
-  start_recall = ags_audio_get_recall(machine->audio);
+  start_play = ags_channel_get_play(input);
+  start_recall = ags_channel_get_recall(input);
 
   recall =
     start_recall = g_list_concat(start_play, start_recall);
@@ -1634,6 +1638,13 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
   }
   
   machine->flags &= (~AGS_MACHINE_NO_UPDATE);
+
+  if(input != NULL){
+    g_object_unref(input);
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**
