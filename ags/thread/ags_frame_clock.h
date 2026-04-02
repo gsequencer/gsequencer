@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 #define AGS_FRAME_CLOCK_GET_OBJ_MUTEX(obj) (&(((AgsFrameClock *) obj)->obj_mutex))
 
 #define AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH (2048.0)
-#define AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH (1024.0)
+#define AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH (4.0)
 #define AGS_FRAME_CLOCK_DEFAULT_PERIOD (AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH * AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH)
 #define AGS_FRAME_CLOCK_DEFAULT_PERIOD_256TH (16.0 * AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH * AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH)
 
@@ -69,24 +69,29 @@ struct _AgsFrameClock
   
   gdouble bpm;
 
+  gdouble absolute_delay;
+  gdouble fixed_absolute_delay;
+
   guint64 absolute_frame_offset;
   
   guint64 frame_offset;
-  
-  gboolean has_16th_pulse;
+
+  guint64 period_frame_offset;
   
   gboolean do_loop;
   
   guint loop_left;
   guint loop_right;
+
+  gboolean has_16th_pulse;
   
   guint absolute_note_offset;
   
   guint note_offset;
 
-  guint note_attack_position;
+  guint64 note_frame_offset;
   
-  GList *note_attack;
+  gboolean has_256th_pulse;
   
   guint absolute_note_256th_offset[16];
   guint absolute_note_256th_offset_length;
@@ -94,20 +99,13 @@ struct _AgsFrameClock
   guint note_256th_offset[16];
   guint note_256th_offset_length;
 
-  guint note_256th_attack_position[16];
-  guint note_256th_attack_position_length;
-  
-  GList *note_256th_attack;
+  guint64 note_256th_frame_offset[16];
+  guint note_256th_frame_offset_length;
 };
 
 struct _AgsFrameClockClass
 {
   GObjectClass gobject;
-
-  void (*start)(AgsFrameClock *frame_clock);
-  void (*stop)(AgsFrameClock *frame_clock);
-  
-  void (*increment_counter)(AgsFrameClock *frame_clock);
 };
 
 GType ags_frame_clock_get_type(void);
@@ -115,11 +113,11 @@ GType ags_frame_clock_flags_get_type(void);
 
 /* flags */
 gboolean ags_frame_clock_test_flags(AgsFrameClock *frame_clock,
-				  AgsFrameClockFlags flags);
+				    AgsFrameClockFlags flags);
 void ags_frame_clock_set_flags(AgsFrameClock *frame_clock,
-			     AgsFrameClockFlags flags);
-void ags_frame_clock_unset_flags(AgsFrameClock *frame_clock,
 			       AgsFrameClockFlags flags);
+void ags_frame_clock_unset_flags(AgsFrameClock *frame_clock,
+				 AgsFrameClockFlags flags);
 
 /* getter/setter */
 guint ags_frame_clock_get_buffer_size(AgsFrameClock *frame_clock);
@@ -138,8 +136,6 @@ guint64 ags_frame_clock_get_absolute_frame_offset(AgsFrameClock *frame_clock);
 
 guint64 ags_frame_clock_get_frame_offset(AgsFrameClock *frame_clock);
 
-guint ags_frame_clock_get_note_attack_position(AgsFrameClock *frame_clock);
-
 gboolean ags_frame_clock_get_has_16th_pulse(AgsFrameClock *frame_clock);
 
 gboolean ags_frame_clock_get_loop(AgsFrameClock *frame_clock,
@@ -154,7 +150,7 @@ guint ags_frame_clock_get_absolute_note_offset(AgsFrameClock *frame_clock);
 
 guint ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock);
 
-guint ags_frame_clock_get_note_attack(AgsFrameClock *frame_clock);
+guint64 ags_frame_clock_get_note_frame_offset(AgsFrameClock *frame_clock);
 
 void ags_frame_clock_get_absolute_note_256th_offset(AgsFrameClock *frame_clock,
 						    guint *absolute_note_256th_offset,
@@ -164,13 +160,15 @@ void ags_frame_clock_get_note_256th_offset(AgsFrameClock *frame_clock,
 					   guint *note_256th_offset,
 					   guint *length);
 
-void ags_frame_clock_get_note_256th_attack_position(AgsFrameClock *frame_clock,
-						    guint *note_256th_attack_position,
-						    guint *length);
+void ags_frame_clock_get_note_256th_frame_offset(AgsFrameClock *frame_clock,
+						 guint64 *note_256th_frame_offset,
+						 guint *length);
 
-void ags_frame_clock_get_note_256th_attack(AgsFrameClock *frame_clock,
-					   guint *note_256th_attack,
-					   guint *length);
+/*  */
+void ags_frame_clock_start(AgsFrameClock *frame_clock);
+void ags_frame_clock_stop(AgsFrameClock *frame_clock);
+  
+void ags_frame_clock_increment_counter(AgsFrameClock *frame_clock);
 
 /* from/to string */
 void ags_frame_clock_from_string(AgsFrameClock *frame_clock,
