@@ -69,8 +69,8 @@ struct _AgsFrameClock
   
   gdouble bpm;
 
-  gdouble absolute_delay;
-  gdouble fixed_absolute_delay;
+  long double absolute_delay;
+  long double fixed_absolute_delay;
 
   guint64 absolute_frame_offset;
   
@@ -80,23 +80,23 @@ struct _AgsFrameClock
   
   gboolean do_loop;
   
-  guint loop_left;
-  guint loop_right;
+  guint64 loop_left;
+  guint64 loop_right;
 
   gboolean has_16th_pulse;
   
-  guint absolute_note_offset;
+  guint64 absolute_note_offset;
   
-  guint note_offset;
+  guint64 note_offset;
 
   guint64 note_frame_offset;
   
   gboolean has_256th_pulse;
   
-  guint absolute_note_256th_offset[16];
+  guint64 absolute_note_256th_offset[16];
   guint absolute_note_256th_offset_length;
 
-  guint note_256th_offset[16];
+  guint64 note_256th_offset[16];
   guint note_256th_offset_length;
 
   guint64 note_256th_frame_offset[16];
@@ -139,25 +139,25 @@ guint64 ags_frame_clock_get_frame_offset(AgsFrameClock *frame_clock);
 gboolean ags_frame_clock_get_has_16th_pulse(AgsFrameClock *frame_clock);
 
 gboolean ags_frame_clock_get_loop(AgsFrameClock *frame_clock,
-				  guint *loop_left,
-				  guint *loop_right);
+				  guint64 *loop_left,
+				  guint64 *loop_right);
 void ags_frame_clock_set_loop(AgsFrameClock *frame_clock,
 			      gboolean do_loop,
-			      guint loop_left,
-			      guint loop_right);
+			      guint64 loop_left,
+			      guint64 loop_right);
 
-guint ags_frame_clock_get_absolute_note_offset(AgsFrameClock *frame_clock);
+guint64 ags_frame_clock_get_absolute_note_offset(AgsFrameClock *frame_clock);
 
-guint ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock);
+guint64 ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock);
 
 guint64 ags_frame_clock_get_note_frame_offset(AgsFrameClock *frame_clock);
 
 void ags_frame_clock_get_absolute_note_256th_offset(AgsFrameClock *frame_clock,
-						    guint *absolute_note_256th_offset,
+						    guint64 *absolute_note_256th_offset,
 						    guint *length);
 
 void ags_frame_clock_get_note_256th_offset(AgsFrameClock *frame_clock,
-					   guint *note_256th_offset,
+					   guint64 *note_256th_offset,
 					   guint *length);
 
 void ags_frame_clock_get_note_256th_frame_offset(AgsFrameClock *frame_clock,

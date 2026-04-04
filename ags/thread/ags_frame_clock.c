@@ -125,34 +125,43 @@ ags_frame_clock_init(AgsFrameClock *frame_clock)
   
   frame_clock->fixed_absolute_delay = ((ceil((AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size) / frame_clock->buffer_size) * frame_clock->buffer_size) / (AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size)) * frame_clock->absolute_delay;
 
+  /* frame offset */
   frame_clock->absolute_frame_offset = 0;
 
   frame_clock->frame_offset = 0;
 
   frame_clock->period_frame_offset = 0;
 
+  /* loop */
   frame_clock->do_loop = FALSE;
   
   frame_clock->loop_left = 0;
   frame_clock->loop_right = 64;
 
+  /* 16th pulse */
   frame_clock->has_16th_pulse = TRUE;
 
   frame_clock->absolute_note_offset = 0;
 
   frame_clock->note_offset = 0;
 
+  frame_clock->note_frame_offset = 0;
+
+  /* 256th pulse */
   frame_clock->has_256th_pulse = TRUE;
 
-  memset(&(frame_clock->absolute_note_256th_offset[0]), 0, 16 * sizeof(guint));
+  /* absolute note 256th offset */
+  memset(&(frame_clock->absolute_note_256th_offset[0]), 0, 16 * sizeof(guint64));
 
   frame_clock->absolute_note_256th_offset_length = 0;
 
-  memset(&(frame_clock->note_256th_offset[0]), 0, 16 * sizeof(guint));
+  /* note 256th offset */
+  memset(&(frame_clock->note_256th_offset[0]), 0, 16 * sizeof(guint64));
 
   frame_clock->note_256th_offset_length = 0;
 
-  memset(&(frame_clock->note_256th_frame_offset[0]), 0, 16 * sizeof(guint));
+  /* note 256th frame offset */
+  memset(&(frame_clock->note_256th_frame_offset[0]), 0, 16 * sizeof(guint64));
   
   frame_clock->note_256th_frame_offset_length = 0;
 }
@@ -413,7 +422,7 @@ ags_frame_clock_set_samplerate(AgsFrameClock *frame_clock,
 gdouble
 ags_frame_clock_get_bpm(AgsFrameClock *frame_clock)
 {
-  guint bpm;
+  gdouble bpm;
   
   GRecMutex *frame_clock_mutex;
 
@@ -515,7 +524,7 @@ ags_frame_clock_get_absolute_frame_offset(AgsFrameClock *frame_clock)
 guint64
 ags_frame_clock_get_frame_offset(AgsFrameClock *frame_clock)
 {
-  guint frame_offset;
+  guint64 frame_offset;
   
   GRecMutex *frame_clock_mutex;
 
@@ -618,8 +627,8 @@ ags_frame_clock_get_has_16th_pulse(AgsFrameClock *frame_clock)
  */
 gboolean
 ags_frame_clock_get_loop(AgsFrameClock *frame_clock,
-			 guint *loop_left,
-			 guint *loop_right)
+			 guint64 *loop_left,
+			 guint64 *loop_right)
 {
   gboolean do_loop;
   
@@ -666,8 +675,8 @@ ags_frame_clock_get_loop(AgsFrameClock *frame_clock,
 void
 ags_frame_clock_set_loop(AgsFrameClock *frame_clock,
 			 gboolean do_loop,
-			 guint loop_left,
-			 guint loop_right)
+			 guint64 loop_left,
+			 guint64 loop_right)
 {
   GRecMutex *frame_clock_mutex;
 
@@ -699,10 +708,10 @@ ags_frame_clock_set_loop(AgsFrameClock *frame_clock,
  * 
  * Since: 8.5.0
  */
-guint
+guint64
 ags_frame_clock_get_absolute_note_offset(AgsFrameClock *frame_clock)
 {
-  guint absolute_note_offset;
+  guint64 absolute_note_offset;
   
   GRecMutex *frame_clock_mutex;
 
@@ -733,10 +742,10 @@ ags_frame_clock_get_absolute_note_offset(AgsFrameClock *frame_clock)
  * 
  * Since: 8.5.0
  */
-guint
+guint64
 ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock)
 {
-  guint note_offset;
+  guint64 note_offset;
   
   GRecMutex *frame_clock_mutex;
 
@@ -769,7 +778,7 @@ ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock)
  */
 void
 ags_frame_clock_get_absolute_note_256th_offset(AgsFrameClock *frame_clock,
-					       guint *absolute_note_256th_offset,
+					       guint64 *absolute_note_256th_offset,
 					       guint *length)
 {
   guint i;
@@ -811,7 +820,7 @@ ags_frame_clock_get_absolute_note_256th_offset(AgsFrameClock *frame_clock,
  */
 void
 ags_frame_clock_get_note_256th_offset(AgsFrameClock *frame_clock,
-				      guint *note_256th_offset,
+				      guint64 *note_256th_offset,
 				      guint *length)
 {
   guint i;
@@ -942,20 +951,20 @@ void
 ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
 {
   guint64 note_256th_frame_offset[16] = {0,};
-  guint note_256th_offset[16] = {0,};
+  guint64 note_256th_offset[16] = {0,};
   
   guint buffer_size;
   gdouble bpm;
-  gdouble fixed_absolute_delay;
+  long double fixed_absolute_delay;
   guint64 period_frame_offset;
   guint64 total_period_frame_offset;
   guint64 note_frame_offset;
+  guint note_256th_frame_offset_length;
+  guint note_256th_offset_length;
   guint64 last_note_256th_frame_offset;
   guint64 loop_left_note_256th_frame_offset;
   guint64 heading_note_256th_frame_offset;
   guint64 stop_note_256th_frame_offset;
-  guint note_256th_frame_offset_length;
-  guint note_256th_offset_length;
 
   guint i, i_stop;
   gboolean do_loop;
@@ -990,7 +999,7 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
 
   total_period_frame_offset = AGS_FRAME_CLOCK_DEFAULT_PERIOD * fixed_absolute_delay * buffer_size;
 
-  total_period_frame_offset = (guint64) ceil((double) total_period_frame_offset / (double) buffer_size) * buffer_size;
+  total_period_frame_offset = (guint64) ceill((long double) total_period_frame_offset / (long double) buffer_size) * buffer_size;
 
   /* note frame offset */
   note_frame_offset = ags_frame_clock_get_note_frame_offset(frame_clock);
@@ -1025,10 +1034,10 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
   do_loop = FALSE;
   
   if(frame_clock->do_loop &&
-     (double) frame_clock->frame_offset + (double) buffer_size >= (double) frame_clock->loop_right * fixed_absolute_delay * (double) buffer_size){
+     (long double) frame_clock->frame_offset + (long double) buffer_size >= (long double) frame_clock->loop_right * fixed_absolute_delay * (long double) buffer_size){
     do_loop = TRUE;
 
-    frame_clock->frame_offset = (guint64) floor(floor((double) frame_clock->loop_left * fixed_absolute_delay * (double) buffer_size) / (double) buffer_size) * buffer_size;
+    frame_clock->frame_offset = (guint64) floorl(floorl((long double) frame_clock->loop_left * fixed_absolute_delay * (long double) buffer_size) / (long double) buffer_size) * buffer_size;
 
     frame_clock->period_frame_offset = frame_clock->frame_offset % total_period_frame_offset;
   }
@@ -1047,9 +1056,9 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
     
     frame_clock->note_offset = frame_clock->loop_left;
 
-    frame_clock->note_frame_offset = (frame_clock->loop_left % (guint) AGS_FRAME_CLOCK_DEFAULT_PERIOD) * buffer_size;
+    frame_clock->note_frame_offset = (frame_clock->loop_left % (guint64) AGS_FRAME_CLOCK_DEFAULT_PERIOD) * buffer_size;
   }else{
-    if(note_frame_offset + (fixed_absolute_delay * (double) buffer_size) < frame_clock->frame_offset + buffer_size){
+    if(note_frame_offset + (fixed_absolute_delay * (long double) buffer_size) < frame_clock->frame_offset + buffer_size){
       has_16th_pulse = TRUE;
 
       frame_clock->absolute_note_offset += 1;
@@ -1066,37 +1075,37 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
   if(do_loop){
     has_256th_pulse = TRUE;
     
-    heading_note_256th_frame_offset = floor((double) frame_clock->loop_left * fixed_absolute_delay * (double) buffer_size);
+    heading_note_256th_frame_offset = floorl((long double) frame_clock->loop_left * fixed_absolute_delay * (long double) buffer_size);
 
     if(fixed_absolute_delay / 16.0 <= 1.0){
       if(frame_clock->frame_offset == 0){
-	for(i = 0; (i * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size)) < buffer_size && i < 16; i++){
-	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size));
+	for(i = 0; (i * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < buffer_size && i < 16; i++){
+	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	  
-	  frame_clock->note_256th_offset[i] = (guint) floor(((double) i * floor(fixed_absolute_delay / 16.0 * (double) buffer_size)) / (fixed_absolute_delay / 16.0 * (double) buffer_size));
+	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) i * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
 
 	frame_clock->note_256th_frame_offset_length = i;
 	
 	frame_clock->note_256th_offset_length = i;
       }else{
-	stop_note_256th_frame_offset = (guint64) floor(heading_note_256th_frame_offset / buffer_size) * (guint64) buffer_size;
+	stop_note_256th_frame_offset = (guint64) floorl(heading_note_256th_frame_offset / buffer_size) * (guint64) buffer_size;
 
 	for(i = 0; heading_note_256th_frame_offset >= stop_note_256th_frame_offset && i < 16; i++){
-	  heading_note_256th_frame_offset -= (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size);
+	  heading_note_256th_frame_offset -= (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size);
 	}
 	
-	for(i = 0; heading_note_256th_frame_offset + ((guint64) (i + 1) * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size)) < frame_clock->frame_offset + buffer_size && i < 16; i++){
-	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size));
+	for(i = 0; heading_note_256th_frame_offset + ((guint64) (i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < frame_clock->frame_offset + buffer_size && i < 16; i++){
+	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	  
-	  frame_clock->note_256th_offset[i] = (guint) floor(((double) heading_note_256th_frame_offset + (((double) i + 1.0) * floor(fixed_absolute_delay / 16.0 * (double) buffer_size))) / (fixed_absolute_delay / 16.0 * (double) buffer_size));
+	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) heading_note_256th_frame_offset + (((long double) i + 1.0) * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size))) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
 	frame_clock->note_256th_frame_offset_length = i;
 	
 	frame_clock->note_256th_offset_length = i;
       }
     }else{
-      frame_clock->note_256th_frame_offset[0] = heading_note_256th_frame_offset + ((guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size));
+      frame_clock->note_256th_frame_offset[0] = heading_note_256th_frame_offset + ((guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
       frame_clock->note_256th_frame_offset_length = 1;
       
       frame_clock->note_256th_offset[0] = 16 * frame_clock->loop_left;
@@ -1109,10 +1118,10 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
       has_256th_pulse = TRUE;
       
       if(frame_clock->frame_offset == 0){
-	for(i = 0; (i * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size)) < buffer_size && i < 16; i++){
-	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size));
+	for(i = 0; (i * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < buffer_size && i < 16; i++){
+	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	
-	  frame_clock->note_256th_offset[i] = (guint) floor(((double) i * floor(fixed_absolute_delay / 16.0 * (double) buffer_size)) / (fixed_absolute_delay / 16.0 * (double) buffer_size));
+	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) i * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
 
 	frame_clock->note_256th_frame_offset_length = i;
@@ -1121,10 +1130,10 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
       }else{
 	heading_note_256th_frame_offset = last_note_256th_frame_offset;
 
-	for(i = 0; heading_note_256th_frame_offset + ((guint64) i * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size)) < frame_clock->frame_offset + buffer_size && i < 16; i++){
-	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size));
+	for(i = 0; heading_note_256th_frame_offset + ((guint64) i * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < frame_clock->frame_offset + buffer_size && i < 16; i++){
+	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	  
-	  frame_clock->note_256th_offset[i] = (guint) floor(((double) heading_note_256th_frame_offset + (((double) i + 1.0) * floor(fixed_absolute_delay / 16.0 * (double) buffer_size))) / (fixed_absolute_delay / 16.0 * (double) buffer_size));
+	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) heading_note_256th_frame_offset + (((long double) i + 1.0) * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size))) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
 
 	frame_clock->note_256th_frame_offset_length = i;
@@ -1132,14 +1141,14 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
 	frame_clock->note_256th_offset_length = i;
       }
     }else{
-      if(heading_note_256th_frame_offset + (guint64) floor(fixed_absolute_delay / 16.0 * (double) buffer_size) < frame_clock->frame_offset + buffer_size){
+      if(heading_note_256th_frame_offset + (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size) < frame_clock->frame_offset + buffer_size){
 	has_256th_pulse = TRUE;
 
 	frame_clock->note_256th_frame_offset[0] = note_256th_frame_offset[note_256th_frame_offset_length - 1] + (i + 1);
 	
 	frame_clock->note_256th_frame_offset_length = 1;
 	
-	frame_clock->note_256th_offset[0] = (guint) floor(((double) heading_note_256th_frame_offset + floor(fixed_absolute_delay / 16.0 * (double) buffer_size)) / (fixed_absolute_delay / 16.0 * (double) buffer_size));
+	frame_clock->note_256th_offset[0] = (guint64) floorl(((long double) heading_note_256th_frame_offset + floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	
 	frame_clock->note_256th_offset_length = 1;
       }
