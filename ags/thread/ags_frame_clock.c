@@ -21,6 +21,16 @@
 
 #include <ags/object/ags_soundcard.h>
 
+#include <libxml/tree.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
+#include <libxml/xlink.h>
+#include <libxml/valid.h>
+#include <libxml/xmlIO.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlsave.h>
+
 #include <math.h>
 
 #include <string.h>
@@ -1074,16 +1084,20 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
   
   if(do_loop){
     has_256th_pulse = TRUE;
-    
+
     heading_note_256th_frame_offset = floorl((long double) frame_clock->loop_left * fixed_absolute_delay * (long double) buffer_size);
 
     if(fixed_absolute_delay / 16.0 <= 1.0){
       if(frame_clock->frame_offset == 0){
 	for(i = 0; (i * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < buffer_size && i < 16; i++){
+	  frame_clock->absolute_note_256th_offset[i] += note_256th_offset_length;
+    
 	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	  
 	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) i * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
+
+	frame_clock->absolute_note_256th_offset_length = i;
 
 	frame_clock->note_256th_frame_offset_length = i;
 	
@@ -1096,10 +1110,15 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
 	}
 	
 	for(i = 0; heading_note_256th_frame_offset + ((guint64) (i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < frame_clock->frame_offset + buffer_size && i < 16; i++){
+	  frame_clock->absolute_note_256th_offset[i] += note_256th_offset_length;
+    
 	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	  
 	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) heading_note_256th_frame_offset + (((long double) i + 1.0) * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size))) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
+
+	frame_clock->absolute_note_256th_offset_length = i;
+
 	frame_clock->note_256th_frame_offset_length = i;
 	
 	frame_clock->note_256th_offset_length = i;
@@ -1108,6 +1127,9 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
       frame_clock->note_256th_frame_offset[0] = heading_note_256th_frame_offset + ((guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
       frame_clock->note_256th_frame_offset_length = 1;
       
+      frame_clock->absolute_note_256th_offset[0] += note_256th_offset_length;
+	frame_clock->absolute_note_256th_offset_length = 1;
+    
       frame_clock->note_256th_offset[0] = 16 * frame_clock->loop_left;
       frame_clock->note_256th_offset_length = 1;
     }
@@ -1116,13 +1138,17 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
     
     if(fixed_absolute_delay / 16.0 <= 1.0){
       has_256th_pulse = TRUE;
-      
+    
       if(frame_clock->frame_offset == 0){
 	for(i = 0; (i * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < buffer_size && i < 16; i++){
+	  frame_clock->absolute_note_256th_offset[i] += note_256th_offset_length;
+    
 	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	
 	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) i * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
+
+	frame_clock->absolute_note_256th_offset_length = i;
 
 	frame_clock->note_256th_frame_offset_length = i;
 	
@@ -1131,10 +1157,14 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
 	heading_note_256th_frame_offset = last_note_256th_frame_offset;
 
 	for(i = 0; heading_note_256th_frame_offset + ((guint64) i * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size)) < frame_clock->frame_offset + buffer_size && i < 16; i++){
+	  frame_clock->absolute_note_256th_offset[i] += note_256th_offset_length;
+    
 	  frame_clock->note_256th_frame_offset[i] = heading_note_256th_frame_offset + ((i + 1) * (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	  
 	  frame_clock->note_256th_offset[i] = (guint64) floorl(((long double) heading_note_256th_frame_offset + (((long double) i + 1.0) * floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size))) / (fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	}
+
+	frame_clock->absolute_note_256th_offset_length = i;
 
 	frame_clock->note_256th_frame_offset_length = i;
 	
@@ -1144,7 +1174,11 @@ ags_frame_clock_increment_counter(AgsFrameClock *frame_clock)
       if(heading_note_256th_frame_offset + (guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size) < frame_clock->frame_offset + buffer_size){
 	has_256th_pulse = TRUE;
 
-	frame_clock->note_256th_frame_offset[0] = note_256th_frame_offset[note_256th_frame_offset_length - 1] + (i + 1);
+	frame_clock->absolute_note_256th_offset[0] += note_256th_offset_length;
+    
+	frame_clock->absolute_note_256th_offset_length = 1;
+
+	frame_clock->note_256th_frame_offset[0] = heading_note_256th_frame_offset + ((guint64) floorl(fixed_absolute_delay / 16.0 * (long double) buffer_size));
 	
 	frame_clock->note_256th_frame_offset_length = 1;
 	
@@ -1173,7 +1207,158 @@ ags_frame_clock_from_string(AgsFrameClock *frame_clock,
 gchar*
 ags_frame_clock_to_string(AgsFrameClock *frame_clock)
 {
-  //TODO:JK: implement me
+  xmlDoc *doc;
+  xmlNode *root_node;
+
+  xmlChar *version;
+  xmlChar *xml_namespace;
+  xmlChar *node_name;
+  xmlChar *prop_name;
+  xmlChar *prop_value;
+  xmlChar *iter;
+
+  gint out_count;
+  guint i;
+  
+  version = BAD_CAST "1.0";
+  
+  doc = xmlNewDoc(version);
+
+  xml_namespace = NULL;
+  
+  node_name = BAD_CAST "ags-frame-clock";
+
+  root_node = xmlNewNode(xml_namespace,
+			 node_name);
+  
+  xmlDocSetRootElement(doc,
+		       root_node);
+
+  /* has 16th pulse */
+  prop_name = BAD_CAST "has-16th-pulse";
+
+  prop_value = BAD_CAST g_strdup_printf("%s", (frame_clock->has_16th_pulse ? "true": "false"));
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+  
+  /* absolute frame offset */
+  prop_name = BAD_CAST "absolute-frame-offset";
+
+  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->absolute_frame_offset);
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+
+  /* frame offset */
+  prop_name = BAD_CAST "frame-offset";
+  
+  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->frame_offset);
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+
+  /* absolute note offset */
+  prop_name = BAD_CAST "absolute-note-offset";
+
+  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->absolute_note_offset);
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+
+  /* note offset */
+  prop_name = BAD_CAST "note-offset";
+
+  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->note_offset);
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+  
+  /* note frame offset */
+  prop_name = BAD_CAST "note-frame-offset";
+
+  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->note_frame_offset);
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+
+  /* has 256th pulse */
+  prop_name = BAD_CAST "has-256th-pulse";
+
+  prop_value = BAD_CAST g_strdup_printf("%s", (frame_clock->has_256th_pulse ? "true": "false"));
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+
+  /* alloc prop value */
+  prop_value = g_malloc((16 * (21 + 1)) * sizeof(xmlChar));
+
+  /* absolute note 256th offset */
+  prop_name = "absolute-note-256th-offset";
+
+  memset(prop_value, 0, (16 * (21 + 1)) * sizeof(xmlChar));
+
+  iter = prop_value;
+  
+  for(i = 0; i < frame_clock->absolute_note_256th_offset_length && i < 16; i++){
+    if(i + 1 < frame_clock->absolute_note_256th_offset_length){
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull ", frame_clock->absolute_note_256th_offset[i]);
+    }else{
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull", frame_clock->absolute_note_256th_offset[i]);
+    }
+  }
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+  
+  /* note 256th offset */
+  prop_name = "note-256th-offset";
+
+  memset(prop_value, 0, (16 * (21 + 1)) * sizeof(xmlChar));
+
+  iter = prop_value;
+  
+  for(i = 0; i < frame_clock->note_256th_offset_length && i < 16; i++){
+    if(i + 1 < frame_clock->note_256th_offset_length){
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull ", frame_clock->note_256th_offset[i]);
+    }else{
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull", frame_clock->note_256th_offset[i]);
+    }
+  }
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+  
+  /* note 256th frame offset */
+  prop_name = "note-256th-frame-offset";
+
+  memset(prop_value, 0, (16 * (21 + 1)) * sizeof(xmlChar));
+
+  iter = prop_value;
+  
+  for(i = 0; i < frame_clock->note_256th_frame_offset_length && i < 16; i++){
+    if(i + 1 < frame_clock->note_256th_frame_offset_length){
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull ", frame_clock->note_256th_frame_offset[i]);
+    }else{
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull", frame_clock->note_256th_frame_offset[i]);
+    }
+  }
+  
+  xmlNewProp(root_node,
+	     prop_name,
+	     prop_value);
+
+  /* free prop value */
+  g_free(prop_value);
 
   return(NULL);
 }
