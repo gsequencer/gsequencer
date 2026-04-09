@@ -2,7 +2,7 @@ ags (8.5.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsFrameClock
-	* implemented AgsEqualizer10 presets and refresh port.
+	* implemented AgsEqualizer10 presets and refresh port
 
 ags (8.4.1)
 

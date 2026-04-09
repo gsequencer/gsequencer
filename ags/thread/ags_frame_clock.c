@@ -1213,7 +1213,6 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   xmlChar *buffer;
   xmlChar *encoding;
   xmlChar *version;
-  xmlChar *xml_namespace;
   xmlChar *node_name;
   xmlChar *prop_name;
   xmlChar *prop_value;
@@ -1228,11 +1227,9 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   
   doc = xmlNewDoc(version);
 
-  xml_namespace = NULL;
-  
   node_name = BAD_CAST "ags-frame-clock";
 
-  root_node = xmlNewNode(xml_namespace,
+  root_node = xmlNewNode(NULL,
 			 node_name);
   
   xmlDocSetRootElement(doc,
@@ -1295,7 +1292,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* frame offset */
   prop_name = BAD_CAST "frame-offset";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->frame_offset);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->frame_offset);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1304,7 +1301,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* period frame offset */
   prop_name = BAD_CAST "period-frame-offset";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->period_frame_offset);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->period_frame_offset);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1322,7 +1319,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* loop left */
   prop_name = BAD_CAST "loop-left";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->loop_left);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->loop_left);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1331,7 +1328,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* loop right */
   prop_name = BAD_CAST "loop-right";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->loop_right);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->loop_right);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1349,7 +1346,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* absolute frame offset */
   prop_name = BAD_CAST "absolute-frame-offset";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->absolute_frame_offset);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->absolute_frame_offset);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1358,7 +1355,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* frame offset */
   prop_name = BAD_CAST "frame-offset";
   
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->frame_offset);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->frame_offset);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1367,7 +1364,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* absolute note offset */
   prop_name = BAD_CAST "absolute-note-offset";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->absolute_note_offset);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->absolute_note_offset);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1376,7 +1373,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* note offset */
   prop_name = BAD_CAST "note-offset";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->note_offset);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->note_offset);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1385,7 +1382,7 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   /* note frame offset */
   prop_name = BAD_CAST "note-frame-offset";
 
-  prop_value = BAD_CAST g_strdup_printf("%ull", frame_clock->note_frame_offset);
+  prop_value = BAD_CAST g_strdup_printf("%lu", frame_clock->note_frame_offset);
   
   xmlNewProp(root_node,
 	     prop_name,
@@ -1412,9 +1409,9 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   
   for(i = 0; i < frame_clock->absolute_note_256th_offset_length && i < 16; i++){
     if(i + 1 < frame_clock->absolute_note_256th_offset_length){
-      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull ", frame_clock->absolute_note_256th_offset[i]);
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%lu ", frame_clock->absolute_note_256th_offset[i]);
     }else{
-      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull", frame_clock->absolute_note_256th_offset[i]);
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%lu", frame_clock->absolute_note_256th_offset[i]);
     }
   }
   
@@ -1431,9 +1428,9 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   
   for(i = 0; i < frame_clock->note_256th_offset_length && i < 16; i++){
     if(i + 1 < frame_clock->note_256th_offset_length){
-      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull ", frame_clock->note_256th_offset[i]);
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%lu ", frame_clock->note_256th_offset[i]);
     }else{
-      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull", frame_clock->note_256th_offset[i]);
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%lu", frame_clock->note_256th_offset[i]);
     }
   }
   
@@ -1450,9 +1447,9 @@ ags_frame_clock_to_string(AgsFrameClock *frame_clock)
   
   for(i = 0; i < frame_clock->note_256th_frame_offset_length && i < 16; i++){
     if(i + 1 < frame_clock->note_256th_frame_offset_length){
-      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull ", frame_clock->note_256th_frame_offset[i]);
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%lu ", frame_clock->note_256th_frame_offset[i]);
     }else{
-      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%ull", frame_clock->note_256th_frame_offset[i]);
+      out_count = g_snprintf(iter, prop_value + (16 * (21 + 1)) - iter, "%lu", frame_clock->note_256th_frame_offset[i]);
     }
   }
   
