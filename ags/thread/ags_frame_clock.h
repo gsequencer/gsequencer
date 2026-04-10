@@ -176,8 +176,7 @@ void ags_frame_clock_from_string(AgsFrameClock *frame_clock,
 gchar* ags_frame_clock_to_string(AgsFrameClock *frame_clock);
 
 /*  */
-gchar* ags_frame_clock_to_time_string(AgsFrameClock *frame_clock,
-				      gint number_of_digits);
+gchar* ags_frame_clock_to_time_string(AgsFrameClock *frame_clock);
 
 /* singleton */
 AgsFrameClock* ags_frame_clock_get_instance();
