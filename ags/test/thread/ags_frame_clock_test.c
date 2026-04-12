@@ -37,6 +37,23 @@ void ags_frame_clock_test_set_samplerate();
 void ags_frame_clock_test_get_samplerate();
 void ags_frame_clock_test_set_bpm();
 void ags_frame_clock_test_get_bpm();
+void ags_frame_clock_test_get_absolute_frame_offset();
+void ags_frame_clock_test_get_frame_offset();
+void ags_frame_clock_test_get_has_16th_pulse();
+void ags_frame_clock_test_get_loop();
+void ags_frame_clock_test_set_loop();
+void ags_frame_clock_test_get_absolute_note_offset();
+void ags_frame_clock_test_get_note_offset();
+void ags_frame_clock_test_get_note_frame_offset();
+void ags_frame_clock_test_get_absolute_note_256th_offset();
+void ags_frame_clock_test_get_note_256th_offset();
+void ags_frame_clock_test_get_note_256th_frame_offset();
+void ags_frame_clock_test_start();
+void ags_frame_clock_test_stop();
+void ags_frame_clock_test_increment_counter();
+void ags_frame_clock_test_from_string();
+void ags_frame_clock_test_to_string();
+void ags_frame_clock_test_to_time_string();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -216,6 +233,304 @@ ags_frame_clock_test_get_bpm()
   CU_ASSERT(ags_frame_clock_get_bpm(frame_clock) == 152.0);
 }
 
+void
+ags_frame_clock_test_get_absolute_frame_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  frame_clock->absolute_frame_offset = 0;
+
+  CU_ASSERT(ags_frame_clock_get_absolute_frame_offset(frame_clock) == 0);
+  
+  frame_clock->absolute_frame_offset = 2048;
+
+  CU_ASSERT(ags_frame_clock_get_absolute_frame_offset(frame_clock) == 2048);
+}
+
+void
+ags_frame_clock_test_get_frame_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  frame_clock->frame_offset = 0;
+
+  CU_ASSERT(ags_frame_clock_get_frame_offset(frame_clock) == 0);
+  
+  frame_clock->frame_offset = 2048;
+
+  CU_ASSERT(ags_frame_clock_get_frame_offset(frame_clock) == 2048);
+}
+
+void
+ags_frame_clock_test_get_has_16th_pulse()
+{
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  frame_clock->has_16th_pulse = FALSE;
+
+  CU_ASSERT(ags_frame_clock_get_has_16th_pulse(frame_clock) == FALSE);
+  
+  frame_clock->has_16th_pulse = TRUE;
+
+  CU_ASSERT(ags_frame_clock_get_has_16th_pulse(frame_clock) == TRUE);
+}
+
+void
+ags_frame_clock_test_get_loop()
+{
+  AgsFrameClock *frame_clock;
+
+  guint64 loop_left;
+  guint64 loop_right;
+  
+  gboolean do_loop;
+  
+  frame_clock = ags_frame_clock_new();
+
+  frame_clock->do_loop = TRUE;
+
+  frame_clock->loop_left = 0;
+  frame_clock->loop_right = 64;
+  
+  loop_left = 0;
+  loop_right = 0;
+  
+  do_loop = ags_frame_clock_get_loop(frame_clock,
+				     &loop_left,
+				     &loop_right);
+
+  CU_ASSERT(do_loop == TRUE && loop_left == 0 && loop_right == 64);
+}
+
+void
+ags_frame_clock_test_set_loop()
+{
+  AgsFrameClock *frame_clock;
+
+  guint64 loop_left;
+  guint64 loop_right;
+  
+  gboolean do_loop;
+  
+  frame_clock = ags_frame_clock_new();
+
+  do_loop = TRUE;
+  
+  loop_left = 0;
+  loop_right = 256;
+  
+  ags_frame_clock_set_loop(frame_clock,
+			   do_loop,
+			   loop_left,
+			   loop_right);
+
+  CU_ASSERT(frame_clock->do_loop == TRUE && frame_clock->loop_left == 0 && frame_clock->loop_right == 256);
+}
+
+void
+ags_frame_clock_test_get_absolute_note_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  frame_clock->absolute_note_offset = 0;
+
+  CU_ASSERT(ags_frame_clock_get_absolute_note_offset(frame_clock) == 0);
+  
+  frame_clock->absolute_note_offset = 1;
+
+  CU_ASSERT(ags_frame_clock_get_absolute_note_offset(frame_clock) == 1);
+}
+
+void
+ags_frame_clock_test_get_note_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  frame_clock->note_offset = 0;
+
+  CU_ASSERT(ags_frame_clock_get_note_offset(frame_clock) == 0);
+  
+  frame_clock->note_offset = 1;
+
+  CU_ASSERT(ags_frame_clock_get_note_offset(frame_clock) == 1);
+}
+
+void
+ags_frame_clock_test_get_note_frame_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  frame_clock->note_frame_offset = 0;
+
+  CU_ASSERT(ags_frame_clock_get_note_frame_offset(frame_clock) == 0);
+  
+  frame_clock->note_frame_offset = 3046;
+
+  CU_ASSERT(ags_frame_clock_get_note_frame_offset(frame_clock) == 3046);
+}
+
+void
+ags_frame_clock_test_get_absolute_note_256th_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  guint64 absolute_note_256th_offset[16];
+
+  guint length;
+  guint i;
+  gboolean success;
+  
+  frame_clock = ags_frame_clock_new();
+  
+  frame_clock->absolute_note_256th_offset[0] = 0;
+  
+  frame_clock->absolute_note_256th_offset_length = 1;
+
+  length = 0;
+  
+  ags_frame_clock_get_absolute_note_256th_offset(frame_clock,
+						 &(absolute_note_256th_offset[0]),
+						 &length);
+  
+  CU_ASSERT(length == 1 && absolute_note_256th_offset[0] == 0);
+  
+  frame_clock->absolute_note_256th_offset[0] = 16;
+  
+  frame_clock->absolute_note_256th_offset_length = 1;
+
+  length = 0;
+  
+  ags_frame_clock_get_absolute_note_256th_offset(frame_clock,
+						 &(absolute_note_256th_offset[0]),
+						 &length);
+  
+  CU_ASSERT(length == 1 && absolute_note_256th_offset[0] == 16);
+}
+
+void
+ags_frame_clock_test_get_note_256th_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  guint64 note_256th_offset[16];
+
+  guint length;
+  guint i;
+  gboolean success;
+  
+  frame_clock = ags_frame_clock_new();
+  
+  frame_clock->note_256th_offset[0] = 0;
+  
+  frame_clock->note_256th_offset_length = 1;
+
+  length = 0;
+  
+  ags_frame_clock_get_note_256th_offset(frame_clock,
+					&(note_256th_offset[0]),
+					&length);
+  
+  CU_ASSERT(length == 1 && note_256th_offset[0] == 0);
+  
+  frame_clock->note_256th_offset[0] = 16;
+  
+  frame_clock->note_256th_offset_length = 1;
+
+  length = 0;
+  
+  ags_frame_clock_get_note_256th_offset(frame_clock,
+					&(note_256th_offset[0]),
+					&length);
+  
+  CU_ASSERT(length == 1 && note_256th_offset[0] == 16);
+}
+
+void
+ags_frame_clock_test_get_note_256th_frame_offset()
+{
+  AgsFrameClock *frame_clock;
+
+  guint64 note_256th_frame_offset[16];
+
+  guint length;
+  guint i;
+  gboolean success;
+  
+  frame_clock = ags_frame_clock_new();
+  
+  frame_clock->note_256th_frame_offset[0] = 0;
+  
+  frame_clock->note_256th_frame_offset_length = 1;
+
+  length = 0;
+  
+  ags_frame_clock_get_note_256th_frame_offset(frame_clock,
+					      &(note_256th_frame_offset[0]),
+					      &length);
+  
+  CU_ASSERT(length == 1 && note_256th_frame_offset[0] == 0);
+  
+  frame_clock->note_256th_frame_offset[0] = 16;
+  
+  frame_clock->note_256th_frame_offset_length = 1;
+
+  length = 0;
+  
+  ags_frame_clock_get_note_256th_frame_offset(frame_clock,
+					      &(note_256th_frame_offset[0]),
+					      &length);
+  
+  CU_ASSERT(length == 1 && note_256th_frame_offset[0] == 16);
+}
+
+void
+ags_frame_clock_test_start()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_frame_clock_test_stop()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_frame_clock_test_increment_counter()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_frame_clock_test_from_string()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_frame_clock_test_to_string()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_frame_clock_test_to_time_string()
+{
+  //TODO:JK: implement me
+}
+
 int
 main(int argc, char **argv)
 {
@@ -244,7 +559,24 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsFrameClock set samplerate", ags_frame_clock_test_set_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFrameClock get samplerate", ags_frame_clock_test_get_samplerate) == NULL) ||
      (CU_add_test(pSuite, "test of AgsFrameClock set bpm", ags_frame_clock_test_set_bpm) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsFrameClock get bpm", ags_frame_clock_test_get_bpm) == NULL)){
+     (CU_add_test(pSuite, "test of AgsFrameClock get bpm", ags_frame_clock_test_get_bpm) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get absolute frame offset", ags_frame_clock_test_get_absolute_frame_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get frame offset", ags_frame_clock_test_get_frame_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get has 16th pulse", ags_frame_clock_test_get_has_16th_pulse) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get loop", ags_frame_clock_test_get_loop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock set loop", ags_frame_clock_test_set_loop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get absolute note offset", ags_frame_clock_test_get_absolute_note_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get note offset", ags_frame_clock_test_get_note_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get note frame offset", ags_frame_clock_test_get_note_frame_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get absolute note 256th offset", ags_frame_clock_test_get_absolute_note_256th_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get note 256th offset", ags_frame_clock_test_get_note_256th_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock get note 256th frame offset", ags_frame_clock_test_get_note_256th_frame_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock start", ags_frame_clock_test_start) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock stop", ags_frame_clock_test_stop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock increment counter", ags_frame_clock_test_increment_counter) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock from string", ags_frame_clock_test_from_string) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock to string", ags_frame_clock_test_to_string) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsFrameClock to time string", ags_frame_clock_test_to_time_string) == NULL)){
     CU_cleanup_registry();
       
     return CU_get_error();
