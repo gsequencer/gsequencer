@@ -498,19 +498,146 @@ ags_frame_clock_test_get_note_256th_frame_offset()
 void
 ags_frame_clock_test_start()
 {
-  //TODO:JK: implement me
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  CU_ASSERT(ags_frame_clock_test_flags(frame_clock, AGS_FRAME_CLOCK_STARTED) == FALSE);
+  
+  ags_frame_clock_start(frame_clock);
+  
+  CU_ASSERT(ags_frame_clock_test_flags(frame_clock, AGS_FRAME_CLOCK_STARTED) == TRUE);
 }
 
 void
 ags_frame_clock_test_stop()
 {
-  //TODO:JK: implement me
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  ags_frame_clock_start(frame_clock);
+  
+  CU_ASSERT(ags_frame_clock_test_flags(frame_clock, AGS_FRAME_CLOCK_STARTED) == TRUE);
+
+  ags_frame_clock_stop(frame_clock);  
+  
+  CU_ASSERT(ags_frame_clock_test_flags(frame_clock, AGS_FRAME_CLOCK_STARTED) == FALSE);  
 }
 
 void
 ags_frame_clock_test_increment_counter()
 {
-  //TODO:JK: implement me
+  AgsFrameClock *frame_clock;
+
+  guint64 frame_offset;
+  guint note_16th_pulse_count;
+  guint i;
+  gboolean success;
+  
+  frame_clock = ags_frame_clock_new();
+
+  /* #1 attempt */
+  ags_frame_clock_start(frame_clock);
+  
+  frame_offset = 0;
+
+  note_16th_pulse_count = 0;
+  
+  success = TRUE;
+  
+  for(i = 0; frame_offset < 64 * frame_clock->samplerate; i++){
+    if(frame_clock->has_16th_pulse){
+      note_16th_pulse_count++;
+    }
+    
+    if(frame_offset != frame_clock->frame_offset){
+      success = FALSE;
+
+      break;
+    }
+    
+    ags_frame_clock_increment_counter(frame_clock);
+    
+    frame_offset += frame_clock->buffer_size;
+  }
+
+  g_message("16th pulse count - %d", note_16th_pulse_count);
+  
+  CU_ASSERT(frame_offset >= 64 * frame_clock->samplerate);
+  
+  CU_ASSERT(success == TRUE);
+
+  ags_frame_clock_stop(frame_clock);
+  
+  /* #2 attempt */
+  ags_frame_clock_start(frame_clock);
+
+  frame_offset = 0;
+
+  note_16th_pulse_count = 0;
+  
+  success = TRUE;
+  
+  for(i = 0; frame_offset < 64 * frame_clock->samplerate; i++){
+    if(frame_clock->has_16th_pulse){
+      note_16th_pulse_count++;
+    }
+    
+    if(frame_offset != frame_clock->frame_offset){
+      success = FALSE;
+
+      break;
+    }
+    
+    ags_frame_clock_increment_counter(frame_clock);
+    
+    frame_offset += frame_clock->buffer_size;
+  }
+
+  g_message("16th pulse count - %d", note_16th_pulse_count);
+  
+  CU_ASSERT(frame_offset >= 64 * frame_clock->samplerate);
+  
+  CU_ASSERT(success == TRUE);
+
+  ags_frame_clock_stop(frame_clock);
+  
+  /* #3 attempt */
+  ags_frame_clock_set_bpm(frame_clock,
+			  138.0);
+  
+  ags_frame_clock_start(frame_clock);
+
+  frame_offset = 0;
+
+  note_16th_pulse_count = 0;
+  
+  success = TRUE;
+  
+  for(i = 0; frame_offset < 64 * frame_clock->samplerate; i++){
+    if(frame_clock->has_16th_pulse){
+      note_16th_pulse_count++;
+    }
+    
+    if(frame_offset != frame_clock->frame_offset){
+      success = FALSE;
+
+      break;
+    }
+    
+    ags_frame_clock_increment_counter(frame_clock);
+    
+    frame_offset += frame_clock->buffer_size;
+  }
+
+  g_message("16th pulse count - %d", note_16th_pulse_count);
+  
+  CU_ASSERT(frame_offset >= 64 * frame_clock->samplerate);
+  
+  CU_ASSERT(success == TRUE);
+
+  ags_frame_clock_stop(frame_clock);
 }
 
 void
