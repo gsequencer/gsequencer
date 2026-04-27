@@ -55,6 +55,8 @@ void ags_frame_clock_test_from_string();
 void ags_frame_clock_test_to_string();
 void ags_frame_clock_test_to_time_string();
 
+#define AGS_FRAME_CLOCK_TEST_TIME_STR "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ags-frame-clock flags=\"0x3\" buffer-size=\"2048\" samplerate=\"44100\" bpm=\"138.000000\" absolute-delay=\"2.340566\" fixed-absolute-delay=\"2.340576\" frame-offset=\"2048\" period-frame-offset=\"2048\" do-loop=\"false\" loop-left=\"0\" loop-right=\"64\" has-16th-pulse=\"false\" absolute-frame-offset=\"2048\" absolute-note-offset=\"0\" note-offset=\"0\" note-frame-offset=\"0\" has-256th-pulse=\"true\" absolute-note-256th-offset=\"6 7 8 9 10 11 12 13\" note-256th-offset=\"6 7 8 9 10 11 12 13\" note-256th-frame-offset=\"1796 2095 2394 2693 2992 3291 3590 3889\"/>\n\n"
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -643,19 +645,80 @@ ags_frame_clock_test_increment_counter()
 void
 ags_frame_clock_test_from_string()
 {
-  //TODO:JK: implement me
+  AgsFrameClock *frame_clock;
+
+  frame_clock = ags_frame_clock_new();
+
+  ags_frame_clock_set_bpm(frame_clock,
+			  138.0);
+  
+  /* #1 attempt */
+  ags_frame_clock_start(frame_clock);
+  
+  //  ags_frame_clock_from_string(frame_clock,
+			      //			      AGS_FRAME_CLOCK_TEST_TIME_STR);
 }
 
 void
 ags_frame_clock_test_to_string()
 {
-  //TODO:JK: implement me
+  AgsFrameClock *frame_clock;
+
+  gchar *str;
+
+  frame_clock = ags_frame_clock_new();
+
+  ags_frame_clock_set_bpm(frame_clock,
+			  138.0);
+  
+  /* #1 attempt */
+  ags_frame_clock_start(frame_clock);
+  
+  str = ags_frame_clock_to_string(frame_clock);
+
+  g_message("%s", str);
+
+  CU_ASSERT(str != NULL);
+
+  /* #2 attempt */
+  ags_frame_clock_increment_counter(frame_clock);
+  
+  str = ags_frame_clock_to_string(frame_clock);
+
+  g_message("%s", str);
+
+  CU_ASSERT(str != NULL);
 }
 
 void
 ags_frame_clock_test_to_time_string()
 {
-  //TODO:JK: implement me
+  AgsFrameClock *frame_clock;
+
+  gchar *str;
+
+  frame_clock = ags_frame_clock_new();
+
+  ags_frame_clock_set_bpm(frame_clock,
+			  138.0);
+  
+  /* #1 attempt */
+  ags_frame_clock_start(frame_clock);
+  
+  str = ags_frame_clock_to_time_string(frame_clock);
+
+  g_message("%s", str);
+
+  CU_ASSERT(str != NULL);
+
+  /* #2 attempt */
+  ags_frame_clock_increment_counter(frame_clock);
+  
+  str = ags_frame_clock_to_time_string(frame_clock);
+
+  g_message("%s", str);
+
+  CU_ASSERT(str != NULL);
 }
 
 int

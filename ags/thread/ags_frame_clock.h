@@ -72,6 +72,8 @@ struct _AgsFrameClock
   long double absolute_delay;
   long double fixed_absolute_delay;
 
+  long double delay_counter;
+
   guint64 absolute_frame_offset;
   
   guint64 frame_offset;
@@ -137,6 +139,7 @@ guint64 ags_frame_clock_get_absolute_frame_offset(AgsFrameClock *frame_clock);
 guint64 ags_frame_clock_get_frame_offset(AgsFrameClock *frame_clock);
 
 gboolean ags_frame_clock_get_has_16th_pulse(AgsFrameClock *frame_clock);
+gboolean ags_frame_clock_get_has_256th_pulse(AgsFrameClock *frame_clock);
 
 gboolean ags_frame_clock_get_loop(AgsFrameClock *frame_clock,
 				  guint64 *loop_left,
