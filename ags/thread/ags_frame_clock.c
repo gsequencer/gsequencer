@@ -228,8 +228,14 @@ ags_frame_clock_counter_reset(AgsFrameClock *frame_clock)
     return;
   }
 
+  frame_clock->absolute_frame_offset = (guint64) ((floorl(((long double) frame_clock->absolute_note_offset * frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size) / (long double) frame_clock->buffer_size) * (long double) frame_clock->buffer_size) + (frame_clock->delay_counter * (long double) frame_clock->buffer_size));
+
+  frame_clock->frame_offset = (guint64) ((floorl(((long double) frame_clock->note_offset * frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size) / (long double) frame_clock->buffer_size) * (long double) frame_clock->buffer_size) + (frame_clock->delay_counter * (long double) frame_clock->buffer_size));
+  
+  frame_clock->period_frame_offset = frame_clock->frame_offset % ((guint64) AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->buffer_size);
+
   /* absolute note 256th offset */
-  memset(&(frame_clock->absolute_note_256th_offset[0]), 0, 16 * sizeof(guint64));
+  memset(&(frame_clock->note_256th_offset[0]), 0, 16 * sizeof(guint64));
 
   frame_clock->absolute_note_256th_offset_length = (guint) floorl((long double) frame_clock->buffer_size / (frame_clock->absolute_delay / 16.0 * (long double) frame_clock->buffer_size)) + 1;
 
