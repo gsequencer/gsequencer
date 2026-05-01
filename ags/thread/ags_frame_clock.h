@@ -152,6 +152,8 @@ void ags_frame_clock_set_loop(AgsFrameClock *frame_clock,
 guint64 ags_frame_clock_get_absolute_note_offset(AgsFrameClock *frame_clock);
 
 guint64 ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock);
+void ags_frame_clock_set_note_offset(AgsFrameClock *frame_clock,
+				     guint64 note_offset);
 
 guint64 ags_frame_clock_get_note_frame_offset(AgsFrameClock *frame_clock);
 

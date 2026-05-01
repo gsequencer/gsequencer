@@ -894,6 +894,42 @@ ags_frame_clock_get_note_offset(AgsFrameClock *frame_clock)
 }
 
 /**
+ * ags_frame_clock_set_note_offset:
+ * @frame_clock: the #AgsFrameClock
+ * @note_offset: the note offset
+ *
+ * Set note offset of @frame_clock.
+ * 
+ * Since: 8.5.0
+ */
+void
+ags_frame_clock_set_note_offset(AgsFrameClock *frame_clock,
+				guint64 note_offset)
+{
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* set note offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  frame_clock->note_offset = note_offset;
+
+  if(frame_clock->absolute_note_offset < note_offset){
+    frame_clock->absolute_note_offset = note_offset;
+  }
+  
+  ags_frame_clock_counter_reset(frame_clock);
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
+}
+
+/**
  * ags_frame_clock_get_absolute_note_256th_offset:
  * @frame_clock: the #AgsFrameClock
  *

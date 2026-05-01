@@ -59,6 +59,7 @@ void ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble n
 
 void ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall);
 void ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall);
+void ags_fx_pattern_audio_processor_done(AgsRecall *recall);
 
 void ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_pattern_audio_processor,
 						AgsNote *note,
@@ -161,6 +162,7 @@ ags_fx_pattern_audio_processor_class_init(AgsFxPatternAudioProcessorClass *fx_pa
   
   recall->run_init_pre = ags_fx_pattern_audio_processor_run_init_pre;
   recall->run_inter = ags_fx_pattern_audio_processor_run_inter;
+  recall->done = ags_fx_pattern_audio_processor_done;
   
   /* AgsFxPatternAudioProcessorClass */
   fx_pattern_audio_processor->key_on = ags_fx_pattern_audio_processor_real_key_on;
@@ -240,6 +242,9 @@ ags_fx_pattern_audio_processor_init(AgsFxPatternAudioProcessor *fx_pattern_audio
   fx_pattern_audio_processor->has_16th_pulse = TRUE;
 
   fx_pattern_audio_processor->note_offset_absolute_start = 0;
+
+  /* frame clock */
+  fx_pattern_audio_processor->frame_clock = ags_frame_clock_new();
 }
 
 void
@@ -259,6 +264,8 @@ ags_fx_pattern_audio_processor_finalize(GObject *gobject)
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
   
   fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(gobject);  
+
+  g_object_unref(fx_pattern_audio_processor->frame_clock);
   
   /* call parent */
   G_OBJECT_CLASS(ags_fx_pattern_audio_processor_parent_class)->finalize(gobject);
@@ -364,9 +371,9 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
     {
       g_rec_mutex_lock(recall_mutex);
 
-      notation_counter = fx_pattern_audio_processor->offset_counter;
+      notation_counter = fx_pattern_audio_processor->frame_clock->note_offset;
 
-      sequencer_counter = fx_pattern_audio_processor->offset_counter;
+      sequencer_counter = fx_pattern_audio_processor->frame_clock->note_offset;
       
       if(notation_counter + offset < 0){
 	notation_counter = (guint64) notation_duration - (guint64) ((offset - notation_counter) % (guint64) notation_duration);
@@ -427,7 +434,10 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
              
       fx_pattern_audio_processor->offset_counter =
 	fx_pattern_audio_processor->current_offset_counter = sequencer_counter;
-      
+
+      ags_frame_clock_set_note_offset(fx_pattern_audio_processor->frame_clock,
+				      sequencer_counter);
+	
       g_rec_mutex_unlock(recall_mutex);
     }
     break;
@@ -435,9 +445,9 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
     {      
       g_rec_mutex_lock(recall_mutex);
 
-      notation_counter = fx_pattern_audio_processor->offset_counter;
+      notation_counter = fx_pattern_audio_processor->frame_clock->note_offset;
 
-      sequencer_counter = fx_pattern_audio_processor->offset_counter;
+      sequencer_counter = fx_pattern_audio_processor->frame_clock->note_offset;
  
       /* notation */
       if(notation_duration + offset < 0){
@@ -497,6 +507,9 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 	}
       }
       
+      ags_frame_clock_set_note_offset(fx_pattern_audio_processor->frame_clock,
+				      sequencer_counter);
+      
       g_rec_mutex_unlock(recall_mutex);
     }
     break;
@@ -548,6 +561,9 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 	}
       }
 
+      ags_frame_clock_set_note_offset(fx_pattern_audio_processor->frame_clock,
+				      offset % (guint64) sequencer_duration);
+      
       g_rec_mutex_unlock(recall_mutex);
     }
     break;
@@ -790,6 +806,9 @@ ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm
     }
   }
 
+  ags_frame_clock_set_bpm(fx_pattern_audio_processor->frame_clock,
+			  new_bpm);
+  
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }
@@ -1039,7 +1058,12 @@ ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall)
   if(note_offset_absolute >= loop_end){
     fx_pattern_audio_processor->note_offset_absolute_start = note_offset_absolute % loop_end;
   }
-    
+
+  ags_frame_clock_start(fx_pattern_audio_processor->frame_clock);
+
+  ags_frame_clock_set_note_offset(fx_pattern_audio_processor->frame_clock,
+				  note_offset);
+  
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
   
   if(output_soundcard != NULL){
@@ -1133,6 +1157,23 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
   
   /* call parent */
   AGS_RECALL_CLASS(ags_fx_pattern_audio_processor_parent_class)->run_inter(recall);
+}
+
+void
+ags_fx_pattern_audio_processor_done(AgsRecall *recall)
+{
+  AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
+  
+  GRecMutex *fx_pattern_audio_processor_mutex;
+
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall);
+  
+  fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
+
+  ags_frame_clock_stop(fx_pattern_audio_processor->frame_clock);
+  
+  /* call parent */
+  AGS_RECALL_CLASS(ags_fx_pattern_audio_processor_parent_class)->done(recall);
 }
 
 void
@@ -1894,7 +1935,14 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
     
     g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
   }
+
+  ags_frame_clock_set_loop(fx_pattern_audio_processor->frame_clock,
+			   do_loop,
+			   loop_start,
+			   loop_end);
   
+  ags_frame_clock_increment_counter(fx_pattern_audio_processor->frame_clock);
+
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
   }

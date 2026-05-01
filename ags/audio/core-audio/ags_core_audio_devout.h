@@ -216,6 +216,8 @@ struct _AgsCoreAudioDevout
 #else
   guint32 audio_device;
 #endif
+
+  AgsFrameClock *frame_clock;
 };
 
 struct _AgsCoreAudioDevoutClass
