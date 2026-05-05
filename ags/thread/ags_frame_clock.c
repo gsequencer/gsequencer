@@ -19,8 +19,11 @@
 
 #include <ags/thread/ags_frame_clock.h>
 
+#include <ags/util/ags_soundcard_helper.h>
+
 #include <ags/lib/ags_time.h>
 
+#include <ags/object/ags_config.h>
 #include <ags/object/ags_soundcard.h>
 
 #include <libxml/tree.h>
@@ -123,7 +126,9 @@ ags_frame_clock_class_init(AgsFrameClockClass *frame_clock)
 void
 ags_frame_clock_init(AgsFrameClock *frame_clock)
 { 
-  guint i;
+  AgsConfig *config;
+  
+  config = ags_config_get_instance();
   
   frame_clock->flags = 0;
 
@@ -131,8 +136,8 @@ ags_frame_clock_init(AgsFrameClock *frame_clock)
   g_rec_mutex_init(&(frame_clock->obj_mutex));
 
   /* common fields */
-  frame_clock->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  frame_clock->samplerate = (guint) AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  frame_clock->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  frame_clock->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   
   frame_clock->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
 
