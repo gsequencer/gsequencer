@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -113,6 +113,8 @@ ags_navigation_rewind_callback(GObject *gobject,
 {
   AgsApplicationContext *application_context;
 
+  AgsFrameClock *frame_clock;
+  
   GObject *default_soundcard;
 
   gdouble tact;
@@ -121,7 +123,9 @@ ags_navigation_rewind_callback(GObject *gobject,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
+  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -134,6 +138,8 @@ ags_navigation_prev_callback(GtkWidget *widget,
 {
   AgsApplicationContext *application_context;
 
+  AgsFrameClock *frame_clock;
+  
   GObject *default_soundcard;
 
   gdouble tact;
@@ -142,7 +148,9 @@ ags_navigation_prev_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
+  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -160,6 +168,8 @@ ags_navigation_play_callback(GObject *gobject,
   AgsStartSoundcard *start_soundcard;
   AgsStartSequencer *start_sequencer;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -202,6 +212,8 @@ ags_navigation_play_callback(GObject *gobject,
   
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
   machines =
     machines_start = ags_window_get_machine(window);
 
@@ -222,7 +234,7 @@ ags_navigation_play_callback(GObject *gobject,
       
       if(!initialized_time){
 	initialized_time = TRUE;
-	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
+	navigation->start_tact = ags_frame_clock_get_note_offset(frame_clock);
       }
 
       if(!gtk_check_button_get_active(navigation->exclude_sequencer)){
@@ -245,7 +257,7 @@ ags_navigation_play_callback(GObject *gobject,
       
       if(!initialized_time){
 	initialized_time = TRUE;
-	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
+	navigation->start_tact = ags_frame_clock_get_note_offset(frame_clock);
       }
       
       /* create start task */
@@ -288,6 +300,8 @@ ags_navigation_stop_callback(GtkWidget *widget,
 {
   AgsWindow *window;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -302,6 +316,8 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
   machines =
     machines_start = ags_window_get_machine(window);
 
@@ -345,13 +361,13 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   timestr = ags_time_get_uptime_from_offset(0.0,
 					    ags_soundcard_get_bpm(AGS_SOUNDCARD(default_soundcard)),
-					    ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard)),
-					    ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard)));
+					    (gdouble) frame_clock->absolute_delay,
+					    AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR);
   gtk_label_set_text(navigation->duration_time, timestr);
   
   g_free(timestr);
-  ags_soundcard_set_note_offset(AGS_SOUNDCARD(default_soundcard),
-				0);
+  ags_frame_clock_set_note_offset(frame_clock,
+				  0);
 
   navigation->play_time = -1;
 }
@@ -362,6 +378,8 @@ ags_navigation_next_callback(GtkWidget *widget,
 {
   AgsApplicationContext *application_context;
 
+  AgsFrameClock *frame_clock;
+  
   GObject *default_soundcard;
 
   gdouble tact;
@@ -370,7 +388,9 @@ ags_navigation_next_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
+  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -384,6 +404,8 @@ ags_navigation_forward_callback(GObject *gobject,
 {
   AgsApplicationContext *application_context;
 
+  AgsFrameClock *frame_clock;
+  
   GObject *default_soundcard;
 
   gdouble tact;
@@ -392,7 +414,9 @@ ags_navigation_forward_callback(GObject *gobject,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard)) / 16.0;
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
+  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -409,6 +433,8 @@ ags_navigation_loop_callback(GObject *gobject,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -426,15 +452,17 @@ ags_navigation_loop_callback(GObject *gobject,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
   machines =
     machines_start = ags_window_get_machine(window);
 
   loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
-  ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
-			 loop_left, loop_right,
-			 gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject)));
+  ags_frame_clock_set_loop(frame_clock,
+			   gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject)),
+			   loop_left, loop_right);
 			 
   g_value_init(&do_loop_value, G_TYPE_BOOLEAN);
   g_value_set_boolean(&do_loop_value,
@@ -671,6 +699,8 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsFrameClock *frame_clock;
+
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -688,15 +718,17 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
   machines =
     machines_start = ags_window_get_machine(window);
 
   loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
-  ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
-			 loop_left, loop_right,
-			 gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)));
+  ags_frame_clock_set_loop(frame_clock,
+			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),
+			   loop_left, loop_right);
 
   g_value_init(&value, G_TYPE_UINT64);
   g_value_set_uint64(&value,
@@ -849,6 +881,8 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -866,15 +900,17 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
   machines =
     machines_start = ags_window_get_machine(window);
 
   loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
   loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
   
-  ags_soundcard_set_loop(AGS_SOUNDCARD(default_soundcard),
-			 loop_left, loop_right,
-			 gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)));
+  ags_frame_clock_set_loop(frame_clock,
+			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),
+			   loop_left, loop_right);
 
   g_value_init(&value, G_TYPE_UINT64);
   g_value_set_uint64(&value,

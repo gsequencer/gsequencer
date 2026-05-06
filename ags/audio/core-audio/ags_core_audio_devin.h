@@ -157,6 +157,8 @@ struct _AgsCoreAudioDevin
 
   gdouble bpm; // beats per minute
 
+  guint64 start_note_offset;
+  
   AgsFrameClock *frame_clock;
 
   AgsCoreAudioDevinAppBufferMode app_buffer_mode;

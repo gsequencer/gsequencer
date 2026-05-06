@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -681,6 +681,8 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
   AgsMachine *machine;
   AgsWaveExportDialog *wave_export_dialog;
 
+  AgsFrameClock *frame_clock;
+
   AgsApplicationContext *application_context;
 
   GObject *soundcard;
@@ -706,8 +708,10 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
 
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
 
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+  
+  delay = (gdouble) frame_clock->absolute_delay;
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
 
   /* get some fields */
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -759,7 +763,9 @@ ags_wave_export_dialog_show(GtkWidget *widget)
 
 void
 ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog)
-{
+{  
+  AgsFrameClock *frame_clock;
+
   AgsApplicationContext *application_context;
   
   GObject *soundcard;
@@ -781,8 +787,10 @@ ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog)
 
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
 
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+  
+  delay = (gdouble) frame_clock->absolute_delay;
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
   
   start_tact = gtk_spin_button_get_value(wave_export_dialog->start_tact);
   end_tact = gtk_spin_button_get_value(wave_export_dialog->end_tact);
