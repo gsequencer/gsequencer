@@ -1,8 +1,40 @@
-ags (8.5.0)
+ags (9.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsFrameClock
 	* implemented AgsEqualizer10 presets and refresh port
+	* implemented ags_soundcard_get_frame_clock()
+	* TODO:JK: refactored AgsSoundcard and all implementations
+	* TODO:JK: refactored ags-fx-playback
+	* TODO:JK: refactored ags-fx-pattern
+	* TODO:JK: refactored ags-fx-notation
+	* deprecated ags_soundcard_set_delay_factor()
+	* deprecated ags_soundcard_get_delay_factor()
+	* deprecated ags_soundcard_get_absolute_delay()
+	* deprecated ags_soundcard_get_delay()
+	* deprecated ags_soundcard_get_attack()
+	* deprecated ags_soundcard_get_delay_counter()
+	* deprecated ags_soundcard_set_start_note_offset()
+	* deprecated ags_soundcard_get_start_note_offset()
+	* deprecated ags_soundcard_set_note_offset()
+	* deprecated ags_soundcard_get_note_offset()
+	* deprecated ags_soundcard_get_note_256th_offset()
+	* deprecated ags_soundcard_get_note_256th_attack_of_16th_pulse()
+	* deprecated ags_soundcard_get_note_256th_attack_of_16th_pulse_position()
+	* deprecated ags_soundcard_get_note_256th_attack()
+	* deprecated ags_soundcard_get_note_256th_attack_at_position()
+	* deprecated ags_soundcard_get_note_256th_attack_position()
+	* deprecated ags_soundcard_set_note_offset_absolute()
+	* deprecated ags_soundcard_get_note_offset_absolute()
+	* deprecated ags_soundcard_set_loop()
+	* deprecated ags_soundcard_get_loop()
+	* deprecated ags_soundcard_get_loop_offset()
+	* deprecated ags_core_audio_devout_adjust_delay_and_attack()
+	* deprecated AgsCoreAudioDevout:delay-factor because defaults to quarter pulse
+	* deprecated AgsCoreAudioDevout:attack
+	* deprecated ags_core_audio_devin_adjust_delay_and_attack()
+	* deprecated AgsCoreAudioDevin:delay-factor because defaults to quarter pulse
+	* deprecated AgsCoreAudioDevin:attack
 	* added ags_frame_clock_test.c
 	* added po/ka.po
 

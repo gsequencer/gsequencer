@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -879,7 +879,8 @@ ags_export_window_start_export(AgsExportWindow *export_window)
   AgsExportThread *export_thread, *current_export_thread;
 
   AgsThread *main_loop;
-
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -932,6 +933,8 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+
   navigation = window->navigation;
   
   machine =
@@ -954,7 +957,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
       
       if(!initialized_time){
 	initialized_time = TRUE;
-	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
+	navigation->start_tact = ags_frame_clock_get_note_offset(frame_clock);
       }
 
       if(!gtk_check_button_get_active(navigation->exclude_sequencer)){
@@ -977,7 +980,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
       
       if(!initialized_time){
 	initialized_time = TRUE;
-	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard));
+	navigation->start_tact = ags_frame_clock_get_note_offset(frame_clock);
       }
       
       /* create start task */
@@ -1013,7 +1016,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
 
 
     /* create task */
-    delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
+    delay = frame_clock->absolute_delay;
 
     /*  */
     tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);

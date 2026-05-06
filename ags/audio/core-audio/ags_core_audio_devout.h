@@ -155,6 +155,10 @@ struct _AgsCoreAudioDevout
   guint buffer_size;
   guint samplerate;
 
+  gdouble bpm; // beats per minute
+
+  AgsFrameClock *frame_clock;
+  
   AgsCoreAudioDevoutAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
@@ -163,26 +167,6 @@ struct _AgsCoreAudioDevout
   GRecMutex **sub_block_mutex;
 
   void **app_buffer;
-
-  double bpm; // beats per minute
-  gdouble delay_factor;
-  
-  gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
-
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint start_note_offset;
-  guint note_offset;
-  guint note_offset_absolute;
-  
-  guint loop_left;
-  guint loop_right;
-  gboolean do_loop;
-  
-  guint loop_offset;
 
   gchar *card_uri;
   GObject *core_audio_client;
@@ -196,18 +180,6 @@ struct _AgsCoreAudioDevout
   GMutex callback_finish_mutex;
   GCond callback_finish_cond;
 
-  gdouble note_256th_delay;
-
-  GList *note_256th_attack;
-
-  guint note_256th_offset;
-  guint note_256th_offset_last;
-
-  guint note_256th_attack_of_16th_pulse;
-  guint note_256th_attack_of_16th_pulse_position;
-
-  gdouble note_256th_delay_counter;
-
   gchar *device_id;
   gchar *device_name;
 
@@ -216,8 +188,6 @@ struct _AgsCoreAudioDevout
 #else
   guint32 audio_device;
 #endif
-
-  AgsFrameClock *frame_clock;
 };
 
 struct _AgsCoreAudioDevoutClass
@@ -236,7 +206,6 @@ void ags_core_audio_devout_unset_flags(AgsCoreAudioDevout *core_audio_devout, Ag
 
 void ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_devout);
 
-void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
 void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
 
 AgsCoreAudioDevout* ags_core_audio_devout_new();

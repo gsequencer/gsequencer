@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -75,6 +75,8 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 {
   AgsWindow *window;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -91,9 +93,12 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+
   /* get some properties */
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
+
+  delay = frame_clock->absolute_delay;
 
   /* update duration */
   str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,

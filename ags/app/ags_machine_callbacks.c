@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1597,6 +1597,8 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
   AgsRecallID *recall_id;
   AgsNote *play_note;
   AgsFxPlaybackAudio *fx_playback_audio;
+
+  AgsFrameClock *frame_clock;
   
   GObject *output_soundcard;
 
@@ -1660,6 +1662,8 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 		 "output-soundcard", &output_soundcard,
 		 NULL);
 
+    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+
     recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
     g_rec_mutex_lock(recycling_mutex);
@@ -1689,7 +1693,7 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
       guint buffer_size;
       guint note_x0, note_x1;
 
-      notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+      notation_delay = frame_clock->absolute_delay;
 
       g_object_get(recycling,
 		   "buffer-size", &buffer_size,

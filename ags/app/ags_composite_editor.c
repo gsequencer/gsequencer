@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3324,6 +3324,8 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   
   AgsWave *wave;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *soundcard;
@@ -3386,8 +3388,11 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 	       "buffer-size", &buffer_size,
 	       NULL);
     
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
+
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+    
+  absolute_delay = frame_clock->absolute_delay;
 
   relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
@@ -3485,6 +3490,7 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
   
   AgsWave *wave;
 
+  AgsFrameClock *frame_clock;
   AgsTimestamp *timestamp;
 
   AgsApplicationContext *application_context;
@@ -3573,8 +3579,10 @@ ags_composite_editor_paste_wave_async(GObject *source_object,
 	       "buffer-size", &buffer_size,
 	       NULL);
 
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
-
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+    
+  absolute_delay = frame_clock->absolute_delay;
+  
   /* get position */
   position_x = 0;
 
@@ -5829,6 +5837,7 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
 
     GtkAdjustment *adjustment;
 
+    AgsFrameClock *frame_clock;
     AgsTimestamp *timestamp;
 
     GObject *soundcard;
@@ -5886,8 +5895,11 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
     
     adjustment = gtk_scrollbar_get_adjustment(GTK_SCROLLBAR(focused_wave_edit->hscrollbar));
       
-    delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
-    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
+    delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
+
+    frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+    
+    absolute_delay = frame_clock->absolute_delay;
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
