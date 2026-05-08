@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2481,7 +2481,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   g_object_unref(soundcard);
   
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
 
   /* get visisble region */
   x0 = gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar));
@@ -2736,7 +2736,7 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit, cairo_t *cr)
 	       "output-soundcard", &soundcard,
 	       NULL);
  
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
   
   /* get visisble region */
   x0 = (guint) gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(wave_edit->hscrollbar));
