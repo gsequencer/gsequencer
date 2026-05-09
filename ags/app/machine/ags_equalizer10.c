@@ -1410,7 +1410,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_28hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_28hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1432,7 +1432,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_56hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_56hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1454,7 +1454,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_112hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_112hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1476,7 +1476,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_224hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_224hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1498,7 +1498,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_448hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_448hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1520,7 +1520,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_896hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_896hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1542,7 +1542,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_1792hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_1792hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1564,7 +1564,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_3584hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_3584hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1586,7 +1586,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_7168hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_7168hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1608,7 +1608,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->peak_14336hz,
+      gtk_range_set_value((GtkRange *) equalizer10->peak_14336hz,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
@@ -1630,7 +1630,7 @@ ags_equalizer10_refresh_port(AgsMachine *machine)
       ags_port_safe_read(port,
 			 &value);
 
-      gtk_range_set_value(equalizer10->pressure,
+      gtk_range_set_value((GtkRange *) equalizer10->pressure,
 			  g_value_get_float(&value));
 
       g_object_unref(port);
