@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -205,7 +205,7 @@ void ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, AgsPulseDevinFlags 
 
 void ags_pulse_devin_switch_buffer_flag(AgsPulseDevin *pulse_devin);
 
-void ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin);
+G_DEPRECATED void ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin);
 void ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin);
 
 AgsPulseDevin* ags_pulse_devin_new();

@@ -435,6 +435,8 @@ ags_alsa_devin_class_init(AgsAlsaDevinClass *alsa_devin)
    * tact
    * 
    * Since: 3.13.2
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -453,6 +455,8 @@ ags_alsa_devin_class_init(AgsAlsaDevinClass *alsa_devin)
    * Attack of the buffer
    * 
    * Since: 3.13.2
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),

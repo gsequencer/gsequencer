@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -214,7 +214,7 @@ void ags_oss_devout_unset_flags(AgsOssDevout *oss_devout, AgsOssDevoutFlags flag
 
 void ags_oss_devout_switch_buffer_flag(AgsOssDevout *oss_devout);
 
-void ags_oss_devout_adjust_delay_and_attack(AgsOssDevout *oss_devout);
+G_DEPRECATED void ags_oss_devout_adjust_delay_and_attack(AgsOssDevout *oss_devout);
 void ags_oss_devout_realloc_buffer(AgsOssDevout *oss_devout);
 
 AgsOssDevout* ags_oss_devout_new();

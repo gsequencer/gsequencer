@@ -444,6 +444,8 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    * tact
    * 
    * Since: 3.0.0
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -462,6 +464,8 @@ ags_jack_devout_class_init(AgsJackDevoutClass *jack_devout)
    * Attack of the buffer
    * 
    * Since: 3.0.0
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
