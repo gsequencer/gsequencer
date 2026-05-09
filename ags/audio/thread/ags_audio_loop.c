@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -672,6 +672,7 @@ ags_audio_loop_run(AgsThread *thread)
   AgsAudioLoop *audio_loop;
 
   AgsTaskLauncher *task_launcher;
+  AgsFrameClock *frame_clock;
   AgsTimestamp *timestamp;
   
   AgsApplicationContext *application_context;
@@ -684,8 +685,8 @@ ags_audio_loop_run(AgsThread *thread)
    
   guint play_audio_ref, play_channel_ref;
 
-  gdouble delay;
-  guint note_offset, delay_counter;
+  gdouble delay, delay_counter;
+  guint64 note_offset;
   guint64 x, x_end;
   
   GRecMutex *thread_mutex;
@@ -786,10 +787,12 @@ ags_audio_loop_run(AgsThread *thread)
   delay_counter = 0.0;
   
   if(soundcard != NULL){
-    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
     
-    delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+    note_offset = ags_frame_clock_get_note_offset(frame_clock);
+    
+    delay = (gdouble) frame_clock->absolute_delay;
+    delay_counter = (gdouble) frame_clock->delay_counter;
   }
   
   x = ((double) note_offset + (delay_counter / delay)) * ((1.0 / AGS_PROGRAM_MINIMUM_MARKER_LENGTH) * AGS_NOTATION_MINIMUM_NOTE_LENGTH);

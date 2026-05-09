@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -119,36 +119,14 @@ void ags_fifoout_set_bpm(AgsSoundcard *soundcard,
 			 gdouble bpm);
 gdouble ags_fifoout_get_bpm(AgsSoundcard *soundcard);
 
-void ags_fifoout_set_delay_factor(AgsSoundcard *soundcard,
-				  gdouble delay_factor);
-gdouble ags_fifoout_get_delay_factor(AgsSoundcard *soundcard);
+void ags_fifoout_set_start_note_offset(AgsSoundcard *soundcard,
+				       guint64 start_note_offset);
+guint64 ags_fifoout_get_start_note_offset(AgsSoundcard *soundcard);
 
-gdouble ags_fifoout_get_absolute_delay(AgsSoundcard *soundcard);
-
-gdouble ags_fifoout_get_delay(AgsSoundcard *soundcard);
-guint ags_fifoout_get_attack(AgsSoundcard *soundcard);
+GObject* ags_fifoout_get_frame_clock(AgsSoundcard *soundcard);
 
 void* ags_fifoout_get_buffer(AgsSoundcard *soundcard);
 void* ags_fifoout_get_next_buffer(AgsSoundcard *soundcard);
-
-guint ags_fifoout_get_delay_counter(AgsSoundcard *soundcard);
-
-void ags_fifoout_set_note_offset(AgsSoundcard *soundcard,
-				 guint note_offset);
-guint ags_fifoout_get_note_offset(AgsSoundcard *soundcard);
-
-void ags_fifoout_set_note_offset_absolute(AgsSoundcard *soundcard,
-					  guint note_offset);
-guint ags_fifoout_get_note_offset_absolute(AgsSoundcard *soundcard);
-
-void ags_fifoout_set_loop(AgsSoundcard *soundcard,
-			  guint loop_left, guint loop_right,
-			  gboolean do_loop);
-void ags_fifoout_get_loop(AgsSoundcard *soundcard,
-			  guint *loop_left, guint *loop_right,
-			  gboolean *do_loop);
-
-guint ags_fifoout_get_loop_offset(AgsSoundcard *soundcard);
 
 /**
  * SECTION:ags_fifoout
@@ -377,21 +355,6 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
 				  param_spec);
 
   /**
-   * AgsFifoout:buffer:
-   *
-   * The buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("buffer",
-				    i18n_pspec("the buffer"),
-				    i18n_pspec("The buffer to play"),
-				    G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER,
-				  param_spec);
-
-  /**
    * AgsFifoout:bpm:
    *
    * Beats per minute
@@ -410,36 +373,18 @@ ags_fifoout_class_init(AgsFifooutClass *fifoout)
 				  param_spec);
 
   /**
-   * AgsFifoout:delay-factor:
+   * AgsFifoout:buffer:
    *
-   * tact
+   * The buffer
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_double("delay-factor",
-				   i18n_pspec("delay factor"),
-				   i18n_pspec("The delay factor"),
-				   0.0,
-				   16.0,
-				   1.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DELAY_FACTOR,
-				  param_spec);
-
-  /**
-   * AgsFifoout:attack:
-   *
-   * Attack of the buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("attack",
-				    i18n_pspec("attack of buffer"),
-				    i18n_pspec("The attack to use for the buffer"),
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to play"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_ATTACK,
+				  PROP_BUFFER,
 				  param_spec);
 
   /* AgsFifooutClass */
@@ -507,30 +452,14 @@ ags_fifoout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
     
   soundcard->set_bpm = ags_fifoout_set_bpm;
   soundcard->get_bpm = ags_fifoout_get_bpm;
-
-  soundcard->set_delay_factor = ags_fifoout_set_delay_factor;
-  soundcard->get_delay_factor = ags_fifoout_get_delay_factor;
   
-  soundcard->get_absolute_delay = ags_fifoout_get_absolute_delay;
-
-  soundcard->get_delay = ags_fifoout_get_delay;
-  soundcard->get_attack = ags_fifoout_get_attack;
+  soundcard->set_start_note_offset = ags_fifoout_set_start_note_offset;
+  soundcard->get_start_note_offset = ags_fifoout_get_start_note_offset;
+  
+  soundcard->get_frame_clock = ags_fifoout_get_frame_clock;
 
   soundcard->get_buffer = ags_fifoout_get_buffer;
   soundcard->get_next_buffer = ags_fifoout_get_next_buffer;
-
-  soundcard->get_delay_counter = ags_fifoout_get_delay_counter;
-
-  soundcard->set_note_offset = ags_fifoout_set_note_offset;
-  soundcard->get_note_offset = ags_fifoout_get_note_offset;
-
-  soundcard->set_note_offset_absolute = ags_fifoout_set_note_offset_absolute;
-  soundcard->get_note_offset_absolute = ags_fifoout_get_note_offset_absolute;
-
-  soundcard->set_loop = ags_fifoout_set_loop;
-  soundcard->get_loop = ags_fifoout_get_loop;
-
-  soundcard->get_loop_offset = ags_fifoout_get_loop_offset;
 }
 
 void
@@ -565,6 +494,15 @@ ags_fifoout_init(AgsFifoout *fifoout)
   fifoout->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   fifoout->format = ags_soundcard_helper_config_get_format(config);
 
+  /* bpm */
+  fifoout->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
+  
+  /* start note offset */
+  fifoout->start_note_offset = 0;
+  
+  /* frame clock */
+  fifoout->frame_clock = ags_frame_clock_new();
+  
   /*  */
   fifoout->device = AGS_FIFOOUT_DEFAULT_DEVICE;
   fifoout->fifo_fd = -1;
@@ -604,51 +542,6 @@ ags_fifoout_init(AgsFifoout *fifoout)
   fifoout->ring_buffer = NULL;
 
   ags_fifoout_realloc_buffer(fifoout);
-  
-  /* bpm */
-  fifoout->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
-
-  /* delay factor */
-  fifoout->delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
-  
-  /* segmentation */
-  segmentation = ags_config_get_value(config,
-				      AGS_CONFIG_GENERIC,
-				      "segmentation");
-
-  if(segmentation != NULL){
-    sscanf(segmentation, "%d/%d",
-	   &denumerator,
-	   &numerator);
-    
-    fifoout->delay_factor = 1.0 / numerator * (numerator / denumerator);
-
-    g_free(segmentation);
-  }
-
-  /* delay and attack */
-  fifoout->delay = (gdouble *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-				      sizeof(gdouble));
-  
-  fifoout->attack = (guint *) g_malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
-				     sizeof(guint));
-
-  ags_fifoout_adjust_delay_and_attack(fifoout);
-  
-  /* counters */
-  fifoout->tact_counter = 0.0;
-  fifoout->delay_counter = 0;
-  fifoout->tic_counter = 0;
-
-  fifoout->note_offset = 0;
-  fifoout->note_offset_absolute = 0;
-
-  fifoout->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
-  fifoout->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
-
-  fifoout->do_loop = FALSE;
-
-  fifoout->loop_offset = 0;
 }
 
 void
@@ -757,10 +650,12 @@ ags_fifoout_set_property(GObject *gobject,
 
       fifoout->buffer_size = buffer_size;
 
+      ags_frame_clock_set_buffer_size(fifoout->frame_clock,
+				      buffer_size);
+      
       g_rec_mutex_unlock(fifoout_mutex);
 
       ags_fifoout_realloc_buffer(fifoout);
-      ags_fifoout_adjust_delay_and_attack(fifoout);
     }
     break;
   case PROP_SAMPLERATE:
@@ -779,14 +674,10 @@ ags_fifoout_set_property(GObject *gobject,
 
       fifoout->samplerate = samplerate;
 
+      ags_frame_clock_set_samplerate(fifoout->frame_clock,
+				     samplerate);
+      
       g_rec_mutex_unlock(fifoout_mutex);
-
-      ags_fifoout_adjust_delay_and_attack(fifoout);
-    }
-    break;
-  case PROP_BUFFER:
-    {
-      //TODO:JK: implement me
     }
     break;
   case PROP_BPM:
@@ -805,30 +696,15 @@ ags_fifoout_set_property(GObject *gobject,
 
       fifoout->bpm = bpm;
 
+      ags_frame_clock_set_bpm(fifoout->frame_clock,
+			      bpm);
+      
       g_rec_mutex_unlock(fifoout_mutex);
-
-      ags_fifoout_adjust_delay_and_attack(fifoout);
     }
     break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
     {
-      gdouble delay_factor;
-      
-      delay_factor = g_value_get_double(value);
-
-      g_rec_mutex_lock(fifoout_mutex);
-
-      if(delay_factor == fifoout->delay_factor){
-	g_rec_mutex_unlock(fifoout_mutex);
-
-	return;
-      }
-
-      fifoout->delay_factor = delay_factor;
-
-      g_rec_mutex_unlock(fifoout_mutex);
-
-      ags_fifoout_adjust_delay_and_attack(fifoout);
+      //TODO:JK: implement me
     }
     break;
   default:
@@ -907,15 +783,6 @@ ags_fifoout_get_property(GObject *gobject,
       g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
-  case PROP_BUFFER:
-    {
-      g_rec_mutex_lock(fifoout_mutex);
-
-      g_value_set_pointer(value, fifoout->app_buffer);
-
-      g_rec_mutex_unlock(fifoout_mutex);
-    }
-    break;
   case PROP_BPM:
     {
       g_rec_mutex_lock(fifoout_mutex);
@@ -925,20 +792,11 @@ ags_fifoout_get_property(GObject *gobject,
       g_rec_mutex_unlock(fifoout_mutex);
     }
     break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
     {
       g_rec_mutex_lock(fifoout_mutex);
 
-      g_value_set_double(value, fifoout->delay_factor);
-
-      g_rec_mutex_unlock(fifoout_mutex);
-    }
-    break;
-  case PROP_ATTACK:
-    {
-      g_rec_mutex_lock(fifoout_mutex);
-
-      g_value_set_pointer(value, fifoout->attack);
+      g_value_set_pointer(value, fifoout->app_buffer);
 
       g_rec_mutex_unlock(fifoout_mutex);
     }
@@ -992,9 +850,6 @@ ags_fifoout_finalize(GObject *gobject)
   }
 
   g_free(fifoout->sub_block_mutex);
-  
-  g_free(fifoout->delay);
-  g_free(fifoout->attack);
   
   /* call parent */
   G_OBJECT_CLASS(ags_fifoout_parent_class)->finalize(gobject);
@@ -1505,39 +1360,23 @@ ags_fifoout_is_playing(AgsSoundcard *soundcard)
 gchar*
 ags_fifoout_get_uptime(AgsSoundcard *soundcard)
 {
+  AgsFifoout *fifoout;
+
   gchar *uptime;
 
-  if(ags_soundcard_is_playing(soundcard)){
-    guint samplerate;
-    guint buffer_size;
-
-    guint note_offset;
-    gdouble bpm;
-    gdouble delay_factor;
-    
-    gdouble delay;
-
-    ags_soundcard_get_presets(soundcard,
-			      NULL,
-			      &samplerate,
-			      &buffer_size,
-			      NULL);
-    
-    note_offset = ags_soundcard_get_note_offset(soundcard);
-
-    bpm = ags_soundcard_get_bpm(soundcard);
-    delay_factor = ags_soundcard_get_delay_factor(soundcard);
-
-    /* calculate delays */
-    delay = ((gdouble) samplerate / (gdouble) buffer_size) * (gdouble)(60.0 / bpm) * delay_factor;
+  GRecMutex *fifoout_mutex;
   
-    uptime = ags_time_get_uptime_from_offset(note_offset,
-					     bpm,
-					     delay,
-					     delay_factor);
-  }else{
-    uptime = g_strdup(AGS_TIME_ZERO);
-  }
+  fifoout = AGS_FIFOOUT(soundcard);
+  
+  /* get fifoout mutex */
+  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
+
+  /* get time string */
+  g_rec_mutex_lock(fifoout_mutex);
+  
+  uptime = ags_frame_clock_to_time_string(fifoout->frame_clock);
+
+  g_rec_mutex_unlock(fifoout_mutex);
   
   return(uptime);
 }
@@ -1567,93 +1406,32 @@ ags_fifoout_tic(AgsSoundcard *soundcard)
 {
   AgsFifoout *fifoout;
 
-  gdouble delay;
-  gdouble delay_counter;
-  guint note_offset_absolute;
-  guint note_offset;
-  guint loop_left, loop_right;
-  gboolean do_loop;
-  
   GRecMutex *fifoout_mutex;
   
   fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
+  
+  /* get fifoout devout mutex */
   fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-  
-  /* determine if attack should be switched */
+
+  /* frame clock */
   g_rec_mutex_lock(fifoout_mutex);
-
-  delay = fifoout->delay[fifoout->tic_counter];
-  delay_counter = fifoout->delay_counter;
-
-  note_offset = fifoout->note_offset;
-  note_offset_absolute = fifoout->note_offset_absolute;
   
-  loop_left = fifoout->loop_left;
-  loop_right = fifoout->loop_right;
-  
-  do_loop = fifoout->do_loop;
+  ags_frame_clock_increment_counter(fifoout->frame_clock);
 
-  g_rec_mutex_unlock(fifoout_mutex);
-
-  if((guint) delay_counter + 1 >= (guint) delay){
-    if(do_loop &&
-       note_offset + 1 == loop_right){
-      ags_soundcard_set_note_offset(soundcard,
-				    loop_left);
-    }else{
-      ags_soundcard_set_note_offset(soundcard,
-				    note_offset + 1);
-    }
-    
-    ags_soundcard_set_note_offset_absolute(soundcard,
-					   note_offset_absolute + 1);
-
-    /* delay */
+  /* 16th pulse */
+  if(ags_frame_clock_get_has_16th_pulse(fifoout->frame_clock)){
     ags_soundcard_offset_changed(soundcard,
-				 note_offset);
-    
-    /* reset - delay counter */
-    g_rec_mutex_lock(fifoout_mutex);
-    
-    fifoout->delay_counter = 0.0;
-    fifoout->tact_counter += 1.0;
-
-    g_rec_mutex_unlock(fifoout_mutex);
-  }else{
-    g_rec_mutex_lock(fifoout_mutex);
-    
-    fifoout->delay_counter += 1.0;
-
-    g_rec_mutex_unlock(fifoout_mutex);
+				 fifoout->frame_clock->note_offset);
   }
+  
+  g_rec_mutex_unlock(fifoout_mutex);
 }
 
 void
 ags_fifoout_offset_changed(AgsSoundcard *soundcard,
 			   guint note_offset)
 {
-  AgsFifoout *fifoout;
-  
-  GRecMutex *fifoout_mutex;
-  
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* offset changed */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  fifoout->tic_counter += 1;
-
-  if(fifoout->tic_counter == AGS_SOUNDCARD_DEFAULT_PERIOD){
-    /* reset - tic counter i.e. modified delay index within period */
-    fifoout->tic_counter = 0;
-  }
-
-  g_rec_mutex_unlock(fifoout_mutex);
+  //empty
 }
 
 void
@@ -1674,9 +1452,10 @@ ags_fifoout_set_bpm(AgsSoundcard *soundcard,
 
   fifoout->bpm = bpm;
 
+  ags_frame_clock_set_bpm(fifoout->frame_clock,
+			  bpm);
+  
   g_rec_mutex_unlock(fifoout_mutex);
-
-  ags_fifoout_adjust_delay_and_attack(fifoout);
 }
 
 gdouble
@@ -1698,14 +1477,17 @@ ags_fifoout_get_bpm(AgsSoundcard *soundcard)
 
   bpm = fifoout->bpm;
   
+  ags_frame_clock_set_bpm(fifoout->frame_clock,
+			  bpm);
+  
   g_rec_mutex_unlock(fifoout_mutex);
 
   return(bpm);
 }
 
 void
-ags_fifoout_set_delay_factor(AgsSoundcard *soundcard,
-			     gdouble delay_factor)
+ags_fifoout_set_start_note_offset(AgsSoundcard *soundcard,
+				  guint64 start_note_offset)
 {
   AgsFifoout *fifoout;
 
@@ -1719,19 +1501,20 @@ ags_fifoout_set_delay_factor(AgsSoundcard *soundcard,
   /* set delay factor */
   g_rec_mutex_lock(fifoout_mutex);
 
-  fifoout->delay_factor = delay_factor;
+  fifoout->start_note_offset = start_note_offset;
 
+  ags_frame_clock_set_start_note_offset(fifoout->frame_clock,
+					start_note_offset);
+  
   g_rec_mutex_unlock(fifoout_mutex);
-
-  ags_fifoout_adjust_delay_and_attack(fifoout);
 }
 
-gdouble
-ags_fifoout_get_delay_factor(AgsSoundcard *soundcard)
+guint64
+ags_fifoout_get_start_note_offset(AgsSoundcard *soundcard)
 {
   AgsFifoout *fifoout;
 
-  gdouble delay_factor;
+  guint64 start_note_offset;
   
   GRecMutex *fifoout_mutex;
   
@@ -1743,20 +1526,19 @@ ags_fifoout_get_delay_factor(AgsSoundcard *soundcard)
   /* get delay factor */
   g_rec_mutex_lock(fifoout_mutex);
 
-  delay_factor = fifoout->delay_factor;
+  start_note_offset = fifoout->start_note_offset;
   
   g_rec_mutex_unlock(fifoout_mutex);
 
-  return(delay_factor);
+  return(start_note_offset);
 }
 
-gdouble
-ags_fifoout_get_delay(AgsSoundcard *soundcard)
+GObject*
+ags_fifoout_get_frame_clock(AgsSoundcard *soundcard)
 {
   AgsFifoout *fifoout;
 
-  guint index;
-  gdouble delay;
+  GObject *frame_clock;
   
   GRecMutex *fifoout_mutex;
   
@@ -1765,67 +1547,14 @@ ags_fifoout_get_delay(AgsSoundcard *soundcard)
   /* get fifoout mutex */
   fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
 
-  /* get delay */
+  /* get frame clock */
   g_rec_mutex_lock(fifoout_mutex);
 
-  index = fifoout->tic_counter;
-
-  delay = fifoout->delay[index];
+  frame_clock = fifoout->frame_clock;
   
   g_rec_mutex_unlock(fifoout_mutex);
   
-  return(delay);
-}
-
-gdouble
-ags_fifoout_get_absolute_delay(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  gdouble absolute_delay;
-  
-  GRecMutex *fifoout_mutex;
-  
-  fifoout = AGS_FIFOOUT(soundcard);
-  
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* get absolute delay */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  absolute_delay = (60.0 * (((gdouble) fifoout->samplerate / (gdouble) fifoout->buffer_size) / (gdouble) fifoout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) fifoout->delay_factor)));
-
-  g_rec_mutex_unlock(fifoout_mutex);
-
-  return(absolute_delay);
-}
-
-guint
-ags_fifoout_get_attack(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  guint index;
-  guint attack;
-  
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-  
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* get attack */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  index = fifoout->tic_counter;
-
-  attack = fifoout->attack[index];
-
-  g_rec_mutex_unlock(fifoout_mutex);
-  
-  return(attack);
+  return(frame_clock);
 }
 
 void*
@@ -1878,204 +1607,6 @@ ags_fifoout_get_prev_buffer(AgsSoundcard *soundcard)
   return(buffer);
 }
 
-guint
-ags_fifoout_get_delay_counter(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  guint delay_counter;
-  
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-  
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* delay counter */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  delay_counter = fifoout->delay_counter;
-  
-  g_rec_mutex_unlock(fifoout_mutex);
-
-  return(delay_counter);
-}
-
-void
-ags_fifoout_set_note_offset(AgsSoundcard *soundcard,
-			    guint note_offset)
-{
-  AgsFifoout *fifoout;
-
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* set note offset */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  fifoout->note_offset = note_offset;
-
-  g_rec_mutex_unlock(fifoout_mutex);
-}
-
-guint
-ags_fifoout_get_note_offset(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  guint note_offset;
-  
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* set note offset */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  note_offset = fifoout->note_offset;
-
-  g_rec_mutex_unlock(fifoout_mutex);
-
-  return(note_offset);
-}
-
-void
-ags_fifoout_set_note_offset_absolute(AgsSoundcard *soundcard,
-				     guint note_offset_absolute)
-{
-  AgsFifoout *fifoout;
-  
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* set note offset */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  fifoout->note_offset_absolute = note_offset_absolute;
-
-  g_rec_mutex_unlock(fifoout_mutex);
-}
-
-guint
-ags_fifoout_get_note_offset_absolute(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  guint note_offset_absolute;
-  
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* set note offset */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  note_offset_absolute = fifoout->note_offset_absolute;
-
-  g_rec_mutex_unlock(fifoout_mutex);
-
-  return(note_offset_absolute);
-}
-
-void
-ags_fifoout_set_loop(AgsSoundcard *soundcard,
-		     guint loop_left, guint loop_right,
-		     gboolean do_loop)
-{
-  AgsFifoout *fifoout;
-
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* set loop */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  fifoout->loop_left = loop_left;
-  fifoout->loop_right = loop_right;
-  fifoout->do_loop = do_loop;
-
-  if(do_loop){
-    fifoout->loop_offset = fifoout->note_offset;
-  }
-
-  g_rec_mutex_unlock(fifoout_mutex);
-}
-
-void
-ags_fifoout_get_loop(AgsSoundcard *soundcard,
-		     guint *loop_left, guint *loop_right,
-		     gboolean *do_loop)
-{
-  AgsFifoout *fifoout;
-
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* get loop */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  if(loop_left != NULL){
-    *loop_left = fifoout->loop_left;
-  }
-
-  if(loop_right != NULL){
-    *loop_right = fifoout->loop_right;
-  }
-
-  if(do_loop != NULL){
-    *do_loop = fifoout->do_loop;
-  }
-
-  g_rec_mutex_unlock(fifoout_mutex);
-}
-
-guint
-ags_fifoout_get_loop_offset(AgsSoundcard *soundcard)
-{
-  AgsFifoout *fifoout;
-
-  guint loop_offset;
-  
-  GRecMutex *fifoout_mutex;  
-
-  fifoout = AGS_FIFOOUT(soundcard);
-
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-
-  /* get loop offset */
-  g_rec_mutex_lock(fifoout_mutex);
-
-  loop_offset = fifoout->loop_offset;
-  
-  g_rec_mutex_unlock(fifoout_mutex);
-
-  return(loop_offset);
-}
-
 /**
  * ags_fifoout_switch_buffer_flag:
  * @fifoout: the #AgsFifoout
@@ -2103,65 +1634,6 @@ ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout)
     fifoout->app_buffer_mode += 1;
   }else{
     fifoout->app_buffer_mode = AGS_FIFOOUT_APP_BUFFER_0;
-  }
-
-  g_rec_mutex_unlock(fifoout_mutex);
-}
-
-/**
- * ags_fifoout_adjust_delay_and_attack:
- * @fifoout: the #AgsFifoout
- *
- * Calculate delay and attack and reset it.
- *
- * Since: 3.0.0
- */
-void
-ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
-{
-  gdouble delay;
-  guint default_tact_frames;
-  guint default_period;
-  guint i;
-
-  GRecMutex *fifoout_mutex;
-
-  if(!AGS_IS_FIFOOUT(fifoout)){
-    return;
-  }
-  
-  /* get fifoout mutex */
-  fifoout_mutex = AGS_FIFOOUT_GET_OBJ_MUTEX(fifoout);
-  
-  /* get some initial values */
-  delay = (60.0 * (((gdouble) fifoout->samplerate / (gdouble) fifoout->buffer_size) / (gdouble) fifoout->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) fifoout->delay_factor)));
-
-#ifdef AGS_DEBUG
-  g_message("delay : %f", delay);
-#endif
-  
-  g_rec_mutex_lock(fifoout_mutex);
-
-  default_tact_frames = (guint) (delay * fifoout->buffer_size);
-  default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
-
-  fifoout->attack[0] = 0;
-  fifoout->delay[0] = delay;
-  
-  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    fifoout->attack[i] = (guint) ((i * default_tact_frames + fifoout->attack[i - 1]) / (AGS_SOUNDCARD_DEFAULT_PERIOD / (delay * i))) % (guint) (fifoout->buffer_size);
-    
-#ifdef AGS_DEBUG
-    g_message("%d", fifoout->attack[i]);
-#endif
-  }
-  
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
-    fifoout->delay[i] = ((gdouble) (default_tact_frames + fifoout->attack[i])) / (gdouble) fifoout->buffer_size;
-    
-#ifdef AGS_DEBUG
-    g_message("%f", fifoout->delay[i]);
-#endif
   }
 
   g_rec_mutex_unlock(fifoout_mutex);

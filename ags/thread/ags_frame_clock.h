@@ -86,6 +86,8 @@ struct _AgsFrameClock
   guint64 loop_right;
 
   gboolean has_16th_pulse;
+
+  guint64 start_note_offset;
   
   guint64 absolute_note_offset;
   
@@ -133,6 +135,10 @@ void ags_frame_clock_set_samplerate(AgsFrameClock *frame_clock,
 gdouble ags_frame_clock_get_bpm(AgsFrameClock *frame_clock);
 void ags_frame_clock_set_bpm(AgsFrameClock *frame_clock,
 			     gdouble bpm);
+
+void ags_frame_clock_set_start_note_offset(AgsFrameClock *frame_clock,
+					   guint64 start_note_offset);
+guint64 ags_frame_clock_get_start_note_offset(AgsFrameClock *frame_clock);
 
 guint64 ags_frame_clock_get_absolute_frame_offset(AgsFrameClock *frame_clock);
 

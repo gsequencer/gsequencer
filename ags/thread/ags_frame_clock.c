@@ -152,6 +152,8 @@ ags_frame_clock_init(AgsFrameClock *frame_clock)
   frame_clock->loop_right = 64;
 
   /* counter init */
+  frame_clock->start_note_offset = 0;
+
   ags_frame_clock_counter_init(frame_clock);
 }
 
@@ -827,6 +829,70 @@ ags_frame_clock_set_loop(AgsFrameClock *frame_clock,
   frame_clock->loop_left = loop_left;
   frame_clock->loop_right = loop_right;
     
+  g_rec_mutex_unlock(frame_clock_mutex);
+}
+
+/**
+ * ags_frame_clock_get_start_note_offset:
+ * @frame_clock: the #AgsFrameClock
+ *
+ * Get note offset of @frame_clock.
+ * 
+ * Returns: the note offset
+ * 
+ * Since: 8.5.0
+ */
+guint64
+ags_frame_clock_get_start_note_offset(AgsFrameClock *frame_clock)
+{
+  guint64 start_note_offset;
+  
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return(0);
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* get note offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  start_note_offset = frame_clock->start_note_offset;
+
+  g_rec_mutex_unlock(frame_clock_mutex);
+
+  return(start_note_offset);
+}
+
+/**
+ * ags_frame_clock_set_start_note_offset:
+ * @frame_clock: the #AgsFrameClock
+ * @start_note_offset: the note offset
+ *
+ * Set note offset of @frame_clock.
+ * 
+ * Since: 8.5.0
+ */
+void
+ags_frame_clock_set_start_note_offset(AgsFrameClock *frame_clock,
+				      guint64 start_note_offset)
+{
+  GRecMutex *frame_clock_mutex;
+
+  if(!AGS_IS_FRAME_CLOCK(frame_clock)){
+    return;
+  }
+  
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(frame_clock);
+
+  /* set note offset */
+  g_rec_mutex_lock(frame_clock_mutex);
+
+  frame_clock->start_note_offset = start_note_offset;
+  
   g_rec_mutex_unlock(frame_clock_mutex);
 }
 

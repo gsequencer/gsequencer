@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -290,15 +290,17 @@ ags_recall_audio_automate(AgsRecall *recall)
 {
   AgsAudio *audio;
 
+  AgsFrameClock *frame_clock;
+  
   GObject *soundcard;
 
   GList *automation_start, *automation;
   GList *port_start, *port;
 
-  gdouble delay;
-  guint note_offset, delay_counter;
+  gdouble delay, delay_counter;
+  guint64 note_offset;
   
-  guint loop_left, loop_right;
+  guint64 loop_left, loop_right;
   gboolean do_loop;
 
   double x, step;
@@ -342,15 +344,16 @@ ags_recall_audio_automate(AgsRecall *recall)
 	       NULL);
 
   /* retrieve position */
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(soundcard));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
   
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(soundcard));
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(soundcard));
+  note_offset = ags_frame_clock_get_note_offset(frame_clock);
+  
+  delay = (gdouble) frame_clock->absolute_delay;
+  delay_counter = (gdouble) frame_clock->delay_counter;
 
   /* retrieve loop information */
-  ags_soundcard_get_loop(AGS_SOUNDCARD(soundcard),
-			 &loop_left, &loop_right,
-			 &do_loop);
+  do_loop = ags_frame_clock_get_loop(frame_clock,
+				     &loop_left, &loop_right);
 
   return_prev_on_failure = TRUE;
 
