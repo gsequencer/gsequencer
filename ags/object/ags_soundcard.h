@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -147,6 +147,16 @@ struct _AgsSoundcardInterface
 		      guint *rate,
 		      guint *buffer_size,
 		      AgsSoundcardFormat *format);
+
+  void (*set_bpm)(AgsSoundcard *soundcard,
+		  gdouble bpm);
+  gdouble (*get_bpm)(AgsSoundcard *soundcard);
+
+  void (*set_start_note_offset)(AgsSoundcard *soundcard,
+				guint64 start_note_offset);
+  guint64 (*get_start_note_offset)(AgsSoundcard *soundcard);
+
+  GObject* (*get_frame_clock)(AgsSoundcard *soundcard);
   
   void (*list_cards)(AgsSoundcard *soundcard,
 		     GList **card_id, GList **card_name);
@@ -156,7 +166,7 @@ struct _AgsSoundcardInterface
   gboolean (*is_starting)(AgsSoundcard *soundcard);
   gboolean (*is_playing)(AgsSoundcard *soundcard);
   gboolean (*is_recording)(AgsSoundcard *soundcard);
-
+  
   gchar* (*get_uptime)(AgsSoundcard *soundcard);
   
   void (*play_init)(AgsSoundcard *soundcard,
@@ -184,66 +194,12 @@ struct _AgsSoundcardInterface
   void (*unlock_buffer)(AgsSoundcard *soundcard,
 			void *buffer);
 
-  void (*set_bpm)(AgsSoundcard *soundcard,
-		  gdouble bpm);
-  gdouble (*get_bpm)(AgsSoundcard *soundcard);
-
-  void (*set_delay_factor)(AgsSoundcard *soundcard,
-			   gdouble delay_factor);
-  gdouble (*get_delay_factor)(AgsSoundcard *soundcard);
-
-  gdouble (*get_absolute_delay)(AgsSoundcard *soundcard);
-  
-  gdouble (*get_delay)(AgsSoundcard *soundcard);
-  guint (*get_attack)(AgsSoundcard *soundcard);
-
-  guint (*get_delay_counter)(AgsSoundcard *soundcard);
-
-  void (*set_start_note_offset)(AgsSoundcard *soundcard,
-				guint start_note_offset);
-  guint (*get_start_note_offset)(AgsSoundcard *soundcard);
-  
-  void (*set_note_offset)(AgsSoundcard *soundcard,
-			  guint note_offset);
-  guint (*get_note_offset)(AgsSoundcard *soundcard);
-  
-  void (*set_note_offset_absolute)(AgsSoundcard *soundcard,
-				   guint note_offset);
-  guint (*get_note_offset_absolute)(AgsSoundcard *soundcard);
-
-  void (*set_loop)(AgsSoundcard *soundcard,
-		   guint loop_left, guint loop_right,
-		   gboolean do_loop);
-  void (*get_loop)(AgsSoundcard *soundcard,
-		   guint *loop_left, guint *loop_right,
-		   gboolean *do_loop);
-
-  guint (*get_loop_offset)(AgsSoundcard *soundcard);
-
   guint (*get_sub_block_count)(AgsSoundcard *soundcard);
 
   gboolean (*trylock_sub_block)(AgsSoundcard *soundcard,
 				void *buffer, guint sub_block);
   void (*unlock_sub_block)(AgsSoundcard *soundcard,
 			   void *buffer, guint sub_block);
-
-  void (*get_note_256th_offset)(AgsSoundcard *soundcard,
-				guint *note_256th_offset_lower,
-				guint *note_256th_offset_upper);
-
-  void (*get_note_256th_attack)(AgsSoundcard *soundcard,
-				guint *note_256th_attack_lower,
-				guint *note_256th_attack_upper);
-  
-  guint (*get_note_256th_attack_at_position)(AgsSoundcard *soundcard,
-					     guint note_256th_attack_position);
-
-  void (*get_note_256th_attack_position)(AgsSoundcard *soundcard,
-					 guint *note_256th_attack_position_lower,
-					 guint *note_256th_attack_position_upper);
-
-  guint (*get_note_256th_attack_of_16th_pulse)(AgsSoundcard *soundcard);
-  guint (*get_note_256th_attack_of_16th_pulse_position)(AgsSoundcard *soundcard);
 };
 
 GType ags_soundcard_get_type();
@@ -272,6 +228,16 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			    guint *rate_min, guint *rate_max,
 			    guint *buffer_size_min, guint *buffer_size_max,
 			    GError **error);
+
+void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
+			   gdouble bpm);
+gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
+
+void ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
+					 guint64 start_note_offset);
+guint64 ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard);
+
+GObject* ags_soundcard_get_frame_clock(AgsSoundcard *soundcard);
 
 AgsSoundcardCapability ags_soundcard_get_capability(AgsSoundcard *soundcard);
 
@@ -307,60 +273,6 @@ void ags_soundcard_lock_buffer(AgsSoundcard *soundcard,
 			       void *buffer);
 void ags_soundcard_unlock_buffer(AgsSoundcard *soundcard,
 				 void *buffer);
-
-void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
-			   gdouble bpm);
-gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
-				    gdouble delay_factor);
-gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
-
-gdouble ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard);
-
-gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
-guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
-
-guint ags_soundcard_get_delay_counter(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
-					 guint start_note_offset);
-guint ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
-				   guint note_offset);
-guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
-
-void ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
-					 guint *note_256th_offset_lower,
-					 guint *note_256th_offset_upper);
-
-guint ags_soundcard_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard);
-guint ags_soundcard_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard);
-
-void ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
-					 guint *note_256th_attack_lower,
-					 guint *note_256th_attack_upper);
-
-guint ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
-						      guint note_256th_attack_position);
-
-void ags_soundcard_get_note_256th_attack_position(AgsSoundcard *soundcard,
-						  guint *note_256th_attack_position_lower,
-						  guint *note_256th_attack_position_upper);
-
-void ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
-					    guint note_offset);
-guint ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_loop(AgsSoundcard *soundcard,
-			    guint loop_left, guint loop_right,
-			    gboolean do_loop);
-void ags_soundcard_get_loop(AgsSoundcard *soundcard,
-			    guint *loop_left, guint *loop_right,
-			    gboolean *do_loop);
-
-guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
 
 guint ags_soundcard_get_sub_block_count(AgsSoundcard *soundcard);
 

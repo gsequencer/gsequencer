@@ -1,3 +1,80 @@
+ags (9.0.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsFrameClock
+	* implemented AgsEqualizer10 presets and refresh port
+	* implemented ags_soundcard_get_frame_clock()
+	* TODO:JK: refactored AgsSoundcard and all implementations
+	* TODO:JK: refactored ags-fx-playback
+	* TODO:JK: refactored ags-fx-pattern
+	* TODO:JK: refactored ags-fx-notation
+	* added ags_frame_clock_test.c
+	* added po/ka.po
+
+ags (8.4.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added language support for Georgian ka.po
+	* deprecated ags_soundcard_set_delay_factor()
+	* deprecated ags_soundcard_get_delay_factor()
+	* deprecated ags_soundcard_get_absolute_delay()
+	* deprecated ags_soundcard_get_delay()
+	* deprecated ags_soundcard_get_attack()
+	* deprecated ags_soundcard_get_delay_counter()
+	* deprecated ags_soundcard_set_start_note_offset()
+	* deprecated ags_soundcard_get_start_note_offset()
+	* deprecated ags_soundcard_set_note_offset()
+	* deprecated ags_soundcard_get_note_offset()
+	* deprecated ags_soundcard_get_note_256th_offset()
+	* deprecated ags_soundcard_get_note_256th_attack_of_16th_pulse()
+	* deprecated ags_soundcard_get_note_256th_attack_of_16th_pulse_position()
+	* deprecated ags_soundcard_get_note_256th_attack()
+	* deprecated ags_soundcard_get_note_256th_attack_at_position()
+	* deprecated ags_soundcard_get_note_256th_attack_position()
+	* deprecated ags_soundcard_set_note_offset_absolute()
+	* deprecated ags_soundcard_get_note_offset_absolute()
+	* deprecated ags_soundcard_set_loop()
+	* deprecated ags_soundcard_get_loop()
+	* deprecated ags_soundcard_get_loop_offset()
+	* deprecated ags_soundcard_util_adjust_delay_and_attack()
+	* deprecated ags_soundcard_util_calc_next_note_256th_offset()
+	* deprecated ags_soundcard_util_calc_next_note_256th_attack()
+	* deprecated ags_core_audio_devout_adjust_delay_and_attack()
+	* deprecated AgsCoreAudioDevout:delay-factor because defaults to quarter pulse
+	* deprecated AgsCoreAudioDevout:attack
+	* deprecated ags_core_audio_devin_adjust_delay_and_attack()
+	* deprecated AgsCoreAudioDevin:delay-factor because defaults to quarter pulse
+	* deprecated AgsCoreAudioDevin:attack
+	* deprecated ags_alsa_devout_adjust_delay_and_attack()
+	* deprecated AgsAlsaDevout:delay-factor because defaults to quarter pulse
+	* deprecated AgsAlsaDevout:attack
+	* deprecated ags_alsa_devin_adjust_delay_and_attack()
+	* deprecated AgsAlsaDevin:delay-factor because defaults to quarter pulse
+	* deprecated AgsAlsaDevin:attack
+	* deprecated ags_oss_devout_adjust_delay_and_attack()
+	* deprecated AgsOssDevout:delay-factor because defaults to quarter pulse
+	* deprecated AgsOssDevout:attack
+	* deprecated ags_oss_devin_adjust_delay_and_attack()
+	* deprecated AgsOssDevin:delay-factor because defaults to quarter pulse
+	* deprecated AgsOssDevin:attack
+	* deprecated ags_jack_devout_adjust_delay_and_attack()
+	* deprecated AgsJackDevout:delay-factor because defaults to quarter pulse
+	* deprecated AgsJackDevout:attack
+	* deprecated ags_jack_devin_adjust_delay_and_attack()
+	* deprecated AgsJackDevin:delay-factor because defaults to quarter pulse
+	* deprecated AgsJackDevin:attack
+	* deprecated ags_pulse_devout_adjust_delay_and_attack()
+	* deprecated AgsPulseDevout:delay-factor because defaults to quarter pulse
+	* deprecated AgsPulseDevout:attack
+	* deprecated ags_pulse_devin_adjust_delay_and_attack()
+	* deprecated AgsPulseDevin:delay-factor because defaults to quarter pulse
+	* deprecated AgsPulseDevin:attack
+	* deprecated ags_gstreamer_devout_adjust_delay_and_attack()
+	* deprecated AgsGstreamerDevout:delay-factor because defaults to quarter gstreamer
+	* deprecated AgsGstreamerDevout:attack
+	* deprecated ags_gstreamer_devin_adjust_delay_and_attack()
+	* deprecated AgsGstreamerDevin:delay-factor because defaults to quarter gstreamer
+
 ags (8.4.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

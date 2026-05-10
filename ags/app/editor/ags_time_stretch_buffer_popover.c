@@ -362,6 +362,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
   AgsAudio *audio;
   AgsAudioBufferUtil *audio_buffer_util;
   
+  AgsFrameClock *frame_clock;
   AgsTimestamp *timestamp;
 
   AgsApplicationContext *application_context;
@@ -417,8 +418,10 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 	       "format", &format,
 	       "wave", &start_wave,
 	       NULL);
-
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+  
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  
+  delay = (gdouble) frame_clock->absolute_delay;
 
   timestamp = ags_timestamp_new();
 

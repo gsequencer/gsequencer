@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@ ags_tempo_edit_update_ui_callback(GObject *ui_provider,
 
   GtkAdjustment *hscrollbar_adjustment;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *output_soundcard;
@@ -55,9 +57,11 @@ ags_tempo_edit_update_ui_callback(GObject *ui_provider,
 
   output_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
     
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  
   /* reset offset */
-  tempo_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-  tempo_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
+  tempo_edit->note_offset = ags_frame_clock_get_note_offset(frame_clock);
+  tempo_edit->note_offset_absolute = ags_frame_clock_get_absolute_note_offset(frame_clock);
 
   /* 256th */
   tempo_edit->note_offset_256th = 16 * tempo_edit->note_offset;

@@ -1269,6 +1269,7 @@ libags_thread_h_sources = \
 	ags/thread/ags_atomic.h \
 	ags/thread/ags_concurrency_provider.h \
 	ags/thread/ags_destroy_worker.h \
+	ags/thread/ags_frame_clock.h \
 	ags/thread/ags_generic_main_loop.h \
 	ags/thread/ags_message_delivery.h \
 	ags/thread/ags_message_envelope.h \
@@ -1289,6 +1290,7 @@ libags_thread_c_sources = \
 	$(deprecated_libags_thread_c_sources) \
 	ags/thread/ags_concurrency_provider.c \
 	ags/thread/ags_destroy_worker.c \
+	ags/thread/ags_frame_clock.c \
 	ags/thread/ags_generic_main_loop.c \
 	ags/thread/ags_message_delivery.c \
 	ags/thread/ags_message_envelope.c \

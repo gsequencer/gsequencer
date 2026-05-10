@@ -37,6 +37,8 @@ ags_notation_edit_update_ui_callback(GObject *ui_provider,
 
   AgsAudio *audio;
     
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
 
   GObject *output_soundcard;
@@ -63,9 +65,11 @@ ags_notation_edit_update_ui_callback(GObject *ui_provider,
 
   output_soundcard = ags_audio_get_output_soundcard(audio);
 
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  
   /* reset offset */
-  notation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-  notation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
+  notation_edit->note_offset = ags_frame_clock_get_note_offset(frame_clock);
+  notation_edit->note_offset_absolute = ags_frame_clock_get_absolute_note_offset(frame_clock);
 
   /* 256th */
   notation_edit->note_offset_256th = 16 * notation_edit->note_offset;

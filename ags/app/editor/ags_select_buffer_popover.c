@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -347,6 +347,7 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
 
+  AgsFrameClock *frame_clock;
   AgsTimestamp *timestamp;
 
   AgsApplicationContext *application_context;
@@ -388,6 +389,14 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
   
   audio = machine->audio;
 
+  output_soundcard = NULL;
+
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+
+  start_list_wave = NULL;
+  
   g_object_get(audio,
 	       "output-soundcard", &output_soundcard,
 	       "buffer-size", &buffer_size,
@@ -395,7 +404,9 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
 	       "wave", &start_list_wave,
 	       NULL);
 
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  
+  delay = (gdouble) frame_clock->absolute_delay;
   
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_buffer_popover->copy_selection);

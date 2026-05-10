@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -677,6 +677,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 {
   AgsSeekSoundcard *seek_soundcard;
 
+  AgsFrameClock *frame_clock;
+
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -697,8 +699,11 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   /* seek soundcard */
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(default_soundcard));
 
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(default_soundcard));
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(default_soundcard));
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
+
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
+  absolute_delay = frame_clock->absolute_delay;
   
   new_offset = (16 * tact_counter);
   
@@ -715,7 +720,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   while(list != NULL){
     ags_soundcard_set_start_note_offset(AGS_SOUNDCARD(list->data),
-					new_offset);
+					(guint64) new_offset);
 
     list = list->next;
   }
@@ -729,7 +734,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   while(list != NULL){
     ags_sequencer_set_start_note_offset(AGS_SEQUENCER(list->data),
-					new_offset);
+					(guint64) new_offset);
 
     list = list->next;
   }

@@ -22,6 +22,8 @@
 ./ags_check_system_tactable_test
 ./ags_check_system_concurrency_provider_test
 ./ags_check_system_destroy_worker_test
+./ags_check_system_frame_clock_test
+./ags_check_system_generic_main_loop_test
 ./ags_check_system_message_delivery_test
 ./ags_check_system_message_envelope_test
 ./ags_check_system_message_queue_test

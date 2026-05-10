@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -128,23 +128,10 @@ struct _AgsFifoout
   unsigned char **ring_buffer;
 
   double bpm; // beats per minute
-  gdouble delay_factor;
   
-  gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
-
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint note_offset;
-  guint note_offset_absolute;
-
-  guint loop_left;
-  guint loop_right;
-  gboolean do_loop;
+  guint64 start_note_offset;
   
-  guint loop_offset;
+  AgsFrameClock *frame_clock;
 
   gchar *device;
   int fifo_fd;
@@ -166,7 +153,6 @@ void ags_fifoout_unset_flags(AgsFifoout *fifoout, AgsFifooutFlags flags);
 
 void ags_fifoout_switch_buffer_flag(AgsFifoout *fifoout);
 
-void ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout);
 void ags_fifoout_realloc_buffer(AgsFifoout *fifoout);
 
 AgsFifoout* ags_fifoout_new();

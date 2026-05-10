@@ -82,6 +82,7 @@
 #include <ags/thread/ags_atomic.h>
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_destroy_worker.h>
+#include <ags/thread/ags_frame_clock.h>
 #include <ags/thread/ags_generic_main_loop.h>
 #include <ags/thread/ags_message_delivery.h>
 #include <ags/thread/ags_message_envelope.h>

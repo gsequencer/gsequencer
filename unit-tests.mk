@@ -34,6 +34,7 @@ check_PROGRAMS += \
 	ags_tactable_test \
 	ags_concurrency_provider_test \
 	ags_destroy_worker_test \
+	ags_frame_clock_test \
 	ags_generic_main_loop_test \
 	ags_message_delivery_test \
 	ags_message_envelope_test \
@@ -456,6 +457,12 @@ ags_destroy_worker_test_SOURCES = ags/test/thread/ags_destroy_worker_test.c
 ags_destroy_worker_test_CFLAGS = $(CFLAGS) $(UNIT_TEST_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
 ags_destroy_worker_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_destroy_worker_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit  -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# frame clock unit test
+ags_frame_clock_test_SOURCES = ags/test/thread/ags_frame_clock_test.c
+ags_frame_clock_test_CFLAGS = $(CFLAGS) $(UNIT_TEST_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS)
+ags_frame_clock_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_frame_clock_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit  -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
 
 # generic main loop unit test
 ags_generic_main_loop_test_SOURCES = ags/test/thread/ags_generic_main_loop_test.c

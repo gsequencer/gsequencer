@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -71,6 +71,8 @@ struct _AgsFxPatternAudioProcessor
   gboolean has_16th_pulse;
 
   guint64 note_offset_absolute_start;
+
+  AgsFrameClock *frame_clock;
 };
 
 struct _AgsFxPatternAudioProcessorClass

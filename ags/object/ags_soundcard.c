@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -277,6 +277,116 @@ ags_soundcard_set_presets(AgsSoundcard *soundcard,
 				   rate,
 				   buffer_size,
 				   format);
+}
+
+/**
+ * ags_soundcard_set_bpm:
+ * @soundcard: the #AgsSoundcard
+ * @bpm: the bpm to set
+ *
+ * Set current playback bpm. 
+ *
+ * Since: 3.0.0
+ */
+void
+ags_soundcard_set_bpm(AgsSoundcard *soundcard,
+		      gdouble bpm)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_bpm);
+  soundcard_interface->set_bpm(soundcard,
+			       bpm);
+}
+
+/**
+ * ags_soundcard_get_bpm:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Get current playback bpm. 
+ *
+ * Returns: bpm
+ *
+ * Since: 3.0.0
+ */
+gdouble
+ags_soundcard_get_bpm(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0.0);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_bpm, 0.0);
+
+  return(soundcard_interface->get_bpm(soundcard));
+}
+
+/**
+ * ags_soundcard_set_start_note_offset:
+ * @soundcard: the #AgsSoundcard
+ * @start_note_offset: the start note offset to set
+ *
+ * Set current playback start note offset. 
+ *
+ * Since: 9.0.0
+ */
+void
+ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
+				    guint64 start_note_offset)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_start_note_offset);
+  soundcard_interface->set_start_note_offset(soundcard,
+					     start_note_offset);
+}
+
+/**
+ * ags_soundcard_get_start_note_offset:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Get current playback start note offset.
+ *
+ * Returns: start note offset
+ *
+ * Since: 9.0.0
+ */
+guint64
+ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_start_note_offset, 0);
+
+  return(soundcard_interface->get_start_note_offset(soundcard));
+}
+
+/**
+ * ags_soundcard_get_frame_clock:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Get the frame clock.
+ *
+ * Returns: the #AgsFrameClock
+ *
+ * Since: 9.0.0
+ */
+GObject*
+ags_soundcard_get_frame_clock(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_frame_clock, NULL);
+
+  return(soundcard_interface->get_frame_clock(soundcard));
 }
 
 /**
@@ -717,533 +827,6 @@ ags_soundcard_unlock_buffer(AgsSoundcard *soundcard,
 
   soundcard_interface->unlock_buffer(soundcard,
 				     buffer);
-}
-
-/**
- * ags_soundcard_set_bpm:
- * @soundcard: the #AgsSoundcard
- * @bpm: the bpm to set
- *
- * Set current playback bpm. 
- *
- * Since: 3.0.0
- */
-void
-ags_soundcard_set_bpm(AgsSoundcard *soundcard,
-		      gdouble bpm)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_bpm);
-  soundcard_interface->set_bpm(soundcard,
-			       bpm);
-}
-
-/**
- * ags_soundcard_get_bpm:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback bpm. 
- *
- * Returns: bpm
- *
- * Since: 3.0.0
- */
-gdouble
-ags_soundcard_get_bpm(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_bpm, G_MAXUINT);
-
-  return(soundcard_interface->get_bpm(soundcard));
-}
-
-/**
- * ags_soundcard_set_delay_factor:
- * @soundcard: the #AgsSoundcard
- * @delay_factor: the delay factor to set
- *
- * Set current playback delay factor. 
- *
- * Since: 3.0.0
- */
-void
-ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
-			       gdouble delay_factor)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_delay_factor);
-  soundcard_interface->set_delay_factor(soundcard,
-					delay_factor);
-}
-
-/**
- * ags_soundcard_get_delay_factor:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback delay factor. 
- *
- * Returns: delay factor
- *
- * Since: 3.0.0
- */
-gdouble
-ags_soundcard_get_delay_factor(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXDOUBLE);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_delay_factor, G_MAXDOUBLE);
-
-  return(soundcard_interface->get_delay_factor(soundcard));
-}
-
-/**
- * ags_soundcard_get_absolute_delay:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback delay. 
- *
- * Returns: delay
- *
- * Since: 3.0.0
- */
-gdouble
-ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXDOUBLE);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_absolute_delay, G_MAXDOUBLE);
-
-  return(soundcard_interface->get_absolute_delay(soundcard));
-}
-
-/**
- * ags_soundcard_get_delay:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback delay. 
- *
- * Returns: delay
- *
- * Since: 3.0.0
- */
-gdouble
-ags_soundcard_get_delay(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXDOUBLE);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_delay, G_MAXDOUBLE);
-
-  return(soundcard_interface->get_delay(soundcard));
-}
-
-/**
- * ags_soundcard_get_attack:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback attack. 
- *
- * Returns: attack
- *
- * Since: 3.0.0
- */
-guint
-ags_soundcard_get_attack(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_attack, G_MAXUINT);
-
-  return(soundcard_interface->get_attack(soundcard));
-}
-
-/**
- * ags_soundcard_get_delay_counter:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback note offset. 
- *
- * Returns: offset
- *
- * Since: 3.0.0
- */
-guint
-ags_soundcard_get_delay_counter(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_delay_counter, G_MAXUINT);
-
-  return(soundcard_interface->get_delay_counter(soundcard));
-}
-
-/**
- * ags_soundcard_set_start_note_offset:
- * @soundcard: the #AgsSoundcard
- * @start_note_offset: the start note offset to set
- *
- * Set start playback note offset. 
- *
- * Since: 3.0.0
- */
-void
-ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
-				    guint start_note_offset)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_start_note_offset);
-  soundcard_interface->set_start_note_offset(soundcard,
-					     start_note_offset);
-}
-
-/**
- * ags_soundcard_get_start_note_offset:
- * @soundcard: the #AgsSoundcard
- *
- * Get start playback note offset. 
- *
- * Returns: the start note offset
- *
- * Since: 3.0.0
- */
-guint
-ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_start_note_offset, G_MAXUINT);
-
-  return(soundcard_interface->get_start_note_offset(soundcard));
-}
-
-/**
- * ags_soundcard_set_note_offset:
- * @soundcard: the #AgsSoundcard
- * @note_offset: the note offset to set
- *
- * Set current playback note offset. 
- *
- * Since: 3.0.0
- */
-void
-ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
-			      guint note_offset)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_note_offset);
-  soundcard_interface->set_note_offset(soundcard,
-				       note_offset);
-}
-
-/**
- * ags_soundcard_get_note_offset:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback note offset. 
- *
- * Returns: the current note offset
- *
- * Since: 3.0.0
- */
-guint
-ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_note_offset, G_MAXUINT);
-
-  return(soundcard_interface->get_note_offset(soundcard));
-}
-
-/**
- * ags_soundcard_get_note_256th_offset:
- * @soundcard: the #AgsSoundcard
- * @note_256th_offset_lower: the return location of offset lower range
- * @note_256th_offset_upper: the return location of offset upper range
- *
- * Get current playback note 256th offset. 
- *
- * Since: 6.1.0
- */
-void
-ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
-				    guint *note_256th_offset_lower,
-				    guint *note_256th_offset_upper)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->get_note_256th_offset);
-
-  soundcard_interface->get_note_256th_offset(soundcard,
-					     note_256th_offset_lower,
-					     note_256th_offset_upper);
-}
-
-/**
- * ags_soundcard_get_note_256th_attack_of_16th_pulse:
- * @soundcard: the #AgsSoundcard
- * 
- * Get note 256th attack of current 16th pulse.
- * 
- * Returns: the note 256th attack of 16th pulse
- * 
- * Since: 6.3.0
- */
-guint
-ags_soundcard_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_of_16th_pulse, G_MAXUINT);
-
-  return(soundcard_interface->get_note_256th_attack_of_16th_pulse(soundcard));
-}
-
-/**
- * ags_soundcard_get_note_256th_attack_of_16th_pulse_position:
- * @soundcard: the #AgsSoundcard
- * 
- * Get note 256th attack position of current 16th pulse.
- * 
- * Returns: the note 256th attack position of 16th pulse
- * 
- * Since: 6.3.0
- */
-guint
-ags_soundcard_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_of_16th_pulse_position, G_MAXUINT);
-
-  return(soundcard_interface->get_note_256th_attack_of_16th_pulse_position(soundcard));
-}
-
-/**
- * ags_soundcard_get_note_256th_attack:
- * @soundcard: the #AgsSoundcard
- * @note_256th_attack_lower: the return location of attack lower range
- * @note_256th_attack_upper: the return location of attack upper range
- *
- * Get current playback note 256th attack. 
- *
- * Since: 6.2.2
- */
-void
-ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
-				    guint *note_256th_attack_lower,
-				    guint *note_256th_attack_upper)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->get_note_256th_attack);
-
-  soundcard_interface->get_note_256th_attack(soundcard,
-					     note_256th_attack_lower,
-					     note_256th_attack_upper);
-}
-
-/**
- * ags_soundcard_get_note_256th_attack_at_position:
- * @soundcard: the #AgsSoundcard
- * @note_256th_attack_position: the note 256th attack position
- *
- * Get current playback note 256th attack position within 16 times %AGS_SOUNDCARD_DEFAULT_PERIOD.
- *
- * Since: 6.2.2
- */
-guint
-ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
-						guint note_256th_attack_position)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_note_256th_attack_at_position, 0);
-
-  return(soundcard_interface->get_note_256th_attack_at_position(soundcard,
-								note_256th_attack_position));
-}
-
-/**
- * ags_soundcard_get_note_256th_attack_position:
- * @soundcard: the #AgsSoundcard
- * @note_256th_attack_position_lower: the return location of attack position lower range
- * @note_256th_attack_position_upper: the return location of attack position upper range
- *
- * Get current playback note 256th attack position within 16 times %AGS_SOUNDCARD_DEFAULT_PERIOD.
- *
- * Since: 6.2.2
- */
-void
-ags_soundcard_get_note_256th_attack_position(AgsSoundcard *soundcard,
-					     guint *note_256th_attack_position_lower,
-					     guint *note_256th_attack_position_upper)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->get_note_256th_attack_position);
-
-  soundcard_interface->get_note_256th_attack_position(soundcard,
-						      note_256th_attack_position_lower,
-						      note_256th_attack_position_upper);
-}
-
-/**
- * ags_soundcard_set_note_offset_absolute:
- * @soundcard: the #AgsSoundcard
- * @note_offset: the note offset to set
- *
- * Set current playback note offset. 
- *
- * Since: 3.0.0
- */
-void
-ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
-				       guint note_offset)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_note_offset_absolute);
-  soundcard_interface->set_note_offset_absolute(soundcard,
-						note_offset);
-}
-
-/**
- * ags_soundcard_get_note_offset_absolute:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback note offset. 
- *
- * Returns: offset
- *
- * Since: 3.0.0
- */
-guint
-ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_note_offset_absolute, G_MAXUINT);
-
-  return(soundcard_interface->get_note_offset_absolute(soundcard));
-}
-
-/**
- * ags_soundcard_set_loop:
- * @soundcard: the #AgsSoundcard
- * @loop_left: loop position of region
- * @loop_right: loop position of region
- * @do_loop: if %TRUE do loop, else don't loop
- *
- * Set loop parameters of @soundcard.
- *
- * Since: 3.0.0
- */
-void
-ags_soundcard_set_loop(AgsSoundcard *soundcard,
-		       guint loop_left, guint loop_right,
-		       gboolean do_loop)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_loop);
-  soundcard_interface->set_loop(soundcard,
-				loop_left, loop_right,
-				do_loop);
-}
-
-/**
- * ags_soundcard_get_loop:
- * @soundcard: the #AgsSoundcard
- * @loop_left: (out): return location of loop position's region
- * @loop_right: (out): return location of loop position's region
- * @do_loop: (out): return location of do loop
- *
- * Get loop parameters of @soundcard.
- * 
- * Since: 3.0.0
- */
-void
-ags_soundcard_get_loop(AgsSoundcard *soundcard,
-		       guint *loop_left, guint *loop_right,
-		       gboolean *do_loop)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->get_loop);
-  soundcard_interface->get_loop(soundcard,
-				loop_left, loop_right,
-				do_loop);
-}
-
-/**
- * ags_soundcard_get_loop_offset:
- * @soundcard: the #AgsSoundcard
- *
- * Get current playback loop offset. 
- *
- * Returns: offset
- *
- * Since: 3.0.0
- */
-guint
-ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_loop_offset, 0);
-
-  return(soundcard_interface->get_loop_offset(soundcard));
 }
 
 /**
