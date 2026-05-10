@@ -4032,6 +4032,9 @@ ags_modular_synth_refresh_port(AgsMachine *machine)
   }
   
   machine->flags &= (~AGS_MACHINE_NO_UPDATE);
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 /**

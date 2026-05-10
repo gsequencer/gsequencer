@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -281,6 +281,7 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
   GRecMutex *recall_mutex;
 
   gdouble delay;
+  gdouble absolute_delay;
   guint64 notation_counter;
   guint64 sequencer_counter;
   
@@ -306,7 +307,9 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
   port = NULL;
 
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
-  
+
+  absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
   notation_duration = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
 
   sequencer_duration = (gdouble) AGS_PATTERN_DEFAULT_OFFSET;
@@ -345,10 +348,14 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 	
     g_object_unref(port);
   }
+  
+  if(output_soundcard != NULL){
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  }
 
   g_rec_mutex_lock(recall_mutex);
 
-  fx_pattern_audio_processor->note_256th_delay = delay / 16.0;
+  fx_pattern_audio_processor->note_256th_delay = absolute_delay / 16.0;
 
   g_rec_mutex_unlock(recall_mutex);
   
@@ -397,7 +404,7 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 				  &buffer_size,
 				  NULL);
 
-	note_256th_delay = delay / 16.0;
+	note_256th_delay = absolute_delay / 16.0;
 	
 	note_256th_attack_lower = 0;
 	note_256th_attack_upper = 0;
@@ -470,7 +477,7 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 				  &buffer_size,
 				  NULL);
 
-	note_256th_delay = delay / 16.0;
+	note_256th_delay = absolute_delay / 16.0;
 	
 	note_256th_attack_lower = 0;
 	note_256th_attack_upper = 0;
@@ -521,7 +528,7 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 				  &buffer_size,
 				  NULL);
 
-	note_256th_delay = delay / 16.0;
+	note_256th_delay = absolute_delay / 16.0;
 	
 	note_256th_attack_lower = 0;
 	note_256th_attack_upper = 0;
@@ -546,6 +553,10 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
     break;
   }
 
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+  
   if(fx_pattern_audio != NULL){
     g_object_unref(fx_pattern_audio);
   }
@@ -1864,6 +1875,8 @@ ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *f
     
     fx_pattern_audio_processor->current_delay_counter = delay_counter + 1.0;
 
+    fx_pattern_audio_processor->current_offset_counter = offset_counter;
+    
     if(floor(delay) + 1.0 < delay_counter + 1.0){
       fx_pattern_audio_processor->has_16th_pulse = TRUE;
       

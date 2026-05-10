@@ -66,6 +66,8 @@
 
 /* audio */
 #include <ags/audio/ags_acceleration.h>
+#include <ags/audio/ags_amplifier_util.h>
+#include <ags/audio/ags_amplifier10_util.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_application_context.h>
 #include <ags/audio/ags_audio_buffer_util.h>

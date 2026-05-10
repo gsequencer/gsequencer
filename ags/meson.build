@@ -336,6 +336,7 @@ libags_audio_sources = files(
   'plugin/ags_plugin_port.c',
   'audio/ags_acceleration.c',
   'audio/ags_amplifier_util.c',
+  'audio/ags_amplifier10_util.c',
   'audio/ags_audio_application_context.c',
   'audio/ags_audio_buffer_util.c',
   'audio/ags_audio.c',
@@ -1576,6 +1577,7 @@ endif
 libags_audio_audio_headers = [
   'audio/ags_acceleration.h',
   'audio/ags_amplifier_util.h',
+  'audio/ags_amplifier10_util.h',
   'audio/ags_audio.h',
   'audio/ags_audio_application_context.h',
   'audio/ags_audio_buffer_util.h',

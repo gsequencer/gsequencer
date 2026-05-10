@@ -11849,6 +11849,8 @@ ags_audio_set_wave(AgsAudio *audio, GList *wave)
 void
 ags_audio_add_wave(AgsAudio *audio, GObject *wave)
 {
+  GList *matching_wave;
+  
   gboolean success;
   
   GRecMutex *audio_mutex;
@@ -11865,9 +11867,13 @@ ags_audio_add_wave(AgsAudio *audio, GObject *wave)
   success = FALSE;
   
   g_rec_mutex_lock(audio_mutex);
+  
+  matching_wave = ags_wave_find_near_timestamp(audio->wave, AGS_WAVE(wave)->line,
+					       AGS_WAVE(wave)->timestamp);
 
   if(g_list_find(audio->wave,
-		 wave) == NULL){
+		 wave) == NULL &&
+     matching_wave == NULL){
     success = TRUE;
     
     g_object_ref(wave);

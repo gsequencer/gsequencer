@@ -905,7 +905,10 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 {
   AgsAudioBufferUtil *audio_buffer_util;
   
-  GList *start_list;
+  AgsTimestamp *timestamp;
+  AgsTimestamp *current_timestamp;
+  
+  GList *start_list, *list;
 
   void *target_data, *data;
 
@@ -989,6 +992,15 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
     target_data = ags_stream_alloc(MAX(target_buffer_size, 4096),
 				   format);
   }
+
+  current_timestamp = ags_timestamp_new();
+
+  current_timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  current_timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  current_timestamp->timer.ags_offset.offset = 0;
+  
+  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
   
   for(i = i_start; i < i_stop; i++){
     AgsWave *wave;
@@ -998,41 +1010,26 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
     ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
 			    0, G_SEEK_SET);
     
-    wave = ags_wave_new(NULL,
-			i);
-    g_object_set(wave,
-		 "samplerate", target_samplerate,
-		 "buffer-size", target_buffer_size,
-		 "format", target_format,
-		 NULL);
-
-    start_list = ags_wave_add(start_list,
-			      wave);
-    
-    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
-    
     x_point_offset = x_offset;
       
     current_offset = 0;
-    
+
     while(current_offset < frame_count){
       AgsBuffer *buffer;
 
-      guint read_count;
-      guint num_read;
-      gboolean create_wave;
-      
-      create_wave = FALSE;
+      gint read_count;
+      gint num_read;
 
+      read_count = 0;
+
+      //      if(x_point_offset >= (relative_offset * floor(x_point_offset / relative_offset)) &&
+      //	 x_point_offset < (relative_offset * floor(x_point_offset / relative_offset)) + relative_offset){
       read_count = target_buffer_size;
   
-      if(x_point_offset + read_count > relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
-	read_count = relative_offset * floor((x_point_offset + read_count) / relative_offset) - x_point_offset;
-
-	create_wave = TRUE;
-      }else if(x_point_offset + read_count == relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
-	create_wave = TRUE;
+      if(x_point_offset + read_count >= (relative_offset * floor(x_point_offset / relative_offset)) + relative_offset){
+	read_count = (relative_offset * floor(x_point_offset / relative_offset)) + relative_offset - x_point_offset;
       }
+      //      }
       
       buffer = ags_buffer_new();
       g_object_set(buffer,
@@ -1135,16 +1132,16 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       //      g_message("read %d[%d-%d]: %d", read_count, i, i_stop, num_read);
 
       if(num_read == 0){
-	break;
+	//	break;
       }
       
-      ags_wave_add_buffer(wave,
-			  buffer,
-			  FALSE);
-      
-      if(create_wave){
-	AgsTimestamp *timestamp;
+      ags_timestamp_set_ags_offset(current_timestamp,
+				   (guint64) relative_offset * floor(x_point_offset / relative_offset));
 
+      list = ags_wave_find_near_timestamp(start_list, i,
+					  current_timestamp);
+      
+      if(list == NULL){
 	wave = ags_wave_new(NULL,
 			    i);
 	g_object_set(wave,
@@ -1153,18 +1150,25 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		     "format", target_format,
 		     NULL);
 
+	timestamp = NULL;
+    
 	g_object_get(wave,
 		     "timestamp", &timestamp,
 		     NULL);
 	ags_timestamp_set_ags_offset(timestamp,
-				     (guint64) relative_offset * floor((x_point_offset + read_count) / relative_offset));
-	
+				     (guint64) relative_offset * floor(x_point_offset / relative_offset));
+    
 	g_object_unref(timestamp);
-
+	
 	start_list = ags_wave_add(start_list,
 				  wave);
-
+      }else{
+	wave = list->data;
       }
+      
+      ags_wave_add_buffer(wave,
+			  buffer,
+			  FALSE);
             
       /* iterate */
       x_point_offset += read_count;
@@ -1184,7 +1188,9 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   ags_stream_free(data);
   
   ags_stream_free(target_data);
- 
+
+  g_object_unref(current_timestamp);
+  
   g_list_foreach(start_list,
 		 (GFunc) g_object_ref,
 		 NULL);
