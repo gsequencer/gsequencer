@@ -57,7 +57,7 @@ struct _AgsTimestamp
 {
   GObject gobject;
 
-  guint flags;
+  AgsTimestampFlags flags;
 
   GRecMutex obj_mutex;
 

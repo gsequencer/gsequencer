@@ -234,7 +234,7 @@ void ags_core_audio_devout_unset_flags(AgsCoreAudioDevout *core_audio_devout, Ag
 
 void ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_devout);
 
-void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
+G_DEPRECATED void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
 void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
 
 AgsCoreAudioDevout* ags_core_audio_devout_new();

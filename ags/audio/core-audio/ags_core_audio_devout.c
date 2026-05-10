@@ -455,9 +455,11 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
   /**
    * AgsCoreAudioDevout:delay-factor:
    *
-   * tact
+   * tact.
    * 
    * Since: 3.0.0
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -476,6 +478,8 @@ ags_core_audio_devout_class_init(AgsCoreAudioDevoutClass *core_audio_devout)
    * Attack of the buffer
    * 
    * Since: 3.0.0
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),

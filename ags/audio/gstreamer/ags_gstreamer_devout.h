@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -206,7 +206,7 @@ void ags_gstreamer_devout_unset_flags(AgsGstreamerDevout *gstreamer_devout, AgsG
 
 void ags_gstreamer_devout_switch_buffer_flag(AgsGstreamerDevout *gstreamer_devout);
 
-void ags_gstreamer_devout_adjust_delay_and_attack(AgsGstreamerDevout *gstreamer_devout);
+G_DEPRECATED void ags_gstreamer_devout_adjust_delay_and_attack(AgsGstreamerDevout *gstreamer_devout);
 void ags_gstreamer_devout_realloc_buffer(AgsGstreamerDevout *gstreamer_devout);
 
 AgsGstreamerDevout* ags_gstreamer_devout_new();

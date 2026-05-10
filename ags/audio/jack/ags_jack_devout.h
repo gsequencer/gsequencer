@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -196,7 +196,7 @@ void ags_jack_devout_unset_flags(AgsJackDevout *jack_devout, AgsJackDevoutFlags 
 
 void ags_jack_devout_switch_buffer_flag(AgsJackDevout *jack_devout);
 
-void ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout);
+G_DEPRECATED void ags_jack_devout_adjust_delay_and_attack(AgsJackDevout *jack_devout);
 void ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout);
 
 AgsJackDevout* ags_jack_devout_new();

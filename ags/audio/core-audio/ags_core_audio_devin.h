@@ -234,7 +234,7 @@ void ags_core_audio_devin_unset_flags(AgsCoreAudioDevin *core_audio_devin, AgsCo
 
 void ags_core_audio_devin_switch_buffer_flag(AgsCoreAudioDevin *core_audio_devin);
 
-void ags_core_audio_devin_adjust_delay_and_attack(AgsCoreAudioDevin *core_audio_devin);
+G_DEPRECATED void ags_core_audio_devin_adjust_delay_and_attack(AgsCoreAudioDevin *core_audio_devin);
 void ags_core_audio_devin_realloc_buffer(AgsCoreAudioDevin *core_audio_devin);
 
 AgsCoreAudioDevin* ags_core_audio_devin_new();

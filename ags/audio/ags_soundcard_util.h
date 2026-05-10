@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,19 +40,19 @@ GType ags_soundcard_util_get_type(void);
 
 GRecMutex* ags_soundcard_util_get_obj_mutex(GObject *soundcard);
 
-void ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard);
+G_DEPRECATED void ags_soundcard_util_adjust_delay_and_attack(GObject *soundcard);
 
 gint64 ags_soundcard_util_calc_system_time(GObject *soundcard);
 gint64 ags_soundcard_util_calc_time_samples(GObject *soundcard);
 gint64 ags_soundcard_util_calc_time_samples_absolute(GObject *soundcard);
 
-void ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
-						    guint *note_256th_offset_lower,
-						    guint *note_256th_offset_upper);
+G_DEPRECATED void ags_soundcard_util_calc_next_note_256th_offset(GObject *soundcard,
+								 guint *note_256th_offset_lower,
+								 guint *note_256th_offset_upper);
 
-void ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
-						    guint *note_256th_attack_lower,
-						    guint *note_256th_attack_upper);
+G_DEPRECATED void ags_soundcard_util_calc_next_note_256th_attack(GObject *soundcard,
+								 guint *note_256th_attack_lower,
+								 guint *note_256th_attack_upper);
 
 G_END_DECLS
 

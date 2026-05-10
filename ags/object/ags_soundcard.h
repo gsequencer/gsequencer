@@ -312,55 +312,58 @@ void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
 			   gdouble bpm);
 gdouble ags_soundcard_get_bpm(AgsSoundcard *soundcard);
 
-void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
-				    gdouble delay_factor);
-gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
+G_DEPRECATED_FOR(AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR) void ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
+											 gdouble delay_factor);
+G_DEPRECATED_FOR(AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR) gdouble ags_soundcard_get_delay_factor(AgsSoundcard *soundcard);
 
-gdouble ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard);
+G_DEPRECATED gdouble ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard);
 
-gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
-guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
+/*
+ * Deprecated in favor of ags_soundcard_get_frame_clock() and AgsFrameClock implementation
+ */
+G_DEPRECATED gdouble ags_soundcard_get_delay(AgsSoundcard *soundcard);
+G_DEPRECATED guint ags_soundcard_get_attack(AgsSoundcard *soundcard);
 
-guint ags_soundcard_get_delay_counter(AgsSoundcard *soundcard);
+G_DEPRECATED guint ags_soundcard_get_delay_counter(AgsSoundcard *soundcard);
 
-void ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
-					 guint start_note_offset);
-guint ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard);
+G_DEPRECATED void ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
+						      guint start_note_offset);
+G_DEPRECATED guint ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard);
 
-void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
-				   guint note_offset);
-guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
+G_DEPRECATED void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
+						guint note_offset);
+G_DEPRECATED guint ags_soundcard_get_note_offset(AgsSoundcard *soundcard);
 
-void ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
-					 guint *note_256th_offset_lower,
-					 guint *note_256th_offset_upper);
+G_DEPRECATED void ags_soundcard_get_note_256th_offset(AgsSoundcard *soundcard,
+						      guint *note_256th_offset_lower,
+						      guint *note_256th_offset_upper);
 
-guint ags_soundcard_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard);
-guint ags_soundcard_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard);
+G_DEPRECATED guint ags_soundcard_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard);
+G_DEPRECATED guint ags_soundcard_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard);
 
-void ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
-					 guint *note_256th_attack_lower,
-					 guint *note_256th_attack_upper);
+G_DEPRECATED void ags_soundcard_get_note_256th_attack(AgsSoundcard *soundcard,
+						      guint *note_256th_attack_lower,
+						      guint *note_256th_attack_upper);
 
-guint ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
-						      guint note_256th_attack_position);
+G_DEPRECATED guint ags_soundcard_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
+								   guint note_256th_attack_position);
 
-void ags_soundcard_get_note_256th_attack_position(AgsSoundcard *soundcard,
-						  guint *note_256th_attack_position_lower,
-						  guint *note_256th_attack_position_upper);
+G_DEPRECATED void ags_soundcard_get_note_256th_attack_position(AgsSoundcard *soundcard,
+							       guint *note_256th_attack_position_lower,
+							       guint *note_256th_attack_position_upper);
 
-void ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
+G_DEPRECATED void ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
 					    guint note_offset);
-guint ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard);
+G_DEPRECATED guint ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard);
 
-void ags_soundcard_set_loop(AgsSoundcard *soundcard,
+G_DEPRECATED void ags_soundcard_set_loop(AgsSoundcard *soundcard,
 			    guint loop_left, guint loop_right,
 			    gboolean do_loop);
-void ags_soundcard_get_loop(AgsSoundcard *soundcard,
+G_DEPRECATED void ags_soundcard_get_loop(AgsSoundcard *soundcard,
 			    guint *loop_left, guint *loop_right,
 			    gboolean *do_loop);
 
-guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
+G_DEPRECATED guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
 
 guint ags_soundcard_get_sub_block_count(AgsSoundcard *soundcard);
 

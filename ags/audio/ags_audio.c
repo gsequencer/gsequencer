@@ -11500,6 +11500,8 @@ ags_audio_get_automation(AgsAudio *audio)
     return(NULL);
   }
 
+  automation = NULL;
+  
   g_object_get(audio,
 	       "automation", &automation,
 	       NULL);

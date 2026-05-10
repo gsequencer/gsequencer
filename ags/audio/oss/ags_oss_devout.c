@@ -474,6 +474,8 @@ ags_oss_devout_class_init(AgsOssDevoutClass *oss_devout)
    * tact
    * 
    * Since: 3.13.2
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -492,6 +494,8 @@ ags_oss_devout_class_init(AgsOssDevoutClass *oss_devout)
    * Attack of the buffer
    * 
    * Since: 3.13.2
+   * 
+   * Deprecated: use AgsFrameClock instead
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),

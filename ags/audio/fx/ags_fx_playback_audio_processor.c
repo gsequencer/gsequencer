@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -323,12 +323,15 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
   AgsFxPlaybackAudio *fx_playback_audio;
   AgsFxPlaybackAudioProcessor *fx_playback_audio_processor;
   AgsPort *port;
+  
+  GObject *output_soundcard;
 
   gdouble playback_duration;
   
   GRecMutex *recall_mutex;
 
   gdouble delay;
+  gdouble absolute_delay;
   guint64 playback_counter;
   guint buffer_size;
 
@@ -341,9 +344,12 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
 
+  output_soundcard = NULL;
+  
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   g_object_get(fx_playback_audio_processor,
+	       "output-soundcard", &output_soundcard,
 	       "recall-audio", &fx_playback_audio,
 	       "buffer-size", &buffer_size,
 	       NULL);
@@ -352,7 +358,9 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
   port = NULL;
 
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
-  
+
+  absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+    
   playback_duration = ceil(AGS_NOTATION_DEFAULT_DURATION * delay);
       
   g_object_get(fx_playback_audio,
@@ -389,6 +397,10 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
 	
     g_object_unref(port);
   }
+
+  if(output_soundcard != NULL){
+    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  }
   
   switch(whence){
   case AGS_SEEK_CUR:
@@ -410,7 +422,7 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
       fx_playback_audio_processor->current_offset_counter = playback_counter;
 
     fx_playback_audio_processor->x_offset = 
-      fx_playback_audio_processor->current_x_offset = (guint64) floor(playback_counter * delay) * buffer_size;
+      fx_playback_audio_processor->current_x_offset = (guint64) floor(playback_counter * absolute_delay) * buffer_size;
   
     g_rec_mutex_unlock(recall_mutex);
   }
@@ -435,7 +447,7 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
       fx_playback_audio_processor->current_offset_counter = playback_counter;
   
     fx_playback_audio_processor->x_offset = 
-      fx_playback_audio_processor->current_x_offset = (guint64) floor(playback_counter * delay) * buffer_size;
+      fx_playback_audio_processor->current_x_offset = (guint64) floor(playback_counter * absolute_delay) * buffer_size;
 
     g_rec_mutex_unlock(recall_mutex);
   }
@@ -451,11 +463,15 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
       fx_playback_audio_processor->current_offset_counter = offset;
 
     fx_playback_audio_processor->x_offset = 
-      fx_playback_audio_processor->current_x_offset = (guint64) floor(offset * delay) * buffer_size;
+      fx_playback_audio_processor->current_x_offset = (guint64) floor(offset * absolute_delay) * buffer_size;
     
     g_rec_mutex_unlock(recall_mutex);
   }
   break;
+  }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
   }
 
   if(fx_playback_audio != NULL){
@@ -739,7 +755,7 @@ ags_fx_playback_audio_processor_run_init_pre(AgsRecall *recall)
 
   /* get delay counter */
   g_rec_mutex_lock(fx_playback_audio_processor_mutex);
-    
+
   fx_playback_audio_processor->delay_counter = 0;
   fx_playback_audio_processor->offset_counter = 0;
   fx_playback_audio_processor->x_offset = 0;
@@ -747,7 +763,7 @@ ags_fx_playback_audio_processor_run_init_pre(AgsRecall *recall)
   fx_playback_audio_processor->current_delay_counter = 0;
   fx_playback_audio_processor->current_offset_counter = 0;
   fx_playback_audio_processor->current_x_offset = 0;
-
+  
   g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
   
   /* call parent */
@@ -2390,7 +2406,7 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
     note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
   }
 
-  if(delay_counter + 1.0 >= floor(delay)){
+  if(floor(delay) + 1.0 < delay_counter + 1.0){
     g_rec_mutex_lock(fx_playback_audio_processor_mutex);
     
     fx_playback_audio_processor->current_delay_counter = 0.0;
@@ -2410,7 +2426,9 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
   }else{
     g_rec_mutex_lock(fx_playback_audio_processor_mutex);
     
-    fx_playback_audio_processor->current_delay_counter += 1.0;
+    fx_playback_audio_processor->current_delay_counter = delay_counter + 1.0;
+
+    fx_playback_audio_processor->current_offset_counter = note_offset;
 
     fx_playback_audio_processor->current_x_offset += buffer_size;
 

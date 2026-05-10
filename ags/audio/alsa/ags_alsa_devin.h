@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -225,7 +225,7 @@ void ags_alsa_devin_unset_flags(AgsAlsaDevin *alsa_devin, AgsAlsaDevinFlags flag
 
 void ags_alsa_devin_switch_buffer_flag(AgsAlsaDevin *alsa_devin);
 
-void ags_alsa_devin_adjust_delay_and_attack(AgsAlsaDevin *alsa_devin);
+G_DEPRECATED void ags_alsa_devin_adjust_delay_and_attack(AgsAlsaDevin *alsa_devin);
 void ags_alsa_devin_realloc_buffer(AgsAlsaDevin *alsa_devin);
 
 AgsAlsaDevin* ags_alsa_devin_new();
