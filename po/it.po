@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-03-28 11:05+0100\n"
+"POT-Creation-Date: 2026-05-09 20:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1446,47 +1446,47 @@ msgstr ""
 msgid "volume"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:232
+#: ags/app/machine/ags_equalizer10.c:236
 msgid "28Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:253
+#: ags/app/machine/ags_equalizer10.c:257
 msgid "56Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:274
+#: ags/app/machine/ags_equalizer10.c:278
 msgid "112Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:295
+#: ags/app/machine/ags_equalizer10.c:299
 msgid "224Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:316
+#: ags/app/machine/ags_equalizer10.c:320
 msgid "448Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:337
+#: ags/app/machine/ags_equalizer10.c:341
 msgid "896Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:358
+#: ags/app/machine/ags_equalizer10.c:362
 msgid "1792Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:379
+#: ags/app/machine/ags_equalizer10.c:383
 msgid "3584Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:400
+#: ags/app/machine/ags_equalizer10.c:404
 msgid "7168Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:421
+#: ags/app/machine/ags_equalizer10.c:425
 msgid "14336Hz"
 msgstr ""
 
-#: ags/app/machine/ags_equalizer10.c:442
+#: ags/app/machine/ags_equalizer10.c:446
 msgid "pressure"
 msgstr ""
 

@@ -1,6 +1,7 @@
 ags (8.4.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added language support for Georgian ka.po
 	* deprecated ags_soundcard_set_delay_factor()
 	* deprecated ags_soundcard_get_delay_factor()
 	* deprecated ags_soundcard_get_absolute_delay()
