@@ -708,7 +708,7 @@ ags_wave_export_dialog_apply(AgsApplicable *applicable)
 
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
   
   delay = (gdouble) frame_clock->absolute_delay;
   delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
@@ -787,7 +787,7 @@ ags_wave_export_dialog_update_duration(AgsWaveExportDialog *wave_export_dialog)
 
   bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(soundcard));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
   
   delay = (gdouble) frame_clock->absolute_delay;
   delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;

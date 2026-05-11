@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -419,7 +419,7 @@ ags_time_stretch_buffer_popover_apply(AgsApplicable *applicable)
 	       "wave", &start_wave,
 	       NULL);
   
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   delay = (gdouble) frame_clock->absolute_delay;
 

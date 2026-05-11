@@ -404,7 +404,7 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
 	       "wave", &start_list_wave,
 	       NULL);
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   delay = (gdouble) frame_clock->absolute_delay;
   

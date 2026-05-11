@@ -1550,7 +1550,7 @@ ags_fifoout_get_frame_clock(AgsSoundcard *soundcard)
   /* get frame clock */
   g_rec_mutex_lock(fifoout_mutex);
 
-  frame_clock = fifoout->frame_clock;
+  frame_clock = (GObject *) fifoout->frame_clock;
   
   g_rec_mutex_unlock(fifoout_mutex);
   
