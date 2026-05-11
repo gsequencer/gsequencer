@@ -65,7 +65,7 @@ ags_wave_edit_update_ui_callback(GObject *ui_provider,
 
   output_soundcard = ags_audio_get_output_soundcard(audio);
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   hscrollbar_adjustment = gtk_scrollbar_get_adjustment(wave_edit->hscrollbar);
     
