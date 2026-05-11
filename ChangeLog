@@ -1,6 +1,7 @@
 ags (9.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* break ABI on some platforms from guint to guint64 with AgsSoundcard::offset-changed()
 	* implemented AgsFrameClock
 	* implemented AgsEqualizer10 presets and refresh port
 	* implemented ags_soundcard_get_frame_clock()
