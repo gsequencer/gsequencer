@@ -464,7 +464,7 @@ ags_alsa_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->tic = ags_alsa_devout_tic;
   
-  soundcard->offset_changed = ags_alsa_devout_offset_changed;;
+  soundcard->offset_changed = ags_alsa_devout_offset_changed;
     
   soundcard->set_bpm = ags_alsa_devout_set_bpm;
   soundcard->get_bpm = ags_alsa_devout_get_bpm;

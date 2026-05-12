@@ -663,10 +663,12 @@ ags_alsa_devin_set_property(GObject *gobject,
 
     alsa_devin->buffer_size = buffer_size;
 
+    ags_frame_clock_set_buffer_size(alsa_devin->frame_clock,
+				    buffer_size);
+
     g_rec_mutex_unlock(alsa_devin_mutex);
 
     ags_alsa_devin_realloc_buffer(alsa_devin);
-    ags_alsa_devin_adjust_delay_and_attack(alsa_devin);
   }
   break;
   case PROP_SAMPLERATE:
@@ -685,9 +687,10 @@ ags_alsa_devin_set_property(GObject *gobject,
 
     alsa_devin->samplerate = samplerate;
 
-    g_rec_mutex_unlock(alsa_devin_mutex);
+    ags_frame_clock_set_samplerate(alsa_devin->frame_clock,
+				   samplerate);
 
-    ags_alsa_devin_adjust_delay_and_attack(alsa_devin);
+    g_rec_mutex_unlock(alsa_devin_mutex);
   }
   break;
   case PROP_BPM:
@@ -706,9 +709,10 @@ ags_alsa_devin_set_property(GObject *gobject,
 
     alsa_devin->bpm = bpm;
 
-    g_rec_mutex_unlock(alsa_devin_mutex);
+    ags_frame_clock_set_bpm(alsa_devin->frame_clock,
+			    bpm);
 
-    ags_alsa_devin_adjust_delay_and_attack(alsa_devin);
+    g_rec_mutex_unlock(alsa_devin_mutex);
   }
   break;
   case PROP_BUFFER:
@@ -876,9 +880,6 @@ ags_alsa_devin_finalize(GObject *gobject)
   }
 
   g_free(alsa_devin->sub_block_mutex);
-  
-  g_free(alsa_devin->delay);
-  g_free(alsa_devin->attack);
   
   g_free(alsa_devin->device);
 
@@ -2610,7 +2611,7 @@ ags_alsa_devin_get_bpm(AgsSoundcard *soundcard)
 
 void
 ags_alsa_devin_set_start_note_offset(AgsSoundcard *soundcard,
-				     guint start_note_offset)
+				     guint64 start_note_offset)
 {
   AgsAlsaDevin *alsa_devin;
 
@@ -2632,12 +2633,12 @@ ags_alsa_devin_set_start_note_offset(AgsSoundcard *soundcard,
   g_rec_mutex_unlock(alsa_devin_mutex);
 }
 
-guint
+guint64
 ags_alsa_devin_get_start_note_offset(AgsSoundcard *soundcard)
 {
   AgsAlsaDevin *alsa_devin;
 
-  guint start_note_offset;
+  guint64 start_note_offset;
   
   GRecMutex *alsa_devin_mutex;  
 
@@ -2818,24 +2819,6 @@ ags_alsa_devin_switch_buffer_flag(AgsAlsaDevin *alsa_devin)
   }
 
   g_rec_mutex_unlock(alsa_devin_mutex);
-}
-
-/**
- * ags_alsa_devin_adjust_delay_and_attack:
- * @alsa_devin: the #AgsAlsaDevin
- *
- * Calculate delay and attack and reset it.
- *
- * Since: 3.13.2
- */
-void
-ags_alsa_devin_adjust_delay_and_attack(AgsAlsaDevin *alsa_devin)
-{
-  if(!AGS_IS_ALSA_DEVIN(alsa_devin)){
-    return;
-  }
-  
-  ags_soundcard_util_adjust_delay_and_attack((GObject *) alsa_devin);
 }
 
 /**
