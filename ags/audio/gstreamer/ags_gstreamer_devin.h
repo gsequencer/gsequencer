@@ -134,7 +134,7 @@ struct _AgsGstreamerDevin
   guint buffer_size;
   guint samplerate;
 
-  double bpm; // beats per minute
+  gdouble bpm; // beats per minute
 
   guint64 start_note_offset;
 

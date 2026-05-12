@@ -148,7 +148,7 @@ struct _AgsAlsaDevout
   guint buffer_size;
   guint samplerate; // sample rate
 
-  double bpm; // beats per minute
+  gdouble bpm; // beats per minute
 
   guint64 start_note_offset;
   
