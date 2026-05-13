@@ -957,9 +957,6 @@ ags_jack_devin_finalize(GObject *gobject)
   /* free buffer array */
   g_free(jack_devin->app_buffer);
 
-  g_free(jack_devin->delay);
-  g_free(jack_devin->attack);
-
   /* jack client */
   if(jack_devin->jack_client != NULL){
     g_object_unref(jack_devin->jack_client);

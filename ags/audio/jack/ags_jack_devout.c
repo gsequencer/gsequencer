@@ -92,6 +92,16 @@ void ags_jack_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			      GError **error);
 guint ags_jack_devout_get_capability(AgsSoundcard *soundcard);
 
+void ags_jack_devout_set_bpm(AgsSoundcard *soundcard,
+			     gdouble bpm);
+gdouble ags_jack_devout_get_bpm(AgsSoundcard *soundcard);
+
+void ags_jack_devout_set_start_note_offset(AgsSoundcard *soundcard,
+					   guint64 start_note_offset);
+guint64 ags_jack_devout_get_start_note_offset(AgsSoundcard *soundcard);
+
+GObject* ags_jack_devout_get_frame_clock(AgsSoundcard *soundcard);
+
 gboolean ags_jack_devout_is_starting(AgsSoundcard *soundcard);
 gboolean ags_jack_devout_is_playing(AgsSoundcard *soundcard);
 
@@ -106,16 +116,6 @@ void ags_jack_devout_port_free(AgsSoundcard *soundcard);
 void ags_jack_devout_tic(AgsSoundcard *soundcard);
 void ags_jack_devout_offset_changed(AgsSoundcard *soundcard,
 				    guint64 note_offset);
-
-void ags_jack_devout_set_bpm(AgsSoundcard *soundcard,
-			     gdouble bpm);
-gdouble ags_jack_devout_get_bpm(AgsSoundcard *soundcard);
-
-void ags_jack_devout_set_start_note_offset(AgsSoundcard *soundcard,
-					   guint64 start_note_offset);
-guint64 ags_jack_devout_get_start_note_offset(AgsSoundcard *soundcard);
-
-GObject* ags_jack_devout_get_frame_clock(AgsSoundcard *soundcard);
 
 void* ags_jack_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_jack_devout_get_next_buffer(AgsSoundcard *soundcard);
@@ -465,6 +465,14 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->pcm_info = ags_jack_devout_pcm_info;
   soundcard->get_capability = ags_jack_devout_get_capability;
 
+  soundcard->set_bpm = ags_jack_devout_set_bpm;
+  soundcard->get_bpm = ags_jack_devout_get_bpm;
+
+  soundcard->set_start_note_offset = ags_jack_devout_set_start_note_offset;
+  soundcard->get_start_note_offset = ags_jack_devout_get_start_note_offset;
+
+  soundcard->get_frame_clock = ags_jack_devout_get_frame_clock;
+
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_jack_devout_is_starting;
@@ -484,14 +492,6 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->tic = ags_jack_devout_tic;
   soundcard->offset_changed = ags_jack_devout_offset_changed;
     
-  soundcard->set_bpm = ags_jack_devout_set_bpm;
-  soundcard->get_bpm = ags_jack_devout_get_bpm;
-
-  soundcard->set_start_note_offset = ags_jack_devout_set_start_note_offset;
-  soundcard->get_start_note_offset = ags_jack_devout_get_start_note_offset;
-
-  soundcard->get_frame_clock = ags_jack_devout_get_frame_clock;
-
   soundcard->get_buffer = ags_jack_devout_get_buffer;
   soundcard->get_next_buffer = ags_jack_devout_get_next_buffer;
   soundcard->get_prev_buffer = ags_jack_devout_get_prev_buffer;
@@ -1014,9 +1014,6 @@ ags_jack_devout_finalize(GObject *gobject)
 
   /* free buffer array */
   g_free(jack_devout->app_buffer);
-
-  g_free(jack_devout->delay);
-  g_free(jack_devout->attack);
 
   g_free(jack_devout->card_uri);
   
