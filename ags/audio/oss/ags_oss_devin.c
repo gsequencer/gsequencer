@@ -129,20 +129,19 @@ void ags_oss_devin_device_free(AgsSoundcard *soundcard);
 
 void ags_oss_devin_tic(AgsSoundcard *soundcard);
 void ags_oss_devin_offset_changed(AgsSoundcard *soundcard,
-				  guint note_offset);
+				  guint64 note_offset);
 
 void ags_oss_devin_set_bpm(AgsSoundcard *soundcard,
 			   gdouble bpm);
 gdouble ags_oss_devin_get_bpm(AgsSoundcard *soundcard);
 
-void ags_oss_devin_set_delay_factor(AgsSoundcard *soundcard,
-				    gdouble delay_factor);
-gdouble ags_oss_devin_get_delay_factor(AgsSoundcard *soundcard);
+void ags_oss_devin_set_start_note_offset(AgsSoundcard *soundcard,
+					 guint64 start_note_offset);
+guint64 ags_oss_devin_get_start_note_offset(AgsSoundcard *soundcard);
 
-gdouble ags_oss_devin_get_absolute_delay(AgsSoundcard *soundcard);
+GObject* ags_oss_devin_get_frame_clock(AgsSoundcard *soundcard);
 
-gdouble ags_oss_devin_get_delay(AgsSoundcard *soundcard);
-guint ags_oss_devin_get_attack(AgsSoundcard *soundcard);
+gchar* ags_oss_devin_get_uptime(AgsSoundcard *soundcard);
 
 void* ags_oss_devin_get_buffer(AgsSoundcard *soundcard);
 void* ags_oss_devin_get_next_buffer(AgsSoundcard *soundcard);
@@ -152,47 +151,6 @@ void ags_oss_devin_lock_buffer(AgsSoundcard *soundcard,
 			       void *buffer);
 void ags_oss_devin_unlock_buffer(AgsSoundcard *soundcard,
 				 void *buffer);
-
-guint ags_oss_devin_get_delay_counter(AgsSoundcard *soundcard);
-
-void ags_oss_devin_set_start_note_offset(AgsSoundcard *soundcard,
-					 guint start_note_offset);
-guint ags_oss_devin_get_start_note_offset(AgsSoundcard *soundcard);
-
-void ags_oss_devin_set_note_offset(AgsSoundcard *soundcard,
-				   guint note_offset);
-guint ags_oss_devin_get_note_offset(AgsSoundcard *soundcard);
-
-void ags_oss_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
-					    guint note_offset);
-guint ags_oss_devin_get_note_offset_absolute(AgsSoundcard *soundcard);
-
-void ags_oss_devin_set_loop(AgsSoundcard *soundcard,
-			    guint loop_left, guint loop_right,
-			    gboolean do_loop);
-void ags_oss_devin_get_loop(AgsSoundcard *soundcard,
-			    guint *loop_left, guint *loop_right,
-			    gboolean *do_loop);
-
-guint ags_oss_devin_get_loop_offset(AgsSoundcard *soundcard);
-
-void ags_oss_devin_get_note_256th_offset(AgsSoundcard *soundcard,
-					 guint *note_256th_offset_lower,
-					 guint *note_256th_offset_upper);
-
-void ags_oss_devin_get_note_256th_attack(AgsSoundcard *soundcard,
-					 guint *note_256th_attack_lower,
-					 guint *note_256th_attack_upper);
-
-guint ags_oss_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
-						      guint note_256th_attack_position);
-
-void ags_oss_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
-						  guint *note_256th_attack_position_lower,
-						  guint *note_256th_attack_position_upper);
-
-guint ags_oss_devin_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard);
-guint ags_oss_devin_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard);
 
 /**
  * SECTION:ags_oss_devin
@@ -212,10 +170,8 @@ enum{
   PROP_FORMAT,
   PROP_BUFFER_SIZE,
   PROP_SAMPLERATE,
-  PROP_BUFFER,
   PROP_BPM,
-  PROP_DELAY_FACTOR,
-  PROP_ATTACK,
+  PROP_BUFFER,
 };
 
 static gpointer ags_oss_devin_parent_class = NULL;
@@ -421,21 +377,6 @@ ags_oss_devin_class_init(AgsOssDevinClass *oss_devin)
 				  param_spec);
 
   /**
-   * AgsOssDevin:buffer:
-   *
-   * The buffer
-   * 
-   * Since: 3.13.2
-   */
-  param_spec = g_param_spec_pointer("buffer",
-				    i18n_pspec("the buffer"),
-				    i18n_pspec("The buffer to record"),
-				    G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER,
-				  param_spec);
-
-  /**
    * AgsOssDevin:bpm:
    *
    * Beats per minute
@@ -454,38 +395,20 @@ ags_oss_devin_class_init(AgsOssDevinClass *oss_devin)
 				  param_spec);
 
   /**
-   * AgsOssDevin:delay-factor:
+   * AgsOssDevin:buffer:
    *
-   * tact
+   * The buffer
    * 
    * Since: 3.13.2
    */
-  param_spec = g_param_spec_double("delay-factor",
-				   i18n_pspec("delay factor"),
-				   i18n_pspec("The delay factor"),
-				   0.0,
-				   16.0,
-				   1.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DELAY_FACTOR,
-				  param_spec);
-
-  /**
-   * AgsOssDevin:attack:
-   *
-   * Attack of the buffer
-   * 
-   * Since: 3.13.2
-   */
-  param_spec = g_param_spec_pointer("attack",
-				    i18n_pspec("attack of buffer"),
-				    i18n_pspec("The attack to use for the buffer"),
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to record"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_ATTACK,
+				  PROP_BUFFER,
 				  param_spec);
-  
+
   /* AgsOssDevinClass */
 }
 
@@ -552,13 +475,10 @@ ags_oss_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->set_bpm = ags_oss_devin_set_bpm;
   soundcard->get_bpm = ags_oss_devin_get_bpm;
 
-  soundcard->set_delay_factor = ags_oss_devin_set_delay_factor;
-  soundcard->get_delay_factor = ags_oss_devin_get_delay_factor;
+  soundcard->set_start_note_offset = ags_oss_devin_set_start_note_offset;
+  soundcard->get_start_note_offset = ags_oss_devin_get_start_note_offset;
 
-  soundcard->get_absolute_delay = ags_oss_devin_get_absolute_delay;
-
-  soundcard->get_delay = ags_oss_devin_get_delay;
-  soundcard->get_attack = ags_oss_devin_get_attack;
+  soundcard->get_frame_clock = ags_oss_devin_get_frame_clock;
 
   soundcard->get_buffer = ags_oss_devin_get_buffer;
   soundcard->get_next_buffer = ags_oss_devin_get_next_buffer;
@@ -566,33 +486,6 @@ ags_oss_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->lock_buffer = ags_oss_devin_lock_buffer;
   soundcard->unlock_buffer = ags_oss_devin_unlock_buffer;
-
-  soundcard->get_delay_counter = ags_oss_devin_get_delay_counter;
-
-  soundcard->set_start_note_offset = ags_oss_devin_set_start_note_offset;
-  soundcard->get_start_note_offset = ags_oss_devin_get_start_note_offset;
-
-  soundcard->set_note_offset = ags_oss_devin_set_note_offset;
-  soundcard->get_note_offset = ags_oss_devin_get_note_offset;
-
-  soundcard->set_note_offset_absolute = ags_oss_devin_set_note_offset_absolute;
-  soundcard->get_note_offset_absolute = ags_oss_devin_get_note_offset_absolute;
-
-  soundcard->set_loop = ags_oss_devin_set_loop;
-  soundcard->get_loop = ags_oss_devin_get_loop;
-
-  soundcard->get_loop_offset = ags_oss_devin_get_loop_offset;
-
-  soundcard->get_note_256th_offset = ags_oss_devin_get_note_256th_offset;
-
-  soundcard->get_note_256th_attack = ags_oss_devin_get_note_256th_attack;
-
-  soundcard->get_note_256th_attack_at_position = ags_oss_devin_get_note_256th_attack_at_position;
-
-  soundcard->get_note_256th_attack_position = ags_oss_devin_get_note_256th_attack_position;
-
-  soundcard->get_note_256th_attack_of_16th_pulse = ags_oss_devin_get_note_256th_attack_of_16th_pulse;
-  soundcard->get_note_256th_attack_of_16th_pulse_position = ags_oss_devin_get_note_256th_attack_of_16th_pulse_position;
 }
 
 void
@@ -600,15 +493,17 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
 {  
   AgsConfig *config;
   
-  GList *start_note_256th_attack;
-  
   gchar *str;
   gchar *segmentation;
 
   gdouble absolute_delay;
   guint denominator, numerator;
   guint i;
-  
+
+  /* config */
+  config = ags_config_get_instance();
+
+  /* flags */
   oss_devin->flags = 0;
   oss_devin->connectable_flags = 0;
 
@@ -619,9 +514,6 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
   oss_devin->uuid = ags_uuid_alloc();
   ags_uuid_generate(oss_devin->uuid);
 
-  /* config */
-  config = ags_config_get_instance();
-
   /* presets */
   oss_devin->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
   oss_devin->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
@@ -629,12 +521,21 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
   oss_devin->samplerate = ags_soundcard_helper_config_get_samplerate(config);
   oss_devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   oss_devin->format = ags_soundcard_helper_config_get_format(config);
+  
+  /* bpm */
+  oss_devin->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
+
+  /* start note offset */
+  oss_devin->start_note_offset = 0;
+  
+  /* frame clock */
+  oss_devin->frame_clock = ags_frame_clock_new();
 
   /* device */
   oss_devin->device_fd = -1;
   oss_devin->device = g_strdup(AGS_OSS_DEVIN_DEFAULT_OSS_DEVICE);
 
-  /* app buffer */
+  /* app buffer mutex */
   oss_devin->app_buffer_mode = AGS_OSS_DEVIN_APP_BUFFER_0;
 
   oss_devin->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
@@ -645,6 +546,7 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
     g_rec_mutex_init(oss_devin->app_buffer_mutex[i]);
   }
 
+  /* sub-block */
   oss_devin->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
   oss_devin->sub_block_mutex = (GRecMutex **) g_malloc(AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE * oss_devin->sub_block_count * oss_devin->pcm_channels * sizeof(GRecMutex *));
 
@@ -654,6 +556,7 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
     g_rec_mutex_init(oss_devin->sub_block_mutex[i]);
   }
 
+  /* app buffer */
   oss_devin->app_buffer = (void **) g_malloc(AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE * sizeof(void *));
   
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
@@ -672,97 +575,6 @@ ags_oss_devin_init(AgsOssDevin *oss_devin)
   }
   
   ags_oss_devin_realloc_buffer(oss_devin);
-  
-  /* bpm */
-  oss_devin->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
-
-  /* delay factor */
-  oss_devin->delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
-  
-  /* segmentation */
-  segmentation = ags_config_get_value(config,
-				      AGS_CONFIG_GENERIC,
-				      "segmentation");
-
-  if(segmentation != NULL){
-    sscanf(segmentation, "%d/%d",
-	   &denominator,
-	   &numerator);
-    
-    oss_devin->delay_factor = 1.0 / numerator * (numerator / denominator);
-
-    g_free(segmentation);
-  }
-
-  /* delay and attack */
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(oss_devin));
-
-  oss_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(gdouble));
-  
-  oss_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD * sizeof(guint));
-
-  oss_devin->note_256th_delay = absolute_delay / 16.0;
-
-  oss_devin->note_256th_attack_of_16th_pulse = 0;
-  oss_devin->note_256th_attack_of_16th_pulse_position = 0;
-
-  start_note_256th_attack = NULL;
-
-  for(i = 0; i < 32; i++){
-    guint *note_256th_attack;
-    
-    note_256th_attack = (guint *) malloc((int) AGS_SOUNDCARD_DEFAULT_PERIOD *
-					 sizeof(guint));
-    
-    start_note_256th_attack = g_list_prepend(start_note_256th_attack,
-					     note_256th_attack);
-  }
-
-  oss_devin->note_256th_attack = start_note_256th_attack;
-
-  ags_oss_devin_adjust_delay_and_attack(oss_devin);
-  
-  /* counters */
-  oss_devin->tact_counter = 0.0;
-  oss_devin->delay_counter = 0;
-  oss_devin->tic_counter = 0;
-
-  oss_devin->start_note_offset = 0;
-  oss_devin->note_offset = 0;
-  oss_devin->note_offset_absolute = 0;
-
-  oss_devin->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
-  oss_devin->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
-
-  oss_devin->do_loop = FALSE;
-
-  oss_devin->loop_offset = 0;  
-
-  /* 256th */
-  //NOTE:JK: note_256th_delay was prior set
-
-  //NOTE:JK: note_256th_attack was prior set
-  
-  oss_devin->note_256th_offset = 0;
-
-  if(oss_devin->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    guint i;
-    
-    buffer_size = oss_devin->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(oss_devin),
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-    
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      oss_devin->note_256th_offset_last = oss_devin->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (oss_devin->note_256th_delay * (double) buffer_size));
-    }
-  }
 }
 
 void
@@ -873,10 +685,12 @@ ags_oss_devin_set_property(GObject *gobject,
 
     oss_devin->buffer_size = buffer_size;
 
+    ags_frame_clock_set_buffer_size(oss_devin->frame_clock,
+				    buffer_size);
+    
     g_rec_mutex_unlock(oss_devin_mutex);
 
     ags_oss_devin_realloc_buffer(oss_devin);
-    ags_oss_devin_adjust_delay_and_attack(oss_devin);
   }
   break;
   case PROP_SAMPLERATE:
@@ -895,14 +709,10 @@ ags_oss_devin_set_property(GObject *gobject,
 
     oss_devin->samplerate = samplerate;
 
-    g_rec_mutex_unlock(oss_devin_mutex);
+    ags_frame_clock_set_samplerate(oss_devin->frame_clock,
+				   samplerate);
 
-    ags_oss_devin_adjust_delay_and_attack(oss_devin);
-  }
-  break;
-  case PROP_BUFFER:
-  {
-    //TODO:JK: implement me
+    g_rec_mutex_unlock(oss_devin_mutex);
   }
   break;
   case PROP_BPM:
@@ -921,30 +731,15 @@ ags_oss_devin_set_property(GObject *gobject,
 
     oss_devin->bpm = bpm;
 
-    g_rec_mutex_unlock(oss_devin_mutex);
+    ags_frame_clock_set_bpm(oss_devin->frame_clock,
+			    bpm);
 
-    ags_oss_devin_adjust_delay_and_attack(oss_devin);
+    g_rec_mutex_unlock(oss_devin_mutex);
   }
   break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
   {
-    gdouble delay_factor;
-      
-    delay_factor = g_value_get_double(value);
-
-    g_rec_mutex_lock(oss_devin_mutex);
-
-    if(delay_factor == oss_devin->delay_factor){
-      g_rec_mutex_unlock(oss_devin_mutex);
-
-      return;
-    }
-
-    oss_devin->delay_factor = delay_factor;
-
-    g_rec_mutex_unlock(oss_devin_mutex);
-
-    ags_oss_devin_adjust_delay_and_attack(oss_devin);
+    //TODO:JK: implement me
   }
   break;
   default:
@@ -1023,15 +818,6 @@ ags_oss_devin_get_property(GObject *gobject,
     g_rec_mutex_unlock(oss_devin_mutex);
   }
   break;
-  case PROP_BUFFER:
-  {
-    g_rec_mutex_lock(oss_devin_mutex);
-
-    g_value_set_pointer(value, oss_devin->app_buffer);
-
-    g_rec_mutex_unlock(oss_devin_mutex);
-  }
-  break;
   case PROP_BPM:
   {
     g_rec_mutex_lock(oss_devin_mutex);
@@ -1041,20 +827,11 @@ ags_oss_devin_get_property(GObject *gobject,
     g_rec_mutex_unlock(oss_devin_mutex);
   }
   break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
   {
     g_rec_mutex_lock(oss_devin_mutex);
 
-    g_value_set_double(value, oss_devin->delay_factor);
-
-    g_rec_mutex_unlock(oss_devin_mutex);
-  }
-  break;
-  case PROP_ATTACK:
-  {
-    g_rec_mutex_lock(oss_devin_mutex);
-
-    g_value_set_pointer(value, oss_devin->attack);
+    g_value_set_pointer(value, oss_devin->app_buffer);
 
     g_rec_mutex_unlock(oss_devin_mutex);
   }
@@ -1089,18 +866,26 @@ ags_oss_devin_finalize(GObject *gobject)
 
   ags_uuid_free(oss_devin->uuid);
 
+  /* frame clock */
+  if(oss_devin->frame_clock != NULL){
+    g_object_unref(oss_devin->frame_clock);
+  }
+
+  /* app buffer */
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
     g_free(oss_devin->app_buffer[i]);
   }
 
   g_free(oss_devin->app_buffer);
 
+  /* app buffer mutex */
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_BACKEND_BUFFER_SIZE; i++){
     g_free(oss_devin->backend_buffer[i]);
   }
 
   g_free(oss_devin->backend_buffer);
 
+  /* backend buffer */
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE; i++){
     g_rec_mutex_clear(oss_devin->app_buffer_mutex[i]);
     
@@ -1109,6 +894,7 @@ ags_oss_devin_finalize(GObject *gobject)
 
   g_free(oss_devin->app_buffer_mutex);
   
+  /* sub-block mutex */  
   for(i = 0; i < AGS_OSS_DEVIN_DEFAULT_APP_BUFFER_SIZE * oss_devin->sub_block_count * oss_devin->pcm_channels; i++){
     g_rec_mutex_clear(oss_devin->sub_block_mutex[i]);
     
@@ -1116,9 +902,6 @@ ags_oss_devin_finalize(GObject *gobject)
   }
 
   g_free(oss_devin->sub_block_mutex);
-  
-  g_free(oss_devin->delay);
-  g_free(oss_devin->attack);
   
   g_free(oss_devin->device);
 
@@ -1883,39 +1666,23 @@ ags_oss_devin_is_recording(AgsSoundcard *soundcard)
 gchar*
 ags_oss_devin_get_uptime(AgsSoundcard *soundcard)
 {
+  AgsOssDevin *oss_devin;
+
   gchar *uptime;
 
-  if(ags_soundcard_is_recording(soundcard)){
-    guint samplerate;
-    guint buffer_size;
-
-    guint note_offset;
-    gdouble bpm;
-    gdouble delay_factor;
-    
-    gdouble delay;
-
-    ags_soundcard_get_presets(soundcard,
-			      NULL,
-			      &samplerate,
-			      &buffer_size,
-			      NULL);
-    
-    note_offset = ags_soundcard_get_note_offset_absolute(soundcard);
-
-    bpm = ags_soundcard_get_bpm(soundcard);
-    delay_factor = ags_soundcard_get_delay_factor(soundcard);
-
-    /* calculate delays */
-    delay = ags_soundcard_get_absolute_delay(soundcard);
+  GRecMutex *oss_devin_mutex;
   
-    uptime = ags_time_get_uptime_from_offset(note_offset,
-					     bpm,
-					     delay,
-					     delay_factor);
-  }else{
-    uptime = g_strdup(AGS_TIME_ZERO);
-  }
+  oss_devin = AGS_OSS_DEVIN(soundcard);
+  
+  /* get core audio devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
+  /* get time string */
+  g_rec_mutex_lock(oss_devin_mutex);
+  
+  uptime = ags_frame_clock_to_time_string(oss_devin->frame_clock);
+
+  g_rec_mutex_unlock(oss_devin_mutex);
   
   return(uptime);
 }
@@ -2171,40 +1938,12 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
 	      oss_devin->samplerate);
   }
 #endif
+
+  ags_frame_clock_start(oss_devin->frame_clock);
+
+  ags_frame_clock_set_note_offset(oss_devin->frame_clock,
+				  oss_devin->start_note_offset);
   
-  oss_devin->tact_counter = 0.0;
-  oss_devin->delay_counter = 0.0;
-  oss_devin->tic_counter = 0;
-
-  oss_devin->note_offset = oss_devin->start_note_offset;
-  oss_devin->note_offset_absolute = oss_devin->start_note_offset;
-
-  oss_devin->note_256th_attack_of_16th_pulse = 0;
-  oss_devin->note_256th_attack_of_16th_pulse_position = 0;
-
-  oss_devin->note_256th_delay_counter = 0.0;
-
-  oss_devin->note_256th_offset = 16 * oss_devin->start_note_offset;
-
-  if(oss_devin->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    guint i;
-    
-    buffer_size = oss_devin->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(oss_devin),
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-    
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      oss_devin->note_256th_offset_last = oss_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (oss_devin->note_256th_delay * (double) buffer_size));
-    }
-  }
-
   oss_devin->backend_buffer_mode = AGS_OSS_DEVIN_BACKEND_BUFFER_0;
     
 #ifdef AGS_WITH_OSS
@@ -2496,34 +2235,7 @@ ags_oss_devin_device_free(AgsSoundcard *soundcard)
 
   oss_devin->backend_buffer_mode = AGS_OSS_DEVIN_BACKEND_BUFFER_0;
 
-  oss_devin->note_offset = oss_devin->start_note_offset;
-  oss_devin->note_offset_absolute = oss_devin->start_note_offset;
-
-  oss_devin->note_256th_offset = 16 * oss_devin->start_note_offset;
-  
-  oss_devin->note_256th_attack_of_16th_pulse = 0;
-  oss_devin->note_256th_attack_of_16th_pulse_position = 0;
-  
-  oss_devin->note_256th_offset_last = oss_devin->note_256th_offset;
-  
-  if(oss_devin->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    guint i;
-    
-    buffer_size = oss_devin->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(oss_devin),
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-    
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      oss_devin->note_256th_offset_last = oss_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (oss_devin->note_256th_delay * (double) buffer_size));
-    }
-  }
+  ags_frame_clock_stop(oss_devin->frame_clock);
 
   g_rec_mutex_unlock(oss_devin_mutex);
 }
@@ -2533,288 +2245,32 @@ ags_oss_devin_tic(AgsSoundcard *soundcard)
 {
   AgsOssDevin *oss_devin;
 
-  gdouble absolute_delay;
-  gdouble delay;
-  gdouble delay_counter;
-  guint attack;
-  guint current_note_256th_attack;
-  gdouble note_256th_delay;
-  guint note_256th_attack_lower, note_256th_attack_upper;
-  guint note_256th_attack_of_16th_pulse;
-  guint note_256th_attack_of_16th_pulse_position;
-  guint buffer_size;
-  guint note_offset_absolute;
-  guint note_offset;
-  guint prev_note_256th_offset_last;
-  guint loop_left, loop_right;
-  gboolean do_loop;
-  guint i;
-  guint note_256th_offset_lower;
-  guint note_256th_offset_upper;
-  guint next_note_256th_offset_lower;
-  guint next_note_256th_offset_upper;
-  guint next_note_256th_attack_lower;
-  guint next_note_256th_attack_upper;
-  
   GRecMutex *oss_devin_mutex;
   
   oss_devin = AGS_OSS_DEVIN(soundcard);
   
   /* get oss devin mutex */
   oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-  
-  /* determine if attack should be switched */
+
+  /* frame clock */
   g_rec_mutex_lock(oss_devin_mutex);
-
-  delay = oss_devin->delay[oss_devin->tic_counter];
-  delay_counter = oss_devin->delay_counter;
-
-  note_256th_delay = oss_devin->note_256th_delay;
-
-  attack = oss_devin->attack[oss_devin->tic_counter];
-
-  buffer_size = oss_devin->buffer_size;
   
-  note_offset = oss_devin->note_offset;
-  note_offset_absolute = oss_devin->note_offset_absolute;
-  
-  loop_left = oss_devin->loop_left;
-  loop_right = oss_devin->loop_right;
-  
-  do_loop = oss_devin->do_loop;
+  ags_frame_clock_increment_counter(oss_devin->frame_clock);
 
-  g_rec_mutex_unlock(oss_devin_mutex);
-  
-  absolute_delay = ags_oss_devin_get_absolute_delay(soundcard);
-
-  note_256th_offset_lower = 0;
-  note_256th_offset_upper = 0;
-
-  note_256th_attack_lower = 0;
-  note_256th_attack_upper = 0;
-
-  note_256th_attack_of_16th_pulse_position =  ags_soundcard_get_note_256th_attack_of_16th_pulse_position(soundcard);
-
-  ags_soundcard_get_note_256th_offset(soundcard,
-				      &note_256th_offset_lower,
-				      &note_256th_offset_upper);
-  
-  ags_soundcard_get_note_256th_attack(soundcard,
-				      &note_256th_attack_lower,
-				      &note_256th_attack_upper);
-
-
-  prev_note_256th_offset_last = oss_devin->note_256th_offset_last;
-
-  next_note_256th_offset_lower = 0;
-  next_note_256th_offset_upper = 0;
-
-  next_note_256th_attack_lower = 0;
-  next_note_256th_attack_upper = 0;
-  
-  ags_soundcard_util_calc_next_note_256th_offset(G_OBJECT(soundcard),
-						 &next_note_256th_offset_lower,
-						 &next_note_256th_offset_upper);
-
-  ags_soundcard_util_calc_next_note_256th_attack(G_OBJECT(soundcard),
-						 &next_note_256th_attack_lower,
-						 &next_note_256th_attack_upper);
-
-  //  g_message("tic -> next 256th [%d-%d]", next_note_256th_offset_lower, next_note_256th_offset_upper);
-
-  oss_devin->note_256th_delay_counter += 1.0;    
-  
-  if((note_256th_delay <= 1.0 ||
-      oss_devin->note_256th_delay_counter >= note_256th_delay) &&
-     (16 * (note_offset + 1) <= next_note_256th_offset_upper ||
-      (next_note_256th_offset_lower + 64 < note_256th_offset_lower))){
-    //    g_message("16th pulse: %d (delay = %f)", note_offset + 1, delay);
-    
-    if(do_loop &&
-       next_note_256th_offset_lower + 64 < note_256th_offset_lower){
-      ags_soundcard_set_note_offset(soundcard,
-				    loop_left);
-
-      g_rec_mutex_lock(oss_devin_mutex);
-
-      oss_devin->note_256th_offset = next_note_256th_offset_lower;
-      oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
-      
-      oss_devin->note_256th_attack_of_16th_pulse = 0;
-      oss_devin->note_256th_attack_of_16th_pulse_position = 0;
-
-      g_rec_mutex_unlock(oss_devin_mutex);
-    }else{
-      ags_soundcard_set_note_offset(soundcard,
-				    note_offset + 1);
-
-      g_rec_mutex_lock(oss_devin_mutex);
-            
-      oss_devin->note_256th_offset = next_note_256th_offset_lower;
-      oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
-
-      note_256th_attack_of_16th_pulse = attack;
-      
-      current_note_256th_attack = attack;
-
-      i = 1;
-
-      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-										  note_256th_attack_of_16th_pulse_position + 1);
-      
-      for(; attack + (guint) floor((double) i * (note_256th_delay * (double) buffer_size)) < (guint) floor(absolute_delay * (double) buffer_size); i++){
-	current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-										    note_256th_attack_of_16th_pulse_position + i);
-      }
-
-      oss_devin->note_256th_attack_of_16th_pulse = current_note_256th_attack;
-      oss_devin->note_256th_attack_of_16th_pulse_position += i;
-
-      g_rec_mutex_unlock(oss_devin_mutex);
-    }
-    
-    ags_soundcard_set_note_offset_absolute(soundcard,
-					   note_offset_absolute + 1);
-
-    /* reset - delay counter */
-    g_rec_mutex_lock(oss_devin_mutex);
-
-    if(do_loop &&
-       next_note_256th_offset_lower + 64 < note_256th_offset_lower){
-      oss_devin->tic_counter = 0;
-
-      oss_devin->delay_counter = 0.0;
-
-      oss_devin->tact_counter = 0.0;
-
-      oss_devin->note_256th_delay_counter = 0.0;
-    }else{    
-      oss_devin->tic_counter += 1;
-
-      if(oss_devin->tic_counter == (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
-	/* reset - tic counter i.e. modified delay index within period */
-	oss_devin->tic_counter = 0;
-      }
-      
-      oss_devin->delay_counter = 0.0;
-
-      oss_devin->tact_counter += 1.0;
-
-      oss_devin->note_256th_delay_counter = 0.0;
-    }
-    
-    g_rec_mutex_unlock(oss_devin_mutex);
-
-    /* 16th pulse */
-    if(do_loop &&
-       next_note_256th_offset_lower + 64 < note_256th_offset_lower){
-      ags_soundcard_offset_changed(soundcard,
-				   loop_left);
-    }else{
-      ags_soundcard_offset_changed(soundcard,
-				   note_offset + 1);
-    }
-  }else{
-    g_rec_mutex_lock(oss_devin_mutex);
-    
-    if(note_256th_delay <= 1.0){
-      oss_devin->note_256th_offset = next_note_256th_offset_lower;
-      oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
-    }else{
-      if(oss_devin->note_256th_delay_counter >= note_256th_delay){
-	oss_devin->note_256th_offset = next_note_256th_offset_lower;
-	oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
-
-	oss_devin->note_256th_delay_counter -= note_256th_delay;
-      }
-    }
-
-    oss_devin->delay_counter += 1.0;
-    
-    g_rec_mutex_unlock(oss_devin_mutex);
-
-    if(floor(delay) + 1.0 < delay_counter + 1.0){
-      ags_soundcard_set_note_offset(soundcard,
-				    note_offset + 1);
-            
-      g_rec_mutex_lock(oss_devin_mutex);
-    
-      oss_devin->note_256th_offset = next_note_256th_offset_lower;
-      oss_devin->note_256th_offset_last = next_note_256th_offset_upper;
-
-      note_256th_attack_of_16th_pulse = attack;
-      
-      current_note_256th_attack = attack;
-
-      i = 1;
-
-      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-										  note_256th_attack_of_16th_pulse_position + 1);
-      
-      for(; attack + (guint) floor((double) i * (note_256th_delay * (double) buffer_size)) < (guint) floor(absolute_delay * (double) buffer_size); i++){
-	current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-										    note_256th_attack_of_16th_pulse_position + i);
-      }
-
-      oss_devin->note_256th_attack_of_16th_pulse = current_note_256th_attack;
-      oss_devin->note_256th_attack_of_16th_pulse_position += i;
-    
-      g_rec_mutex_unlock(oss_devin_mutex);
-    
-      ags_soundcard_set_note_offset_absolute(soundcard,
-					     note_offset_absolute + 1);
-
-      /* reset - delay counter */
-      g_rec_mutex_lock(oss_devin_mutex);
-    
-      oss_devin->tic_counter += 1;
-
-      if(oss_devin->tic_counter == (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
-	/* reset - tic counter i.e. modified delay index within period */
-	oss_devin->tic_counter = 0;
-      }
-      
-      oss_devin->delay_counter = 0.0;
-
-      oss_devin->tact_counter += 1.0;
-
-      oss_devin->note_256th_delay_counter = 0.0;
-    
-      g_rec_mutex_unlock(oss_devin_mutex);
-
-      /* 16th pulse */
-      ags_soundcard_offset_changed(soundcard,
-				   note_offset + 1);
-    }
+  /* 16th pulse */
+  if(ags_frame_clock_get_has_16th_pulse(oss_devin->frame_clock)){
+    ags_soundcard_offset_changed(soundcard,
+				 oss_devin->frame_clock->note_offset);
   }
+  
+  g_rec_mutex_unlock(oss_devin_mutex);
 }
 
 void
 ags_oss_devin_offset_changed(AgsSoundcard *soundcard,
-			     guint note_offset)
+			     guint64 note_offset)
 {
-#if 0
-  AgsOssDevin *oss_devin;
-  
-  GRecMutex *oss_devin_mutex;
-  
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* offset changed */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  oss_devin->tic_counter += 1;
-
-  if(oss_devin->tic_counter == AGS_SOUNDCARD_DEFAULT_PERIOD){
-    /* reset - tic counter i.e. modified delay index within period */
-    oss_devin->tic_counter = 0;
-  }
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-#endif
+  //empty
 }
 
 void
@@ -2834,10 +2290,11 @@ ags_oss_devin_set_bpm(AgsSoundcard *soundcard,
   g_rec_mutex_lock(oss_devin_mutex);
 
   oss_devin->bpm = bpm;
+  
+  ags_frame_clock_set_bpm(oss_devin->frame_clock,
+			  bpm);
 
   g_rec_mutex_unlock(oss_devin_mutex);
-
-  ags_oss_devin_adjust_delay_and_attack(oss_devin);
 }
 
 gdouble
@@ -2865,128 +2322,48 @@ ags_oss_devin_get_bpm(AgsSoundcard *soundcard)
 }
 
 void
-ags_oss_devin_set_delay_factor(AgsSoundcard *soundcard,
-			       gdouble delay_factor)
+ags_oss_devin_set_start_note_offset(AgsSoundcard *soundcard,
+				    guint64 start_note_offset)
 {
   AgsOssDevin *oss_devin;
 
-  GRecMutex *oss_devin_mutex;
-  
+  GRecMutex *oss_devin_mutex;  
+
   oss_devin = AGS_OSS_DEVIN(soundcard);
 
   /* get oss_devin mutex */
   oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
 
-  /* set delay factor */
+  /* set note offset */
   g_rec_mutex_lock(oss_devin_mutex);
 
-  oss_devin->delay_factor = delay_factor;
+  oss_devin->start_note_offset = start_note_offset;
 
   g_rec_mutex_unlock(oss_devin_mutex);
-
-  ags_oss_devin_adjust_delay_and_attack(oss_devin);
 }
 
-gdouble
-ags_oss_devin_get_delay_factor(AgsSoundcard *soundcard)
+guint64
+ags_oss_devin_get_start_note_offset(AgsSoundcard *soundcard)
 {
   AgsOssDevin *oss_devin;
 
-  gdouble delay_factor;
-  
-  GRecMutex *oss_devin_mutex;
-  
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get delay factor */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  delay_factor = oss_devin->delay_factor;
-  
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(delay_factor);
-}
-
-gdouble
-ags_oss_devin_get_delay(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint index;
-  gdouble delay;
-  
-  GRecMutex *oss_devin_mutex;
-  
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get delay */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  index = oss_devin->tic_counter;
-
-  delay = oss_devin->delay[index];
-  
-  g_rec_mutex_unlock(oss_devin_mutex);
-  
-  return(delay);
-}
-
-gdouble
-ags_oss_devin_get_absolute_delay(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  gdouble absolute_delay;
-  
-  GRecMutex *oss_devin_mutex;
-  
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-  
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get absolute delay */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  absolute_delay = (60.0 * (((gdouble) oss_devin->samplerate / (gdouble) oss_devin->buffer_size) / (gdouble) oss_devin->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) oss_devin->delay_factor)));
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(absolute_delay);
-}
-
-guint
-ags_oss_devin_get_attack(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint index;
-  guint attack;
+  guint64 start_note_offset;
   
   GRecMutex *oss_devin_mutex;  
 
   oss_devin = AGS_OSS_DEVIN(soundcard);
-  
+
   /* get oss_devin mutex */
   oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
 
-  /* get attack */
+  /* set note offset */
   g_rec_mutex_lock(oss_devin_mutex);
 
-  index = oss_devin->tic_counter;
-
-  attack = oss_devin->attack[index];
+  start_note_offset = oss_devin->start_note_offset;
 
   g_rec_mutex_unlock(oss_devin_mutex);
-  
-  return(attack);
+
+  return(start_note_offset);
 }
 
 void*
@@ -3097,542 +2474,6 @@ ags_oss_devin_unlock_buffer(AgsSoundcard *soundcard,
   }
 }
 
-guint
-ags_oss_devin_get_delay_counter(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint delay_counter;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-  
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* delay counter */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  delay_counter = oss_devin->delay_counter;
-  
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(delay_counter);
-}
-
-void
-ags_oss_devin_set_start_note_offset(AgsSoundcard *soundcard,
-				    guint start_note_offset)
-{
-  AgsOssDevin *oss_devin;
-
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* set note offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  oss_devin->start_note_offset = start_note_offset;
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-guint
-ags_oss_devin_get_start_note_offset(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint start_note_offset;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* set note offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  start_note_offset = oss_devin->start_note_offset;
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(start_note_offset);
-}
-
-void
-ags_oss_devin_set_note_offset(AgsSoundcard *soundcard,
-			      guint note_offset)
-{
-  AgsOssDevin *oss_devin;
-
-  gdouble note_256th_delay;
-
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* set note offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  oss_devin->note_offset = note_offset;
-
-  note_256th_delay = oss_devin->note_256th_delay;
-
-  oss_devin->note_256th_offset = 16 * note_offset;
-
-  oss_devin->note_256th_offset_last = oss_devin->note_256th_offset;
-  
-  if(oss_devin->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    
-    buffer_size = oss_devin->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(soundcard,
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      oss_devin->note_256th_offset_last = oss_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (oss_devin->note_256th_delay * (double) buffer_size));
-    }
-  }
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-guint
-ags_oss_devin_get_note_offset(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint note_offset;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* set note offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  note_offset = oss_devin->note_offset;
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(note_offset);
-}
-
-void
-ags_oss_devin_get_note_256th_offset(AgsSoundcard *soundcard,
-				    guint *offset_lower,
-				    guint *offset_upper)
-{
-  AgsOssDevin *oss_devin;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get note 256th offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  if(offset_lower != NULL){
-    offset_lower[0] = oss_devin->note_256th_offset;
-  }
-
-  if(offset_upper != NULL){
-    offset_upper[0] = oss_devin->note_256th_offset_last;
-  }
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-void
-ags_oss_devin_get_note_256th_attack(AgsSoundcard *soundcard,
-				    guint *note_256th_attack_lower,
-				    guint *note_256th_attack_upper)
-{
-  AgsOssDevin *oss_devin;
-
-  guint *note_256th_attack;
-
-  guint nth_list;
-  guint note_256th_attack_position_lower, note_256th_attack_position_upper;
-  guint local_note_256th_attack_lower, local_note_256th_attack_upper;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get note 256th attack lower and upper */
-  ags_soundcard_get_note_256th_attack_position(soundcard,
-					       &note_256th_attack_position_lower,
-					       &note_256th_attack_position_upper);
-
-  local_note_256th_attack_lower = 0;
-  local_note_256th_attack_upper = 0;
-  
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  nth_list = (guint) floor(note_256th_attack_position_lower / AGS_SOUNDCARD_DEFAULT_PERIOD);
-  note_256th_attack = g_list_nth_data(oss_devin->note_256th_attack,
-				      nth_list);
-  if(note_256th_attack != NULL){
-    local_note_256th_attack_lower = note_256th_attack[note_256th_attack_position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD];
-  }
-  
-  if(note_256th_attack_lower != NULL){
-    note_256th_attack_lower[0] = local_note_256th_attack_lower;
-  }  
-
-  nth_list = (guint) floor(note_256th_attack_position_upper / AGS_SOUNDCARD_DEFAULT_PERIOD);
-  note_256th_attack = g_list_nth_data(oss_devin->note_256th_attack,
-				      nth_list);
-
-  if(note_256th_attack != NULL){
-    local_note_256th_attack_upper = note_256th_attack[note_256th_attack_position_upper % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD];
-  }else{
-    local_note_256th_attack_upper = local_note_256th_attack_lower;
-  }
-  
-  if(note_256th_attack_upper != NULL){
-    note_256th_attack_upper[0] = local_note_256th_attack_upper;
-  }  
-    
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-guint
-ags_oss_devin_get_note_256th_attack_at_position(AgsSoundcard *soundcard,
-						guint note_256th_attack_position)
-{
-  AgsOssDevin *oss_devin;
-  
-  guint *note_256th_attack;
-
-  guint nth_list;
-  guint current_note_256th_attack;
-
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-  
-  /* get oss devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get note 256th attack */
-  g_rec_mutex_lock(oss_devin_mutex);
-  
-  current_note_256th_attack = 0;
-
-  nth_list = (guint) floor(note_256th_attack_position / AGS_SOUNDCARD_DEFAULT_PERIOD);
-  note_256th_attack = g_list_nth_data(oss_devin->note_256th_attack,
-				      nth_list);
-
-  if(note_256th_attack != NULL){
-    current_note_256th_attack = note_256th_attack[note_256th_attack_position % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD];
-  }
-  
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(current_note_256th_attack);
-}
-
-void
-ags_oss_devin_get_note_256th_attack_position(AgsSoundcard *soundcard,
-					     guint *note_256th_attack_position_lower,
-					     guint *note_256th_attack_position_upper)
-{
-  AgsOssDevin *oss_devin;
-
-  guint buffer_size;
-  guint attack_position;
-  guint local_attack;
-  gdouble note_256th_delay;
-  guint nth_list;
-  guint *local_note_256th_attack;
-  guint position_lower, position_upper;
-  guint i, j;
-  
-  GRecMutex *oss_devin_mutex;  
-  
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-  
-  /* get oss devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-  
-  /* get note 256th attack */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  buffer_size = oss_devin->buffer_size;
-
-  attack_position = oss_devin->tic_counter;
-
-  local_attack = oss_devin->attack[attack_position];
-
-  note_256th_delay = oss_devin->note_256th_delay;
-
-  if(1.0 / note_256th_delay >= AGS_SOUNDCARD_DEFAULT_PERIOD){
-    g_critical("unexpected time segmentation");
-  }
-
-  position_lower = 16 * oss_devin->tic_counter;
-
-  for(i = 1; local_attack - (i * note_256th_delay * buffer_size) >= 0; i++){
-    if(position_lower - 1 >= 0){
-      position_lower--;
-    }
-  }
-  
-  position_upper = position_lower;
-
-  nth_list = (guint) floor(position_lower / AGS_SOUNDCARD_DEFAULT_PERIOD);
-
-  local_note_256th_attack = g_list_nth_data(oss_devin->note_256th_attack,
-					    nth_list);
-
-  for(i = 1, j = 0; local_note_256th_attack[position_lower % (guint) AGS_SOUNDCARD_DEFAULT_PERIOD] + (i * note_256th_delay * buffer_size) < buffer_size &&
-	(note_256th_delay < 1.0 &&
-	 i <= (guint) floor(1.0 / note_256th_delay)) &&
-	j < 2; i++){
-    if((position_upper + 1) >= (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
-      if(nth_list + 1 < 32){
-	local_note_256th_attack = g_list_nth_data(oss_devin->note_256th_attack,
-						  nth_list + 1);
-
-	i = 0;
-	j++;
-      }else{
-	local_note_256th_attack = g_list_nth_data(oss_devin->note_256th_attack,
-						  0);
-      }
-    }
-
-    if(position_upper + 1 < 16 * (guint) AGS_SOUNDCARD_DEFAULT_PERIOD){
-      guint prev_note_256th_attack;
-      guint current_note_256th_attack;
-
-      prev_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-									       position_upper);
-
-      current_note_256th_attack = ags_soundcard_get_note_256th_attack_at_position(soundcard,
-										  position_upper + 1);
-
-      if(prev_note_256th_attack < current_note_256th_attack){
-	position_upper++;
-      }
-    }
-  }
-  
-  if(note_256th_attack_position_lower != NULL){
-    note_256th_attack_position_lower[0] = position_lower;
-  }
-
-  if(note_256th_attack_position_upper != NULL){
-    note_256th_attack_position_upper[0] = position_upper;
-  }
-  
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-guint
-ags_oss_devin_get_note_256th_attack_of_16th_pulse(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint note_256th_attack_of_16th_pulse;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get note 256th attack of 16th pulse */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  note_256th_attack_of_16th_pulse = oss_devin->note_256th_attack_of_16th_pulse;
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(note_256th_attack_of_16th_pulse);
-}
-
-guint
-ags_oss_devin_get_note_256th_attack_of_16th_pulse_position(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint position;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get note 256th attack position of 16th pulse */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  position = oss_devin->note_256th_attack_of_16th_pulse_position;
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(position);
-}
-
-void
-ags_oss_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
-				       guint note_offset_absolute)
-{
-  AgsOssDevin *oss_devin;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* set note offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  oss_devin->note_offset_absolute = note_offset_absolute;
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-guint
-ags_oss_devin_get_note_offset_absolute(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint note_offset_absolute;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* set note offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  note_offset_absolute = oss_devin->note_offset_absolute;
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(note_offset_absolute);
-}
-
-void
-ags_oss_devin_set_loop(AgsSoundcard *soundcard,
-		       guint loop_left, guint loop_right,
-		       gboolean do_loop)
-{
-  AgsOssDevin *oss_devin;
-
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* set loop */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  oss_devin->loop_left = loop_left;
-  oss_devin->loop_right = loop_right;
-  oss_devin->do_loop = do_loop;
-
-  if(do_loop){
-    oss_devin->loop_offset = oss_devin->note_offset;
-  }
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-void
-ags_oss_devin_get_loop(AgsSoundcard *soundcard,
-		       guint *loop_left, guint *loop_right,
-		       gboolean *do_loop)
-{
-  AgsOssDevin *oss_devin;
-
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get loop */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  if(loop_left != NULL){
-    *loop_left = oss_devin->loop_left;
-  }
-
-  if(loop_right != NULL){
-    *loop_right = oss_devin->loop_right;
-  }
-
-  if(do_loop != NULL){
-    *do_loop = oss_devin->do_loop;
-  }
-
-  g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-guint
-ags_oss_devin_get_loop_offset(AgsSoundcard *soundcard)
-{
-  AgsOssDevin *oss_devin;
-
-  guint loop_offset;
-  
-  GRecMutex *oss_devin_mutex;  
-
-  oss_devin = AGS_OSS_DEVIN(soundcard);
-
-  /* get oss_devin mutex */
-  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
-
-  /* get loop offset */
-  g_rec_mutex_lock(oss_devin_mutex);
-
-  loop_offset = oss_devin->loop_offset;
-  
-  g_rec_mutex_unlock(oss_devin_mutex);
-
-  return(loop_offset);
-}
-
 /**
  * ags_oss_devin_switch_buffer_flag:
  * @oss_devin: the #AgsOssDevin
@@ -3663,24 +2504,6 @@ ags_oss_devin_switch_buffer_flag(AgsOssDevin *oss_devin)
   }
 
   g_rec_mutex_unlock(oss_devin_mutex);
-}
-
-/**
- * ags_oss_devin_adjust_delay_and_attack:
- * @oss_devin: the #AgsOssDevin
- *
- * Calculate delay and attack and reset it.
- *
- * Since: 3.13.2
- */
-void
-ags_oss_devin_adjust_delay_and_attack(AgsOssDevin *oss_devin)
-{
-  if(!AGS_IS_OSS_DEVIN(oss_devin)){
-    return;
-  }
-  
-  ags_soundcard_util_adjust_delay_and_attack((GObject *) oss_devin);
 }
 
 /**

@@ -150,9 +150,9 @@ ags_soundcard_class_init(AgsSoundcardInterface *ginterface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, offset_changed),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT,
+		 g_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
-		 G_TYPE_UINT);
+		 G_TYPE_UINT64);
 
   /**
    * AgsSoundcard::stop:
@@ -709,7 +709,7 @@ ags_soundcard_tic(AgsSoundcard *soundcard)
  */
 void
 ags_soundcard_offset_changed(AgsSoundcard *soundcard,
-			     guint note_offset)
+			     guint64 note_offset)
 {
   g_signal_emit(soundcard,
 		soundcard_signals[OFFSET_CHANGED],

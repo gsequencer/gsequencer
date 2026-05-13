@@ -123,7 +123,7 @@ ags_navigation_rewind_callback(GObject *gobject,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
   
@@ -148,7 +148,7 @@ ags_navigation_prev_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
   
@@ -212,7 +212,7 @@ ags_navigation_play_callback(GObject *gobject,
   
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   machines =
     machines_start = ags_window_get_machine(window);
@@ -316,7 +316,7 @@ ags_navigation_stop_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   machines =
     machines_start = ags_window_get_machine(window);
@@ -388,7 +388,7 @@ ags_navigation_next_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
 
@@ -414,7 +414,7 @@ ags_navigation_forward_callback(GObject *gobject,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
 
@@ -452,7 +452,7 @@ ags_navigation_loop_callback(GObject *gobject,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   machines =
     machines_start = ags_window_get_machine(window);
@@ -718,7 +718,7 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   machines =
     machines_start = ags_window_get_machine(window);
@@ -900,7 +900,7 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   machines =
     machines_start = ags_window_get_machine(window);

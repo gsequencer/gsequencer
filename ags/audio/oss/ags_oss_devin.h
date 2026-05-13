@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,6 +142,12 @@ struct _AgsOssDevin
   guint buffer_size;
   guint samplerate;
 
+  gdouble bpm; // beats per minute
+
+  guint64 start_note_offset;
+  
+  AgsFrameClock *frame_clock;
+
   AgsOssDevinAppBufferMode app_buffer_mode;
   
   GRecMutex **app_buffer_mutex;
@@ -156,41 +162,9 @@ struct _AgsOssDevin
   AgsOssDevinBackendBufferMode backend_buffer_mode;
   
   guchar **backend_buffer;
-
-  double bpm; // beats per minute
-  gdouble delay_factor;
-  
-  gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
-
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint start_note_offset;
-  guint note_offset;
-  guint note_offset_absolute;
-  
-  guint loop_left;
-  guint loop_right;
-  gboolean do_loop;
-  
-  guint loop_offset;
   
   int device_fd;
   char *device;
-
-  gdouble note_256th_delay;
-
-  GList *note_256th_attack;
-
-  guint note_256th_offset;
-  guint note_256th_offset_last;
-
-  guint note_256th_attack_of_16th_pulse;
-  guint note_256th_attack_of_16th_pulse_position;
-
-  gdouble note_256th_delay_counter;
 };
 
 struct _AgsOssDevinClass
@@ -209,7 +183,6 @@ void ags_oss_devin_unset_flags(AgsOssDevin *oss_devin, AgsOssDevinFlags flags);
 
 void ags_oss_devin_switch_buffer_flag(AgsOssDevin *oss_devin);
 
-void ags_oss_devin_adjust_delay_and_attack(AgsOssDevin *oss_devin);
 void ags_oss_devin_realloc_buffer(AgsOssDevin *oss_devin);
 
 AgsOssDevin* ags_oss_devin_new();

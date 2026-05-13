@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -146,8 +146,14 @@ struct _AgsAlsaDevout
   guint pcm_channels;
   AgsSoundcardFormat format;
   guint buffer_size;
-  guint samplerate; // sample_rate
+  guint samplerate; // sample rate
 
+  gdouble bpm; // beats per minute
+
+  guint64 start_note_offset;
+  
+  AgsFrameClock *frame_clock;
+    
   AgsAlsaDevoutAppBufferMode app_buffer_mode;
   
   GRecMutex **app_buffer_mutex;
@@ -163,26 +169,6 @@ struct _AgsAlsaDevout
   
   guchar **backend_buffer;
 
-  double bpm; // beats per minute
-  gdouble delay_factor;
-  
-  gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/16 of bpm
-
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint start_note_offset;
-  guint note_offset;
-  guint note_offset_absolute;
-  
-  guint loop_left;
-  guint loop_right;
-  gboolean do_loop;
-  
-  guint loop_offset;
-  
   char *device;
   int rc;
 
@@ -200,18 +186,6 @@ struct _AgsAlsaDevout
   GList *tag;
 
   gint64 poll_timeout;
-
-  gdouble note_256th_delay;
-
-  GList *note_256th_attack;
-  
-  guint note_256th_offset;
-  guint note_256th_offset_last;
-
-  guint note_256th_attack_of_16th_pulse;
-  guint note_256th_attack_of_16th_pulse_position;
-
-  gdouble note_256th_delay_counter;
 };
 
 struct _AgsAlsaDevoutClass
@@ -230,7 +204,6 @@ void ags_alsa_devout_unset_flags(AgsAlsaDevout *alsa_devout, AgsAlsaDevoutFlags 
 
 void ags_alsa_devout_switch_buffer(AgsAlsaDevout *alsa_devout);
 
-void ags_alsa_devout_adjust_delay_and_attack(AgsAlsaDevout *alsa_devout);
 void ags_alsa_devout_realloc_buffer(AgsAlsaDevout *alsa_devout);
 
 AgsAlsaDevout* ags_alsa_devout_new();

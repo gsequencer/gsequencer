@@ -57,7 +57,7 @@ ags_tempo_edit_update_ui_callback(GObject *ui_provider,
 
   output_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
     
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   /* reset offset */
   tempo_edit->note_offset = ags_frame_clock_get_note_offset(frame_clock);

@@ -787,7 +787,7 @@ ags_audio_loop_run(AgsThread *thread)
   delay_counter = 0.0;
   
   if(soundcard != NULL){
-    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+    frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
     
     note_offset = ags_frame_clock_get_note_offset(frame_clock);
     
