@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2022 Joël Krähemann
+  * Copyright (C) 2005-2026 Joël Krähemann
   *
   * This file is part of GSequencer.
   *
@@ -143,6 +143,8 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxLfoRecycling *fx_lfo_recycling;
   AgsAudioSignal *source;
   AgsPort *port;
+
+  AgsFrameClock *frame_clock;
   
   GObject *output_soundcard;
 
@@ -158,8 +160,8 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
   gdouble lfo_phase;
   gdouble lfo_depth;
   gdouble lfo_tuning;
-  gdouble delay;
-  guint note_offset, delay_counter;
+  gdouble delay, delay_counter;
+  guint64 note_offset;
   guint current_frame;
   
   GRecMutex *recall_mutex;
@@ -336,10 +338,13 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
     g_object_unref(port);
   }
 
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  note_offset = ags_frame_clock_get_note_offset(frame_clock);
+  
+  delay = (gdouble) frame_clock->absolute_delay;
+  
+  delay_counter = (gdouble) frame_clock->delay_counter;
   
   if(enabled &&
      source != NULL &&
