@@ -2647,32 +2647,7 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
   g_mutex_unlock(callback_finish_mutex);
   
   /*  */
-  core_audio_devout->note_offset = core_audio_devout->start_note_offset;
-  core_audio_devout->note_offset_absolute = core_audio_devout->start_note_offset;
-
-  core_audio_devout->note_256th_attack_of_16th_pulse = 0;
-  core_audio_devout->note_256th_attack_of_16th_pulse_position = 0;
-  
-  core_audio_devout->note_256th_offset = 16 * core_audio_devout->start_note_offset;
-  
-  if(core_audio_devout->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    guint i;
-    
-    buffer_size = core_audio_devout->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(core_audio_devout),
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-    
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      core_audio_devout->note_256th_offset_last = core_audio_devout->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (core_audio_devout->note_256th_delay * (double) buffer_size));
-    }
-  }
+  ags_frame_clock_stop(core_audio_devout->frame_clock);
 
   switch(core_audio_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2734,8 +2709,6 @@ ags_core_audio_devout_port_free(AgsSoundcard *soundcard)
   memset(core_audio_devout->app_buffer[5], 0, (size_t) core_audio_devout->pcm_channels * core_audio_devout->buffer_size * word_size);
   memset(core_audio_devout->app_buffer[6], 0, (size_t) core_audio_devout->pcm_channels * core_audio_devout->buffer_size * word_size);
   memset(core_audio_devout->app_buffer[7], 0, (size_t) core_audio_devout->pcm_channels * core_audio_devout->buffer_size * word_size);
-
-  ags_frame_clock_stop(core_audio_devout->frame_clock);
   
   g_rec_mutex_unlock(core_audio_devout_mutex);  
 }

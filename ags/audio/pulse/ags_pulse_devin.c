@@ -1955,7 +1955,7 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
   g_mutex_unlock(callback_finish_mutex);
   
   /* stop */  
-  ags_frame_clock_stop(pulse_devout->frame_clock);
+  ags_frame_clock_stop(pulse_devin->frame_clock);
 
   switch(pulse_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
