@@ -562,7 +562,7 @@ ags_wasapi_devin_init(AgsWasapiDevin *wasapi_devin)
     g_rec_mutex_init(wasapi_devin->app_buffer_mutex[i]);
   }
 
-  /* sub-block */
+  /* sub-block mutex */
   wasapi_devin->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
   wasapi_devin->sub_block_mutex = (GRecMutex **) g_malloc(8 * wasapi_devin->sub_block_count * wasapi_devin->pcm_channels * sizeof(GRecMutex *));
 
