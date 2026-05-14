@@ -215,6 +215,9 @@ ags_osc_action_controller_test_run_action()
 						      stop_audio_message, stop_audio_message_size);
 
   CU_ASSERT(osc_response != NULL);  
+
+  /* wait a moment */
+  sleep(10);
 }
 
 int
