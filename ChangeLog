@@ -12,6 +12,15 @@ ags (9.0.0)
 	* added ags_frame_clock_test.c
 	* added po/ka.po
 
+ags (8.4.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed maybe unitialized in ags_server.c
+	* deprecated ags_sequencer_set_delay_factor()
+	* deprecated ags_sequencer_get_delay_factor()
+	* deprecated ags_sequencer_set_note_offset()
+	* deprecated ags_sequencer_get_note_offset()
+
 ags (8.4.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -75,6 +84,7 @@ ags (8.4.2)
 	* deprecated AgsGstreamerDevout:attack
 	* deprecated ags_gstreamer_devin_adjust_delay_and_attack()
 	* deprecated AgsGstreamerDevin:delay-factor because defaults to quarter gstreamer
+	* deprecated AgsGstreamerDevin:attack
 
 ags (8.4.1)
 
