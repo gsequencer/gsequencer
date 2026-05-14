@@ -723,6 +723,11 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
     GList *start_list, *list;
 
     guint attack;
+
+    output_soundcard = NULL;
+
+    first_recycling = NULL;
+    last_recycling = NULL;
     
     g_object_get(selected_input,
 		 "output-soundcard", &output_soundcard,
@@ -730,11 +735,7 @@ ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_patter
 		 "last-recycling", &last_recycling,
 		 NULL);
 
-    attack = 0;
-
-    if(output_soundcard != NULL){
-      attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
-    }
+    attack = fx_pattern_audio_processor->frame_clock->note_frame_offset % (guint64) fx_pattern_audio_processor->frame_clock->buffer_size;
     
     end_recycling = ags_recycling_next(last_recycling);
 
@@ -1030,7 +1031,7 @@ ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_
     }
   }
 
-  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
+  note_offset_absolute = ags_frame_clock_get_absolute_note_offset(fx_pattern_audio_processor->frame_clock);
   
   /* get input */
   input = ags_channel_nth(start_input,
