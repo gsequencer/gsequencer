@@ -5,7 +5,7 @@ ags (9.0.0)
 	* implemented AgsFrameClock
 	* implemented AgsEqualizer10 presets and refresh port
 	* implemented ags_soundcard_get_frame_clock()
-	* TODO:JK: refactored AgsSoundcard and all implementations
+	* refactored AgsSoundcard and all implementations
 	* TODO:JK: refactored ags-fx-playback
 	* TODO:JK: refactored ags-fx-pattern
 	* TODO:JK: refactored ags-fx-notation
