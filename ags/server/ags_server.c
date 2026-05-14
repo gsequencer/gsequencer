@@ -1270,21 +1270,20 @@ ags_server_real_listen(AgsServer *server)
   
   g_rec_mutex_lock(server_mutex);
 
+  error = NULL;
+  
   if(any_address ||
      (ip4_success && ip6_success)){
-    error = NULL;
     soup_server_listen_all(server->soup_server,
 			   server->server_port,
 			   0,
 			   &error);
   }else if(ip4_success){
-    error = NULL;
     soup_server_listen_all(server->soup_server,
 			   server->server_port,
 			   SOUP_SERVER_LISTEN_IPV4_ONLY,
 			   &error);
   }else if(ip6_success){
-    error = NULL;
     soup_server_listen_all(server->soup_server,
 			   server->server_port,
 			   SOUP_SERVER_LISTEN_IPV6_ONLY,
