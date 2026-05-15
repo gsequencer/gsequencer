@@ -2366,6 +2366,30 @@ ags_oss_devin_get_start_note_offset(AgsSoundcard *soundcard)
   return(start_note_offset);
 }
 
+GObject*
+ags_oss_devin_get_frame_clock(AgsSoundcard *soundcard)
+{
+  AgsOssDevin *oss_devin;
+
+  GObject *frame_clock;
+  
+  GRecMutex *oss_devin_mutex;
+  
+  oss_devin = AGS_OSS_DEVIN(soundcard);
+
+  /* get core audio devin mutex */
+  oss_devin_mutex = AGS_OSS_DEVIN_GET_OBJ_MUTEX(oss_devin);
+
+  /* get frame clock */
+  g_rec_mutex_lock(oss_devin_mutex);
+
+  frame_clock = (GObject *) oss_devin->frame_clock;
+  
+  g_rec_mutex_unlock(oss_devin_mutex);
+
+  return(frame_clock);
+}
+
 void*
 ags_oss_devin_get_buffer(AgsSoundcard *soundcard)
 {
