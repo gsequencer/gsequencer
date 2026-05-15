@@ -19,6 +19,8 @@
 
 #include <ags/object/ags_soundcard.h>
 
+#include <ags/object/ags_marshal.h>
+
 void ags_soundcard_class_init(AgsSoundcardInterface *ginterface);
 
 /**
@@ -150,7 +152,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *ginterface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSoundcardInterface, offset_changed),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__UINT64,
+		 ags_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_UINT64);
 

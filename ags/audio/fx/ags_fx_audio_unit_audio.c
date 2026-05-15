@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2109,6 +2109,8 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   
   AgsAudioUnitPlugin *audio_unit_plugin;
 
+  AgsFrameClock *frame_clock;
+
   GObject *output_soundcard;
 
   struct _AgsFxAudioUnitIterateData *active_iterate_data;
@@ -2201,17 +2203,25 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
   
-  bpm = 120.0;
-
   /* get note offset */
+  bpm = 120.0;
+  
+  note_offset = 0;
+
+  absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  delay_counter = 0.0;
+  
   if(output_soundcard != NULL){
     bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
 
-    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
       
-    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+    absolute_delay = (gdouble) frame_clock->absolute_delay;
       
-    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    delay_counter = (gdouble) frame_clock->delay_counter;
+      
+    note_offset = ags_frame_clock_get_note_offset(frame_clock);
   }
   
   /* sequencer */
@@ -2321,6 +2331,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
 		 "buffer-size", &buffer_size,
 		 NULL);
 
+#if 0
     bpm = 120.0;
     
     note_offset = 0;
@@ -2328,7 +2339,8 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
     absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
     delay_counter = 0.0;
-
+#endif
+    
     /* pre sync */
     g_mutex_lock(&(fx_audio_unit_audio->pre_sync_mutex));
 
@@ -2348,6 +2360,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
     g_mutex_unlock(&(fx_audio_unit_audio->pre_sync_mutex));
 
     /* get note offset */
+#if 0
     if(output_soundcard != NULL){
       bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
 
@@ -2357,6 +2370,7 @@ ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data)
       
       note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
     }
+#endif
     
     /*  */
     g_rec_mutex_lock(recall_mutex);
@@ -3031,6 +3045,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
   
   AgsAudioUnitPlugin *audio_unit_plugin;
 
+  AgsFrameClock *frame_clock;
+  
   GObject *output_soundcard;
 
   struct _AgsFxAudioUnitIterateData *active_iterate_data;
@@ -3126,17 +3142,25 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
   is_instrument = ags_base_plugin_test_flags((AgsBasePlugin *) audio_unit_plugin,
 					     AGS_BASE_PLUGIN_IS_INSTRUMENT);
 
-  bpm = 120.0;
-
   /* get note offset */
+  bpm = 120.0;
+    
+  note_offset = 0;
+
+  absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
+
+  delay_counter = 0.0;
+  
   if(output_soundcard != NULL){
     bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
 
-    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+    
+    absolute_delay = (gdouble) frame_clock->absolute_delay;
+
+    delay_counter = (gdouble) frame_clock->delay_counter;
       
-    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
-      
-    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    note_offset = ags_frame_clock_get_note_offset(frame_clock);
   }
   
   /* sequencer */
@@ -3255,6 +3279,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
 		 "buffer-size", &buffer_size,
 		 NULL);
 
+#if 0
     bpm = 120.0;
     
     note_offset = 0;
@@ -3262,7 +3287,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
     absolute_delay = AGS_SOUNDCARD_DEFAULT_DELAY;
 
     delay_counter = 0.0;
-
+#endif
+    
     /* pre sync */
     g_mutex_lock(&(fx_audio_unit_audio->pre_sync_mutex));
 
@@ -3285,6 +3311,7 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
     g_mutex_unlock(&(fx_audio_unit_audio->pre_sync_mutex));
     
     /* get note offset */
+#if 0
     if(output_soundcard != NULL){
       bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
 
@@ -3294,7 +3321,8 @@ ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data)
       
       note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
     }
-
+#endif
+    
     /*  */
     g_rec_mutex_lock(recall_mutex);
 

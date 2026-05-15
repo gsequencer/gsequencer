@@ -1086,6 +1086,7 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
   
   guint64 note_256th_offset[16] = {0,};
 
+  guint64 note_offset;
   guint note_256th_offset_length;
   guint audio_channel;
   gdouble delay_counter;
@@ -1363,7 +1364,7 @@ ags_fx_notation_audio_processor_real_midi1_record(AgsFxNotationAudioProcessor *f
     
   timestamp = fx_notation_audio_processor->timestamp;
   
-  offset_counter = ags_frame_counter_get_note_offset(fx_notation_audio_processor->frame_counter);
+  offset_counter = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
 
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
@@ -2684,9 +2685,9 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
-  offset_counter = fx_notation_audio_processor->offset_counter;
+  offset_counter = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
 
-  note_256th_delay = fx_notation_audio_processor->note_256th_delay;
+  note_256th_delay = fx_notation_audio_processor->frame_clock->absolute_delay / 16.0;
   
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
