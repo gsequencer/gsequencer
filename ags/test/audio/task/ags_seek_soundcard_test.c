@@ -80,7 +80,7 @@ ags_seek_soundcard_test_launch()
   /* launch */
   ags_task_launch(seek_soundcard);
 
-  CU_ASSERT(ags_soundcard_get_note_offset(AGS_SOUNDCARD(devout)) == 64 * 16);
+  CU_ASSERT(devout->frame_clock->note_offset == 64 * 16);
 }
 
 int

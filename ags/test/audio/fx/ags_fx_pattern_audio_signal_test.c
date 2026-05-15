@@ -188,13 +188,13 @@ ags_fx_pattern_audio_signal_test_run_inter()
   ags_recall_run_inter(fx_pattern_audio_signal);
 
   /* run inter - attempt #1 */
-  fx_pattern_audio_processor->current_delay_counter = 1.0;
+  fx_pattern_audio_processor->frame_clock->delay_counter = 1.0;
   
   ags_recall_run_inter(fx_pattern_audio_signal);
 
   /* run inter - attempt #2 */
-  fx_pattern_audio_processor->current_delay_counter = 0.0;
-  fx_pattern_audio_processor->offset_counter = 1;
+  fx_pattern_audio_processor->frame_clock->delay_counter = 0.0;
+  fx_pattern_audio_processor->frame_clock->note_offset = 1;
   
   ags_recall_run_inter(fx_pattern_audio_signal);
 
