@@ -285,6 +285,46 @@ ags_frequency_aliase_util_set_phase_shifted_source(AgsFrequencyAliaseUtil *frequ
 }
 
 /**
+ * ags_frequency_aliase_util_get_phase_shifted_source_stride:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
+ * 
+ * Get phase shifted source stride of @frequency_aliase_util.
+ * 
+ * Returns: the phase shifted source stride
+ * 
+ * Since: 9.0.0
+ */
+guint
+ags_frequency_aliase_util_get_phase_shifted_source_stride(AgsFrequencyAliaseUtil *frequency_aliase_util)
+{
+  if(frequency_aliase_util == NULL){
+    return(0);
+  }
+
+  return(frequency_aliase_util->phase_shifted_source_stride);
+}
+
+/**
+ * ags_frequency_aliase_util_set_phase_shifted_source_stride:
+ * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
+ * @phase_shifted_source_stride: the phase shifted source stride
+ *
+ * Set @phase_shifted_source_stride of @frequency_aliase_util.
+ *
+ * Since: 9.0.0
+ */
+void
+ags_frequency_aliase_util_set_phase_shifted_source_stride(AgsFrequencyAliaseUtil *frequency_aliase_util,
+							  guint phase_shifted_source_stride)
+{
+  if(frequency_aliase_util == NULL){
+    return;
+  }
+
+  frequency_aliase_util->phase_shifted_source_stride = phase_shifted_source_stride;
+}
+
+/**
  * ags_frequency_aliase_util_get_source_stride:
  * @frequency_aliase_util: the #AgsFrequencyAliaseUtil-struct
  * 
