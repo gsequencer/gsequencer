@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -165,11 +165,14 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
   AgsFxSynthRecycling *fx_synth_recycling;
   AgsFxSynthAudioSignal *fx_synth_audio_signal;
   
+  guint64 note_256th_offset[16] = {0,};
+  
   guint sound_scope;
   guint audio_channel;
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
+  guint note_256th_offset_length;
   guint x0_256th, x1_256th;
   guint64 note_256th_offset_lower;
   gdouble note_256th_delay;
@@ -324,9 +327,15 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 
   g_rec_mutex_lock(fx_synth_audio_processor_mutex);
 
-  note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_offset_lower;
+  note_256th_offset_length = 0;
+    
+  ags_frame_clock_get_note_256th_offset(AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->frame_clock,
+					&(note_256th_offset[0]),
+					&note_256th_offset_length);
+  
+  note_256th_offset_lower = note_256th_offset[0];
 
-  note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_delay;
+  note_256th_delay = (gdouble) AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->frame_clock->absolute_delay / 16.0;
   
   g_rec_mutex_unlock(fx_synth_audio_processor_mutex);
 
@@ -1286,14 +1295,6 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_synth_util_set_offset(channel_data->synth_0,
 				floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
     }else{
-      g_rec_mutex_lock(fx_synth_audio_processor_mutex);
-
-      note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_offset_lower;
-
-      note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_delay;
-
-      g_rec_mutex_unlock(fx_synth_audio_processor_mutex);
-
       ags_synth_util_set_frame_count(channel_data->synth_0,
 				     (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
@@ -1573,14 +1574,6 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
       ags_synth_util_set_offset(channel_data->synth_1,
 				floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
     }else{
-      g_rec_mutex_lock(fx_synth_audio_processor_mutex);
-
-      note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_offset_lower;
-
-      note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_delay;
-
-      g_rec_mutex_unlock(fx_synth_audio_processor_mutex);
-
       ags_synth_util_set_frame_count(channel_data->synth_1,
 				     (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
@@ -1862,14 +1855,6 @@ ags_fx_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audi
 	ags_noise_util_set_offset(channel_data->noise_util,
 				  floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
       }else{
-	g_rec_mutex_lock(fx_synth_audio_processor_mutex);
-
-	note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_offset_lower;
-
-	note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_synth_audio_processor)->note_256th_delay;
-
-	g_rec_mutex_unlock(fx_synth_audio_processor_mutex);
-
 	ags_noise_util_set_frame_count(channel_data->noise_util,
 				       (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 

@@ -379,21 +379,6 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
 				  param_spec);
 
   /**
-   * AgsWasapiDevout:buffer:
-   *
-   * The buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("buffer",
-				    i18n_pspec("the buffer"),
-				    i18n_pspec("The buffer to play"),
-				    G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER,
-				  param_spec);
-
-  /**
    * AgsWasapiDevout:bpm:
    *
    * Beats per minute
@@ -410,38 +395,19 @@ ags_wasapi_devout_class_init(AgsWasapiDevoutClass *wasapi_devout)
   g_object_class_install_property(gobject,
 				  PROP_BPM,
 				  param_spec);
-
   /**
-   * AgsWasapiDevout:delay-factor:
+   * AgsWasapiDevout:buffer:
    *
-   * tact
+   * The buffer
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_double("delay-factor",
-				   i18n_pspec("delay factor"),
-				   i18n_pspec("The delay factor"),
-				   0.0,
-				   16.0,
-				   1.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DELAY_FACTOR,
-				  param_spec);
-
-  /**
-   * AgsWasapiDevout:attack:
-   *
-   * Attack of the buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("attack",
-				    i18n_pspec("attack of buffer"),
-				    i18n_pspec("The attack to use for the buffer"),
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to play"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_ATTACK,
+				  PROP_BUFFER,
 				  param_spec);
 }
 
@@ -621,7 +587,7 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
     g_rec_mutex_init(wasapi_devout->app_buffer_mutex[i]);
   }
 
-  /* sub-block */
+  /* sub-block mutex */
   wasapi_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
   wasapi_devout->sub_block_mutex = (GRecMutex **) g_malloc(8 * wasapi_devout->sub_block_count * wasapi_devout->pcm_channels * sizeof(GRecMutex *));
 
@@ -654,32 +620,6 @@ ags_wasapi_devout_init(AgsWasapiDevout *wasapi_devout)
   g_mutex_init(&(wasapi_devout->callback_finish_mutex));
 
   g_cond_init(&(wasapi_devout->callback_finish_cond));
-
-  /* 256th */
-  //NOTE:JK: note_256th_delay was prior set
-
-  //NOTE:JK: note_256th_attack was prior set
-  
-  wasapi_devout->note_256th_offset = 0;
-
-  if(wasapi_devout->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    guint i;
-    
-    buffer_size = wasapi_devout->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(wasapi_devout),
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-    
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      wasapi_devout->note_256th_offset_last = wasapi_devout->note_256th_offset + ((note_256th_attack_upper - note_256th_attack_lower) / (wasapi_devout->note_256th_delay * (double) buffer_size));
-    }
-  }
 }
 
 void

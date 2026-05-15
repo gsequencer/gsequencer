@@ -943,6 +943,8 @@ ags_fx_pattern_audio_notify_output_soundcard_callback(GObject *gobject,
 {
   AgsFxPatternAudio *fx_pattern_audio;
   AgsPort *port;
+
+  AgsFrameClock *frame_clock;
   
   GObject *output_soundcard;
 
@@ -957,6 +959,8 @@ ags_fx_pattern_audio_notify_output_soundcard_callback(GObject *gobject,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  
   /* delay */
   g_object_get(fx_pattern_audio,
 	       "delay", &port,
@@ -965,7 +969,8 @@ ags_fx_pattern_audio_notify_output_soundcard_callback(GObject *gobject,
   if(port != NULL){
     g_value_init(&value, G_TYPE_DOUBLE);
 
-    g_value_set_double(&value, ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard)));
+    g_value_set_double(&value,
+		       (gdouble) frame_clock->absolute_delay);
 
     ags_port_safe_write(port, &value);
 
