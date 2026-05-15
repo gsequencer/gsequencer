@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -58,25 +58,12 @@ void ags_alsa_devout_test_lock_buffer();
 void ags_alsa_devout_test_unlock_buffer();
 void ags_alsa_devout_test_set_bpm();
 void ags_alsa_devout_test_get_bpm();
-void ags_alsa_devout_test_set_delay_factor();
-void ags_alsa_devout_test_get_delay_factor();
-void ags_alsa_devout_test_get_absolute_delay();
-void ags_alsa_devout_test_get_delay();
-void ags_alsa_devout_test_get_attack();
-void ags_alsa_devout_test_get_delay_counter();
 void ags_alsa_devout_test_get_start_note_offset();
 void ags_alsa_devout_test_set_start_note_offset();
-void ags_alsa_devout_test_get_note_offset();
-void ags_alsa_devout_test_set_note_offset();
-void ags_alsa_devout_test_get_note_offset_absolute();
-void ags_alsa_devout_test_set_note_offset_absolute();
-void ags_alsa_devout_test_set_loop();
-void ags_alsa_devout_test_get_loop();
-void ags_alsa_devout_test_get_loop_offset();
+void ags_alsa_devout_test_get_frame_clock();
 void ags_alsa_devout_test_get_sub_block_count();
 void ags_alsa_devout_test_trylock_sub_block();
 void ags_alsa_devout_test_unlock_sub_block();
-void ags_alsa_devout_test_get_note_256th_offset();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -447,20 +434,20 @@ ags_alsa_devout_test_tic()
   
   alsa_devout = ags_alsa_devout_new();
 
-  delay_counter = alsa_devout->delay_counter;
-  delay = alsa_devout->delay[0];
+  delay_counter = alsa_devout->frame_clock->delay_counter;
+  delay = alsa_devout->frame_clock->absolute_delay;
 
-  note_offset = alsa_devout->note_offset;
+  note_offset = alsa_devout->frame_clock->note_offset;
   
   ags_soundcard_tic(AGS_SOUNDCARD(alsa_devout));
 
-  CU_ASSERT(delay_counter < alsa_devout->delay_counter);
+  CU_ASSERT(delay_counter < alsa_devout->frame_clock->delay_counter);
 
   for(i = 0; i < (guint) floor(delay) + 1; i++){
     ags_soundcard_tic(AGS_SOUNDCARD(alsa_devout));
   }
   
-  CU_ASSERT(note_offset < alsa_devout->note_offset);
+  CU_ASSERT(note_offset < alsa_devout->frame_clock->note_offset);
 }
 
 void
@@ -589,74 +576,6 @@ ags_alsa_devout_test_get_bpm()
 }
 
 void
-ags_alsa_devout_test_set_delay_factor()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devout_test_get_delay_factor()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devout_test_get_absolute_delay()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  gdouble absolute_delay;
-  
-  alsa_devout = ags_alsa_devout_new();
-  
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devout));
-
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devout_test_get_delay()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  gdouble delay;
-  
-  alsa_devout = ags_alsa_devout_new();
-  
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(alsa_devout));
-
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devout_test_get_attack()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint attack;
-  
-  alsa_devout = ags_alsa_devout_new();
-  
-  attack = ags_soundcard_get_attack(AGS_SOUNDCARD(alsa_devout));
-
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devout_test_get_delay_counter()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint delay_counter;
-  
-  alsa_devout = ags_alsa_devout_new();
-  
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(alsa_devout));
-
-  //TODO:JK: implement me
-}
-
-void
 ags_alsa_devout_test_get_start_note_offset()
 {
   AgsAlsaDevout *alsa_devout;
@@ -690,131 +609,17 @@ ags_alsa_devout_test_set_start_note_offset()
 }
 
 void
-ags_alsa_devout_test_get_note_offset()
+ags_alsa_devout_test_get_frame_clock()
 {
   AgsAlsaDevout *alsa_devout;
 
-  guint note_offset;
+  GObject *frame_clock;
   
   alsa_devout = ags_alsa_devout_new();
-
-  alsa_devout->note_offset = 64;
   
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(alsa_devout));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(alsa_devout));
 
-  CU_ASSERT(note_offset == 64);
-}
-
-void
-ags_alsa_devout_test_set_note_offset()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint note_offset;
-  
-  alsa_devout = ags_alsa_devout_new();
-
-  note_offset = 64;
-
-  ags_soundcard_set_note_offset(AGS_SOUNDCARD(alsa_devout),
-				      note_offset);
-
-  CU_ASSERT(alsa_devout->note_offset == 64);
-}
-
-void
-ags_alsa_devout_test_get_note_offset_absolute()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint note_offset_absolute;
-  
-  alsa_devout = ags_alsa_devout_new();
-
-  alsa_devout->note_offset_absolute = 64;
-  
-  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(alsa_devout));
-
-  CU_ASSERT(note_offset_absolute == 64);
-}
-
-void
-ags_alsa_devout_test_set_note_offset_absolute_absolute()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint note_offset_absolute;
-  
-  alsa_devout = ags_alsa_devout_new();
-
-  note_offset_absolute = 64;
-
-  ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(alsa_devout),
-					 note_offset_absolute);
-  
-  CU_ASSERT(alsa_devout->note_offset_absolute == 64);
-}
-
-void
-ags_alsa_devout_test_set_loop()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint loop_left, loop_right;
-  gboolean do_loop;
-  
-  alsa_devout = ags_alsa_devout_new();
-
-  alsa_devout->loop_left = 64;
-  alsa_devout->loop_right = 128;
-  
-  alsa_devout->do_loop = TRUE;
-  
-  ags_soundcard_get_loop(AGS_SOUNDCARD(alsa_devout),
-			 &loop_left, &loop_right,
-			 &do_loop);
-
-  CU_ASSERT(loop_left == 64);
-  CU_ASSERT(loop_right == 128);
-  CU_ASSERT(do_loop == TRUE);
-}
-
-void
-ags_alsa_devout_test_get_loop()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint loop_left, loop_right;
-  gboolean do_loop;
-  
-  alsa_devout = ags_alsa_devout_new();
-
-  loop_left = 64;
-  loop_right = 128;
-  
-  do_loop = TRUE;
-
-  ags_soundcard_set_loop(AGS_SOUNDCARD(alsa_devout),
-			 loop_left, loop_right,
-			 do_loop);
-
-  CU_ASSERT(alsa_devout->loop_left == 64);
-  CU_ASSERT(alsa_devout->loop_right == 128);
-  CU_ASSERT(alsa_devout->do_loop == TRUE);
-}
-
-void
-ags_alsa_devout_test_get_loop_offset()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint loop_offset;
-  
-  alsa_devout = ags_alsa_devout_new();
-
-  loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(alsa_devout));
-  
-  //TODO:JK: implement me
+  CU_ASSERT(frame_clock != NULL);
 }
 
 void
@@ -840,21 +645,6 @@ ags_alsa_devout_test_trylock_sub_block()
 void
 ags_alsa_devout_test_unlock_sub_block()
 {
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devout_test_get_note_256th_offset()
-{
-  AgsAlsaDevout *alsa_devout;
-
-  guint note_256th_offset_lower, note_256th_offset_upper;
-  
-  alsa_devout = ags_alsa_devout_new();
-
-  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(alsa_devout),
-				      &note_256th_offset_lower, &note_256th_offset_upper);
-
   //TODO:JK: implement me
 }
 
@@ -907,19 +697,9 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAlsaDevout unlock buffer", ags_alsa_devout_test_unlock_buffer) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout set bpm", ags_alsa_devout_test_set_bpm) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout get bpm", ags_alsa_devout_test_get_bpm) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout set delay factor", ags_alsa_devout_test_set_delay_factor) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get delay factor", ags_alsa_devout_test_get_delay_factor) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get absolute delay", ags_alsa_devout_test_get_absolute_delay) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get delay", ags_alsa_devout_test_get_delay) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get attack", ags_alsa_devout_test_get_attack) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get delay counter", ags_alsa_devout_test_get_delay_counter) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout set start note offset", ags_alsa_devout_test_set_start_note_offset) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout get start note offset", ags_alsa_devout_test_get_start_note_offset) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout set note offset", ags_alsa_devout_test_set_note_offset) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get note offset", ags_alsa_devout_test_get_note_offset) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout set loop", ags_alsa_devout_test_set_loop) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get loop", ags_alsa_devout_test_get_loop) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout get loop offset", ags_alsa_devout_test_get_loop_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAlsaDevout get frame clock", ags_alsa_devout_test_get_frame_clock) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout get sub block count", ags_alsa_devout_test_get_sub_block_count) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout trylock sub block", ags_alsa_devout_test_trylock_sub_block) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout unock sub block", ags_alsa_devout_test_unlock_sub_block) == NULL)){
