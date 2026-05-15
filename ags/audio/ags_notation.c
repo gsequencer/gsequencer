@@ -1677,7 +1677,7 @@ ags_notation_find_point(AgsNotation *notation,
   return(retval);
 }
 /**
- * ags_notation_find_exact_point:
+ * ags_notation_find_exact_note_256th_point:
  * @notation: the #AgsNotation
  * @x: offset
  * @y: note
