@@ -255,6 +255,8 @@ ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
 
   guint64 note_offset;
   
+  fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(seekable);
+  
   note_offset = ags_frame_clock_get_note_offset(fx_pattern_audio_processor->frame_clock);
 
   switch(whence){

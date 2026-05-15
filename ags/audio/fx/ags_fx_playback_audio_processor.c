@@ -315,6 +315,8 @@ ags_fx_playback_audio_processor_seek(AgsSeekable *seekable,
 
   guint64 note_offset;
   
+  fx_playback_audio_processor = AGS_FX_PLAYBACK_AUDIO_PROCESSOR(seekable);
+  
   note_offset = ags_frame_clock_get_note_offset(fx_playback_audio_processor->frame_clock);
 
   switch(whence){
@@ -494,7 +496,7 @@ ags_fx_playback_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bp
   
   g_rec_mutex_lock(fx_playback_audio_processor_mutex);
 
-  ags_frame_clock_set_bpm(fx_playback_audio_processor,
+  ags_frame_clock_set_bpm(fx_playback_audio_processor->frame_clock,
 			  new_bpm);
   
   g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
