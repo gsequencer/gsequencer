@@ -183,7 +183,7 @@ struct _AgsSoundcardInterface
 
   void (*tic)(AgsSoundcard *soundcard);
   void (*offset_changed)(AgsSoundcard *soundcard,
-			 guint note_offset);
+			 guint64 note_offset);
   
   void* (*get_buffer)(AgsSoundcard *soundcard);
   void* (*get_next_buffer)(AgsSoundcard *soundcard);  
@@ -263,7 +263,7 @@ void ags_soundcard_stop(AgsSoundcard *soundcard);
 
 void ags_soundcard_tic(AgsSoundcard *soundcard);
 void ags_soundcard_offset_changed(AgsSoundcard *soundcard,
-				  guint note_offset);
+				  guint64 note_offset);
 
 void* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
 void* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,16 +63,7 @@ struct _AgsFxPlaybackAudioProcessor
 {
   AgsRecallAudioRun recall_audio_run;  
 
-  gdouble delay_completion;
-
-  gdouble delay_counter;
-  guint64 offset_counter;
-  
-  gdouble current_delay_counter;
-  guint64 current_offset_counter;
-
-  guint64 x_offset;
-  guint64 current_x_offset;
+  AgsFrameClock *frame_clock;
   
   AgsTimestamp *timestamp;
   

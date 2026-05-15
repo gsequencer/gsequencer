@@ -190,6 +190,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   AgsPort *attack, *decay, *sustain, *release, *ratio;
   AgsRecallID *recall_id;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
+
+  AgsFrameClock *frame_clock;
   
   GObject *output_soundcard;
 
@@ -198,8 +200,8 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 
   AgsComplex cattack, cdecay, csustain, crelease, cratio;
 
-  guint note_offset, delay_counter;
-  gdouble delay;
+  guint64 note_offset;
+  gdouble delay, delay_counter;
   guint length;
   guint buffer_size;
   guint format;
@@ -296,10 +298,13 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   fx_notation_audio_processor = NULL;
   fx_pattern_audio_processor = NULL;
     
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  note_offset = ags_frame_clock_get_note_offset(frame_clock);
+  
+  delay = (gdouble) frame_clock->absolute_delay;
+  
+  delay_counter = (gdouble) frame_clock->delay_counter;
 
   start_list = NULL;
 
@@ -324,8 +329,9 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 
       g_rec_mutex_lock(mutex);
 
-      note_offset = fx_notation_audio_processor->offset_counter;
-      delay_counter = fx_notation_audio_processor->delay_counter;
+      note_offset = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
+      
+      delay_counter = (gdouble) fx_notation_audio_processor->frame_clock->delay_counter;
       
       g_rec_mutex_unlock(mutex);
     }
@@ -344,8 +350,9 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
 
       g_rec_mutex_lock(mutex);
 
-      note_offset = fx_pattern_audio_processor->offset_counter;
-      delay_counter = fx_pattern_audio_processor->delay_counter;
+      note_offset = ags_frame_clock_get_note_offset(fx_pattern_audio_processor->frame_clock);
+
+      delay_counter = (gdouble) fx_pattern_audio_processor->frame_clock->delay_counter;
       
       g_rec_mutex_unlock(mutex);
     }

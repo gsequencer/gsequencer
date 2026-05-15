@@ -1662,7 +1662,7 @@ ags_machine_active_playback_start_channel_launch_callback(AgsTask *task,
 		 "output-soundcard", &output_soundcard,
 		 NULL);
 
-    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+    frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
 
     recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 

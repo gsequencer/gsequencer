@@ -701,7 +701,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   absolute_delay = frame_clock->absolute_delay;
   

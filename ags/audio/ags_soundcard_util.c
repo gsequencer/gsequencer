@@ -169,7 +169,7 @@ ags_soundcard_util_calc_system_time(GObject *soundcard)
   gdouble delay, delay_counter;
   guint64 note_offset;
   
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
 
   samplerate = ags_frame_clock_get_samplerate(frame_clock);
   
@@ -178,7 +178,7 @@ ags_soundcard_util_calc_system_time(GObject *soundcard)
   delay = (gdouble) frame_clock->absolute_delay;
   delay_counter = (gdouble) frame_clock->delay_counter;
 
-  note_offset = ags_frame_clock_get_absolute_note_offset(AGS_SOUNDCARD(soundcard));
+  note_offset = ags_frame_clock_get_absolute_note_offset(frame_clock);
 
   system_time = (note_offset * delay + delay_counter) * buffer_size * (AGS_NSEC_PER_SEC / samplerate);
 
@@ -205,14 +205,14 @@ ags_soundcard_util_calc_time_samples(GObject *soundcard)
   gdouble delay, delay_counter;
   guint64 note_offset;
   
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
 
   buffer_size = ags_frame_clock_get_buffer_size(frame_clock);
 
   delay = (gdouble) frame_clock->absolute_delay;
   delay_counter = (gdouble) frame_clock->delay_counter;
 
-  note_offset = ags_frame_clock_get_note_offset(AGS_SOUNDCARD(soundcard));
+  note_offset = ags_frame_clock_get_note_offset(frame_clock);
 
   time_samples = (note_offset * delay + delay_counter) * buffer_size;
 
@@ -239,14 +239,14 @@ ags_soundcard_util_calc_time_samples_absolute(GObject *soundcard)
   gdouble delay, delay_counter;
   guint64 note_offset;
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(soundcard));
 
   buffer_size = ags_frame_clock_get_buffer_size(frame_clock);
 
   delay = (gdouble) frame_clock->absolute_delay;
   delay_counter = (gdouble) frame_clock->delay_counter;
 
-  note_offset = ags_frame_clock_get_absolute_note_offset(AGS_SOUNDCARD(soundcard));
+  note_offset = ags_frame_clock_get_absolute_note_offset(frame_clock);
   
   time_samples = (note_offset * delay + delay_counter) * buffer_size;
 

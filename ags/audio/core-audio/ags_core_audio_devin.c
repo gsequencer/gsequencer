@@ -117,7 +117,7 @@ void ags_core_audio_devin_port_free(AgsSoundcard *soundcard);
 
 void ags_core_audio_devin_tic(AgsSoundcard *soundcard);
 void ags_core_audio_devin_offset_changed(AgsSoundcard *soundcard,
-					 guint note_offset);
+					 guint64 note_offset);
 
 void ags_core_audio_devin_set_bpm(AgsSoundcard *soundcard,
 				  gdouble bpm);
@@ -549,7 +549,7 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
   /* frame clock */
   core_audio_devin->frame_clock = ags_frame_clock_new();
   
-  /* buffer */
+  /* app buffer mutex */
   core_audio_devin->app_buffer_mode = AGS_CORE_AUDIO_DEVIN_APP_BUFFER_0;
 
   core_audio_devin->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_CORE_AUDIO_DEVIN_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
@@ -560,6 +560,7 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
     g_rec_mutex_init(core_audio_devin->app_buffer_mutex[i]);
   }
   
+  /* sub-block */
   core_audio_devin->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
   core_audio_devin->sub_block_mutex = (GRecMutex **) g_malloc(AGS_CORE_AUDIO_DEVIN_DEFAULT_APP_BUFFER_SIZE * core_audio_devin->sub_block_count * core_audio_devin->pcm_channels * sizeof(GRecMutex *));
 
@@ -569,6 +570,7 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
     g_rec_mutex_init(core_audio_devin->sub_block_mutex[i]);
   }
 
+  /* app buffer */
   core_audio_devin->app_buffer = (void **) g_malloc(AGS_CORE_AUDIO_DEVIN_DEFAULT_APP_BUFFER_SIZE * sizeof(void*));
 
   core_audio_devin->app_buffer[0] = NULL;
@@ -580,6 +582,7 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
   core_audio_devin->app_buffer[6] = NULL;
   core_audio_devin->app_buffer[7] = NULL;
   
+  /* realloc buffer */
   ags_core_audio_devin_realloc_buffer(core_audio_devin);
   
   /*  */
@@ -1909,39 +1912,23 @@ ags_core_audio_devin_is_recording(AgsSoundcard *soundcard)
 gchar*
 ags_core_audio_devin_get_uptime(AgsSoundcard *soundcard)
 {
+  AgsCoreAudioDevin *core_audio_devin;
+
   gchar *uptime;
 
-  if(ags_soundcard_is_playing(soundcard)){
-    guint samplerate;
-    guint buffer_size;
-
-    guint note_offset;
-    gdouble bpm;
-    gdouble delay_factor;
-    
-    gdouble delay;
-
-    ags_soundcard_get_presets(soundcard,
-			      NULL,
-			      &samplerate,
-			      &buffer_size,
-			      NULL);
-    
-    note_offset = ags_soundcard_get_note_offset_absolute(soundcard);
-
-    bpm = ags_soundcard_get_bpm(soundcard);
-    delay_factor = ags_soundcard_get_delay_factor(soundcard);
-
-    /* calculate delays */
-    delay = ags_soundcard_get_absolute_delay(soundcard);
+  GRecMutex *core_audio_devin_mutex;
   
-    uptime = ags_time_get_uptime_from_offset(note_offset,
-					     bpm,
-					     delay,
-					     delay_factor);
-  }else{
-    uptime = g_strdup(AGS_TIME_ZERO);
-  }
+  core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
+  
+  /* get core audio devin mutex */
+  core_audio_devin_mutex = AGS_CORE_AUDIO_DEVIN_GET_OBJ_MUTEX(core_audio_devin);
+
+  /* get time string */
+  g_rec_mutex_lock(core_audio_devin_mutex);
+  
+  uptime = ags_frame_clock_to_time_string(core_audio_devin->frame_clock);
+
+  g_rec_mutex_unlock(core_audio_devin_mutex);
   
   return(uptime);
 }
@@ -2030,38 +2017,10 @@ ags_core_audio_devin_port_init(AgsSoundcard *soundcard,
   memset(core_audio_devin->app_buffer[7], 0, core_audio_devin->pcm_channels * core_audio_devin->buffer_size * word_size);
 
   /*  */
-  core_audio_devin->tact_counter = 0.0;
-  core_audio_devin->delay_counter = 0.0;
-  core_audio_devin->tic_counter = 0;
+  ags_frame_clock_start(core_audio_devin->frame_clock);
 
-  core_audio_devin->note_offset = core_audio_devin->start_note_offset;
-  core_audio_devin->note_offset_absolute = core_audio_devin->start_note_offset;
-
-  core_audio_devin->note_256th_attack_of_16th_pulse = 0;
-  core_audio_devin->note_256th_attack_of_16th_pulse_position = 0;
-
-  core_audio_devin->note_256th_delay_counter = 0.0;
-
-  core_audio_devin->note_256th_offset = 16 * core_audio_devin->start_note_offset;
-
-  if(core_audio_devin->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    guint i;
-    
-    buffer_size = core_audio_devin->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(core_audio_devin),
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-    
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      core_audio_devin->note_256th_offset_last = core_audio_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (core_audio_devin->note_256th_delay * (double) buffer_size));
-    }
-  }
+  ags_frame_clock_set_note_offset(core_audio_devin->frame_clock,
+				  core_audio_devin->start_note_offset);
 
   core_audio_devin->flags |= (AGS_CORE_AUDIO_DEVIN_INITIALIZED |
 			      AGS_CORE_AUDIO_DEVIN_START_RECORD |
@@ -2324,33 +2283,8 @@ ags_core_audio_devin_port_free(AgsSoundcard *soundcard)
   g_mutex_unlock(callback_finish_mutex);
   
   /*  */
-  core_audio_devin->note_offset = core_audio_devin->start_note_offset;
-  core_audio_devin->note_offset_absolute = core_audio_devin->start_note_offset;
-
-  core_audio_devin->note_256th_attack_of_16th_pulse = 0;
-  core_audio_devin->note_256th_attack_of_16th_pulse_position = 0;
+  ags_frame_clock_stop(core_audio_devin->frame_clock);
   
-  core_audio_devin->note_256th_offset = 16 * core_audio_devin->start_note_offset;
-  
-  if(core_audio_devin->note_256th_delay < 1.0){
-    guint buffer_size;
-    guint note_256th_attack_lower, note_256th_attack_upper;
-    guint i;
-    
-    buffer_size = core_audio_devin->buffer_size;
-
-    note_256th_attack_lower = 0;
-    note_256th_attack_upper = 0;
-    
-    ags_soundcard_get_note_256th_attack(AGS_SOUNDCARD(core_audio_devin),
-					&note_256th_attack_lower,
-					&note_256th_attack_upper);
-    
-    if(note_256th_attack_lower < note_256th_attack_upper){
-      core_audio_devin->note_256th_offset_last = core_audio_devin->note_256th_offset + floor((note_256th_attack_upper - note_256th_attack_lower) / (core_audio_devin->note_256th_delay * (double) buffer_size));
-    }
-  }
-
   switch(core_audio_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2443,7 +2377,7 @@ ags_core_audio_devin_tic(AgsSoundcard *soundcard)
 
 void
 ags_core_audio_devin_offset_changed(AgsSoundcard *soundcard,
-				    guint note_offset)
+				    guint64 note_offset)
 {
   //empty
 }

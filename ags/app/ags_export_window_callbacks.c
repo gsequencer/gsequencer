@@ -93,7 +93,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
   
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
 
   /* get some properties */
   delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;

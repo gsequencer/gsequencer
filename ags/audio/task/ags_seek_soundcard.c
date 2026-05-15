@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -293,6 +293,8 @@ ags_seek_soundcard_launch(AgsTask *task)
 {
   AgsSeekSoundcard *seek_soundcard;
 
+  AgsFrameClock *frame_clock;
+  
   AgsApplicationContext *application_context;
   
   GObject *soundcard;
@@ -301,8 +303,7 @@ ags_seek_soundcard_launch(AgsTask *task)
   GList *recall_start, *recall;
 
   guint note_offset;
-  guint note_offset_absolute;
-
+  
   seek_soundcard = AGS_SEEK_SOUNDCARD(task);
 
   application_context = ags_application_context_get_instance();
@@ -364,32 +365,27 @@ ags_seek_soundcard_launch(AgsTask *task)
 		   g_object_unref);
 
   /* seek soundcard */
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard));
-  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(seek_soundcard->soundcard));
+  
+  note_offset = ags_frame_clock_get_note_offset(frame_clock);
 
   switch(seek_soundcard->whence){
   case AGS_SEEK_CUR:
     {
-      ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    note_offset + seek_soundcard->offset);
-      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					     note_offset_absolute + seek_soundcard->offset);
+      ags_frame_clock_set_note_offset(frame_clock,
+				      note_offset + seek_soundcard->offset);
     }
     break;
   case AGS_SEEK_SET:
     {
-      ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    seek_soundcard->offset);
-      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					     seek_soundcard->offset);
+      ags_frame_clock_set_note_offset(frame_clock,
+				      seek_soundcard->offset);
     }
     break;
   case AGS_SEEK_END:
     {
-      ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    AGS_NOTATION_DEFAULT_END + seek_soundcard->offset);
-      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					     AGS_NOTATION_DEFAULT_END + seek_soundcard->offset);
+      ags_frame_clock_set_note_offset(frame_clock,
+				      AGS_NOTATION_DEFAULT_END + seek_soundcard->offset);
     }
     break;
   }

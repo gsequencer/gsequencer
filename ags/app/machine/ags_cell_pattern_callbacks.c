@@ -135,7 +135,7 @@ ags_cell_pattern_update_ui_callback(GObject *ui_provider,
 
   g_rec_mutex_lock(play_fx_pattern_audio_processor_mutex);
 
-  active_led_new = play_fx_pattern_audio_processor->offset_counter;
+  active_led_new = play_fx_pattern_audio_processor->frame_clock->note_offset;
     
   g_rec_mutex_unlock(play_fx_pattern_audio_processor_mutex);
 

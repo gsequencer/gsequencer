@@ -113,7 +113,7 @@ void ags_fifoout_fifo_free(AgsSoundcard *soundcard);
 
 void ags_fifoout_tic(AgsSoundcard *soundcard);
 void ags_fifoout_offset_changed(AgsSoundcard *soundcard,
-				guint note_offset);
+				guint64 note_offset);
 
 void ags_fifoout_set_bpm(AgsSoundcard *soundcard,
 			 gdouble bpm);
@@ -1429,7 +1429,7 @@ ags_fifoout_tic(AgsSoundcard *soundcard)
 
 void
 ags_fifoout_offset_changed(AgsSoundcard *soundcard,
-			   guint note_offset)
+			   guint64 note_offset)
 {
   //empty
 }
@@ -1550,7 +1550,7 @@ ags_fifoout_get_frame_clock(AgsSoundcard *soundcard)
   /* get frame clock */
   g_rec_mutex_lock(fifoout_mutex);
 
-  frame_clock = fifoout->frame_clock;
+  frame_clock = (GObject *) fifoout->frame_clock;
   
   g_rec_mutex_unlock(fifoout_mutex);
   

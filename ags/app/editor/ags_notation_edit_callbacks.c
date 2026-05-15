@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -65,7 +65,7 @@ ags_notation_edit_update_ui_callback(GObject *ui_provider,
 
   output_soundcard = ags_audio_get_output_soundcard(audio);
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   /* reset offset */
   notation_edit->note_offset = ags_frame_clock_get_note_offset(frame_clock);

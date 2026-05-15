@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -163,6 +163,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   
   GList *start_note, *note;
 
+  guint64 note_256th_offset[16] = {0,};
+
   gboolean pattern_mode;
   gboolean note_256th_mode;
   gdouble delay_counter;
@@ -174,6 +176,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   guint template_frame_count;
   guint buffer_size;
   guint i;
+  guint note_256th_offset_length;
   guint note_offset;
   guint note_256th_offset_lower;
   guint note_256th_offset_upper;
@@ -235,11 +238,18 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     /* get delay counter */
     g_rec_mutex_lock(fx_notation_audio_processor_mutex);
     
-    delay_counter = fx_notation_audio_processor->delay_counter;
-    offset_counter = fx_notation_audio_processor->offset_counter;
+    offset_counter = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
 
-    note_256th_offset_lower = fx_notation_audio_processor->note_256th_current_offset_lower;
-    note_256th_offset_upper = fx_notation_audio_processor->note_256th_current_offset_upper;
+    delay_counter = (gdouble) fx_notation_audio_processor->frame_clock->delay_counter;
+
+    note_256th_offset_length = 0;
+    
+    ags_frame_clock_get_note_256th_offset(fx_notation_audio_processor->frame_clock,
+					  &(note_256th_offset[0]),
+					  &note_256th_offset_length);
+    
+    note_256th_offset_lower = note_256th_offset[0];
+    note_256th_offset_upper = note_256th_offset[note_256th_offset_length - 1];
     
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
@@ -288,13 +298,17 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   note_offset = 0;
 
   if(output_soundcard != NULL){
-    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+    AgsFrameClock *frame_clock;
 
-    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+    
+    absolute_delay = (gdouble) frame_clock->absolute_delay;
 
-    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    delay_counter = (gdouble) frame_clock->delay_counter;
+
+    note_offset = ags_frame_clock_get_note_offset(frame_clock);
   }
-
+  
   if(template != NULL){
     g_object_get(template,
 		 "frame-count", &template_frame_count,
@@ -459,9 +473,12 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
   GObject *output_soundcard;
   
+  guint64 note_256th_offset[16] = {0,};
+
   gboolean note_256th_mode;
   gdouble absolute_delay;
   guint note_offset;
+  guint note_256th_offset_length;
   guint note_256th_offset_lower;
   guint note_256th_offset_upper;
 
@@ -506,15 +523,24 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
   note_256th_offset_upper = 16;
 
   if(output_soundcard != NULL){
-    absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+    AgsFrameClock *frame_clock;
 
-    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-
-    ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(output_soundcard),
-					&note_256th_offset_lower,
-					&note_256th_offset_upper);
+    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
     
-    delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+    absolute_delay = (gdouble) frame_clock->absolute_delay;
+
+    delay_counter = (gdouble) frame_clock->delay_counter;
+
+    note_offset = ags_frame_clock_get_note_offset(frame_clock);
+
+    note_256th_offset_length = 0;
+    
+    ags_frame_clock_get_note_256th_offset(frame_clock,
+					  &(note_256th_offset[0]),
+					  &note_256th_offset_length);
+    
+    note_256th_offset_lower = note_256th_offset[0];
+    note_256th_offset_upper = note_256th_offset[0] + note_256th_offset_length;
   }
 
   if(!note_256th_mode){

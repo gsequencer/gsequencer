@@ -214,8 +214,9 @@ ags_fx_pattern_audio_signal_run_inter(AgsRecall *recall)
     /* get delay counter */
     g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
     
-    delay_counter = fx_pattern_audio_processor->delay_counter;
-    offset_counter = fx_pattern_audio_processor->offset_counter;
+    offset_counter = ags_frame_clock_get_note_offset(fx_pattern_audio_processor->frame_clock);
+
+    delay_counter = (gdouble) fx_pattern_audio_processor->frame_clock->delay_counter;
 
     g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
   }
