@@ -95,8 +95,6 @@ void ags_gstreamer_server_remove_client(AgsGstreamerServer *gstreamer_server,
 void ags_gstreamer_server_connect_client(AgsGstreamerServer *gstreamer_server);
 void ags_gstreamer_server_disconnect_client(AgsGstreamerServer *gstreamer_server);
 
-void ags_gstreamer_server_start_poll(AgsGstreamerServer *gstreamer_server);
-
 AgsGstreamerServer* ags_gstreamer_server_new(gchar *url);
 
 G_END_DECLS
