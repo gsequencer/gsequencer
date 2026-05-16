@@ -242,7 +242,7 @@ main(int argc, char **argv)
 			     0,
 			     NULL,
 			     sizeof(output_buffer_size_bytes),
-			     &output_buffer_size_bytes);
+			     (void *) &output_buffer_size_bytes);
       
   os_status = AudioDeviceCreateIOProcID(output_device,
 			    (OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) hw_output_callback,

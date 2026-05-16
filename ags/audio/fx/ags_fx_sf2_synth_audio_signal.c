@@ -671,14 +671,16 @@ ags_fx_sf2_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
       ags_sf2_synth_util_set_offset(channel_data->synth,
 				    floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
     }else{
-      ags_sf2_synth_util_set_frame_count(channel_data->synth,
-					 (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
-
       ags_sf2_synth_util_set_offset(channel_data->synth,
 				    (guint) floor(((double) (offset_counter - x0) * delay + delay_counter) * (double) buffer_size));
+      
+      ags_sf2_synth_util_set_frame_count(channel_data->synth,
+					 (guint) floor((double) (x1_256th - x0_256th) * note_256th_delay * (double) buffer_size) + (guint) floor(delay * (double) buffer_size));
 
-      ags_sf2_synth_util_set_offset_256th(channel_data->synth,
-					  (guint) floor((double) (note_256th_offset_lower - x0_256th) * note_256th_delay * (double) buffer_size));
+      if(x0_256th <= note_256th_offset[0]){
+	ags_sf2_synth_util_set_offset_256th(channel_data->synth,
+					    (guint) floor((double) (note_256th_offset[0] - x0_256th) * note_256th_delay * (double) buffer_size));
+      }
     }
 #endif
     

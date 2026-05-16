@@ -517,6 +517,7 @@ ags_core_audio_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_sub_block_count = ags_core_audio_devout_get_sub_block_count;
 
   soundcard->trylock_sub_block = ags_core_audio_devout_trylock_sub_block;
+  soundcard->unlock_sub_block = ags_core_audio_devout_unlock_sub_block;
 }
 
 void

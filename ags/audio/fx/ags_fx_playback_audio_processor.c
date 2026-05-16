@@ -544,6 +544,8 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
   AgsRecallID *recall_id;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
+  GObject *output_soundcard;
+  
   GList *start_playing_audio_signal, *playing_audio_signal;
   GList *start_recording_audio_signal, *recording_audio_signal;
   
@@ -574,9 +576,15 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
     return;
   }
   
+  output_soundcard = NULL;
+  
   recycling_context = NULL;
   parent_recycling_context = NULL;
   
+  g_object_get(recall,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
   g_object_get(recall_id,
 	       "recycling-context", &recycling_context,
 	       NULL);
@@ -587,8 +595,9 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
   
   /* frame clock */
   g_rec_mutex_lock(fx_playback_audio_processor_mutex);
-    
-  //empty
+  
+  ags_frame_clock_copy_time(fx_playback_audio_processor->frame_clock,
+			    (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard)));  
   
   g_rec_mutex_unlock(fx_playback_audio_processor_mutex);
 
@@ -706,6 +715,10 @@ ags_fx_playback_audio_processor_run_inter(AgsRecall *recall)
   /* counter change */
   ags_fx_playback_audio_processor_counter_change(fx_playback_audio_processor);
 
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+  
   if(recall_id != NULL){
     g_object_unref(recall_id);
   }
@@ -2036,7 +2049,7 @@ ags_fx_playback_audio_processor_real_counter_change(AgsFxPlaybackAudioProcessor 
   
   fx_playback_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_playback_audio_processor);
 
-  ags_frame_clock_increment_counter(fx_playback_audio_processor->frame_clock);
+  //  ags_frame_clock_increment_counter(fx_playback_audio_processor->frame_clock);
 }
 
 void
