@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,25 +142,11 @@ struct _AgsAudioUnitDevin
   guint sub_block_count;
   GRecMutex **sub_block_mutex;
 
-  double bpm; // beats per minute
-  gdouble delay_factor;
+  gdouble bpm; // beats per minute
   
-  gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
+  guint64 start_note_offset;
 
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint start_note_offset;
-  guint note_offset;
-  guint note_offset_absolute;
-  
-  guint loop_left;
-  guint loop_right;
-  gboolean do_loop;
-  
-  guint loop_offset;
+  AgsFrameClock *frame_clock;
 
   gchar *card_uri;
   GObject *audio_unit_client;
@@ -175,10 +161,6 @@ struct _AgsAudioUnitDevin
   GCond callback_finish_cond;
 
   GObject *notify_soundcard;
-
-  guint note_256th_offset;
-  guint note_256th_offset_last;
-  gdouble note_256th_tic_size;
 };
 
 struct _AgsAudioUnitDevinClass
@@ -197,7 +179,6 @@ void ags_audio_unit_devin_unset_flags(AgsAudioUnitDevin *audio_unit_devin, guint
 
 void ags_audio_unit_devin_switch_buffer_flag(AgsAudioUnitDevin *audio_unit_devin);
 
-void ags_audio_unit_devin_adjust_delay_and_attack(AgsAudioUnitDevin *audio_unit_devin);
 void ags_audio_unit_devin_realloc_buffer(AgsAudioUnitDevin *audio_unit_devin);
 
 AgsAudioUnitDevin* ags_audio_unit_devin_new();

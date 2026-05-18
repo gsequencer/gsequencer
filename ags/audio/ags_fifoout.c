@@ -113,7 +113,7 @@ void ags_fifoout_fifo_free(AgsSoundcard *soundcard);
 
 void ags_fifoout_tic(AgsSoundcard *soundcard);
 void ags_fifoout_offset_changed(AgsSoundcard *soundcard,
-				guint note_offset);
+				guint64 note_offset);
 
 void ags_fifoout_set_bpm(AgsSoundcard *soundcard,
 			 gdouble bpm);
@@ -1429,7 +1429,7 @@ ags_fifoout_tic(AgsSoundcard *soundcard)
 
 void
 ags_fifoout_offset_changed(AgsSoundcard *soundcard,
-			   guint note_offset)
+			   guint64 note_offset)
 {
   //empty
 }

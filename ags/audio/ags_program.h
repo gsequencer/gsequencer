@@ -165,12 +165,6 @@ GList* ags_program_find_region(AgsProgram *program,
 void ags_program_free_selection(AgsProgram *program);
 void ags_program_free_all_selection(GList *program);
 
-void ags_program_add_point_to_selection(AgsProgram *program,
-					guint x,
-					gboolean replace_current_selection);
-void ags_program_remove_point_from_selection(AgsProgram *program,
-					     guint x);
-
 void ags_program_add_region_to_selection(AgsProgram *program,
 					 guint x0,
 					 guint x1,

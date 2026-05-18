@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -165,11 +165,14 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
   AgsFxModularSynthRecycling *fx_modular_synth_recycling;
   AgsFxModularSynthAudioSignal *fx_modular_synth_audio_signal;
   
+  guint64 note_256th_offset[16] = {0,};
+  
   guint sound_scope;
   guint audio_channel;
   guint audio_start_mapping;
   guint midi_start_mapping;
   gint midi_note;
+  guint note_256th_offset_length;
   guint x0_256th, x1_256th;
   guint64 note_256th_offset_lower;
   gdouble note_256th_delay;
@@ -262,9 +265,15 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
   g_rec_mutex_lock(fx_modular_synth_audio_processor_mutex);
 
-  note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_modular_synth_audio_processor)->note_256th_offset_lower;
+  note_256th_offset_length = 0;
+    
+  ags_frame_clock_get_note_256th_offset(AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_modular_synth_audio_processor)->frame_clock,
+					&(note_256th_offset[0]),
+					&note_256th_offset_length);
+  
+  note_256th_offset_lower = note_256th_offset[0];
 
-  note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_modular_synth_audio_processor)->note_256th_delay;
+  note_256th_delay = (gdouble) AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_modular_synth_audio_processor)->frame_clock->absolute_delay / 16.0;
   
   g_rec_mutex_unlock(fx_modular_synth_audio_processor_mutex);
 
@@ -1412,14 +1421,6 @@ ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notat
       ags_modular_synth_util_set_offset(channel_data->modular_synth_util_0,
 					floor(((offset_counter - x0) * delay + delay_counter) * buffer_size));
     }else{
-      g_rec_mutex_lock(fx_modular_synth_audio_processor_mutex);
-
-      note_256th_offset_lower = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_modular_synth_audio_processor)->note_256th_offset_lower;
-
-      note_256th_delay = AGS_FX_NOTATION_AUDIO_PROCESSOR(fx_modular_synth_audio_processor)->note_256th_delay;
-
-      g_rec_mutex_unlock(fx_modular_synth_audio_processor_mutex);
-
       ags_modular_synth_util_set_frame_count(channel_data->modular_synth_util_0,
 					     (guint) floor((double) ((x1_256th - x0_256th) / 16.0) * delay * (double) buffer_size));
 

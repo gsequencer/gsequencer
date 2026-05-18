@@ -56,25 +56,12 @@ void ags_alsa_devin_test_lock_buffer();
 void ags_alsa_devin_test_unlock_buffer();
 void ags_alsa_devin_test_set_bpm();
 void ags_alsa_devin_test_get_bpm();
-void ags_alsa_devin_test_set_delay_factor();
-void ags_alsa_devin_test_get_delay_factor();
-void ags_alsa_devin_test_get_absolute_delay();
-void ags_alsa_devin_test_get_delay();
-void ags_alsa_devin_test_get_attack();
-void ags_alsa_devin_test_get_delay_counter();
 void ags_alsa_devin_test_get_start_note_offset();
 void ags_alsa_devin_test_set_start_note_offset();
-void ags_alsa_devin_test_get_note_offset();
-void ags_alsa_devin_test_set_note_offset();
-void ags_alsa_devin_test_get_note_offset_absolute();
-void ags_alsa_devin_test_set_note_offset_absolute();
-void ags_alsa_devin_test_set_loop();
-void ags_alsa_devin_test_get_loop();
-void ags_alsa_devin_test_get_loop_offset();
+void ags_alsa_devin_test_get_frame_clock();
 void ags_alsa_devin_test_get_sub_block_count();
 void ags_alsa_devin_test_trylock_sub_block();
 void ags_alsa_devin_test_unlock_sub_block();
-void ags_alsa_devin_test_get_note_256th_offset();
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -445,20 +432,20 @@ ags_alsa_devin_test_tic()
   
   alsa_devin = ags_alsa_devin_new();
 
-  delay_counter = alsa_devin->delay_counter;
-  delay = alsa_devin->delay[0];
+  delay_counter = alsa_devin->frame_clock->delay_counter;
+  delay = alsa_devin->frame_clock->absolute_delay;
 
-  note_offset = alsa_devin->note_offset;
+  note_offset = alsa_devin->frame_clock->note_offset;
   
   ags_soundcard_tic(AGS_SOUNDCARD(alsa_devin));
 
-  CU_ASSERT(delay_counter < alsa_devin->delay_counter);
+  CU_ASSERT(delay_counter < alsa_devin->frame_clock->delay_counter);
 
   for(i = 0; i < (guint) floor(delay) + 1; i++){
     ags_soundcard_tic(AGS_SOUNDCARD(alsa_devin));
   }
   
-  CU_ASSERT(note_offset < alsa_devin->note_offset);
+  CU_ASSERT(note_offset < alsa_devin->frame_clock->note_offset);
 }
 
 void
@@ -587,74 +574,6 @@ ags_alsa_devin_test_get_bpm()
 }
 
 void
-ags_alsa_devin_test_set_delay_factor()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devin_test_get_delay_factor()
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devin_test_get_absolute_delay()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  gdouble absolute_delay;
-  
-  alsa_devin = ags_alsa_devin_new();
-  
-  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(alsa_devin));
-
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devin_test_get_delay()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  gdouble delay;
-  
-  alsa_devin = ags_alsa_devin_new();
-  
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(alsa_devin));
-
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devin_test_get_attack()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint attack;
-  
-  alsa_devin = ags_alsa_devin_new();
-  
-  attack = ags_soundcard_get_attack(AGS_SOUNDCARD(alsa_devin));
-
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devin_test_get_delay_counter()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint delay_counter;
-  
-  alsa_devin = ags_alsa_devin_new();
-  
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(alsa_devin));
-
-  //TODO:JK: implement me
-}
-
-void
 ags_alsa_devin_test_get_start_note_offset()
 {
   AgsAlsaDevin *alsa_devin;
@@ -688,131 +607,17 @@ ags_alsa_devin_test_set_start_note_offset()
 }
 
 void
-ags_alsa_devin_test_get_note_offset()
+ags_alsa_devin_test_get_frame_clock()
 {
   AgsAlsaDevin *alsa_devin;
 
-  guint note_offset;
+  GObject *frame_clock;
   
   alsa_devin = ags_alsa_devin_new();
-
-  alsa_devin->note_offset = 64;
   
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(alsa_devin));
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(alsa_devin));
 
-  CU_ASSERT(note_offset == 64);
-}
-
-void
-ags_alsa_devin_test_set_note_offset()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint note_offset;
-  
-  alsa_devin = ags_alsa_devin_new();
-
-  note_offset = 64;
-
-  ags_soundcard_set_note_offset(AGS_SOUNDCARD(alsa_devin),
-				note_offset);
-
-  CU_ASSERT(alsa_devin->note_offset == 64);
-}
-
-void
-ags_alsa_devin_test_get_note_offset_absolute()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint note_offset_absolute;
-  
-  alsa_devin = ags_alsa_devin_new();
-
-  alsa_devin->note_offset_absolute = 64;
-  
-  note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(alsa_devin));
-
-  CU_ASSERT(note_offset_absolute == 64);
-}
-
-void
-ags_alsa_devin_test_set_note_offset_absolute()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint note_offset_absolute;
-  
-  alsa_devin = ags_alsa_devin_new();
-
-  note_offset_absolute = 64;
-
-  ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(alsa_devin),
-					 note_offset_absolute);
-  
-  CU_ASSERT(alsa_devin->note_offset_absolute == 64);
-}
-
-void
-ags_alsa_devin_test_set_loop()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint loop_left, loop_right;
-  gboolean do_loop;
-  
-  alsa_devin = ags_alsa_devin_new();
-
-  alsa_devin->loop_left = 64;
-  alsa_devin->loop_right = 128;
-  
-  alsa_devin->do_loop = TRUE;
-  
-  ags_soundcard_get_loop(AGS_SOUNDCARD(alsa_devin),
-			 &loop_left, &loop_right,
-			 &do_loop);
-
-  CU_ASSERT(loop_left == 64);
-  CU_ASSERT(loop_right == 128);
-  CU_ASSERT(do_loop == TRUE);
-}
-
-void
-ags_alsa_devin_test_get_loop()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint loop_left, loop_right;
-  gboolean do_loop;
-  
-  alsa_devin = ags_alsa_devin_new();
-
-  loop_left = 64;
-  loop_right = 128;
-  
-  do_loop = TRUE;
-
-  ags_soundcard_set_loop(AGS_SOUNDCARD(alsa_devin),
-			 loop_left, loop_right,
-			 do_loop);
-
-  CU_ASSERT(alsa_devin->loop_left == 64);
-  CU_ASSERT(alsa_devin->loop_right == 128);
-  CU_ASSERT(alsa_devin->do_loop == TRUE);
-}
-
-void
-ags_alsa_devin_test_get_loop_offset()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint loop_offset;
-  
-  alsa_devin = ags_alsa_devin_new();
-
-  loop_offset = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(alsa_devin));
-  
-  //TODO:JK: implement me
+  CU_ASSERT(frame_clock != NULL);
 }
 
 void
@@ -838,21 +643,6 @@ ags_alsa_devin_test_trylock_sub_block()
 void
 ags_alsa_devin_test_unlock_sub_block()
 {
-  //TODO:JK: implement me
-}
-
-void
-ags_alsa_devin_test_get_note_256th_offset()
-{
-  AgsAlsaDevin *alsa_devin;
-
-  guint note_256th_offset_lower, note_256th_offset_upper;
-  
-  alsa_devin = ags_alsa_devin_new();
-
-  ags_soundcard_get_note_256th_offset(AGS_SOUNDCARD(alsa_devin),
-				      &note_256th_offset_lower, &note_256th_offset_upper);
-
   //TODO:JK: implement me
 }
 
@@ -905,19 +695,9 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAlsaDevin unlock buffer", ags_alsa_devin_test_unlock_buffer) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevin set bpm", ags_alsa_devin_test_set_bpm) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevin get bpm", ags_alsa_devin_test_get_bpm) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin set delay factor", ags_alsa_devin_test_set_delay_factor) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get delay factor", ags_alsa_devin_test_get_delay_factor) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get absolute delay", ags_alsa_devin_test_get_absolute_delay) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get delay", ags_alsa_devin_test_get_delay) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get attack", ags_alsa_devin_test_get_attack) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get delay counter", ags_alsa_devin_test_get_delay_counter) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevin set start note offset", ags_alsa_devin_test_set_start_note_offset) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevin get start note offset", ags_alsa_devin_test_get_start_note_offset) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin set note offset", ags_alsa_devin_test_set_note_offset) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get note offset", ags_alsa_devin_test_get_note_offset) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin set loop", ags_alsa_devin_test_set_loop) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get loop", ags_alsa_devin_test_get_loop) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevin get loop offset", ags_alsa_devin_test_get_loop_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsAlsaDevin get frame clock", ags_alsa_devin_test_get_frame_clock) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevin get sub block count", ags_alsa_devin_test_get_sub_block_count) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevin trylock sub block", ags_alsa_devin_test_trylock_sub_block) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevin unock sub block", ags_alsa_devin_test_unlock_sub_block) == NULL)){

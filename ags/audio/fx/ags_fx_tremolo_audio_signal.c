@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,13 +142,15 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxTremoloChannelProcessor *fx_tremolo_channel_processor;
   AgsFxTremoloRecycling *fx_tremolo_recycling;
   AgsFxTremoloAudioSignal *fx_tremolo_audio_signal;
+
+  AgsFrameClock *frame_clock;
   
   GObject *output_soundcard;
   
   GList *start_note, *note;
 
-  guint note_offset, delay_counter;
-  gdouble delay;
+  guint64 note_offset;
+  gdouble delay, delay_counter;
   guint buffer_size;
   guint format;
   guint samplerate;
@@ -203,11 +205,14 @@ ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       "samplerate", &samplerate,
 	       NULL);
+
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  note_offset = ags_frame_clock_get_note_offset(frame_clock);
   
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+  delay = (gdouble) frame_clock->absolute_delay;
+  
+  delay_counter = (gdouble) frame_clock->delay_counter;
 
   if(fx_tremolo_audio != NULL){
     AgsPort *port;

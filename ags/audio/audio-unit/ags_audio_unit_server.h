@@ -103,8 +103,6 @@ void ags_audio_unit_server_remove_client(AgsAudioUnitServer *audio_unit_server,
 
 void ags_audio_unit_server_connect_client(AgsAudioUnitServer *audio_unit_server);
 
-void ags_audio_unit_server_start_poll(AgsAudioUnitServer *audio_unit_server);
-
 AgsAudioUnitServer* ags_audio_unit_server_new(gchar *url);
 
 G_END_DECLS

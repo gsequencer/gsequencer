@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,6 +122,12 @@ struct _AgsJackDevin
   AgsSoundcardFormat format;
   guint buffer_size;
   guint samplerate;
+
+  gdouble bpm; // beats per minute  
+
+  guint64 start_note_offset;
+
+  AgsFrameClock *frame_clock;
   
   AgsJackDevinAppBufferMode app_buffer_mode;
 
@@ -130,26 +136,6 @@ struct _AgsJackDevin
 
   guint sub_block_count;
   GRecMutex **sub_block_mutex;
-
-  double bpm; // beats per minute
-  gdouble delay_factor;
-  
-  gdouble *delay; // count of tics within buffer size
-  guint *attack; // where currently tic resides in the stream's offset, measured in 1/64 of bpm
-
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint start_note_offset;
-  guint note_offset;
-  guint note_offset_absolute;
-  
-  guint loop_left;
-  guint loop_right;
-  gboolean do_loop;
-  
-  guint loop_offset;
 
   gchar *card_uri;
   GObject *jack_client;
@@ -162,18 +148,6 @@ struct _AgsJackDevin
 
   GMutex callback_finish_mutex;
   GCond callback_finish_cond;
-
-  gdouble note_256th_delay;
-
-  GList *note_256th_attack;
-
-  guint note_256th_offset;
-  guint note_256th_offset_last;
-
-  guint note_256th_attack_of_16th_pulse;
-  guint note_256th_attack_of_16th_pulse_position;
-
-  gdouble note_256th_delay_counter;
 };
 
 struct _AgsJackDevinClass
@@ -192,7 +166,6 @@ void ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, AgsJackDevinFlags flag
 
 void ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin);
 
-void ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin);
 void ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin);
 
 AgsJackDevin* ags_jack_devin_new();

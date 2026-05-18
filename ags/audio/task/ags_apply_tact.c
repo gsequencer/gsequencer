@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -455,13 +455,13 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
 void
 ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard)
 {
-  ags_soundcard_set_delay_factor(AGS_SOUNDCARD(soundcard), apply_tact->tact);
+  g_warning("defaults to 4/4");
 }
 
 void
 ags_apply_tact_sequencer(AgsApplyTact *apply_tact, GObject *sequencer)
 {
-  ags_sequencer_set_delay_factor(AGS_SEQUENCER(sequencer), apply_tact->tact);
+  g_warning("defaults to 4/4");
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2019 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -151,6 +151,8 @@ ags_reset_note_launch(AgsTask *task)
 {
   AgsResetNote *reset_note;
 
+  AgsFrameClock *frame_clock;
+
   AgsApplicationContext *application_context;
 
   GObject *default_soundcard;
@@ -169,10 +171,12 @@ ags_reset_note_launch(AgsTask *task)
   application_context = ags_application_context_get_instance();
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   g_rec_mutex_lock(task_mutex);
   
-  if((note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(default_soundcard))) == reset_note->note_offset){
+  if((note_offset = ags_frame_clock_get_note_offset(frame_clock)) == reset_note->note_offset){
     g_rec_mutex_unlock(task_mutex);
 
     return;
