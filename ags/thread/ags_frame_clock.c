@@ -2090,7 +2090,7 @@ ags_frame_clock_to_time_string(AgsFrameClock *frame_clock)
 
   secs_count = (guint64) floor((double) frame_clock->frame_offset / (double) frame_clock->samplerate);
 
-  nsecs_count = (guint64) ((double) (frame_clock->frame_offset % frame_clock->samplerate) / (double) frame_clock->samplerate) * AGS_NSEC_PER_SEC;
+  nsecs_count = (guint64) (((double) (frame_clock->frame_offset % frame_clock->samplerate) / (double) frame_clock->samplerate) * (double) AGS_NSEC_PER_SEC);
 
   min = (guint) floor((double) secs_count / 60.0);
 

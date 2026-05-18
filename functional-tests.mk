@@ -18,6 +18,7 @@ check_LTLIBRARIES = libgsequencer_test.la
 # functional tests
 check_PROGRAMS += \
 	ags_functional_server_test \
+	ags_functional_frame_clock_test \
 	ags_functional_audio_test \
 	ags_functional_pitch_test \
 	ags_functional_fast_pitch_test \
@@ -78,6 +79,12 @@ ags_functional_server_test_SOURCES = ags/test/server/ags_functional_server_test.
 ags_functional_server_test_CFLAGS = $(CFLAGS) $(FUNCTIONAL_TEST_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
 ags_functional_server_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_server_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit  -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS)
+
+# functional frame_clock test
+ags_functional_frame_clock_test_SOURCES = ags/test/thread/ags_functional_frame_clock_test.c
+ags_functional_frame_clock_test_CFLAGS = $(CFLAGS) $(FUNCTIONAL_TEST_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_functional_frame_clock_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_frame_clock_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional audio test
 ags_functional_audio_test_SOURCES = ags/test/audio/ags_functional_audio_test.c

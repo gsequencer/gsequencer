@@ -1118,7 +1118,7 @@ ags_fx_notation_audio_notify_output_soundcard_callback(GObject *gobject,
 {
   AgsFxNotationAudio *fx_notation_audio;
   AgsPort *port;
-  
+
   AgsFrameClock *frame_clock;
   
   GObject *output_soundcard;
@@ -1134,6 +1134,8 @@ ags_fx_notation_audio_notify_output_soundcard_callback(GObject *gobject,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
+  g_return_if_fail(output_soundcard != NULL);
+  
   frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   /* delay */
@@ -1144,8 +1146,7 @@ ags_fx_notation_audio_notify_output_soundcard_callback(GObject *gobject,
   if(port != NULL){
     g_value_init(&value, G_TYPE_DOUBLE);
 
-    g_value_set_double(&value,
-		       (gdouble) frame_clock->absolute_delay);
+    g_value_set_double(&value, (gdouble) frame_clock->absolute_delay);
 
     ags_port_safe_write(port, &value);
 
