@@ -64,7 +64,7 @@ void activate(GApplication *app,
 #define AGS_FUNCTIONAL_FRAME_CLOCK_TEST_PLAYBACK_N_NOTES (4 * (guint) (1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH) * 120)
 #define AGS_FUNCTIONAL_FRAME_CLOCK_TEST_PLAYBACK_STOP_DELAY (120)
 
- // Apple Inc. - Built-in Output
+// Apple Inc. - Built-in Output
 #define AGS_FUNCTIONAL_FRAME_CLOCK_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"					\
   "simple-file=true\n"						\
@@ -79,14 +79,15 @@ void activate(GApplication *app,
   "max-precision=60\n"						\
   "\n"								\
   "[soundcard]\n"						\
-  "backend=core-audio\n"					\
-  "capability=playback\n"					\
-  "device=Apple Inc. - MacBook Pro-Lautsprecher\n"		\
+  "backend=pulse\n"						\
+  "device=ags-pulse-devout-0\n"					\
   "samplerate=44100\n"						\
-  "buffer-size=2048\n"						\
+  "buffer-size=512\n"						\
   "pcm-channels=2\n"						\
   "dsp-channels=2\n"						\
-  "format=float\n"						\
+  "format=16\n"							\
+  "use-cache=true\n"						\
+  "cache-buffer-size=4096\n"					\
   "\n"								\
   "[recall]\n"							\
   "auto-sense=true\n"						\
