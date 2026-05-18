@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -163,6 +163,12 @@ struct _AgsAlsaMidiin
   GRecMutex obj_mutex;
 
   AgsUUID *uuid;
+
+  gdouble bpm; // beats per minute
+
+  guint64 start_note_offset;
+
+  AgsFrameClock *frame_clock;
     
   AgsAlsaMidiinAppBufferMode app_buffer_mode;
   
@@ -177,21 +183,7 @@ struct _AgsAlsaMidiin
   char **backend_buffer;
   guint allocated_backend_buffer_size[AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE];
   guint backend_buffer_size[AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE];
-
-  double bpm; // beats per minute
-
-  gdouble delay;
-  gdouble delay_factor;
-  guint latency;
   
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint start_note_offset;
-  guint note_offset;
-  guint note_offset_absolute;
-
   char *device;
 
   int rc;

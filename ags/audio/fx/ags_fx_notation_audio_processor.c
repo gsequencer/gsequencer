@@ -1280,7 +1280,7 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
       start_note = ags_notation_get_note(notation->data);
   }
 
-#if 0
+#if 1
   if(start_note != NULL){
     note = ags_note_find_range_x_256th(start_note,
 				       note_256th_offset_lower, note_256th_offset_upper);
@@ -1316,6 +1316,8 @@ ags_fx_notation_audio_processor_real_play(AgsFxNotationAudioProcessor *fx_notati
 					     current,
 					     AGS_FX_NOTATION_AUDIO_PROCESSOR_DEFAULT_KEY_ON_VELOCITY,
 					     AGS_FX_NOTATION_AUDIO_PROCESSOR_KEY_MODE_PLAY);
+    }else if(x0_256th > note_256th_offset_upper){
+      break;
     }
       
     /* iterate */

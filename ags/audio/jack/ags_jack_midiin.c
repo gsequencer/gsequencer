@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -68,6 +68,16 @@ void ags_jack_midiin_set_device(AgsSequencer *sequencer,
 				gchar *device);
 gchar* ags_jack_midiin_get_device(AgsSequencer *sequencer);
 
+void ags_jack_midiin_set_bpm(AgsSequencer *sequencer,
+			     gdouble bpm);
+gdouble ags_jack_midiin_get_bpm(AgsSequencer *sequencer);
+
+void ags_jack_midiin_set_start_note_offset(AgsSequencer *sequencer,
+					   guint64 start_note_offset);
+guint64 ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer);
+
+GObject* ags_jack_midiin_get_frame_clock(AgsSequencer *sequencer);
+
 void ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 				GList **card_id, GList **card_name);
 
@@ -82,15 +92,7 @@ void ags_jack_midiin_port_free(AgsSequencer *sequencer);
 
 void ags_jack_midiin_tic(AgsSequencer *sequencer);
 void ags_jack_midiin_offset_changed(AgsSequencer *sequencer,
-				    guint note_offset);
-
-void ags_jack_midiin_set_bpm(AgsSequencer *sequencer,
-			     gdouble bpm);
-gdouble ags_jack_midiin_get_bpm(AgsSequencer *sequencer);
-
-void ags_jack_midiin_set_delay_factor(AgsSequencer *sequencer,
-				      gdouble delay_factor);
-gdouble ags_jack_midiin_get_delay_factor(AgsSequencer *sequencer);
+				    guint64 note_offset);
 
 void* ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
 				 guint *buffer_length);
@@ -101,14 +103,6 @@ void ags_jack_midiin_lock_buffer(AgsSequencer *sequencer,
 				 void *buffer);
 void ags_jack_midiin_unlock_buffer(AgsSequencer *sequencer,
 				   void *buffer);
-
-void ags_jack_midiin_set_start_note_offset(AgsSequencer *sequencer,
-					   guint start_note_offset);
-guint ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer);
-
-void ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
-				     guint note_offset);
-guint ags_jack_midiin_get_note_offset(AgsSequencer *sequencer);
 
 AgsSequencerMidiVersion ags_jack_midiin_get_midi_version(AgsSequencer *sequencer);  
 
@@ -125,10 +119,8 @@ AgsSequencerMidiVersion ags_jack_midiin_get_midi_version(AgsSequencer *sequencer
 enum{
   PROP_0,
   PROP_DEVICE,
-  PROP_BUFFER,
   PROP_BPM,
-  PROP_DELAY_FACTOR,
-  PROP_ATTACK,
+  PROP_BUFFER,
   PROP_JACK_CLIENT,
   PROP_JACK_PORT,
 };
@@ -246,21 +238,6 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 				  param_spec);
 
   /**
-   * AgsJackMidiin:buffer:
-   *
-   * The buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("buffer",
-				    i18n_pspec("the buffer"),
-				    i18n_pspec("The buffer to record"),
-				    G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER,
-				  param_spec);
-
-  /**
    * AgsJackMidiin:bpm:
    *
    * Beats per minute
@@ -279,38 +256,19 @@ ags_jack_midiin_class_init(AgsJackMidiinClass *jack_midiin)
 				  param_spec);
 
   /**
-   * AgsJackMidiin:delay-factor:
+   * AgsJackMidiin:buffer:
    *
-   * tact
+   * The buffer
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_double("delay-factor",
-				   i18n_pspec("delay factor"),
-				   i18n_pspec("The delay factor"),
-				   0.0,
-				   16.0,
-				   1.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DELAY_FACTOR,
-				  param_spec);
-
-  /**
-   * AgsJackMidiin:attack:
-   *
-   * Attack of the buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("attack",
-				    i18n_pspec("attack of buffer"),
-				    i18n_pspec("The attack to use for the buffer"),
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to record"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_ATTACK,
+				  PROP_BUFFER,
 				  param_spec);
-
 
   /**
    * AgsJackMidiin:jack-client:
@@ -380,6 +338,14 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 {
   sequencer->set_device = ags_jack_midiin_set_device;
   sequencer->get_device = ags_jack_midiin_get_device;
+    
+  sequencer->set_bpm = ags_jack_midiin_set_bpm;
+  sequencer->get_bpm = ags_jack_midiin_get_bpm;
+
+  sequencer->set_start_note_offset = ags_jack_midiin_set_start_note_offset;
+  sequencer->get_start_note_offset = ags_jack_midiin_get_start_note_offset;
+
+  sequencer->get_frame_clock = ags_jack_midiin_get_frame_clock;
 
   sequencer->list_cards = ags_jack_midiin_list_cards;
 
@@ -397,24 +363,12 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->tic = ags_jack_midiin_tic;
   sequencer->offset_changed = ags_jack_midiin_offset_changed;
-    
-  sequencer->set_bpm = ags_jack_midiin_set_bpm;
-  sequencer->get_bpm = ags_jack_midiin_get_bpm;
-
-  sequencer->set_delay_factor = ags_jack_midiin_set_delay_factor;
-  sequencer->get_delay_factor = ags_jack_midiin_get_delay_factor;
   
   sequencer->get_buffer = ags_jack_midiin_get_buffer;
   sequencer->get_next_buffer = ags_jack_midiin_get_next_buffer;
 
   sequencer->lock_buffer = ags_jack_midiin_lock_buffer;
   sequencer->unlock_buffer = ags_jack_midiin_unlock_buffer;
-
-  sequencer->set_start_note_offset = ags_jack_midiin_set_start_note_offset;
-  sequencer->get_start_note_offset = ags_jack_midiin_get_start_note_offset;
-
-  sequencer->set_note_offset = ags_jack_midiin_set_note_offset;
-  sequencer->get_note_offset = ags_jack_midiin_get_note_offset;
 
   sequencer->get_midi_version = ags_jack_midiin_get_midi_version;
   sequencer->set_midi_version = NULL;
@@ -443,9 +397,19 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   jack_midiin->uuid = ags_uuid_alloc();
   ags_uuid_generate(jack_midiin->uuid);
 
+  /* bpm */
+  jack_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
+  
+  /* start note offset */
+  jack_midiin->start_note_offset = 0;
+  
+  /* frame clock */
+  jack_midiin->frame_clock = ags_frame_clock_new();
+
+  /* app buffer mode */
   jack_midiin->app_buffer_mode = AGS_JACK_MIDIIN_APP_BUFFER_0;
   
-  /* buffer */
+  /* app buffer mutex */
   jack_midiin->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
 
   for(i = 0; i < AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
@@ -454,6 +418,7 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
     g_rec_mutex_init(jack_midiin->app_buffer_mutex[i]);
   }
 
+  /* app buffer */
   jack_midiin->app_buffer = (char **) g_malloc(AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(char *));
 
   for(i = 0; i < AGS_JACK_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
@@ -462,39 +427,6 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
     jack_midiin->allocated_app_buffer_size[i] = 0;
     jack_midiin->app_buffer_size[i] = 0;
   }
-
-  /* bpm */
-  jack_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
-
-  /* delay and delay factor */
-  jack_midiin->delay = AGS_SEQUENCER_DEFAULT_DELAY;
-  jack_midiin->delay_factor = AGS_SEQUENCER_DEFAULT_DELAY_FACTOR;
-    
-  /* segmentation */
-  config = ags_config_get_instance();
-
-  segmentation = ags_config_get_value(config,
-				      AGS_CONFIG_GENERIC,
-				      "segmentation");
-
-  if(segmentation != NULL){
-    sscanf(segmentation, "%d/%d",
-	   &denominator,
-	   &numerator);
-    
-    jack_midiin->delay_factor = 1.0 / numerator * (numerator / denominator);
-
-    g_free(segmentation);
-  }
-
-  /* counters */
-  jack_midiin->start_note_offset = 0;
-  jack_midiin->note_offset = 0;
-  jack_midiin->note_offset_absolute = 0;
-
-  jack_midiin->tact_counter = 0.0;
-  jack_midiin->delay_counter = 0;
-  jack_midiin->tic_counter = 0;
 
   /* card and port */
   jack_midiin->card_uri = NULL;
@@ -545,11 +477,6 @@ ags_jack_midiin_set_property(GObject *gobject,
       g_rec_mutex_unlock(jack_midiin_mutex);
     }
     break;
-  case PROP_BUFFER:
-    {
-      //TODO:JK: implement me
-    }
-    break;
   case PROP_BPM:
     {
       gdouble bpm;
@@ -558,22 +485,23 @@ ags_jack_midiin_set_property(GObject *gobject,
 
       g_rec_mutex_lock(jack_midiin_mutex);
 
+      if(bpm == jack_midiin->bpm){
+	g_rec_mutex_unlock(jack_midiin_mutex);
+
+	return;
+      }
+
       jack_midiin->bpm = bpm;
+      
+      ags_frame_clock_set_bpm(jack_midiin->frame_clock,
+			      bpm);
 
       g_rec_mutex_unlock(jack_midiin_mutex);
     }
     break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
     {
-      gdouble delay_factor;
-      
-      delay_factor = g_value_get_double(value);
-
-      g_rec_mutex_lock(jack_midiin_mutex);
-
-      jack_midiin->delay_factor = delay_factor;
-
-      g_rec_mutex_unlock(jack_midiin_mutex);
+      //TODO:JK: implement me
     }
     break;
   case PROP_JACK_CLIENT:
@@ -657,15 +585,6 @@ ags_jack_midiin_get_property(GObject *gobject,
       g_rec_mutex_unlock(jack_midiin_mutex);
     }
     break;
-  case PROP_BUFFER:
-    {
-      g_rec_mutex_lock(jack_midiin_mutex);
-
-      g_value_set_pointer(value, jack_midiin->app_buffer);
-
-      g_rec_mutex_unlock(jack_midiin_mutex);
-    }
-    break;
   case PROP_BPM:
     {
       g_rec_mutex_lock(jack_midiin_mutex);
@@ -675,11 +594,11 @@ ags_jack_midiin_get_property(GObject *gobject,
       g_rec_mutex_unlock(jack_midiin_mutex);
     }
     break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
     {
       g_rec_mutex_lock(jack_midiin_mutex);
 
-      g_value_set_double(value, jack_midiin->delay_factor);
+      g_value_set_pointer(value, jack_midiin->app_buffer);
 
       g_rec_mutex_unlock(jack_midiin_mutex);
     }
@@ -745,6 +664,11 @@ ags_jack_midiin_finalize(GObject *gobject)
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
   ags_uuid_free(jack_midiin->uuid);
+
+  /* frame clock */
+  if(jack_midiin->frame_clock != NULL){
+    g_object_unref(jack_midiin->frame_clock);
+  }
   
   /* free output buffer */
   if(jack_midiin->app_buffer[0] != NULL){
@@ -1078,6 +1002,120 @@ ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, AgsJackMidiinFlags flags
 }
 
 void
+ags_jack_midiin_set_bpm(AgsSequencer *sequencer,
+			gdouble bpm)
+{
+  AgsJackMidiin *jack_midiin;
+
+  GRecMutex *jack_midiin_mutex;
+  
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack_midiin mutex */
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
+
+  /* set bpm */
+  g_rec_mutex_lock(jack_midiin_mutex);
+
+  jack_midiin->bpm = bpm;
+
+  g_rec_mutex_unlock(jack_midiin_mutex);
+}
+
+gdouble
+ags_jack_midiin_get_bpm(AgsSequencer *sequencer)
+{
+  AgsJackMidiin *jack_midiin;
+
+  gdouble bpm;
+  
+  GRecMutex *jack_midiin_mutex;
+  
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack_midiin mutex */
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
+
+  /* get bpm */
+  g_rec_mutex_lock(jack_midiin_mutex);
+
+  bpm = jack_midiin->bpm;
+  
+  g_rec_mutex_unlock(jack_midiin_mutex);
+
+  return(bpm);
+}
+
+void
+ags_jack_midiin_set_start_note_offset(AgsSequencer *sequencer,
+				      guint64 start_note_offset)
+{
+  AgsJackMidiin *jack_midiin;
+
+  GRecMutex *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack midiin mutex */
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(jack_midiin_mutex);
+
+  jack_midiin->start_note_offset = start_note_offset;
+
+  g_rec_mutex_unlock(jack_midiin_mutex);
+}
+
+guint64
+ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsJackMidiin *jack_midiin;
+
+  guint64 start_note_offset;
+  
+  GRecMutex *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack midiin mutex */
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(jack_midiin_mutex);
+
+  start_note_offset = jack_midiin->start_note_offset;
+
+  g_rec_mutex_unlock(jack_midiin_mutex);
+
+  return(start_note_offset);
+}
+
+GObject*
+ags_jack_midiin_get_frame_clock(AgsSequencer *sequencer)
+{
+  AgsJackMidiin *jack_midiin;
+
+  GObject *frame_clock;
+  
+  GRecMutex *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack midiin mutex */
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(jack_midiin_mutex);
+
+  frame_clock = (GObject *) jack_midiin->frame_clock;
+
+  g_rec_mutex_unlock(jack_midiin_mutex);
+
+  return(frame_clock);
+}
+
+void
 ags_jack_midiin_set_device(AgsSequencer *sequencer,
 			   gchar *device)
 {
@@ -1332,13 +1370,14 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   //TODO:JK: implement me
   
   /*  */
-  jack_midiin->tact_counter = 0.0;
-  jack_midiin->delay_counter = floor(jack_midiin->delay);
-  jack_midiin->tic_counter = 0;
-
   jack_midiin->flags |= (AGS_JACK_MIDIIN_INITIALIZED |
 			 AGS_JACK_MIDIIN_START_RECORD |
 			 AGS_JACK_MIDIIN_RECORD);
+
+  ags_frame_clock_start(jack_midiin->frame_clock);
+
+  ags_frame_clock_set_note_offset(jack_midiin->frame_clock,
+				  jack_midiin->start_note_offset);
   
   ags_atomic_int_and(&(jack_midiin->sync_flags),
 		   (~(AGS_JACK_MIDIIN_PASS_THROUGH)));
@@ -1573,8 +1612,8 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
     jack_midiin->app_buffer_size[0] = 0;
   }
 
-  jack_midiin->note_offset = jack_midiin->start_note_offset;
-  jack_midiin->note_offset_absolute = jack_midiin->start_note_offset;
+  /*  */
+  ags_frame_clock_stop(jack_midiin->frame_clock);
 
   g_rec_mutex_unlock(jack_midiin_mutex);
 }
@@ -1584,165 +1623,32 @@ ags_jack_midiin_tic(AgsSequencer *sequencer)
 {
   AgsJackMidiin *jack_midiin;
 
-  gdouble delay;
-  gdouble delay_counter;    
-  guint note_offset;
-  
   GRecMutex *jack_midiin_mutex;
-
+  
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
-  /* get jack_midiin mutex */
+  /* get jack midiin mutex */
   jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-  
-  /* determine if attack should be switched */
+
+  /* frame clock */
   g_rec_mutex_lock(jack_midiin_mutex);
+  
+  ags_frame_clock_increment_counter(jack_midiin->frame_clock);
 
-  delay = jack_midiin->delay;
-  delay_counter = jack_midiin->delay_counter;
-
-  note_offset = jack_midiin->note_offset;
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-
-  if(delay_counter + 1.0 >= delay){
-    ags_sequencer_set_note_offset(sequencer,
-				  note_offset + 1);
-    
-    /* delay */
+  /* 16th pulse */
+  if(ags_frame_clock_get_has_16th_pulse(jack_midiin->frame_clock)){
     ags_sequencer_offset_changed(sequencer,
-				 note_offset);
-    
-    /* reset - delay counter */
-    g_rec_mutex_lock(jack_midiin_mutex);
-
-    jack_midiin->delay_counter = delay_counter + 1.0 - delay;
-    jack_midiin->tact_counter += 1.0;
-
-    g_rec_mutex_unlock(jack_midiin_mutex);
-  }else{
-    g_rec_mutex_lock(jack_midiin_mutex);
-
-    jack_midiin->delay_counter += 1.0;
-
-    g_rec_mutex_unlock(jack_midiin_mutex);
+				 jack_midiin->frame_clock->note_offset);
   }
+  
+  g_rec_mutex_unlock(jack_midiin_mutex);
 }
 
 void
 ags_jack_midiin_offset_changed(AgsSequencer *sequencer,
-			       guint note_offset)
+			       guint64 note_offset)
 {
-  AgsJackMidiin *jack_midiin;
-  
-  GRecMutex *jack_midiin_mutex;
-  
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack_midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* offset changed */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  jack_midiin->tic_counter += 1;
-
-  if(jack_midiin->tic_counter == AGS_SEQUENCER_DEFAULT_PERIOD){
-    /* reset - tic counter i.e. modified delay index within period */
-    jack_midiin->tic_counter = 0;
-  }
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-}
-
-void
-ags_jack_midiin_set_bpm(AgsSequencer *sequencer,
-			gdouble bpm)
-{
-  AgsJackMidiin *jack_midiin;
-
-  GRecMutex *jack_midiin_mutex;
-  
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack_midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* set bpm */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  jack_midiin->bpm = bpm;
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-}
-
-gdouble
-ags_jack_midiin_get_bpm(AgsSequencer *sequencer)
-{
-  AgsJackMidiin *jack_midiin;
-
-  gdouble bpm;
-  
-  GRecMutex *jack_midiin_mutex;
-  
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack_midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* get bpm */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  bpm = jack_midiin->bpm;
-  
-  g_rec_mutex_unlock(jack_midiin_mutex);
-
-  return(bpm);
-}
-
-void
-ags_jack_midiin_set_delay_factor(AgsSequencer *sequencer,
-				 gdouble delay_factor)
-{
-  AgsJackMidiin *jack_midiin;
-
-  GRecMutex *jack_midiin_mutex;
-  
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack_midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* set delay factor */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  jack_midiin->delay_factor = delay_factor;
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-}
-
-gdouble
-ags_jack_midiin_get_delay_factor(AgsSequencer *sequencer)
-{
-  AgsJackMidiin *jack_midiin;
-
-  gdouble delay_factor;
-  
-  GRecMutex *jack_midiin_mutex;
-  
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack_midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* get delay factor */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  delay_factor = jack_midiin->delay_factor;
-  
-  g_rec_mutex_unlock(jack_midiin_mutex);
-
-  return(delay_factor);
+  //empty
 }
 
 void*
@@ -1911,97 +1817,6 @@ ags_jack_midiin_unlock_buffer(AgsSequencer *sequencer,
   if(app_buffer_mutex != NULL){
     g_rec_mutex_unlock(app_buffer_mutex);
   }
-}
-
-void
-ags_jack_midiin_set_start_note_offset(AgsSequencer *sequencer,
-				      guint start_note_offset)
-{
-  AgsJackMidiin *jack_midiin;
-
-  GRecMutex *jack_midiin_mutex;  
-
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  jack_midiin->start_note_offset = start_note_offset;
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-}
-
-guint
-ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer)
-{
-  AgsJackMidiin *jack_midiin;
-
-  guint start_note_offset;
-  
-  GRecMutex *jack_midiin_mutex;  
-
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  start_note_offset = jack_midiin->start_note_offset;
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-
-  return(start_note_offset);
-}
-
-
-void
-ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
-				guint note_offset)
-{
-  AgsJackMidiin *jack_midiin;
-
-  GRecMutex *jack_midiin_mutex;  
-
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  jack_midiin->note_offset = note_offset;
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-}
-
-guint
-ags_jack_midiin_get_note_offset(AgsSequencer *sequencer)
-{
-  AgsJackMidiin *jack_midiin;
-
-  guint note_offset;
-  
-  GRecMutex *jack_midiin_mutex;  
-
-  jack_midiin = AGS_JACK_MIDIIN(sequencer);
-
-  /* get jack midiin mutex */
-  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(jack_midiin_mutex);
-
-  note_offset = jack_midiin->note_offset;
-
-  g_rec_mutex_unlock(jack_midiin_mutex);
-
-  return(note_offset);
 }
 
 AgsSequencerMidiVersion

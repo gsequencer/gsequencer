@@ -70,6 +70,16 @@ void ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
 				      gchar *device);
 gchar* ags_core_audio_midiin_get_device(AgsSequencer *sequencer);
 
+void ags_core_audio_midiin_set_bpm(AgsSequencer *sequencer,
+				   gdouble bpm);
+gdouble ags_core_audio_midiin_get_bpm(AgsSequencer *sequencer);
+
+void ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
+						 guint64 start_note_offset);
+guint64 ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer);
+
+GObject* ags_core_audio_midiin_get_frame_clock(AgsSequencer *sequencer);
+
 void ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
 				      GList **card_id, GList **card_name);
 
@@ -84,11 +94,7 @@ void ags_core_audio_midiin_port_free(AgsSequencer *sequencer);
 
 void ags_core_audio_midiin_tic(AgsSequencer *sequencer);
 void ags_core_audio_midiin_offset_changed(AgsSequencer *sequencer,
-					  guint note_offset);
-
-void ags_core_audio_midiin_set_bpm(AgsSequencer *sequencer,
-				   gdouble bpm);
-gdouble ags_core_audio_midiin_get_bpm(AgsSequencer *sequencer);
+					  guint64 note_offset);
 
 void ags_core_audio_midiin_set_delay_factor(AgsSequencer *sequencer,
 					    gdouble delay_factor);
@@ -103,14 +109,6 @@ void ags_core_audio_midiin_lock_buffer(AgsSequencer *sequencer,
 				       void *buffer);
 void ags_core_audio_midiin_unlock_buffer(AgsSequencer *sequencer,
 					 void *buffer);
-
-void ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
-						 guint start_note_offset);
-guint ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer);
-
-void ags_core_audio_midiin_set_note_offset(AgsSequencer *sequencer,
-					   guint note_offset);
-guint ags_core_audio_midiin_get_note_offset(AgsSequencer *sequencer);
 
 AgsSequencerMidiVersion ags_core_audio_midiin_get_midi_version(AgsSequencer *sequencer);  
 
@@ -127,10 +125,8 @@ AgsSequencerMidiVersion ags_core_audio_midiin_get_midi_version(AgsSequencer *seq
 enum{
   PROP_0,
   PROP_DEVICE,
-  PROP_BUFFER,
   PROP_BPM,
-  PROP_DELAY_FACTOR,
-  PROP_ATTACK,
+  PROP_BUFFER,
   PROP_CORE_AUDIO_CLIENT,
   PROP_CORE_AUDIO_PORT,
 };
@@ -248,21 +244,6 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
 				  param_spec);
 
   /**
-   * AgsCoreAudioMidiin:buffer:
-   *
-   * The buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("buffer",
-				    i18n_pspec("the buffer"),
-				    i18n_pspec("The buffer to record"),
-				    G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER,
-				  param_spec);
-
-  /**
    * AgsCoreAudioMidiin:bpm:
    *
    * Beats per minute
@@ -281,38 +262,19 @@ ags_core_audio_midiin_class_init(AgsCoreAudioMidiinClass *core_audio_midiin)
 				  param_spec);
 
   /**
-   * AgsCoreAudioMidiin:delay-factor:
+   * AgsCoreAudioMidiin:buffer:
    *
-   * tact
+   * The buffer
    * 
    * Since: 3.0.0
    */
-  param_spec = g_param_spec_double("delay-factor",
-				   i18n_pspec("delay factor"),
-				   i18n_pspec("The delay factor"),
-				   0.0,
-				   16.0,
-				   1.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DELAY_FACTOR,
-				  param_spec);
-
-  /**
-   * AgsCoreAudioMidiin:attack:
-   *
-   * Attack of the buffer
-   * 
-   * Since: 3.0.0
-   */
-  param_spec = g_param_spec_pointer("attack",
-				    i18n_pspec("attack of buffer"),
-				    i18n_pspec("The attack to use for the buffer"),
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to record"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_ATTACK,
+				  PROP_BUFFER,
 				  param_spec);
-
 
   /**
    * AgsCoreAudioMidiin:core-audio-client:
@@ -382,6 +344,14 @@ ags_core_audio_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 {
   sequencer->set_device = ags_core_audio_midiin_set_device;
   sequencer->get_device = ags_core_audio_midiin_get_device;
+    
+  sequencer->set_bpm = ags_core_audio_midiin_set_bpm;
+  sequencer->get_bpm = ags_core_audio_midiin_get_bpm;  
+
+  sequencer->set_start_note_offset = ags_core_audio_midiin_set_start_note_offset;
+  sequencer->get_start_note_offset = ags_core_audio_midiin_get_start_note_offset;
+
+  sequencer->get_frame_clock = ags_core_audio_midiin_get_frame_clock;  
 
   sequencer->list_cards = ags_core_audio_midiin_list_cards;
 
@@ -399,24 +369,12 @@ ags_core_audio_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->tic = ags_core_audio_midiin_tic;
   sequencer->offset_changed = ags_core_audio_midiin_offset_changed;
-    
-  sequencer->set_bpm = ags_core_audio_midiin_set_bpm;
-  sequencer->get_bpm = ags_core_audio_midiin_get_bpm;
 
-  sequencer->set_delay_factor = ags_core_audio_midiin_set_delay_factor;
-  sequencer->get_delay_factor = ags_core_audio_midiin_get_delay_factor;
-  
   sequencer->get_buffer = ags_core_audio_midiin_get_buffer;
   sequencer->get_next_buffer = ags_core_audio_midiin_get_next_buffer;
 
   sequencer->lock_buffer = ags_core_audio_midiin_lock_buffer;
   sequencer->unlock_buffer = ags_core_audio_midiin_unlock_buffer;
-
-  sequencer->set_start_note_offset = ags_core_audio_midiin_set_start_note_offset;
-  sequencer->get_start_note_offset = ags_core_audio_midiin_get_start_note_offset;
-
-  sequencer->set_note_offset = ags_core_audio_midiin_set_note_offset;
-  sequencer->get_note_offset = ags_core_audio_midiin_get_note_offset;
 
   sequencer->get_midi_version = ags_core_audio_midiin_get_midi_version;
   sequencer->set_midi_version = NULL;
@@ -445,9 +403,19 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   core_audio_midiin->uuid = ags_uuid_alloc();
   ags_uuid_generate(core_audio_midiin->uuid);
 
+  /* bpm */
+  core_audio_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
+  
+  /* start note offset */
+  core_audio_midiin->start_note_offset = 0;
+  
+  /* frame clock */
+  core_audio_midiin->frame_clock = ags_frame_clock_new();
+  
+  /* app buffer mode */
   core_audio_midiin->app_buffer_mode = AGS_CORE_AUDIO_MIDIIN_APP_BUFFER_0;
   
-  /* buffer */
+  /* app buffer mutex */
   core_audio_midiin->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
 
   for(i = 0; i < AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
@@ -456,6 +424,7 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
     g_rec_mutex_init(core_audio_midiin->app_buffer_mutex[i]);
   }
 
+  /* app buffer */
   core_audio_midiin->app_buffer = (char **) g_malloc(AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(char *));
 
   for(i = 0; i < AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
@@ -465,39 +434,6 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
     core_audio_midiin->allocated_app_buffer_size[i] = AGS_CORE_AUDIO_MIDIIN_DEFAULT_BUFFER_SIZE;
     core_audio_midiin->app_buffer_size[i] = 0;
   }
-
-  /* bpm */
-  core_audio_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
-
-  /* delay and delay factor */
-  core_audio_midiin->delay = AGS_SEQUENCER_DEFAULT_DELAY;
-  core_audio_midiin->delay_factor = AGS_SEQUENCER_DEFAULT_DELAY_FACTOR;
-    
-  /* segmentation */
-  config = ags_config_get_instance();
-
-  segmentation = ags_config_get_value(config,
-				      AGS_CONFIG_GENERIC,
-				      "segmentation");
-
-  if(segmentation != NULL){
-    sscanf(segmentation, "%d/%d",
-	   &denominator,
-	   &numerator);
-    
-    core_audio_midiin->delay_factor = 1.0 / numerator * (numerator / denominator);
-
-    g_free(segmentation);
-  }
-
-  /* counters */
-  core_audio_midiin->start_note_offset = 0;
-  core_audio_midiin->note_offset = 0;
-  core_audio_midiin->note_offset_absolute = 0;
-  
-  core_audio_midiin->tact_counter = 0.0;
-  core_audio_midiin->delay_counter = 0;
-  core_audio_midiin->tic_counter = 0;
 
   /* card and port */
   core_audio_midiin->card_uri = NULL;
@@ -548,11 +484,6 @@ ags_core_audio_midiin_set_property(GObject *gobject,
       g_rec_mutex_unlock(core_audio_midiin_mutex);
     }
     break;
-  case PROP_BUFFER:
-    {
-      //TODO:JK: implement me
-    }
-    break;
   case PROP_BPM:
     {
       gdouble bpm;
@@ -561,22 +492,23 @@ ags_core_audio_midiin_set_property(GObject *gobject,
 
       g_rec_mutex_lock(core_audio_midiin_mutex);
 
+      if(bpm == core_audio_midiin->bpm){
+	g_rec_mutex_unlock(core_audio_midiin_mutex);
+
+	return;
+      }
+
       core_audio_midiin->bpm = bpm;
+      
+      ags_frame_clock_set_bpm(core_audio_midiin->frame_clock,
+			      bpm);
 
       g_rec_mutex_unlock(core_audio_midiin_mutex);
     }
     break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
     {
-      gdouble delay_factor;
-      
-      delay_factor = g_value_get_double(value);
-
-      g_rec_mutex_lock(core_audio_midiin_mutex);
-
-      core_audio_midiin->delay_factor = delay_factor;
-
-      g_rec_mutex_unlock(core_audio_midiin_mutex);
+      //TODO:JK: implement me
     }
     break;
   case PROP_CORE_AUDIO_CLIENT:
@@ -660,15 +592,6 @@ ags_core_audio_midiin_get_property(GObject *gobject,
       g_rec_mutex_unlock(core_audio_midiin_mutex);
     }
     break;
-  case PROP_BUFFER:
-    {
-      g_rec_mutex_lock(core_audio_midiin_mutex);
-
-      g_value_set_pointer(value, core_audio_midiin->app_buffer);
-
-      g_rec_mutex_unlock(core_audio_midiin_mutex);
-    }
-    break;
   case PROP_BPM:
     {
       g_rec_mutex_lock(core_audio_midiin_mutex);
@@ -678,11 +601,11 @@ ags_core_audio_midiin_get_property(GObject *gobject,
       g_rec_mutex_unlock(core_audio_midiin_mutex);
     }
     break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
     {
       g_rec_mutex_lock(core_audio_midiin_mutex);
 
-      g_value_set_double(value, core_audio_midiin->delay_factor);
+      g_value_set_pointer(value, core_audio_midiin->app_buffer);
 
       g_rec_mutex_unlock(core_audio_midiin_mutex);
     }
@@ -748,6 +671,11 @@ ags_core_audio_midiin_finalize(GObject *gobject)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(gobject);
 
   ags_uuid_free(core_audio_midiin->uuid);
+
+  /* frame clock */
+  if(core_audio_midiin->frame_clock != NULL){
+    g_object_unref(core_audio_midiin->frame_clock);
+  }
   
   /* free output buffer */
   if(core_audio_midiin->app_buffer[0] != NULL){
@@ -1078,6 +1006,75 @@ ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, AgsCore
   core_audio_midiin->flags &= (~flags);
   
   g_rec_mutex_unlock(core_audio_midiin_mutex);
+}
+
+void
+ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
+					    guint64 start_note_offset)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  GRecMutex *core_audio_midiin_mutex;  
+
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  core_audio_midiin->start_note_offset = start_note_offset;
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
+}
+
+guint64
+ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  guint64 start_note_offset;
+  
+  GRecMutex *core_audio_midiin_mutex;  
+
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  start_note_offset = core_audio_midiin->start_note_offset;
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
+
+  return(start_note_offset);
+}
+
+GObject*
+ags_core_audio_midiin_get_frame_clock(AgsSequencer *sequencer)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  GObject *frame_clock;
+  
+  GRecMutex *core_audio_midiin_mutex;  
+
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  /* get core_audio midiin mutex */
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(core_audio_midiin_mutex);
+
+  frame_clock = (GObject *) core_audio_midiin->frame_clock;
+
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
+
+  return(frame_clock);
 }
 
 void
@@ -1422,14 +1419,15 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
   //TODO:JK: implement me
   
   /*  */
-  core_audio_midiin->tact_counter = 0.0;
-  core_audio_midiin->delay_counter = floor(core_audio_midiin->delay);
-  core_audio_midiin->tic_counter = 0;
-
   core_audio_midiin->flags |= (AGS_CORE_AUDIO_MIDIIN_INITIALIZED |
 			       AGS_CORE_AUDIO_MIDIIN_START_RECORD |
 			       AGS_CORE_AUDIO_MIDIIN_RECORD);
-  
+
+  ags_frame_clock_start(core_audio_midiin->frame_clock);
+
+  ags_frame_clock_set_note_offset(core_audio_midiin->frame_clock,
+				  core_audio_midiin->start_note_offset);
+    
   ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 		     (~(AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH)));
   ags_atomic_int_or(&(core_audio_midiin->sync_flags),
@@ -1653,9 +1651,9 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
   for(i = 0; i < AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){    
     core_audio_midiin->app_buffer_size[i] = 0;
   }
-  
-  core_audio_midiin->note_offset = core_audio_midiin->start_note_offset;
-  core_audio_midiin->note_offset_absolute = core_audio_midiin->start_note_offset;
+
+  /*  */
+  ags_frame_clock_stop(core_audio_midiin->frame_clock);
 
   g_rec_mutex_unlock(core_audio_midiin_mutex);
 }
@@ -1665,75 +1663,32 @@ ags_core_audio_midiin_tic(AgsSequencer *sequencer)
 {
   AgsCoreAudioMidiin *core_audio_midiin;
 
-  gdouble delay;
-  gdouble delay_counter;    
-  guint note_offset;
-  
   GRecMutex *core_audio_midiin_mutex;
-
+  
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
-  /* get core_audio_midiin mutex */
+  /* get core_audio midiin mutex */
   core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-  
-  /* determine if attack should be switched */
+
+  /* frame clock */
   g_rec_mutex_lock(core_audio_midiin_mutex);
+  
+  ags_frame_clock_increment_counter(core_audio_midiin->frame_clock);
 
-  delay = core_audio_midiin->delay;
-  delay_counter = core_audio_midiin->delay_counter;
-
-  note_offset = core_audio_midiin->note_offset;
-
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
-
-  if(delay_counter + 1.0 >= delay){
-    ags_sequencer_set_note_offset(sequencer,
-				  note_offset + 1);
-    
-    /* delay */
+  /* 16th pulse */
+  if(ags_frame_clock_get_has_16th_pulse(core_audio_midiin->frame_clock)){
     ags_sequencer_offset_changed(sequencer,
-				 note_offset);
-    
-    /* reset - delay counter */
-    g_rec_mutex_lock(core_audio_midiin_mutex);
-
-    core_audio_midiin->delay_counter = delay_counter + 1.0 - delay;
-    core_audio_midiin->tact_counter += 1.0;
-
-    g_rec_mutex_unlock(core_audio_midiin_mutex);
-  }else{
-    g_rec_mutex_lock(core_audio_midiin_mutex);
-
-    core_audio_midiin->delay_counter += 1.0;
-
-    g_rec_mutex_unlock(core_audio_midiin_mutex);
+				 core_audio_midiin->frame_clock->note_offset);
   }
+  
+  g_rec_mutex_unlock(core_audio_midiin_mutex);
 }
 
 void
 ags_core_audio_midiin_offset_changed(AgsSequencer *sequencer,
-				     guint note_offset)
+				     guint64 note_offset)
 {
-  AgsCoreAudioMidiin *core_audio_midiin;
-  
-  GRecMutex *core_audio_midiin_mutex;
-  
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio_midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* offset changed */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
-  core_audio_midiin->tic_counter += 1;
-
-  if(core_audio_midiin->tic_counter == AGS_SEQUENCER_DEFAULT_PERIOD){
-    /* reset - tic counter i.e. modified delay index within period */
-    core_audio_midiin->tic_counter = 0;
-  }
-
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
+  //empty
 }
 
 void
@@ -1779,51 +1734,6 @@ ags_core_audio_midiin_get_bpm(AgsSequencer *sequencer)
   g_rec_mutex_unlock(core_audio_midiin_mutex);
 
   return(bpm);
-}
-
-void
-ags_core_audio_midiin_set_delay_factor(AgsSequencer *sequencer,
-				       gdouble delay_factor)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  GRecMutex *core_audio_midiin_mutex;
-  
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio_midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* set delay factor */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
-  core_audio_midiin->delay_factor = delay_factor;
-
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
-}
-
-gdouble
-ags_core_audio_midiin_get_delay_factor(AgsSequencer *sequencer)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  gdouble delay_factor;
-  
-  GRecMutex *core_audio_midiin_mutex;
-  
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio_midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* get delay factor */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
-  delay_factor = core_audio_midiin->delay_factor;
-  
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
-
-  return(delay_factor);
 }
 
 void*
@@ -1992,96 +1902,6 @@ ags_core_audio_midiin_unlock_buffer(AgsSequencer *sequencer,
   if(app_buffer_mutex != NULL){
     g_rec_mutex_unlock(app_buffer_mutex);
   }
-}
-
-void
-ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
-					    guint start_note_offset)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  GRecMutex *core_audio_midiin_mutex;  
-
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
-  core_audio_midiin->start_note_offset = start_note_offset;
-
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
-}
-
-guint
-ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  guint start_note_offset;
-  
-  GRecMutex *core_audio_midiin_mutex;  
-
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
-  start_note_offset = core_audio_midiin->start_note_offset;
-
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
-
-  return(start_note_offset);
-}
-
-void
-ags_core_audio_midiin_set_note_offset(AgsSequencer *sequencer,
-				      guint note_offset)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  GRecMutex *core_audio_midiin_mutex;  
-
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
-  core_audio_midiin->note_offset = note_offset;
-
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
-}
-
-guint
-ags_core_audio_midiin_get_note_offset(AgsSequencer *sequencer)
-{
-  AgsCoreAudioMidiin *core_audio_midiin;
-
-  guint note_offset;
-  
-  GRecMutex *core_audio_midiin_mutex;  
-
-  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
-
-  /* get core_audio midiin mutex */
-  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(core_audio_midiin_mutex);
-
-  note_offset = core_audio_midiin->note_offset;
-
-  g_rec_mutex_unlock(core_audio_midiin_mutex);
-
-  return(note_offset);
 }
 
 AgsSequencerMidiVersion
