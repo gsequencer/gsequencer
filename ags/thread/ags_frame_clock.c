@@ -1003,10 +1003,10 @@ ags_frame_clock_set_note_offset(AgsFrameClock *frame_clock,
 /**
  * ags_frame_clock_get_absolute_note_256th_offset:
  * @frame_clock: the #AgsFrameClock
+ * @absolute_note_256th_offset: (out): return location of note 256th offset, maximum length 16
+ * @length: (out): return location of length
  *
  * Get absolute note 256th offset of @frame_clock.
- * 
- * Returns: the absolute note 256th offset
  * 
  * Since: 9.0.0
  */
@@ -1045,10 +1045,10 @@ ags_frame_clock_get_absolute_note_256th_offset(AgsFrameClock *frame_clock,
 /**
  * ags_frame_clock_get_note_256th_offset:
  * @frame_clock: the #AgsFrameClock
+ * @note_256th_offset: (out): return location of note 256th offset, maximum length 16
+ * @length: (out): return location of length
  *
  * Get note 256th offset of @frame_clock.
- * 
- * Returns: the note 256th offset
  * 
  * Since: 9.0.0
  */
@@ -1127,7 +1127,7 @@ ags_frame_clock_get_note_256th_frame_offset(AgsFrameClock *frame_clock,
 }
 
 /**
- * ags_frame_clock_get_note_256th_frame_offset:
+ * ags_frame_clock_copy_time:
  * @destination: the destination #AgsFrameClock
  * @source: the source #AgsFrameClock
  *

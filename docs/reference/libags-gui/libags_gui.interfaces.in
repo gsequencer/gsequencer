@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2025 Joël Krähemann
+# Copyright (C) 2005-2026 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -18,9 +18,12 @@
 
 GtkWidget GtkAccessible GtkBuildable GtkConstraintTarget
 AgsCartesian GtkAccessible GtkBuildable GtkConstraintTarget
-AgsDial GtkAccessible GtkBuildable GtkConstraintTarget
+AgsDial GtkAccessible GtkBuildable GtkConstraintTarget GtkAccessibleRange
 GtkBox GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsExpander GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
+AgsFileEntry GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
+AgsFileWidget GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
+AgsIconLink GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsLedArray GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsLevelBox GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsNotebook GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
@@ -30,7 +33,10 @@ AgsExpanderSet GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsScrolledLevelBox GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsScrolledPiano GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsScrolledScaleBox GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
-AgsIndicator GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
+GtkWindow GtkAccessible GtkBuildable GtkConstraintTarget GtkNative GtkShortcutManager GtkRoot
+AgsFileDialog GtkAccessible GtkBuildable GtkConstraintTarget GtkNative GtkShortcutManager GtkRoot
+AgsInputDialog GtkAccessible GtkBuildable GtkConstraintTarget GtkNative GtkShortcutManager GtkRoot
+AgsIndicator GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable GtkAccessibleRange
 AgsLed GtkAccessible GtkBuildable GtkConstraintTarget
 AgsLevel GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsPiano GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
@@ -39,3 +45,5 @@ AgsScale GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 AgsTempo GtkAccessible GtkBuildable GtkConstraintTarget GtkOrientable
 GListStore GListModel
 GtkBoxLayout GtkOrientable
+GApplication GActionGroup GActionMap
+GtkApplication GActionGroup GActionMap

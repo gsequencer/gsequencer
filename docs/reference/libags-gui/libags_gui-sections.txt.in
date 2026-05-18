@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2025 Joël Krähemann
+# Copyright (C) 2005-2026 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -15,6 +15,48 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+
+<SECTION>
+<FILE>ags_button</FILE>
+<TITLE>AgsButton</TITLE>
+AGS_BUTTON_DEFAULT_BORDER_WIDTH
+AGS_BUTTON_SMALL_FONT_SIZE
+AGS_BUTTON_MEDIUM_FONT_SIZE
+AGS_BUTTON_LARGE_FONT_SIZE
+AGS_BUTTON_DEFAULT_FONT_SIZE
+AgsButtonStatus
+ags_button_test_flags
+ags_button_set_flags
+ags_button_unset_flags
+ags_button_test_button_size
+ags_button_set_button_size
+ags_button_set_font_size
+ags_button_get_font_size
+ags_button_set_font_name
+ags_button_get_font_name
+ags_button_set_label
+ags_button_get_label
+ags_button_set_icon_name
+ags_button_get_icon_name
+ags_button_clicked
+ags_button_new
+ags_button_new_with_label
+ags_button_new_from_icon_name
+<SUBSECTION Standard>
+AGS_BUTTON
+AGS_BUTTON_CLASS
+AGS_BUTTON_GET_CLASS
+AGS_IS_BUTTON
+AGS_IS_BUTTON_CLASS
+AGS_TYPE_BUTTON
+AgsButton
+AgsButtonClass
+AgsButtonFlags
+AgsButtonSize
+ags_button_flags_get_type
+ags_button_get_type
+ags_button_size_get_type
+</SECTION>
 
 <SECTION>
 <FILE>ags_cartesian</FILE>
@@ -189,8 +231,11 @@ AGS_DIAL_DEFAULT_MARGIN_LEFT
 AGS_DIAL_DEFAULT_MARGIN_RIGHT
 AGS_DIAL_DEFAULT_HEIGHT
 AGS_DIAL_DEFAULT_WIDTH
-AgsDialFlags
+AgsDialStateFlags
 AgsDialAction
+ags_dial_test_flags
+ags_dial_set_flags
+ags_dial_unset_flags
 ags_dial_set_radius
 ags_dial_get_radius
 ags_dial_set_outline_strength
@@ -199,6 +244,8 @@ ags_dial_set_scale_precision
 ags_dial_get_scale_precision
 ags_dial_set_font_size
 ags_dial_get_font_size
+ags_dial_set_font_name
+ags_dial_get_font_name
 ags_dial_set_button_width
 ags_dial_get_button_width
 ags_dial_set_button_height
@@ -222,6 +269,8 @@ AGS_IS_DIAL_CLASS
 AGS_TYPE_DIAL
 AgsDial
 AgsDialClass
+AgsDialFlags
+ags_dial_flags_get_type
 ags_dial_get_type
 </SECTION>
 
