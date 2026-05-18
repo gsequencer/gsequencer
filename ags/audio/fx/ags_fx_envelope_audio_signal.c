@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -298,7 +298,7 @@ ags_fx_envelope_audio_signal_real_run_inter(AgsRecall *recall)
   fx_notation_audio_processor = NULL;
   fx_pattern_audio_processor = NULL;
     
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   note_offset = ags_frame_clock_get_note_offset(frame_clock);
   

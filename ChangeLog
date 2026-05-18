@@ -11,6 +11,7 @@ ags (9.0.0)
 	* refactored ags-fx-notation
 	* refactored synths using ags-fx-notation
 	* added ags_frame_clock_test.c
+	* added ags_functional_frame_clock_test.c
 
 ags (8.4.3)
 

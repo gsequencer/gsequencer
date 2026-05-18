@@ -338,7 +338,7 @@ ags_fx_lfo_audio_signal_real_run_inter(AgsRecall *recall)
     g_object_unref(port);
   }
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
   
   note_offset = ags_frame_clock_get_note_offset(frame_clock);
   

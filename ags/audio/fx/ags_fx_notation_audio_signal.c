@@ -345,7 +345,12 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
     if((!note_256th_mode && note_offset >= x0) ||
        (note_256th_mode && note_256th_offset_lower >= x0_256th)){
-      if(note_offset <= x1 + 1){
+      if(source->stream_current == NULL ||
+	 source->stream_current->next == NULL){
+	ags_audio_signal_add_stream(source);
+      }
+
+      if(source->stream_current->next == NULL){
 	ags_audio_signal_add_stream(source);
       }
       
