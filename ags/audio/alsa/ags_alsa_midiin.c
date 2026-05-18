@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -87,6 +87,16 @@ void ags_alsa_midiin_set_device(AgsSequencer *sequencer,
 				gchar *device);
 gchar* ags_alsa_midiin_get_device(AgsSequencer *sequencer);
 
+void ags_alsa_midiin_set_bpm(AgsSequencer *sequencer,
+			     gdouble bpm);
+gdouble ags_alsa_midiin_get_bpm(AgsSequencer *sequencer);
+
+void ags_alsa_midiin_set_start_note_offset(AgsSequencer *sequencer,
+					   guint64 start_note_offset);
+guint64 ags_alsa_midiin_get_start_note_offset(AgsSequencer *sequencer);
+
+GObject* ags_alsa_midiin_get_frame_clock(AgsSequencer *sequencer);
+
 void ags_alsa_midiin_list_cards(AgsSequencer *sequencer,
 				GList **card_id, GList **card_name);
 
@@ -101,15 +111,7 @@ void ags_alsa_midiin_device_free(AgsSequencer *sequencer);
 
 void ags_alsa_midiin_tic(AgsSequencer *sequencer);
 void ags_alsa_midiin_offset_changed(AgsSequencer *sequencer,
-				    guint note_offset);
-
-void ags_alsa_midiin_set_bpm(AgsSequencer *sequencer,
-			     gdouble bpm);
-gdouble ags_alsa_midiin_get_bpm(AgsSequencer *sequencer);
-
-void ags_alsa_midiin_set_delay_factor(AgsSequencer *sequencer,
-				      gdouble delay_factor);
-gdouble ags_alsa_midiin_get_delay_factor(AgsSequencer *sequencer);
+				    guint64 note_offset);
 
 void* ags_alsa_midiin_get_buffer(AgsSequencer *sequencer,
 				 guint *buffer_length);
@@ -121,23 +123,13 @@ void ags_alsa_midiin_lock_buffer(AgsSequencer *sequencer,
 void ags_alsa_midiin_unlock_buffer(AgsSequencer *sequencer,
 				   void *buffer);
 
-void ags_alsa_midiin_set_start_note_offset(AgsSequencer *sequencer,
-					   guint start_note_offset);
-guint ags_alsa_midiin_get_start_note_offset(AgsSequencer *sequencer);
-
-void ags_alsa_midiin_set_note_offset(AgsSequencer *sequencer,
-				     guint note_offset);
-guint ags_alsa_midiin_get_note_offset(AgsSequencer *sequencer);
-
 AgsSequencerMidiVersion ags_alsa_midiin_get_midi_version(AgsSequencer *sequencer);  
 
 enum{
   PROP_0,
   PROP_DEVICE,
-  PROP_BUFFER,
   PROP_BPM,
-  PROP_DELAY_FACTOR,
-  PROP_ATTACK,
+  PROP_BUFFER,
 };
 
 static gpointer ags_alsa_midiin_parent_class = NULL;
@@ -228,21 +220,6 @@ ags_alsa_midiin_class_init(AgsAlsaMidiinClass *alsa_midiin)
 				  param_spec);
 
   /**
-   * AgsAlsaMidiin:buffer:
-   *
-   * The buffer
-   * 
-   * Since: 3.13.2
-   */
-  param_spec = g_param_spec_pointer("buffer",
-				    i18n_pspec("the buffer"),
-				    i18n_pspec("The buffer to record"),
-				    G_PARAM_READABLE);
-  g_object_class_install_property(gobject,
-				  PROP_BUFFER,
-				  param_spec);
-
-  /**
    * AgsAlsaMidiin:bpm:
    *
    * Beats per minute
@@ -261,36 +238,18 @@ ags_alsa_midiin_class_init(AgsAlsaMidiinClass *alsa_midiin)
 				  param_spec);
 
   /**
-   * AgsAlsaMidiin:delay-factor:
+   * AgsAlsaMidiin:buffer:
    *
-   * tact
+   * The buffer
    * 
    * Since: 3.13.2
    */
-  param_spec = g_param_spec_double("delay-factor",
-				   i18n_pspec("delay factor"),
-				   i18n_pspec("The delay factor"),
-				   0.0,
-				   16.0,
-				   1.0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DELAY_FACTOR,
-				  param_spec);
-
-  /**
-   * AgsAlsaMidiin:attack:
-   *
-   * Attack of the buffer
-   * 
-   * Since: 3.13.2
-   */
-  param_spec = g_param_spec_pointer("attack",
-				    i18n_pspec("attack of buffer"),
-				    i18n_pspec("The attack to use for the buffer"),
+  param_spec = g_param_spec_pointer("buffer",
+				    i18n_pspec("the buffer"),
+				    i18n_pspec("The buffer to record"),
 				    G_PARAM_READABLE);
   g_object_class_install_property(gobject,
-				  PROP_ATTACK,
+				  PROP_BUFFER,
 				  param_spec);
 
   /* AgsAlsaMidiinClass */
@@ -329,6 +288,14 @@ ags_alsa_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 {
   sequencer->set_device = ags_alsa_midiin_set_device;
   sequencer->get_device = ags_alsa_midiin_get_device;
+    
+  sequencer->set_bpm = ags_alsa_midiin_set_bpm;
+  sequencer->get_bpm = ags_alsa_midiin_get_bpm;
+
+  sequencer->set_start_note_offset = ags_alsa_midiin_set_start_note_offset;
+  sequencer->get_start_note_offset = ags_alsa_midiin_get_start_note_offset;
+
+  sequencer->get_frame_clock = ags_alsa_midiin_get_frame_clock;
 
   sequencer->list_cards = ags_alsa_midiin_list_cards;
 
@@ -346,24 +313,12 @@ ags_alsa_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
 
   sequencer->tic = ags_alsa_midiin_tic;
   sequencer->offset_changed = ags_alsa_midiin_offset_changed;
-    
-  sequencer->set_bpm = ags_alsa_midiin_set_bpm;
-  sequencer->get_bpm = ags_alsa_midiin_get_bpm;
-
-  sequencer->set_delay_factor = ags_alsa_midiin_set_delay_factor;
-  sequencer->get_delay_factor = ags_alsa_midiin_get_delay_factor;
   
   sequencer->get_buffer = ags_alsa_midiin_get_buffer;
   sequencer->get_next_buffer = ags_alsa_midiin_get_next_buffer;
 
   sequencer->lock_buffer = ags_alsa_midiin_lock_buffer;
   sequencer->unlock_buffer = ags_alsa_midiin_unlock_buffer;
-
-  sequencer->set_start_note_offset = ags_alsa_midiin_set_start_note_offset;
-  sequencer->get_start_note_offset = ags_alsa_midiin_get_start_note_offset;
-
-  sequencer->set_note_offset = ags_alsa_midiin_set_note_offset;
-  sequencer->get_note_offset = ags_alsa_midiin_get_note_offset;
 
   sequencer->get_midi_version = ags_alsa_midiin_get_midi_version;
   sequencer->set_midi_version = NULL;
@@ -380,6 +335,9 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   guint i;
   guint denominator, numerator;
 
+  /* config */
+  config = ags_config_get_instance();
+
   alsa_midiin->flags = 0;
   
   /* insert alsa_midiin mutex */
@@ -389,9 +347,6 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   alsa_midiin->uuid = ags_uuid_alloc();
   ags_uuid_generate(alsa_midiin->uuid);
 
-  /* config */
-  config = ags_config_get_instance();
-
   /* sync flags */
   ags_atomic_int_set(&(alsa_midiin->sync_flags),
 		   (AGS_ALSA_MIDIIN_PASS_THROUGH));
@@ -400,7 +355,16 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
   alsa_midiin->handle = NULL;
   alsa_midiin->device = g_strdup(AGS_ALSA_MIDIIN_DEFAULT_ALSA_DEVICE);
 
-  /* app buffer */
+  /* bpm */
+  alsa_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
+  
+  /* start note offset */
+  alsa_midiin->start_note_offset = 0;
+  
+  /* frame clock */
+  alsa_midiin->frame_clock = ags_frame_clock_new();
+
+  /* app buffer mutex */
   alsa_midiin->app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_0;
 
   alsa_midiin->app_buffer_mutex = (GRecMutex **) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(GRecMutex *));
@@ -411,6 +375,7 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
     g_rec_mutex_init(alsa_midiin->app_buffer_mutex[i]);
   }
 
+  /* app buffer */
   alsa_midiin->app_buffer = (char **) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE * sizeof(char *));
   
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
@@ -419,7 +384,8 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
     alsa_midiin->allocated_app_buffer_size[i] = AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE;
     alsa_midiin->app_buffer_size[i] = 0;
   }
-  
+
+  /* backend buffer */
   alsa_midiin->backend_buffer_mode = AGS_ALSA_MIDIIN_BACKEND_BUFFER_0;
   
   alsa_midiin->backend_buffer = (char **) g_malloc(AGS_ALSA_MIDIIN_DEFAULT_BACKEND_BUFFER_SIZE * sizeof(char *));
@@ -430,39 +396,6 @@ ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin)
     alsa_midiin->allocated_backend_buffer_size[i] = AGS_ALSA_MIDIIN_DEFAULT_BUFFER_SIZE;
     alsa_midiin->backend_buffer_size[i] = 0;
   }
-
-  /* bpm */
-  alsa_midiin->bpm = AGS_SEQUENCER_DEFAULT_BPM;
-
-  /* delay and delay factor */
-  alsa_midiin->delay = AGS_SEQUENCER_DEFAULT_DELAY;
-  alsa_midiin->delay_factor = AGS_SEQUENCER_DEFAULT_DELAY_FACTOR;
-  
-  /* segmentation */
-  segmentation = ags_config_get_value(config,
-				      AGS_CONFIG_GENERIC,
-				      "segmentation");
-
-  if(segmentation != NULL){
-    sscanf(segmentation, "%d/%d",
-	   &denominator,
-	   &numerator);
-    
-    alsa_midiin->delay_factor = 1.0 / numerator * (numerator / denominator);
-
-    g_free(segmentation);
-  }
-  
-  alsa_midiin->latency = AGS_NSEC_PER_SEC / 4000.0;
-  
-  /* counters */
-  alsa_midiin->start_note_offset = 0;
-  alsa_midiin->note_offset = 0;
-  alsa_midiin->note_offset_absolute = 0;
-
-  alsa_midiin->tact_counter = 0.0;
-  alsa_midiin->delay_counter = 0;
-  alsa_midiin->tic_counter = 0;
 
   alsa_midiin->midi_version = AGS_SEQUENCER_MIDI1;
 }
@@ -498,11 +431,6 @@ ags_alsa_midiin_set_property(GObject *gobject,
     g_rec_mutex_unlock(alsa_midiin_mutex);
   }
   break;
-  case PROP_BUFFER:
-  {
-    //TODO:JK: implement me
-  }
-  break;
   case PROP_BPM:
   {
     gdouble bpm;
@@ -519,26 +447,15 @@ ags_alsa_midiin_set_property(GObject *gobject,
 
     alsa_midiin->bpm = bpm;
 
+    ags_frame_clock_set_bpm(alsa_midiin->frame_clock,
+			    bpm);
+
     g_rec_mutex_unlock(alsa_midiin_mutex);
   }
   break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
   {
-    gdouble delay_factor;
-      
-    delay_factor = g_value_get_double(value);
-
-    g_rec_mutex_lock(alsa_midiin_mutex);
-
-    if(delay_factor == alsa_midiin->delay_factor){
-      g_rec_mutex_unlock(alsa_midiin_mutex);
-
-      return;
-    }
-
-    alsa_midiin->delay_factor = delay_factor;
-
-    g_rec_mutex_unlock(alsa_midiin_mutex);
+    //TODO:JK: implement me
   }
   break;
   default:
@@ -572,15 +489,6 @@ ags_alsa_midiin_get_property(GObject *gobject,
     g_rec_mutex_unlock(alsa_midiin_mutex);
   }
   break;
-  case PROP_BUFFER:
-  {
-    g_rec_mutex_lock(alsa_midiin_mutex);
-
-    g_value_set_pointer(value, alsa_midiin->app_buffer);
-
-    g_rec_mutex_unlock(alsa_midiin_mutex);
-  }
-  break;
   case PROP_BPM:
   {
     g_rec_mutex_lock(alsa_midiin_mutex);
@@ -590,11 +498,11 @@ ags_alsa_midiin_get_property(GObject *gobject,
     g_rec_mutex_unlock(alsa_midiin_mutex);
   }
   break;
-  case PROP_DELAY_FACTOR:
+  case PROP_BUFFER:
   {
     g_rec_mutex_lock(alsa_midiin_mutex);
 
-    g_value_set_double(value, alsa_midiin->delay_factor);
+    g_value_set_pointer(value, alsa_midiin->app_buffer);
 
     g_rec_mutex_unlock(alsa_midiin_mutex);
   }
@@ -626,6 +534,11 @@ ags_alsa_midiin_finalize(GObject *gobject)
   alsa_midiin = AGS_ALSA_MIDIIN(gobject);
 
   ags_uuid_free(alsa_midiin->uuid);
+
+  /* frame clock */
+  if(alsa_midiin->frame_clock != NULL){
+    g_object_unref(alsa_midiin->frame_clock);
+  }
   
   for(i = 0; i < AGS_ALSA_MIDIIN_DEFAULT_APP_BUFFER_SIZE; i++){
     g_free(alsa_midiin->app_buffer[i]);
@@ -896,6 +809,120 @@ ags_alsa_midiin_unset_flags(AgsAlsaMidiin *alsa_midiin, AgsAlsaMidiinFlags flags
   alsa_midiin->flags &= (~flags);
   
   g_rec_mutex_unlock(alsa_midiin_mutex);
+}
+
+void
+ags_alsa_midiin_set_bpm(AgsSequencer *sequencer,
+			gdouble bpm)
+{
+  AgsAlsaMidiin *alsa_midiin;
+
+  GRecMutex *alsa_midiin_mutex;
+  
+  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
+
+  /* get alsa_midiin mutex */
+  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
+
+  /* set bpm */
+  g_rec_mutex_lock(alsa_midiin_mutex);
+
+  alsa_midiin->bpm = bpm;
+
+  g_rec_mutex_unlock(alsa_midiin_mutex);
+}
+
+gdouble
+ags_alsa_midiin_get_bpm(AgsSequencer *sequencer)
+{
+  AgsAlsaMidiin *alsa_midiin;
+
+  gdouble bpm;
+  
+  GRecMutex *alsa_midiin_mutex;
+  
+  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
+
+  /* get alsa_midiin mutex */
+  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
+
+  /* get bpm */
+  g_rec_mutex_lock(alsa_midiin_mutex);
+
+  bpm = alsa_midiin->bpm;
+  
+  g_rec_mutex_unlock(alsa_midiin_mutex);
+
+  return(bpm);
+}
+
+void
+ags_alsa_midiin_set_start_note_offset(AgsSequencer *sequencer,
+				      guint64 start_note_offset)
+{
+  AgsAlsaMidiin *alsa_midiin;
+
+  GRecMutex *alsa_midiin_mutex;  
+
+  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
+
+  /* get alsa_midiin mutex */
+  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(alsa_midiin_mutex);
+
+  alsa_midiin->start_note_offset = start_note_offset;
+
+  g_rec_mutex_unlock(alsa_midiin_mutex);
+}
+
+guint64
+ags_alsa_midiin_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsAlsaMidiin *alsa_midiin;
+
+  guint64 start_note_offset;
+  
+  GRecMutex *alsa_midiin_mutex;  
+
+  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
+
+  /* get alsa_midiin mutex */
+  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(alsa_midiin_mutex);
+
+  start_note_offset = alsa_midiin->start_note_offset;
+
+  g_rec_mutex_unlock(alsa_midiin_mutex);
+
+  return(start_note_offset);
+}
+
+GObject*
+ags_alsa_midiin_get_frame_clock(AgsSequencer *sequencer)
+{
+  AgsAlsaMidiin *alsa_midiin;
+
+  GObject *frame_clock;
+  
+  GRecMutex *alsa_midiin_mutex;  
+
+  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
+
+  /* get alsa midiin mutex */
+  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
+
+  /* set note offset */
+  g_rec_mutex_lock(alsa_midiin_mutex);
+
+  frame_clock = (GObject *) alsa_midiin->frame_clock;
+
+  g_rec_mutex_unlock(alsa_midiin_mutex);
+
+  return(frame_clock);
 }
 
 void
@@ -1177,15 +1204,17 @@ ags_alsa_midiin_device_record_init(AgsSequencer *sequencer,
   alsa_midiin->handle = handle;
 #endif
 
-  alsa_midiin->tact_counter = 0.0;
-  alsa_midiin->delay_counter = floor(alsa_midiin->delay);
-  alsa_midiin->tic_counter = 0;
-
+  /*  */
   alsa_midiin->backend_buffer_mode = AGS_ALSA_MIDIIN_BACKEND_BUFFER_0;  
 
 #ifdef AGS_WITH_ALSA
   alsa_midiin->flags |= AGS_ALSA_MIDIIN_INITIALIZED;
 #endif
+
+  ags_frame_clock_start(alsa_midiin->frame_clock);
+
+  ags_frame_clock_set_note_offset(alsa_midiin->frame_clock,
+				  alsa_midiin->start_note_offset);
 
   alsa_midiin->app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_0;
   
@@ -1417,11 +1446,11 @@ ags_alsa_midiin_device_free(AgsSequencer *sequencer)
     alsa_midiin->backend_buffer_size[i] = 0;
   }
 
+  /*  */
+  ags_frame_clock_stop(alsa_midiin->frame_clock);
+
   ags_atomic_int_or(&(alsa_midiin->sync_flags),
 		  AGS_ALSA_MIDIIN_PASS_THROUGH);
-
-  alsa_midiin->note_offset = alsa_midiin->start_note_offset;
-  alsa_midiin->note_offset_absolute = alsa_midiin->start_note_offset;
   
   g_rec_mutex_unlock(alsa_midiin_mutex);  
 }
@@ -1431,165 +1460,32 @@ ags_alsa_midiin_tic(AgsSequencer *sequencer)
 {
   AgsAlsaMidiin *alsa_midiin;
 
-  gdouble delay;
-  gdouble delay_counter;    
-  guint note_offset;
-  
   GRecMutex *alsa_midiin_mutex;
-
+  
   alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
   
-  /* get alsa_midiin mutex */
+  /* get alsa midiin mutex */
   alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-  
-  /* determine if attack should be switched */
+
+  /* frame clock */
   g_rec_mutex_lock(alsa_midiin_mutex);
+  
+  ags_frame_clock_increment_counter(alsa_midiin->frame_clock);
 
-  delay = alsa_midiin->delay;
-  delay_counter = alsa_midiin->delay_counter;
-
-  note_offset = alsa_midiin->note_offset;
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-
-  if(delay_counter + 1.0 >= delay){
-    ags_sequencer_set_note_offset(sequencer,
-				  note_offset + 1);
-
-    /* delay */
+  /* 16th pulse */
+  if(ags_frame_clock_get_has_16th_pulse(alsa_midiin->frame_clock)){
     ags_sequencer_offset_changed(sequencer,
-				 note_offset);
-    
-    /* reset - delay counter */
-    g_rec_mutex_lock(alsa_midiin_mutex);
-
-    alsa_midiin->delay_counter = delay_counter + 1.0 - delay;
-    alsa_midiin->tact_counter += 1.0;
-
-    g_rec_mutex_unlock(alsa_midiin_mutex);
-  }else{
-    g_rec_mutex_lock(alsa_midiin_mutex);
-
-    alsa_midiin->delay_counter += 1.0;
-
-    g_rec_mutex_unlock(alsa_midiin_mutex);
+				 alsa_midiin->frame_clock->note_offset);
   }
+  
+  g_rec_mutex_unlock(alsa_midiin_mutex);
 }
 
 void
 ags_alsa_midiin_offset_changed(AgsSequencer *sequencer,
-			       guint note_offset)
+			       guint64 note_offset)
 {
-  AgsAlsaMidiin *alsa_midiin;
-  
-  GRecMutex *alsa_midiin_mutex;
-  
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* offset changed */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  alsa_midiin->tic_counter += 1;
-
-  if(alsa_midiin->tic_counter == AGS_SEQUENCER_DEFAULT_PERIOD){
-    /* reset - tic counter i.e. modified delay index within period */
-    alsa_midiin->tic_counter = 0;
-  }
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-}
-
-void
-ags_alsa_midiin_set_bpm(AgsSequencer *sequencer,
-			gdouble bpm)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  GRecMutex *alsa_midiin_mutex;
-  
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* set bpm */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  alsa_midiin->bpm = bpm;
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-}
-
-gdouble
-ags_alsa_midiin_get_bpm(AgsSequencer *sequencer)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  gdouble bpm;
-  
-  GRecMutex *alsa_midiin_mutex;
-  
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* get bpm */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  bpm = alsa_midiin->bpm;
-  
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-
-  return(bpm);
-}
-
-void
-ags_alsa_midiin_set_delay_factor(AgsSequencer *sequencer,
-				 gdouble delay_factor)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  GRecMutex *alsa_midiin_mutex;
-  
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* set delay factor */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  alsa_midiin->delay_factor = delay_factor;
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-}
-
-gdouble
-ags_alsa_midiin_get_delay_factor(AgsSequencer *sequencer)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  gdouble delay_factor;
-  
-  GRecMutex *alsa_midiin_mutex;
-  
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* get delay factor */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  delay_factor = alsa_midiin->delay_factor;
-  
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-
-  return(delay_factor);
+  //empty
 }
 
 void*
@@ -1697,96 +1593,6 @@ ags_alsa_midiin_unlock_buffer(AgsSequencer *sequencer,
   if(buffer_mutex != NULL){
     g_rec_mutex_unlock(buffer_mutex);
   }
-}
-
-void
-ags_alsa_midiin_set_start_note_offset(AgsSequencer *sequencer,
-				      guint start_note_offset)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  GRecMutex *alsa_midiin_mutex;  
-
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  alsa_midiin->start_note_offset = start_note_offset;
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-}
-
-guint
-ags_alsa_midiin_get_start_note_offset(AgsSequencer *sequencer)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  guint start_note_offset;
-  
-  GRecMutex *alsa_midiin_mutex;  
-
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  start_note_offset = alsa_midiin->start_note_offset;
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-
-  return(start_note_offset);
-}
-
-void
-ags_alsa_midiin_set_note_offset(AgsSequencer *sequencer,
-				guint note_offset)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  GRecMutex *alsa_midiin_mutex;  
-
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  alsa_midiin->note_offset = note_offset;
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-}
-
-guint
-ags_alsa_midiin_get_note_offset(AgsSequencer *sequencer)
-{
-  AgsAlsaMidiin *alsa_midiin;
-
-  guint note_offset;
-  
-  GRecMutex *alsa_midiin_mutex;  
-
-  alsa_midiin = AGS_ALSA_MIDIIN(sequencer);
-
-  /* get alsa_midiin mutex */
-  alsa_midiin_mutex = AGS_ALSA_MIDIIN_GET_OBJ_MUTEX(alsa_midiin);
-
-  /* set note offset */
-  g_rec_mutex_lock(alsa_midiin_mutex);
-
-  note_offset = alsa_midiin->note_offset;
-
-  g_rec_mutex_unlock(alsa_midiin_mutex);
-
-  return(note_offset);
 }
 
 AgsSequencerMidiVersion

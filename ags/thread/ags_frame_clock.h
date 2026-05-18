@@ -175,6 +175,10 @@ void ags_frame_clock_get_note_256th_frame_offset(AgsFrameClock *frame_clock,
 						 guint64 *note_256th_frame_offset,
 						 guint *length);
 
+/* copy time */
+void ags_frame_clock_copy_time(AgsFrameClock *destination,
+			       AgsFrameClock *source);
+
 /*  */
 void ags_frame_clock_start(AgsFrameClock *frame_clock);
 void ags_frame_clock_stop(AgsFrameClock *frame_clock);

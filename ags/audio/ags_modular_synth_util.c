@@ -1610,6 +1610,7 @@ ags_modular_synth_util_set_env_1_frequency(AgsModularSynthUtil *modular_synth_ut
 /**
  * ags_modular_synth_util_get_env_1_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @env_1_sends_count: (out): return location of env-1 sends count
  * 
  * Get env-1 sends of @modular_synth_util.
  * 
@@ -1636,6 +1637,7 @@ ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_env_1_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @env_1_sends: the env-1 sends
+ * @env_1_Sends_count: the env-1 sends count
  *
  * Set @env_1_sends of @modular_synth_util.
  *
@@ -1819,6 +1821,7 @@ ags_modular_synth_util_set_lfo_0_tuning(AgsModularSynthUtil *modular_synth_util,
 /**
  * ags_modular_synth_util_get_lfo_0_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @lfo_0_sends_count: (out): the return location of lfo-0 sends count
  * 
  * Get lfo-0 sends of @modular_synth_util.
  * 
@@ -1845,6 +1848,7 @@ ags_modular_synth_util_get_lfo_0_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_lfo_0_synth_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @lfo_0_sends: the lfo-0 sends
+ * @lfo_0_sends_count: the lfo-0 sends count
  *
  * Set @lfo_0_sends of @modular_synth_util.
  *
@@ -2028,6 +2032,7 @@ ags_modular_synth_util_set_lfo_1_tuning(AgsModularSynthUtil *modular_synth_util,
 /**
  * ags_modular_synth_util_get_lfo_1_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @lfo_1_sends_count: (out): the return location lfo-1 sends count
  * 
  * Get lfo-1 sends of @modular_synth_util.
  * 
@@ -2054,6 +2059,7 @@ ags_modular_synth_util_get_lfo_1_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_lfo_1_synth_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @lfo_1_sends: the lfo-1 sends
+ * @lfo_1_sends_count: the lfo-1 sends count
  *
  * Set @lfo_1_sends of @modular_synth_util.
  *

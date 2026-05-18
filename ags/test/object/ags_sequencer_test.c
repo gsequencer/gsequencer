@@ -32,6 +32,11 @@
 int ags_sequencer_test_init_suite();
 int ags_sequencer_test_clean_suite();
 
+void ags_sequencer_test_set_bpm();
+void ags_sequencer_test_get_bpm();
+void ags_sequencer_test_set_start_note_offset();
+void ags_sequencer_test_get_start_note_offset();
+void ags_sequencer_test_get_frame_clock();
 void ags_sequencer_test_set_device();
 void ags_sequencer_test_get_device();
 void ags_sequencer_test_is_starting();
@@ -46,14 +51,6 @@ void ags_sequencer_test_tic();
 void ags_sequencer_test_offset_changed();
 void ags_sequencer_test_get_buffer();
 void ags_sequencer_test_get_next_buffer();  
-void ags_sequencer_test_set_bpm();
-void ags_sequencer_test_get_bpm();
-void ags_sequencer_test_set_delay_factor();
-void ags_sequencer_test_get_delay_factor();
-void ags_sequencer_test_set_start_note_offset();
-void ags_sequencer_test_get_start_note_offset();
-void ags_sequencer_test_set_note_offset();
-void ags_sequencer_test_get_note_offset();
 
 #define AGS_SEQUENCER_TEST_SET_DEVICE_DEVICE "ags-test-default-0"
 
@@ -97,6 +94,181 @@ int
 ags_sequencer_test_clean_suite()
 {  
   return(0);
+}
+
+void
+ags_sequencer_test_set_bpm()
+{
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  ags_application_context = NULL;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(sequencer_test_types[i],
+			   NULL);
+    
+    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->set_bpm == NULL){
+      g_message("AgsSequencer::set-bpm missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_sequencer_set_bpm(AGS_SEQUENCER(current),
+			  AGS_SEQUENCER_TEST_SET_BPM_BPM);
+  }
+
+  CU_ASSERT(success);
+}
+
+void
+ags_sequencer_test_get_bpm()
+{
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  gdouble retval;
+  guint i;
+  gboolean success;
+
+  ags_application_context = NULL;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(sequencer_test_types[i],
+			   NULL);
+    
+    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->get_bpm == NULL){
+      g_message("AgsSequencer::get-bpm missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_sequencer_get_bpm(AGS_SEQUENCER(current));
+  }
+
+  CU_ASSERT(success);
+}
+
+void
+ags_sequencer_test_set_start_note_offset()
+{
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  ags_application_context = NULL;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(sequencer_test_types[i],
+			   NULL);
+    
+    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->set_start_note_offset == NULL){
+      g_message("AgsSequencer::set-start-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_sequencer_set_start_note_offset(AGS_SEQUENCER(current),
+				  AGS_SEQUENCER_TEST_SET_START_NOTE_OFFSET_NOTE_OFFSET);
+  }
+
+  CU_ASSERT(success);
+}
+
+void
+ags_sequencer_test_get_start_note_offset()
+{
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint retval;
+  guint i;
+  gboolean success;
+
+  ags_application_context = NULL;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(sequencer_test_types[i],
+			   NULL);
+    
+    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->get_start_note_offset == NULL){
+      g_message("AgsSequencer::get-start-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_sequencer_get_start_note_offset(AGS_SEQUENCER(current));
+  }
+
+  CU_ASSERT(success);
+}
+
+void
+ags_sequencer_test_get_frame_clock()
+{
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  GObject *retval;
+  guint i;
+  gboolean success;
+
+  ags_application_context = NULL;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(sequencer_test_types[i],
+			   NULL);
+    
+    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->get_frame_clock == NULL){
+      g_message("AgsSequencer::get-start-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_sequencer_get_frame_clock(AGS_SEQUENCER(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
@@ -561,286 +733,6 @@ ags_sequencer_test_get_next_buffer()
   CU_ASSERT(success);
 }
 
-void
-ags_sequencer_test_set_bpm()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-  
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->set_bpm == NULL){
-      g_message("AgsSequencer::set-bpm missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    ags_sequencer_set_bpm(AGS_SEQUENCER(current),
-			  AGS_SEQUENCER_TEST_SET_BPM_BPM);
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_sequencer_test_get_bpm()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  gdouble retval;
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->get_bpm == NULL){
-      g_message("AgsSequencer::get-bpm missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    retval = ags_sequencer_get_bpm(AGS_SEQUENCER(current));
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_sequencer_test_set_delay_factor()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-  
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->set_delay_factor == NULL){
-      g_message("AgsSequencer::set-delay-factor missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    ags_sequencer_set_delay_factor(AGS_SEQUENCER(current),
-				   AGS_SEQUENCER_TEST_SET_DELAY_FACTOR_DELAY_FACTOR);
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_sequencer_test_get_delay_factor()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  gdouble retval;
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->get_delay_factor == NULL){
-      g_message("AgsSequencer::get-delay-factor missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    retval = ags_sequencer_get_delay_factor(AGS_SEQUENCER(current));
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_sequencer_test_set_start_note_offset()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-  
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->set_start_note_offset == NULL){
-      g_message("AgsSequencer::set-start-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    ags_sequencer_set_start_note_offset(AGS_SEQUENCER(current),
-				  AGS_SEQUENCER_TEST_SET_START_NOTE_OFFSET_NOTE_OFFSET);
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_sequencer_test_get_start_note_offset()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  guint retval;
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->get_start_note_offset == NULL){
-      g_message("AgsSequencer::get-start-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    retval = ags_sequencer_get_start_note_offset(AGS_SEQUENCER(current));
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_sequencer_test_set_note_offset()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-  
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->set_note_offset == NULL){
-      g_message("AgsSequencer::set-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    ags_sequencer_set_note_offset(AGS_SEQUENCER(current),
-				  AGS_SEQUENCER_TEST_SET_NOTE_OFFSET_NOTE_OFFSET);
-  }
-
-  CU_ASSERT(success);
-}
-
-void
-ags_sequencer_test_get_note_offset()
-{
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  guint retval;
-  guint i;
-  gboolean success;
-
-  ags_application_context = NULL;
-
-  application_context = ags_audio_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; sequencer_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(sequencer_test_types[i],
-			   NULL);
-    
-    if(AGS_SEQUENCER_GET_INTERFACE(AGS_SEQUENCER(current))->get_note_offset == NULL){
-      g_message("AgsSequencer::get-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    retval = ags_sequencer_get_note_offset(AGS_SEQUENCER(current));
-  }
-
-  CU_ASSERT(success);
-}
-
 int
 main(int argc, char **argv)
 {
@@ -864,8 +756,25 @@ main(int argc, char **argv)
   }
 
   /* remove the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsSequencer set device", ags_sequencer_test_set_device) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsSequencer get device", ags_sequencer_test_get_device) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsSequencer set bpm", ags_sequencer_test_set_bpm) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer get bpm", ags_sequencer_test_get_bpm) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer set start note offset", ags_sequencer_test_set_start_note_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer get start note offset", ags_sequencer_test_get_start_note_offset) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer get frame clock", ags_sequencer_test_get_frame_clock) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer set device", ags_sequencer_test_set_device) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer get device", ags_sequencer_test_get_device) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer is starting", ags_sequencer_test_is_starting) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer is playing", ags_sequencer_test_is_playing) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer is recording", ags_sequencer_test_is_recording) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer play init", ags_sequencer_test_play_init) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer play", ags_sequencer_test_play) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer record init", ags_sequencer_test_record_init) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer record", ags_sequencer_test_record) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer stop", ags_sequencer_test_stop) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer tic", ags_sequencer_test_tic) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer offset changed", ags_sequencer_test_offset_changed) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer get buffer", ags_sequencer_test_get_buffer) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsSequencer get next buffer", ags_sequencer_test_get_next_buffer) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

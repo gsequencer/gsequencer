@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2025 Joël Krähemann
+# Copyright (C) 2005-2026 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -17,10 +17,16 @@
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
 ags_cartesian_get_type
+ags_dial_flags_get_type
 ags_dial_get_type
 ags_expander_get_type
 ags_expander_set_get_type
+ags_file_dialog_get_type
+ags_file_entry_get_type
+ags_file_widget_get_type
+ags_icon_link_get_type
 ags_indicator_get_type
+ags_input_dialog_get_type
 ags_led_array_get_type
 ags_led_get_type
 ags_level_box_get_type

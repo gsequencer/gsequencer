@@ -131,7 +131,13 @@ struct _AgsCoreAudioMidiin
   GRecMutex obj_mutex;
   
   AgsUUID *uuid;
+
+  gdouble bpm; // beats per minute
+
+  guint64 start_note_offset;
   
+  AgsFrameClock *frame_clock;
+
   AgsCoreAudioMidiinAppBufferMode app_buffer_mode;
 
   GRecMutex **app_buffer_mutex;
@@ -139,20 +145,6 @@ struct _AgsCoreAudioMidiin
   char **app_buffer;
   guint allocated_app_buffer_size[AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
   guint app_buffer_size[AGS_CORE_AUDIO_MIDIIN_DEFAULT_APP_BUFFER_SIZE];
-
-  double bpm; // beats per minute
-
-  gdouble delay;
-  gdouble delay_factor;
-  guint latency;
-  
-  gdouble tact_counter;
-  gdouble delay_counter; // next time attack changeing when delay_counter == delay
-  guint tic_counter; // in the range of default period
-
-  guint start_note_offset;
-  guint note_offset;
-  guint note_offset_absolute;
 
   gchar *card_uri;
   GObject *core_audio_client;

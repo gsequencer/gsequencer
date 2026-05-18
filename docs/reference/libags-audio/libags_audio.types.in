@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2025 Joël Krähemann
+# Copyright (C) 2005-2026 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -27,6 +27,7 @@ ags_alsa_devin_get_type
 ags_alsa_devout_flags_get_type
 ags_alsa_devout_get_type
 ags_alsa_midiin_get_type
+ags_amplifier10_util_get_type
 ags_amplifier_util_get_type
 ags_apply_bpm_get_type
 ags_apply_presets_get_type
@@ -52,15 +53,7 @@ ags_audio_signal_flags_get_type
 ags_audio_signal_get_type
 ags_audio_signal_stream_mode_get_type
 ags_audio_thread_get_type
-ags_audio_unit_client_flags_get_type
-ags_audio_unit_client_get_type
-ags_audio_unit_devin_flags_get_type
-ags_audio_unit_devin_get_type
-ags_audio_unit_devout_flags_get_type
-ags_audio_unit_devout_get_type
-ags_audio_unit_port_flags_get_type
-ags_audio_unit_port_get_type
-ags_audio_unit_server_get_type
+ags_audio_tree_dispatcher_get_type
 ags_automation_control_name_key_manager_get_type
 ags_automation_flags_get_type
 ags_automation_get_type
@@ -180,6 +173,12 @@ ags_fx_lv2_audio_signal_get_type
 ags_fx_lv2_channel_get_type
 ags_fx_lv2_channel_processor_get_type
 ags_fx_lv2_recycling_get_type
+ags_fx_modular_synth_audio_get_type
+ags_fx_modular_synth_audio_processor_get_type
+ags_fx_modular_synth_audio_signal_get_type
+ags_fx_modular_synth_channel_get_type
+ags_fx_modular_synth_channel_processor_get_type
+ags_fx_modular_synth_recycling_get_type
 ags_fx_notation_audio_get_type
 ags_fx_notation_audio_processor_get_type
 ags_fx_notation_audio_signal_get_type
@@ -327,13 +326,13 @@ ags_lv2ui_plugin_get_type
 ags_marker_flags_get_type
 ags_marker_get_type
 ags_midi_builder_get_type
-ags_midi_ci_util_get_type
 ags_midi_file_get_type
 ags_midi_get_type
 ags_midi_parser_get_type
 ags_midi_smf_util_get_type
 ags_midi_ump_util_get_type
 ags_midi_util_get_type
+ags_modular_synth_util_get_type
 ags_move_note_get_type
 ags_noise_util_get_type
 ags_notation_flags_get_type
