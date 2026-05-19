@@ -173,6 +173,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   gdouble delay;
   guint length;
   guint frame_count;
+  guint template_length;
   guint template_frame_count;
   guint buffer_size;
   guint i;
@@ -284,7 +285,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
   length = 0;
   frame_count = 0;
-  
+
+  template_length = 0;    
   template_frame_count = 0;  
 
   g_object_get(source,
@@ -309,9 +311,11 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
   if(template != NULL){
     g_object_get(template,
+		 "length", &template_length,
 		 "frame-count", &template_frame_count,
 		 NULL);
   }else{
+    template_length = (guint) floor(absolute_delay) + 1;
     template_frame_count = ((guint) floor(absolute_delay) + 1) * buffer_size;
   }
   
@@ -344,13 +348,11 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 		 NULL);
 
     if((!note_256th_mode && note_offset >= x0) ||
-       (note_256th_mode && note_256th_offset_lower >= x0_256th)){
+       (note_256th_mode && note_256th_offset_lower >= x0_256th) ||
+       (pattern_mode &&
+	frame_count <= template_frame_count)){
       if(source->stream_current == NULL ||
 	 source->stream_current->next == NULL){
-	ags_audio_signal_add_stream(source);
-      }
-
-      if(source->stream_current->next == NULL){
 	ags_audio_signal_add_stream(source);
       }
       

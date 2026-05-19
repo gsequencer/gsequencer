@@ -8,6 +8,7 @@
 static_tests = [
   'ags_concurrency_provider_test',
   'ags_destroy_worker_test',
+#  'ags_functional_frame_clock_test', TODO: missing dependency?
 #  'ags_functional_thread_test', TODO: missing header?
   'ags_generic_main_loop_test',
   'ags_message_delivery_test',
@@ -20,6 +21,7 @@ static_tests = [
   'ags_thread_pool_test',
   'ags_thread_test',
   'ags_timestamp_test',
+  'ags_frame_clock_test',
   'ags_worker_thread_test',
 ]
 
