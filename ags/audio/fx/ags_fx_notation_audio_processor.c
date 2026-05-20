@@ -753,9 +753,9 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
   note_offset = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
   
   if(do_loop &&
-     note_offset > loop_end){
+     note_offset >= loop_end){
     ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
-				    note_offset % (loop_end - loop_start));
+				    loop_start);
   }
   
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
