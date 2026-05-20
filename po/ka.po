@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 8.3.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-03-17 11:25+0100\n"
+"POT-Creation-Date: 2026-05-19 17:05+0200\n"
 "PO-Revision-Date: 2026-04-12 06:57+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: \n"
@@ -74,11 +74,11 @@ msgstr "მომხმარებლის სახელი"
 msgid "password"
 msgstr "პაროლი"
 
-#: ags/app/ags_export_window_callbacks.c:195
+#: ags/app/ags_export_window_callbacks.c:200
 msgid "Replace existing file(s)?"
 msgstr "ჩანაცვლდეს არსებული ფაილ(ებ)-ი?"
 
-#: ags/app/ags_export_window_callbacks.c:198
+#: ags/app/ags_export_window_callbacks.c:203
 msgid "Following files exist, do you want to remove in order to export?"
 msgstr "შემდეგი ფაილი არსებობს. გნებავთ, წაშალოთ ის გატანისთვის?"
 
@@ -386,7 +386,7 @@ msgstr "ჩართულია"
 msgid "sequence: "
 msgstr "მიმდევრობა: "
 
-#: ags/app/export/ags_machine_mapper.c:242 ags/app/machine/ags_drum.c:365
+#: ags/app/export/ags_machine_mapper.c:242 ags/app/machine/ags_drum.c:364
 msgid "default"
 msgstr "ნაგულისხმევი"
 
@@ -984,7 +984,7 @@ msgstr "რედაქტორი"
 msgid "info"
 msgstr "ინფორმაცია"
 
-#: ags/app/editor/ags_envelope_dialog.c:675 ags/app/machine/ags_drum.c:373
+#: ags/app/editor/ags_envelope_dialog.c:675 ags/app/machine/ags_drum.c:372
 msgid "pattern"
 msgstr "შაბლონი"
 
@@ -1102,7 +1102,7 @@ msgstr "წინ გადახვევა"
 msgid "skip forward"
 msgstr "წინ გადახტომა"
 
-#: ags/app/ags_navigation.c:332 ags/app/machine/ags_drum.c:394
+#: ags/app/ags_navigation.c:332 ags/app/machine/ags_drum.c:393
 msgid "loop"
 msgstr "მარყუჟი"
 
@@ -1438,7 +1438,7 @@ msgstr "დადუმება"
 msgid "program"
 msgstr "პროგრამა"
 
-#: ags/app/machine/ags_matrix.c:384 ags/app/machine/ags_drum.c:474
+#: ags/app/machine/ags_matrix.c:384 ags/app/machine/ags_drum.c:473
 #: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1166
 #: ags/app/machine/ags_sf2_synth.c:1212 ags/app/machine/ags_fm_oscillator.c:267
 msgid "length"
@@ -1451,47 +1451,47 @@ msgstr "სიგრძე"
 msgid "volume"
 msgstr "საცავი"
 
-#: ags/app/machine/ags_equalizer10.c:232
+#: ags/app/machine/ags_equalizer10.c:236
 msgid "28Hz"
 msgstr "28ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:253
+#: ags/app/machine/ags_equalizer10.c:257
 msgid "56Hz"
 msgstr "56ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:274
+#: ags/app/machine/ags_equalizer10.c:278
 msgid "112Hz"
 msgstr "112Hz"
 
-#: ags/app/machine/ags_equalizer10.c:295
+#: ags/app/machine/ags_equalizer10.c:299
 msgid "224Hz"
 msgstr "224Hz"
 
-#: ags/app/machine/ags_equalizer10.c:316
+#: ags/app/machine/ags_equalizer10.c:320
 msgid "448Hz"
 msgstr "448ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:337
+#: ags/app/machine/ags_equalizer10.c:341
 msgid "896Hz"
 msgstr "896ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:358
+#: ags/app/machine/ags_equalizer10.c:362
 msgid "1792Hz"
 msgstr "1792ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:379
+#: ags/app/machine/ags_equalizer10.c:383
 msgid "3584Hz"
 msgstr "3584ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:400
+#: ags/app/machine/ags_equalizer10.c:404
 msgid "7168Hz"
 msgstr "7168ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:421
+#: ags/app/machine/ags_equalizer10.c:425
 msgid "14336Hz"
 msgstr "14336ჰც"
 
-#: ags/app/machine/ags_equalizer10.c:442
+#: ags/app/machine/ags_equalizer10.c:446
 msgid "pressure"
 msgstr "წნევა"
 
@@ -1512,17 +1512,17 @@ msgstr "update"
 msgid "lower"
 msgstr "ქვემოთ"
 
-#: ags/app/machine/ags_drum.c:351
+#: ags/app/machine/ags_drum.c:350
 msgid "kit"
 msgstr ""
 
-#: ags/app/machine/ags_drum.c:368 ags/app/machine/ags_sfz_synth.c:349
+#: ags/app/machine/ags_drum.c:367 ags/app/machine/ags_sfz_synth.c:349
 #: ags/app/machine/ags_audiorec.c:295 ags/app/machine/ags_sf2_synth.c:357
 #: ags/app/machine/ags_ffplayer.c:403
 msgid "_Open"
 msgstr "_გახსნა"
 
-#: ags/app/machine/ags_drum.c:401
+#: ags/app/machine/ags_drum.c:400
 msgid "run"
 msgstr ""
 

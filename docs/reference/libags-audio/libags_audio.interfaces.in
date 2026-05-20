@@ -1,5 +1,5 @@
 # GSequencer - Advanced GTK Sequencer 
-# Copyright (C) 2005-2025 Joël Krähemann
+# Copyright (C) 2005-2026 Joël Krähemann
 # 
 # This file is part of GSequencer.
 #
@@ -36,11 +36,6 @@ AgsSequencerThread AgsConnectable
 AgsSoundcardThread AgsConnectable
 AgsWorkerThread AgsConnectable
 AgsAudioSignal AgsConnectable
-AgsAudioUnitClient AgsConnectable
-AgsAudioUnitDevin AgsConnectable AgsSoundcard
-AgsAudioUnitDevout AgsConnectable AgsSoundcard
-AgsAudioUnitPort AgsConnectable
-AgsAudioUnitServer AgsConnectable AgsSoundServer
 AgsChannel AgsConnectable
 AgsInput AgsConnectable
 AgsOutput AgsConnectable
@@ -59,6 +54,7 @@ AgsFxNotationAudio AgsConnectable
 AgsFxDssiAudio AgsConnectable
 AgsFxFMSynthAudio AgsConnectable
 AgsFxLv2Audio AgsConnectable
+AgsFxModularSynthAudio AgsConnectable
 AgsFxRavenSynthAudio AgsConnectable
 AgsFxSeqSynthAudio AgsConnectable
 AgsFxSF2SynthAudio AgsConnectable
@@ -85,6 +81,7 @@ AgsFxNotationAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxDssiAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxFMSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxLv2AudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
+AgsFxModularSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxRavenSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxSeqSynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
 AgsFxSF2SynthAudioProcessor AgsConnectable AgsCountable AgsSeekable AgsTactable
@@ -111,6 +108,7 @@ AgsFxNotationAudioSignal AgsConnectable
 AgsFxDssiAudioSignal AgsConnectable
 AgsFxFMSynthAudioSignal AgsConnectable
 AgsFxLv2AudioSignal AgsConnectable
+AgsFxModularSynthAudioSignal AgsConnectable
 AgsFxRavenSynthAudioSignal AgsConnectable
 AgsFxSeqSynthAudioSignal AgsConnectable
 AgsFxSF2SynthAudioSignal AgsConnectable
@@ -137,6 +135,7 @@ AgsFxNotationChannel AgsConnectable
 AgsFxDssiChannel AgsConnectable
 AgsFxFMSynthChannel AgsConnectable
 AgsFxLv2Channel AgsConnectable
+AgsFxModularSynthChannel AgsConnectable
 AgsFxRavenSynthChannel AgsConnectable
 AgsFxSeqSynthChannel AgsConnectable
 AgsFxSF2SynthChannel AgsConnectable
@@ -163,6 +162,7 @@ AgsFxNotationChannelProcessor AgsConnectable
 AgsFxDssiChannelProcessor AgsConnectable
 AgsFxFMSynthChannelProcessor AgsConnectable
 AgsFxLv2ChannelProcessor AgsConnectable
+AgsFxModularSynthChannelProcessor AgsConnectable
 AgsFxRavenSynthChannelProcessor AgsConnectable
 AgsFxSeqSynthChannelProcessor AgsConnectable
 AgsFxSF2SynthChannelProcessor AgsConnectable
@@ -190,6 +190,7 @@ AgsFxNotationRecycling AgsConnectable
 AgsFxDssiRecycling AgsConnectable
 AgsFxFMSynthRecycling AgsConnectable
 AgsFxLv2Recycling AgsConnectable
+AgsFxModularSynthRecycling AgsConnectable
 AgsFxRavenSynthRecycling AgsConnectable
 AgsFxSeqSynthRecycling AgsConnectable
 AgsFxSF2SynthRecycling AgsConnectable

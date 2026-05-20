@@ -147,7 +147,7 @@ main(int argc, char **argv)
 			     0,
 			     NULL,
 			     sizeof(input_buffer_size_bytes),
-			     &input_buffer_size_bytes);
+			     (void *) &input_buffer_size_bytes);
       
   AudioDeviceCreateIOProcID(input_device,
 			    (OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) hw_input_callback,

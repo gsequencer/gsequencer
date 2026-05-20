@@ -172,7 +172,7 @@ ags_reset_note_launch(AgsTask *task)
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
   g_rec_mutex_lock(task_mutex);
   

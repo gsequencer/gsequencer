@@ -1,3 +1,9 @@
+ags (9.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-notation pattern mode missing samples
+	* fixed functional system test
+
 ags (9.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -5,12 +11,15 @@ ags (9.0.0)
 	* implemented AgsFrameClock
 	* implemented AgsEqualizer10 presets and refresh port
 	* implemented ags_soundcard_get_frame_clock()
+	* implemented ags_sequencer_get_frame_clock()
 	* refactored AgsSoundcard and all implementations
+	* refactored AgsSequencer and all implementations
 	* refactored ags-fx-playback
 	* refactored ags-fx-pattern
 	* refactored ags-fx-notation
 	* refactored synths using ags-fx-notation
 	* added ags_frame_clock_test.c
+	* added ags_functional_frame_clock_test.c
 
 ags (8.4.3)
 

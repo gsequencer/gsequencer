@@ -230,6 +230,8 @@ ags_start_soundcard_launch(AgsTask *task)
       if(AGS_SOUNDCARD_THREAD(soundcard_thread)->error == NULL){
 	ags_thread_add_start_queue(audio_loop,
 				   soundcard_thread);
+      }else{
+	g_warning("didn't start soundcard");
       }
       
       g_object_unref(soundcard);
