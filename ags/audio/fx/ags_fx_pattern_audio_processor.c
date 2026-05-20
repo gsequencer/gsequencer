@@ -526,6 +526,7 @@ ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall)
 void
 ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
 {
+  AgsFxPatternAudio *fx_pattern_audio;
   AgsFxPatternAudioProcessor *fx_pattern_audio_processor;
   AgsRecallID *recall_id;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
@@ -534,9 +535,14 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
   
   gint sound_scope;
   gdouble delay_counter;
-  
-  GRecMutex *fx_pattern_audio_processor_mutex;
+  gboolean do_loop;
+  guint64 loop_start, loop_end;
+  guint64 note_offset;
 
+  GValue value = {0,};
+   
+  GRecMutex *fx_pattern_audio_processor_mutex;
+ 
   fx_pattern_audio_processor = AGS_FX_PATTERN_AUDIO_PROCESSOR(recall);
   
   fx_pattern_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_pattern_audio_processor);
@@ -561,11 +567,14 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
 
   output_soundcard = NULL;
   
+  fx_pattern_audio = NULL;
+  
   recycling_context = NULL;
   parent_recycling_context = NULL;
   
   g_object_get(recall,
 	       "output-soundcard", &output_soundcard,
+	       "recall-audio", &fx_pattern_audio,
 	       NULL);
   
   g_object_get(recall_id,
@@ -576,11 +585,83 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
 	       "parent", &parent_recycling_context,
 	       NULL);
   
+  /* loop */
+  do_loop = FALSE;
+  
+  loop_start = AGS_FX_PATTERN_AUDIO_DEFAULT_LOOP_START;
+  loop_end = AGS_FX_PATTERN_AUDIO_DEFAULT_LOOP_END;
+  
+  if(fx_pattern_audio != NULL){
+    AgsPort *port;
+
+    /* loop */
+    g_object_get(fx_pattern_audio,
+		 "loop", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
+    
+      ags_port_safe_read(port,
+			 &value);
+
+      do_loop = g_value_get_boolean(&value);
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+
+    /* loop-start */
+    g_object_get(fx_pattern_audio,
+		 "loop-start", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value,
+		   G_TYPE_UINT64);
+    
+      ags_port_safe_read(port,
+			 &value);
+
+      loop_start = g_value_get_uint64(&value);
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+
+    /* loop-end */
+    g_object_get(fx_pattern_audio,
+		 "loop-end", &port,
+		 NULL);
+
+    if(port != NULL){
+      g_value_init(&value,
+		   G_TYPE_UINT64);
+    
+      ags_port_safe_read(port,
+			 &value);
+
+      loop_end = g_value_get_uint64(&value);
+      g_value_unset(&value);
+
+      g_object_unref(port);
+    }
+  }
+  
   /* frame clock */
   g_rec_mutex_lock(fx_pattern_audio_processor_mutex);
 
   ags_frame_clock_copy_time(fx_pattern_audio_processor->frame_clock,
 			    (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard)));
+
+  note_offset = ags_frame_clock_get_note_offset(fx_pattern_audio_processor->frame_clock);
+  
+  if(do_loop &&
+     note_offset > loop_end){
+    ags_frame_clock_set_note_offset(fx_pattern_audio_processor->frame_clock,
+				    note_offset % (loop_end - loop_start));
+  }
   
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
 
