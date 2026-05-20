@@ -660,7 +660,7 @@ ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall)
   if(do_loop &&
      note_offset >= loop_end){
     ags_frame_clock_set_note_offset(fx_pattern_audio_processor->frame_clock,
-				    note_offset % loop_end);
+				    loop_start + ((note_offset - loop_end) % (loop_end - loop_start)));
   }
   
   g_rec_mutex_unlock(fx_pattern_audio_processor_mutex);
