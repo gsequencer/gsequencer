@@ -50,6 +50,14 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="9.0.0" date="2026-05-18">
+      <description>
+	<p>
+	  Implemented frame clock. Fixes more precise BPM setting.
+	</p>
+      </description>
+    </release>
+
     <release version="8.2.0" date="2025-12-13">
       <description>
 	<p>
