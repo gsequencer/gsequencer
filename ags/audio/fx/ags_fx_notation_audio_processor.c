@@ -316,6 +316,7 @@ ags_fx_notation_audio_processor_seek(AgsSeekable *seekable,
 				     gint64 offset,
 				     guint whence)
 {
+#if 0
   AgsFxNotationAudioProcessor *fx_notation_audio_processor;
 
   guint64 note_offset;
@@ -359,12 +360,13 @@ ags_fx_notation_audio_processor_seek(AgsSeekable *seekable,
     g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
     ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
-				    offset);
+				    (guint64) offset);
     
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
   break;
   }
+#endif
 }
 
 guint64
@@ -600,11 +602,11 @@ ags_fx_notation_audio_processor_run_init_pre(AgsRecall *recall)
   
   /* counter */
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+  
+  ags_frame_clock_set_start_note_offset(fx_notation_audio_processor->frame_clock,
+					ags_soundcard_get_start_note_offset(AGS_SOUNDCARD(output_soundcard)));
     
   ags_frame_clock_start(fx_notation_audio_processor->frame_clock);
-  
-  ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
-				  ags_soundcard_get_start_note_offset(AGS_SOUNDCARD(output_soundcard)));
  
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 

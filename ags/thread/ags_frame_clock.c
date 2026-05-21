@@ -235,9 +235,9 @@ ags_frame_clock_counter_reset(AgsFrameClock *frame_clock)
     return;
   }
 
-  frame_clock->absolute_frame_offset = (guint64) ((floorl(((long double) frame_clock->absolute_note_offset * frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size) / (long double) frame_clock->buffer_size) * (long double) frame_clock->buffer_size) + (frame_clock->delay_counter * (long double) frame_clock->buffer_size));
+  frame_clock->absolute_frame_offset = (guint64) ((floorl(((long double) frame_clock->absolute_note_offset * (frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size)) / (long double) frame_clock->buffer_size) * (long double) frame_clock->buffer_size) + (frame_clock->delay_counter * (long double) frame_clock->buffer_size));
 
-  frame_clock->frame_offset = (guint64) ((floorl(((long double) frame_clock->note_offset * frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size) / (long double) frame_clock->buffer_size) * (long double) frame_clock->buffer_size) + (frame_clock->delay_counter * (long double) frame_clock->buffer_size));
+  frame_clock->frame_offset = (guint64) ((floorl(((long double) frame_clock->note_offset * (frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size)) / (long double) frame_clock->buffer_size) * (long double) frame_clock->buffer_size) + (frame_clock->delay_counter * (long double) frame_clock->buffer_size));
   
   frame_clock->period_frame_offset = frame_clock->frame_offset % ((guint64) AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->buffer_size);
 
@@ -836,9 +836,9 @@ ags_frame_clock_set_loop(AgsFrameClock *frame_clock,
  * ags_frame_clock_get_start_note_offset:
  * @frame_clock: the #AgsFrameClock
  *
- * Get note offset of @frame_clock.
+ * Get start note offset of @frame_clock.
  * 
- * Returns: the note offset
+ * Returns: the start note offset
  * 
  * Since: 9.0.0
  */
@@ -869,9 +869,9 @@ ags_frame_clock_get_start_note_offset(AgsFrameClock *frame_clock)
 /**
  * ags_frame_clock_set_start_note_offset:
  * @frame_clock: the #AgsFrameClock
- * @start_note_offset: the note offset
+ * @start_note_offset: the start note offset
  *
- * Set note offset of @frame_clock.
+ * Set start note offset of @frame_clock.
  * 
  * Since: 9.0.0
  */
@@ -892,7 +892,12 @@ ags_frame_clock_set_start_note_offset(AgsFrameClock *frame_clock,
   g_rec_mutex_lock(frame_clock_mutex);
 
   frame_clock->start_note_offset = start_note_offset;
-  
+
+  if(frame_clock->note_offset < start_note_offset){
+    ags_frame_clock_set_note_offset(frame_clock,
+				    start_note_offset);
+  }
+
   g_rec_mutex_unlock(frame_clock_mutex);
 }
 
@@ -989,11 +994,13 @@ ags_frame_clock_set_note_offset(AgsFrameClock *frame_clock,
   /* set note offset */
   g_rec_mutex_lock(frame_clock_mutex);
 
+  frame_clock->delay_counter = 0.0;
+  
+  frame_clock->absolute_note_offset = note_offset;
+  
   frame_clock->note_offset = note_offset;
 
-  if(frame_clock->absolute_note_offset < note_offset){
-    frame_clock->absolute_note_offset = note_offset;
-  }
+  frame_clock->note_frame_offset = (guint64) floorl((long double) note_offset * (frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size));
   
   ags_frame_clock_counter_reset(frame_clock);
   
@@ -1154,6 +1161,8 @@ ags_frame_clock_copy_time(AgsFrameClock *destination,
 
   destination->has_16th_pulse = source->has_16th_pulse;
   
+  destination->start_note_offset = source->start_note_offset;
+  
   destination->absolute_note_offset = source->absolute_note_offset;
   
   destination->note_offset = source->note_offset;
@@ -1186,11 +1195,19 @@ ags_frame_clock_copy_time(AgsFrameClock *destination,
 void
 ags_frame_clock_start(AgsFrameClock *frame_clock)
 {
+  guint64 start_note_offset;
+  
   if(!AGS_IS_FRAME_CLOCK(frame_clock) ||
      ags_frame_clock_test_flags(frame_clock, AGS_FRAME_CLOCK_STARTED)){
     return;
   }
 
+  /* start note offset */
+  start_note_offset = ags_frame_clock_get_start_note_offset(frame_clock);
+  
+  ags_frame_clock_set_note_offset(frame_clock,
+				  start_note_offset);
+  
   ags_frame_clock_set_flags(frame_clock,
 			    AGS_FRAME_CLOCK_STARTED);
 
@@ -1210,6 +1227,8 @@ ags_frame_clock_start(AgsFrameClock *frame_clock)
 void
 ags_frame_clock_stop(AgsFrameClock *frame_clock)
 {
+  guint64 start_note_offset;
+  
   guint i;
   
   if(!AGS_IS_FRAME_CLOCK(frame_clock) ||
@@ -1226,6 +1245,12 @@ ags_frame_clock_stop(AgsFrameClock *frame_clock)
   
   ags_frame_clock_unset_flags(frame_clock,
 			      AGS_FRAME_CLOCK_STARTED);
+  
+  /* start note offset */
+  start_note_offset = ags_frame_clock_get_start_note_offset(frame_clock);
+  
+  ags_frame_clock_set_note_offset(frame_clock,
+				  start_note_offset);
 }
 
 /**

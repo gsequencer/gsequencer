@@ -1787,10 +1787,10 @@ ags_gstreamer_devin_port_init(AgsSoundcard *soundcard,
 			     AGS_GSTREAMER_DEVIN_START_RECORD |
 			     AGS_GSTREAMER_DEVIN_RECORD);
 
-  ags_frame_clock_start(gstreamer_devin->frame_clock);
+  ags_frame_clock_set_start_note_offset(gstreamer_devin->frame_clock,
+					gstreamer_devin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(gstreamer_devin->frame_clock,
-				  gstreamer_devin->start_note_offset);
+  ags_frame_clock_start(gstreamer_devin->frame_clock);
     
   ags_atomic_int_and(&(gstreamer_devin->sync_flags),
 		     (~(AGS_GSTREAMER_DEVIN_PASS_THROUGH)));

@@ -1714,10 +1714,10 @@ ags_jack_devin_port_init(AgsSoundcard *soundcard,
 			AGS_JACK_DEVIN_START_RECORD |
 			AGS_JACK_DEVIN_RECORD);
 
-  ags_frame_clock_start(jack_devin->frame_clock);
+  ags_frame_clock_set_start_note_offset(jack_devin->frame_clock,
+					jack_devin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(jack_devin->frame_clock,
-				  jack_devin->start_note_offset);
+  ags_frame_clock_start(jack_devin->frame_clock);
   
   ags_atomic_int_and(&(jack_devin->sync_flags),
 		   (~(AGS_JACK_DEVIN_PASS_THROUGH)));

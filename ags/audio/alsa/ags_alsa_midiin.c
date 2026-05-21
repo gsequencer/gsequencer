@@ -1211,10 +1211,10 @@ ags_alsa_midiin_device_record_init(AgsSequencer *sequencer,
   alsa_midiin->flags |= AGS_ALSA_MIDIIN_INITIALIZED;
 #endif
 
-  ags_frame_clock_start(alsa_midiin->frame_clock);
+  ags_frame_clock_set_start_note_offset(alsa_midiin->frame_clock,
+					alsa_midiin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(alsa_midiin->frame_clock,
-				  alsa_midiin->start_note_offset);
+  ags_frame_clock_start(alsa_midiin->frame_clock);
 
   alsa_midiin->app_buffer_mode = AGS_ALSA_MIDIIN_APP_BUFFER_0;
   

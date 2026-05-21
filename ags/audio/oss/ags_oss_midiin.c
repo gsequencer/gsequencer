@@ -1278,10 +1278,10 @@ ags_oss_midiin_device_record_init(AgsSequencer *sequencer,
   oss_midiin->flags |= AGS_OSS_MIDIIN_INITIALIZED;
 #endif
 
-  ags_frame_clock_start(oss_midiin->frame_clock);
+  ags_frame_clock_set_start_note_offset(oss_midiin->frame_clock,
+					oss_midiin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(oss_midiin->frame_clock,
-				  oss_midiin->start_note_offset);
+  ags_frame_clock_start(oss_midiin->frame_clock);
 
   oss_midiin->app_buffer_mode = AGS_OSS_MIDIIN_APP_BUFFER_0;
   

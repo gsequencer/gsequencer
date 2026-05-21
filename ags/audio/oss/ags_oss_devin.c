@@ -1939,10 +1939,10 @@ ags_oss_devin_device_record_init(AgsSoundcard *soundcard,
   }
 #endif
 
-  ags_frame_clock_start(oss_devin->frame_clock);
+  ags_frame_clock_set_start_note_offset(oss_devin->frame_clock,
+					oss_devin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(oss_devin->frame_clock,
-				  oss_devin->start_note_offset);
+  ags_frame_clock_start(oss_devin->frame_clock);
   
   oss_devin->backend_buffer_mode = AGS_OSS_DEVIN_BACKEND_BUFFER_0;
     

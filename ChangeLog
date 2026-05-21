@@ -1,3 +1,9 @@
+ags (9.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed set start note offset of frame clock
+	* fixed set note offset of frame clock
+
 ags (9.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -2162,10 +2162,10 @@ ags_alsa_devin_device_record_init(AgsSoundcard *soundcard,
   alsa_devin->flags |= AGS_ALSA_DEVIN_INITIALIZED;
 #endif
 
-  ags_frame_clock_start(alsa_devin->frame_clock);
+  ags_frame_clock_set_start_note_offset(alsa_devin->frame_clock,
+					alsa_devin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(alsa_devin->frame_clock,
-				  alsa_devin->start_note_offset);
+  ags_frame_clock_start(alsa_devin->frame_clock);
 
   alsa_devin->app_buffer_mode = AGS_ALSA_DEVIN_APP_BUFFER_0;
   
