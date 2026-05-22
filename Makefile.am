@@ -3626,6 +3626,7 @@ libags_vst_h_sources = \
 
 deprecated_libags_vst_c_sources =
 
+
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
 	ags/vst3-capi/host/ags_vst_component_handler.cpp \

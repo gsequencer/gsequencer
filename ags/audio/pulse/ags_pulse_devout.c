@@ -1822,11 +1822,11 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
 			  AGS_PULSE_DEVOUT_START_PLAY |
 			  AGS_PULSE_DEVOUT_PLAY);
 
+  ags_frame_clock_set_start_note_offset(pulse_devout->frame_clock,
+					pulse_devout->start_note_offset);
+  
   ags_frame_clock_start(pulse_devout->frame_clock);
 
-  ags_frame_clock_set_note_offset(pulse_devout->frame_clock,
-				  pulse_devout->start_note_offset);
-  
   ags_atomic_int_and(&(pulse_devout->sync_flags),
 		   (~(AGS_PULSE_DEVOUT_PASS_THROUGH)));
   ags_atomic_int_or(&(pulse_devout->sync_flags),

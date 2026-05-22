@@ -2329,10 +2329,10 @@ ags_alsa_devout_device_play_init(AgsSoundcard *soundcard,
   alsa_devout->flags |= AGS_ALSA_DEVOUT_INITIALIZED;
 #endif
 
+  ags_frame_clock_set_start_note_offset(alsa_devout->frame_clock,
+					alsa_devout->start_note_offset);
+  
   ags_frame_clock_start(alsa_devout->frame_clock);
-
-  ags_frame_clock_set_note_offset(alsa_devout->frame_clock,
-				  alsa_devout->start_note_offset);
 
   alsa_devout->app_buffer_mode = AGS_ALSA_DEVOUT_APP_BUFFER_0;
 

@@ -327,41 +327,25 @@ ags_fx_notation_audio_processor_seek(AgsSeekable *seekable,
   /* get recall mutex */
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
-  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-  
   note_offset = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
-  
-  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   
   switch(whence){
   case AGS_SEEK_CUR:
   {
-    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-
     ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
 				    note_offset + offset);
-  
-    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
   break;
   case AGS_SEEK_END:
   {      
-    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-
     ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
 				    AGS_NOTATION_DEFAULT_END + offset);
-    
-    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
   break;
   case AGS_SEEK_SET:
   {
-    g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-
     ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
-				    offset);
-    
-    g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
+				    (guint64) offset);
   }
   break;
   }
@@ -382,11 +366,7 @@ ags_fx_notation_audio_processor_get_notation_counter(AgsCountable *countable)
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
   /* bpm */
-  g_rec_mutex_lock(recall_mutex);
-
   notation_counter = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
-  
-  g_rec_mutex_unlock(recall_mutex);
   
   return(notation_counter);
 }
@@ -496,9 +476,12 @@ ags_fx_notation_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bp
 
   GObject *output_soundcard;
   
+  long double absolute_delay;
+  
   GValue value = {0,};
   
   GRecMutex *fx_notation_audio_processor_mutex;
+  GRecMutex *frame_clock_mutex;
 
   output_soundcard = NULL;
   
@@ -508,6 +491,9 @@ ags_fx_notation_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bp
   
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(fx_notation_audio_processor->frame_clock);
+  
   port = NULL;
   
   g_object_get(fx_notation_audio_processor,
@@ -515,10 +501,13 @@ ags_fx_notation_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bp
 	       "recall-audio", &fx_notation_audio,
 	       NULL);
 
-  ags_frame_clock_set_bpm(fx_notation_audio_processor->frame_clock,
-			  new_bpm);
-
   /* delay */
+  g_rec_mutex_lock(frame_clock_mutex);
+  
+  absolute_delay = fx_notation_audio_processor->frame_clock->absolute_delay;
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
+  
   if(fx_notation_audio != NULL){
     port = NULL;
     
@@ -530,7 +519,7 @@ ags_fx_notation_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bp
       g_value_init(&value, G_TYPE_DOUBLE);
 
       g_value_set_double(&value,
-			 (gdouble) fx_notation_audio_processor->frame_clock->absolute_delay);
+			 (gdouble) absolute_delay);
 
       ags_port_safe_write(port, &value);
 
@@ -561,6 +550,9 @@ ags_fx_notation_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bp
     }
   }
   
+  ags_frame_clock_set_bpm(fx_notation_audio_processor->frame_clock,
+			  new_bpm);
+
   if(fx_notation_audio != NULL){
     g_object_unref(fx_notation_audio);
   }
@@ -583,7 +575,7 @@ ags_fx_notation_audio_processor_run_init_pre(AgsRecall *recall)
 
   GObject *output_soundcard;
 
-  gdouble absolute_delay;
+  long double absolute_delay;
   gdouble delay_counter;
   
   GRecMutex *fx_notation_audio_processor_mutex;
@@ -599,14 +591,10 @@ ags_fx_notation_audio_processor_run_init_pre(AgsRecall *recall)
 	       NULL);
   
   /* counter */
-  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
+  ags_frame_clock_set_start_note_offset(fx_notation_audio_processor->frame_clock,
+					ags_soundcard_get_start_note_offset(AGS_SOUNDCARD(output_soundcard)));
     
   ags_frame_clock_start(fx_notation_audio_processor->frame_clock);
-  
-  ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
-				  ags_soundcard_get_start_note_offset(AGS_SOUNDCARD(output_soundcard)));
- 
-  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
   if(output_soundcard != NULL){
     g_object_unref(output_soundcard);
@@ -745,8 +733,6 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
   }
   
   /* frame clock copy time */
-  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-  
   ags_frame_clock_copy_time(fx_notation_audio_processor->frame_clock,
 			    (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard)));
   
@@ -757,8 +743,6 @@ ags_fx_notation_audio_processor_run_inter(AgsRecall *recall)
     ags_frame_clock_set_note_offset(fx_notation_audio_processor->frame_clock,
 				    loop_start + ((note_offset - loop_end) % (loop_end - loop_start)));
   }
-  
-  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
 #if AGS_DEBUG
   g_message("delay-counter[%Lf] run-inter() %lu %lu", fx_notation_audio_processor->frame_clock->delay_counter, fx_notation_audio_processor->frame_clock->note_256th_offset[0], fx_notation_audio_processor->frame_clock->note_256th_offset[fx_notation_audio_processor->frame_clock->note_256th_offset_length - 1]);
@@ -826,7 +810,7 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 
 
   guint buffer_size;
-  gdouble absolute_delay;
+  long double absolute_delay;
   gdouble delay;
   guint64 offset_counter;
   guint input_pads;
@@ -849,9 +833,13 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
   GValue value = {0,};
 
   GRecMutex *fx_notation_audio_processor_mutex;
+  GRecMutex *frame_clock_mutex;
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(fx_notation_audio_processor->frame_clock);
+  
   audio = NULL;
 
   start_input = NULL;
@@ -877,16 +865,16 @@ ags_fx_notation_audio_processor_real_key_on(AgsFxNotationAudioProcessor *fx_nota
 	       "recycling-context", &recycling_context,
 	       NULL);
 
-  g_rec_mutex_lock(fx_notation_audio_processor_mutex);
-    
   offset_counter = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
-
-  g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   
   /* get delay */
-  absolute_delay = (gdouble) fx_notation_audio_processor->frame_clock->absolute_delay;
+  g_rec_mutex_lock(frame_clock_mutex);
+  
+  absolute_delay = fx_notation_audio_processor->frame_clock->absolute_delay;
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
   
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
   
@@ -2883,7 +2871,8 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 
   GList *start_feed_note, *feed_note;
   GList *start_feeding_note, *feeding_note;
-  
+
+  long double absolute_delay;
   gdouble delay;
   gdouble note_256th_delay;
   guint64 offset_counter;
@@ -2891,9 +2880,13 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
   GValue value = {0,};
   
   GRecMutex *fx_notation_audio_processor_mutex;
+  GRecMutex *frame_clock_mutex;
 
   fx_notation_audio_processor_mutex = AGS_RECALL_GET_OBJ_MUTEX(fx_notation_audio_processor);
 
+  /* get frame clock mutex */
+  frame_clock_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(fx_notation_audio_processor->frame_clock);
+  
   audio = NULL;
 
   fx_notation_audio = NULL;
@@ -2903,14 +2896,20 @@ ags_fx_notation_audio_processor_real_feed(AgsFxNotationAudioProcessor *fx_notati
 	       "recall-audio", &fx_notation_audio,
 	       NULL);
 
+  g_rec_mutex_lock(frame_clock_mutex);
+  
+  absolute_delay = fx_notation_audio_processor->frame_clock->absolute_delay;
+  
+  g_rec_mutex_unlock(frame_clock_mutex);
+  
   g_rec_mutex_lock(fx_notation_audio_processor_mutex);
 
   offset_counter = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
 
-  note_256th_delay = (gdouble) fx_notation_audio_processor->frame_clock->absolute_delay / 16.0;
-  
   g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
 
+  note_256th_delay = (gdouble) (absolute_delay / 16.0);
+  
   /* get delay */
   delay = AGS_SOUNDCARD_DEFAULT_DELAY;
   

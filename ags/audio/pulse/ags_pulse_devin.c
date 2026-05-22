@@ -1719,11 +1719,11 @@ ags_pulse_devin_port_init(AgsSoundcard *soundcard,
   pulse_devin->flags |= (AGS_PULSE_DEVIN_INITIALIZED |
 			 AGS_PULSE_DEVIN_START_RECORD |
 			 AGS_PULSE_DEVIN_RECORD);
+
+  ags_frame_clock_set_start_note_offset(pulse_devin->frame_clock,
+					pulse_devin->start_note_offset);
   
   ags_frame_clock_start(pulse_devin->frame_clock);
-
-  ags_frame_clock_set_note_offset(pulse_devin->frame_clock,
-				  pulse_devin->start_note_offset);
 
   ags_atomic_int_and(&(pulse_devin->sync_flags),
 		   (~(AGS_PULSE_DEVIN_PASS_THROUGH)));

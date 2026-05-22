@@ -1766,10 +1766,10 @@ ags_gstreamer_devout_port_init(AgsSoundcard *soundcard,
 			      AGS_GSTREAMER_DEVOUT_START_PLAY |
 			      AGS_GSTREAMER_DEVOUT_PLAY);
 
-  ags_frame_clock_start(gstreamer_devout->frame_clock);
+  ags_frame_clock_set_start_note_offset(gstreamer_devout->frame_clock,
+					gstreamer_devout->start_note_offset);
 
-  ags_frame_clock_set_note_offset(gstreamer_devout->frame_clock,
-				  gstreamer_devout->start_note_offset);
+  ags_frame_clock_start(gstreamer_devout->frame_clock);
   
   ags_atomic_int_and(&(gstreamer_devout->sync_flags),
 		     (~(AGS_GSTREAMER_DEVOUT_PASS_THROUGH)));

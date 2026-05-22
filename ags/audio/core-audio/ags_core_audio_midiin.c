@@ -1423,10 +1423,10 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
 			       AGS_CORE_AUDIO_MIDIIN_START_RECORD |
 			       AGS_CORE_AUDIO_MIDIIN_RECORD);
 
-  ags_frame_clock_start(core_audio_midiin->frame_clock);
+  ags_frame_clock_set_start_note_offset(core_audio_midiin->frame_clock,
+					core_audio_midiin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(core_audio_midiin->frame_clock,
-				  core_audio_midiin->start_note_offset);
+  ags_frame_clock_start(core_audio_midiin->frame_clock);
     
   ags_atomic_int_and(&(core_audio_midiin->sync_flags),
 		     (~(AGS_CORE_AUDIO_MIDIIN_PASS_THROUGH)));

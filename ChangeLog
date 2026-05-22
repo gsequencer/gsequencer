@@ -1,3 +1,17 @@
+ags (9.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_frame_clock_copy_time() to be thread-safe
+	* increased frame clock period by modifying AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH
+	* minor improvements
+
+ags (9.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed set start note offset of frame clock
+	* fixed set note offset of frame clock
+	* refactored ags-fx-vst3 make use of frame clock
+
 ags (9.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

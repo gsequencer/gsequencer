@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -169,6 +169,7 @@ ags_fx_vst3_audio_signal_real_run_inter(AgsRecall *recall)
   AgsFxVst3ChannelProcessor *fx_vst3_channel_processor;
   AgsFxVst3Recycling *fx_vst3_recycling;
   AgsVst3Plugin *vst3_plugin;
+
   GObject *output_soundcard;
   
   guint sound_scope;
@@ -401,6 +402,9 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   AgsFxVst3Recycling *fx_vst3_recycling;
   AgsFxVst3AudioSignal *fx_vst3_audio_signal;
   AgsVst3Plugin *vst3_plugin;
+
+  AgsFrameClock *frame_clock;
+  
   GObject *output_soundcard;
   
   gboolean is_live_instrument;
@@ -420,6 +424,8 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
   audio = NULL;
 
   output_soundcard = NULL;
+
+  frame_clock = NULL;
   
   fx_vst3_audio = NULL;
   fx_vst3_audio_processor = NULL;
@@ -453,10 +459,12 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  
   g_object_get(fx_vst3_audio_processor,
 	       "audio-channel", &audio_channel,
 	       NULL);
-
+  
   format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   
@@ -505,8 +513,8 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
     AgsVstEvent *note_on;
     AgsVstEvent *note_off;
 
-    guint loop_left, loop_right;
-    guint note_offset;
+    guint64 loop_left, loop_right;
+    guint64 note_offset;
     guint project_time_samples;
     gdouble bpm;
     guint i;
@@ -515,13 +523,12 @@ ags_fx_vst3_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio
     note_on = NULL;
     note_off = NULL;
     
-    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    note_offset = ags_frame_clock_get_note_offset(frame_clock);
 
-    ags_soundcard_get_loop(AGS_SOUNDCARD(output_soundcard),
-			   &loop_left, &loop_right,
-			   &do_loop);
+    do_loop = ags_frame_clock_get_loop(frame_clock,
+				       &loop_left, &loop_right);
 
-    bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+    bpm = ags_frame_clock_get_bpm(frame_clock);
       
     project_time_samples = ags_soundcard_util_calc_time_samples(output_soundcard);
 
