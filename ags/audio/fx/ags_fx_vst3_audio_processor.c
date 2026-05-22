@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -166,17 +166,19 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 
   AgsFxVst3AudioScopeData *scope_data;
 
+  AgsFrameClock *frame_clock;
+
   GObject *output_soundcard;
 
   guint audio_channel;
-  guint note_offset;
+  guint64 note_offset;
   gdouble delay;
-  guint delay_counter;
+  gdouble delay_counter;
   guint samplerate;
   guint buffer_size;
   guint project_time_samples;
   gdouble bpm;
-  guint loop_left, loop_right;
+  guint64 loop_left, loop_right;
   guint sound_scope;
   guint j, k;
   guint nth;
@@ -196,6 +198,8 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 	       "recall-audio", &fx_vst3_audio,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
+
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
 
   sound_scope = ags_recall_get_sound_scope(recall);
 
@@ -234,10 +238,10 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
   
   g_rec_mutex_unlock(fx_vst3_audio_processor_mutex);
 
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  note_offset = ags_frame_clock_get_note_offset(frame_clock);
 
-  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
-  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  delay = (gdouble) frame_clock->absolute_delay;
+  delay_counter = (gdouble) frame_clock->delay_counter;
 
   buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   samplerate =  AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
@@ -248,11 +252,10 @@ ags_fx_vst3_audio_processor_run_inter(AgsRecall *recall)
 			    &buffer_size,
 			    NULL);
 
-  ags_soundcard_get_loop(AGS_SOUNDCARD(output_soundcard),
-			 &loop_left, &loop_right,
-			 &do_loop);
+  do_loop = ags_frame_clock_get_loop(frame_clock,
+				     &loop_left, &loop_right);
 
-  bpm = ags_soundcard_get_bpm(AGS_SOUNDCARD(output_soundcard));
+  bpm = ags_frame_clock_get_bpm(frame_clock);
       
   project_time_samples = ags_soundcard_util_calc_time_samples(output_soundcard);
 
