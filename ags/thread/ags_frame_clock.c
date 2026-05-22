@@ -1146,42 +1146,121 @@ void
 ags_frame_clock_copy_time(AgsFrameClock *destination,
 			  AgsFrameClock *source)
 {
+  long double delay_counter;
+
+  guint64 absolute_frame_offset;
+  
+  guint64 frame_offset;
+
+  guint64 period_frame_offset;
+
+  gboolean has_16th_pulse;
+
+  guint64 start_note_offset;
+  
+  guint64 absolute_note_offset;
+  
+  guint64 note_offset;
+
+  guint64 note_frame_offset;
+  
+  gboolean has_256th_pulse;
+  
+  guint64 absolute_note_256th_offset[16] = {0,};
+  guint absolute_note_256th_offset_length;
+
+  guint64 note_256th_offset[16] = {0,};
+  guint note_256th_offset_length;
+
+  guint64 note_256th_frame_offset[16] = {0,};
+  guint note_256th_frame_offset_length;
+  
+  GRecMutex *destination_mutex;
+  GRecMutex *source_mutex;
+  
   if(!AGS_IS_FRAME_CLOCK(destination) ||
      !AGS_IS_FRAME_CLOCK(source)){
     return;
   }
   
-  destination->delay_counter = source->delay_counter;
-  
-  destination->absolute_frame_offset = source->absolute_frame_offset;
-  
-  destination->frame_offset = source->frame_offset;
-  
-  destination->period_frame_offset = source->period_frame_offset;
+  /* get frame clock mutex */
+  destination_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(destination);
 
-  destination->has_16th_pulse = source->has_16th_pulse;
+  source_mutex = AGS_FRAME_CLOCK_GET_OBJ_MUTEX(source);
+
+  /* copy local */
+  g_rec_mutex_lock(source_mutex);
   
-  destination->start_note_offset = source->start_note_offset;
+  delay_counter = source->delay_counter;
   
-  destination->absolute_note_offset = source->absolute_note_offset;
+  absolute_frame_offset = source->absolute_frame_offset;
   
-  destination->note_offset = source->note_offset;
+  frame_offset = source->frame_offset;
   
-  destination->note_frame_offset = source->note_frame_offset;
+  period_frame_offset = source->period_frame_offset;
+
+  has_16th_pulse = source->has_16th_pulse;
   
-  destination->has_256th_pulse = source->has_256th_pulse;
+  start_note_offset = source->start_note_offset;
   
-  memcpy(&(destination->absolute_note_256th_offset[0]), &(source->absolute_note_256th_offset[0]), 16 * sizeof(guint64));
+  absolute_note_offset = source->absolute_note_offset;
   
-  destination->absolute_note_256th_offset_length = source->absolute_note_256th_offset_length;
+  note_offset = source->note_offset;
   
-  memcpy(&(destination->note_256th_offset[0]), &(source->note_256th_offset[0]), 16 * sizeof(guint64));
+  note_frame_offset = source->note_frame_offset;
   
-  destination->note_256th_offset_length = source->note_256th_offset_length;
+  has_256th_pulse = source->has_256th_pulse;
   
-  memcpy(&(destination->note_256th_frame_offset[0]), &(source->note_256th_frame_offset[0]), 16 * sizeof(guint64));
+  memcpy(&(absolute_note_256th_offset[0]), &(source->absolute_note_256th_offset[0]), 16 * sizeof(guint64));
   
-  destination->note_256th_frame_offset_length = source->note_256th_frame_offset_length;  
+  absolute_note_256th_offset_length = source->absolute_note_256th_offset_length;
+  
+  memcpy(&(note_256th_offset[0]), &(source->note_256th_offset[0]), 16 * sizeof(guint64));
+  
+  note_256th_offset_length = source->note_256th_offset_length;
+  
+  memcpy(&(note_256th_frame_offset[0]), &(source->note_256th_frame_offset[0]), 16 * sizeof(guint64));
+  
+  note_256th_frame_offset_length = source->note_256th_frame_offset_length;
+  
+  g_rec_mutex_unlock(source_mutex);
+  
+  /* copy destination */
+  g_rec_mutex_lock(destination_mutex);
+  
+  destination->delay_counter = delay_counter;
+  
+  destination->absolute_frame_offset = absolute_frame_offset;
+  
+  destination->frame_offset = frame_offset;
+  
+  destination->period_frame_offset = period_frame_offset;
+
+  destination->has_16th_pulse = has_16th_pulse;
+  
+  destination->start_note_offset = start_note_offset;
+  
+  destination->absolute_note_offset = absolute_note_offset;
+  
+  destination->note_offset = note_offset;
+  
+  destination->note_frame_offset = note_frame_offset;
+  
+  destination->has_256th_pulse = has_256th_pulse;
+  
+  memcpy(&(destination->absolute_note_256th_offset[0]), &(absolute_note_256th_offset[0]), 16 * sizeof(guint64));
+  
+  destination->absolute_note_256th_offset_length = absolute_note_256th_offset_length;
+  
+  memcpy(&(destination->note_256th_offset[0]), &(note_256th_offset[0]), 16 * sizeof(guint64));
+  
+  destination->note_256th_offset_length = note_256th_offset_length;
+  
+  memcpy(&(destination->note_256th_frame_offset[0]), &(note_256th_frame_offset[0]), 16 * sizeof(guint64));
+  
+  destination->note_256th_frame_offset_length = note_256th_frame_offset_length;  
+
+  g_rec_mutex_unlock(destination_mutex);
 }
 
 /**
