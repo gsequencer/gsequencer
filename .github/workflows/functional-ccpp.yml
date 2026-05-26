@@ -1,4 +1,6 @@
 name: functional C/C++ CI
+permissions:
+  contents: read
 
 on: [push]
 

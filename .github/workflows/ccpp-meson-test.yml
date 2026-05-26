@@ -1,4 +1,6 @@
 name: C/C++ meson test CI
+permissions:
+  contents: read
 
 on: [push]
 
