@@ -571,6 +571,10 @@ ags_frame_clock_set_bpm(AgsFrameClock *frame_clock,
   frame_clock->absolute_delay = (60.0 * frame_clock->samplerate) / (4.0 * frame_clock->bpm) / frame_clock->buffer_size;
 
   frame_clock->fixed_absolute_delay = ((ceil((AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size) / frame_clock->buffer_size) * frame_clock->buffer_size) / (AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size)) * frame_clock->absolute_delay;
+
+  if(frame_clock->delay_counter >= frame_clock->absolute_delay){
+    frame_clock->delay_counter = 0.0;
+  }
   
   ags_frame_clock_counter_reset(frame_clock);
   

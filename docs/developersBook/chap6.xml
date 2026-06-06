@@ -113,7 +113,7 @@
       AgsRecycling associated with the appropriate AgsChannel.
     </para>
 
-    <imagedata width="100%" scalefit="1" fileref="../images/AGS_linking.png" format="PNG" />
+    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../images/AGS_linking.png" format="PNG" />
     <table>
       <title>AGS network layer table</title>
       <tgroup cols="2" align="left" colsep='1' rowsep='1'>

@@ -57,7 +57,7 @@
     <title>Notation editor</title>
     <mediaobject>
       <imageobject>
-	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_notation_edit.png" format="PNG" />
+	<imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_notation_edit.png" format="PNG" />
       </imageobject>
       <caption>
 	<para>
@@ -89,7 +89,7 @@
       <title>Toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../&images;/ags-toolbar.png" format="PNG" />
+	  <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags-toolbar.png" format="PNG" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -191,7 +191,7 @@
 	<title>Position cursor</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_position_notation_cursor_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_position_notation_cursor_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -236,7 +236,7 @@
 	<title>Move notes</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_move_notes_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_move_notes_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -295,7 +295,7 @@
 	<title>Crop notes</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_crop_notes_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_crop_notes_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -362,7 +362,7 @@
 	<title>Select notes</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_select_notes_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_select_notes_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -843,7 +843,7 @@
     <title>Automation editor</title>
     <mediaobject>
       <imageobject>
-	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_automation_edit.png" format="PNG" />
+	<imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_automation_edit.png" format="PNG" />
       </imageobject>
       <caption>
 	<para>
@@ -875,7 +875,7 @@
       <title>Toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../&images;/ags-toolbar.png" format="PNG" />
+	  <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags-toolbar.png" format="PNG" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -969,7 +969,7 @@
 	<title>Position cursor</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_position_automation_cursor_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_position_automation_cursor_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1008,7 +1008,7 @@
 	<title>Select accelerations</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_select_accelerations_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_select_accelerations_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1066,7 +1066,7 @@
 	<title>Ramp accelerations</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_ramp_accelerations_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_ramp_accelerations_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1195,7 +1195,7 @@
     <title>Wave editor</title>
     <mediaobject>
       <imageobject>
-	<imagedata width="100%" scalefit="1" fileref="../&images;/ags_wave_edit.png" format="PNG" />
+	<imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_wave_edit.png" format="PNG" />
       </imageobject>
       <caption>
 	<para>
@@ -1231,7 +1231,7 @@
       <title>Wave toolbar</title>
       <mediaobject>
 	<imageobject>
-	  <imagedata width="100%" scalefit="1" fileref="../&images;/ags-wave-toolbar.png" format="PNG" />
+	  <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags-wave-toolbar.png" format="PNG" />
 	</imageobject>
 	<caption>
 	  <para>
@@ -1310,7 +1310,7 @@
 	<title>Position cursor</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_position_wave_cursor_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_position_wave_cursor_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1349,7 +1349,7 @@
 	<title>Select buffers</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_select_buffers_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_select_buffers_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
@@ -1400,7 +1400,7 @@
 	<title>Time-stretch buffers</title>
 	<mediaobject>
 	  <imageobject>
-	    <imagedata width="100%" scalefit="1" fileref="../&images;/ags_time_stretch_buffers_dialog.png" format="PNG" />
+	    <imagedata width="100%" scalefit="1" contentdepth="100%"  fileref="../&images;/ags_time_stretch_buffers_dialog.png" format="PNG" />
 	  </imageobject>
 	  <caption>
 	    <para>
