@@ -241,6 +241,8 @@ ags_frame_clock_counter_reset(AgsFrameClock *frame_clock)
   
   frame_clock->period_frame_offset = frame_clock->frame_offset % ((guint64) AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->buffer_size);
 
+  frame_clock->note_frame_offset = (guint64) floorl((long double) frame_clock->note_offset * (frame_clock->fixed_absolute_delay * (long double) frame_clock->buffer_size));
+  
   /* absolute note 256th offset */
   memset(&(frame_clock->note_256th_offset[0]), 0, 16 * sizeof(guint64));
 
@@ -429,7 +431,11 @@ ags_frame_clock_set_buffer_size(AgsFrameClock *frame_clock,
   frame_clock->absolute_delay = (60.0 * frame_clock->samplerate) / (4.0 * frame_clock->bpm) / frame_clock->buffer_size;
   
   frame_clock->fixed_absolute_delay = ((ceil((AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size) / frame_clock->buffer_size) * frame_clock->buffer_size) / (AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size)) * frame_clock->absolute_delay;
-  
+
+  if(frame_clock->delay_counter >= frame_clock->absolute_delay){
+    frame_clock->delay_counter = floorl(frame_clock->absolute_delay);
+  }
+    
   ags_frame_clock_counter_reset(frame_clock);
   
   g_rec_mutex_unlock(frame_clock_mutex);
@@ -500,6 +506,10 @@ ags_frame_clock_set_samplerate(AgsFrameClock *frame_clock,
 
   frame_clock->fixed_absolute_delay = ((ceil((AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size) / frame_clock->buffer_size) * frame_clock->buffer_size) / (AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size)) * frame_clock->absolute_delay;
 
+  if(frame_clock->delay_counter >= frame_clock->absolute_delay){
+    frame_clock->delay_counter = floorl(frame_clock->absolute_delay);
+  }
+  
   ags_frame_clock_counter_reset(frame_clock);
   
   g_rec_mutex_unlock(frame_clock_mutex);
@@ -571,6 +581,10 @@ ags_frame_clock_set_bpm(AgsFrameClock *frame_clock,
   frame_clock->absolute_delay = (60.0 * frame_clock->samplerate) / (4.0 * frame_clock->bpm) / frame_clock->buffer_size;
 
   frame_clock->fixed_absolute_delay = ((ceil((AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size) / frame_clock->buffer_size) * frame_clock->buffer_size) / (AGS_FRAME_CLOCK_DEFAULT_PERIOD * frame_clock->absolute_delay * frame_clock->buffer_size)) * frame_clock->absolute_delay;
+
+  if(frame_clock->delay_counter >= frame_clock->absolute_delay){
+    frame_clock->delay_counter = floorl(frame_clock->absolute_delay);
+  }
   
   ags_frame_clock_counter_reset(frame_clock);
   
