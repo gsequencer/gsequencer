@@ -2016,10 +2016,10 @@ ags_oss_devout_device_play_init(AgsSoundcard *soundcard,
   oss_devout->flags |= AGS_OSS_DEVOUT_INITIALIZED;
 #endif
 
-  ags_frame_clock_start(oss_devout->frame_clock);
+  ags_frame_clock_set_start_note_offset(oss_devout->frame_clock,
+					oss_devout->start_note_offset);
 
-  ags_frame_clock_set_note_offset(oss_devout->frame_clock,
-				  oss_devout->start_note_offset);
+  ags_frame_clock_start(oss_devout->frame_clock);
 
   oss_devout->app_buffer_mode = AGS_OSS_DEVOUT_APP_BUFFER_0;
 

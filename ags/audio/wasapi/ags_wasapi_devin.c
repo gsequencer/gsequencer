@@ -1588,11 +1588,11 @@ ags_wasapi_devin_client_init(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   wasapi_devin->flags |= AGS_WASAPI_DEVIN_INITIALIZED;
 #endif
+
+  ags_frame_clock_set_start_note_offset(wasapi_devin->frame_clock,
+					wasapi_devin->start_note_offset);
   
   ags_frame_clock_start(wasapi_devin->frame_clock);
-
-  ags_frame_clock_set_note_offset(wasapi_devin->frame_clock,
-				  wasapi_devin->start_note_offset);
   
   wasapi_devin->app_buffer_mode = AGS_WASAPI_DEVIN_APP_BUFFER_7;
   wasapi_devin->flags |= (AGS_WASAPI_DEVIN_START_RECORD |

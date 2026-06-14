@@ -1374,10 +1374,10 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
 			 AGS_JACK_MIDIIN_START_RECORD |
 			 AGS_JACK_MIDIIN_RECORD);
 
-  ags_frame_clock_start(jack_midiin->frame_clock);
+  ags_frame_clock_set_start_note_offset(jack_midiin->frame_clock,
+					jack_midiin->start_note_offset);
 
-  ags_frame_clock_set_note_offset(jack_midiin->frame_clock,
-				  jack_midiin->start_note_offset);
+  ags_frame_clock_start(jack_midiin->frame_clock);
   
   ags_atomic_int_and(&(jack_midiin->sync_flags),
 		   (~(AGS_JACK_MIDIIN_PASS_THROUGH)));

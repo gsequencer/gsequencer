@@ -1766,10 +1766,10 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 			 AGS_JACK_DEVOUT_START_PLAY |
 			 AGS_JACK_DEVOUT_PLAY);
 
-  ags_frame_clock_start(jack_devout->frame_clock);
+  ags_frame_clock_set_start_note_offset(jack_devout->frame_clock,
+					jack_devout->start_note_offset);
 
-  ags_frame_clock_set_note_offset(jack_devout->frame_clock,
-				  jack_devout->start_note_offset);
+  ags_frame_clock_start(jack_devout->frame_clock);
   
   ags_atomic_int_and(&(jack_devout->sync_flags),
 		   (~(AGS_JACK_DEVOUT_PASS_THROUGH)));

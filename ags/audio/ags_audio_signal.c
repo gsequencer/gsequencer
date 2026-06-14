@@ -3606,6 +3606,10 @@ ags_audio_signal_add_stream(AgsAudioSignal *audio_signal)
 
     stream->prev = end_old;
     end_old->next = stream;
+    
+    if(audio_signal->stream_current == NULL){
+      audio_signal->stream_current = stream;
+    }
   }else{
     audio_signal->stream = stream;
     audio_signal->stream_current = stream;

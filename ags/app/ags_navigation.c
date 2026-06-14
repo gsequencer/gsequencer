@@ -707,13 +707,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   new_offset = (16 * tact_counter);
   
-  seek_soundcard = ags_seek_soundcard_new(default_soundcard,
-					  new_offset,
-					  AGS_SEEK_SET);
-  
-  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
-				(AgsTask *) seek_soundcard);
-
   /* soundcard - start offset */
   list = 
     start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
@@ -741,6 +734,14 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   g_list_free_full(start_list,
 		   g_object_unref);
+
+  /* seek soundcard */  
+  seek_soundcard = ags_seek_soundcard_new(default_soundcard,
+					  new_offset,
+					  AGS_SEEK_SET);
+  
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) seek_soundcard);
 
   //TODO:JK: implement me
   
