@@ -1766,10 +1766,10 @@ ags_audio_unit_devout_port_init(AgsSoundcard *soundcard,
   memset(audio_unit_devout->app_buffer[7], 0, audio_unit_devout->pcm_channels * audio_unit_devout->buffer_size * word_size);
 
   /*  */
-  ags_frame_clock_start(audio_unit_devout->frame_clock);
+  ags_frame_clock_set_start_note_offset(audio_unit_devout->frame_clock,
+					audio_unit_devout->start_note_offset);
 
-  ags_frame_clock_set_note_offset(audio_unit_devout->frame_clock,
-				  audio_unit_devout->start_note_offset);
+  ags_frame_clock_start(audio_unit_devout->frame_clock);
   
   audio_unit_devout->flags |= (AGS_AUDIO_UNIT_DEVOUT_INITIALIZED |
 			       AGS_AUDIO_UNIT_DEVOUT_START_PLAY |

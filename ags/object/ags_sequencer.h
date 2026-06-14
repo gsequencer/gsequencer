@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,6 +76,16 @@ struct _AgsSequencerInterface
   void (*set_device)(AgsSequencer *sequencer,
 		     gchar *card_id);
   gchar* (*get_device)(AgsSequencer *sequencer);
+  
+  void (*set_bpm)(AgsSequencer *sequencer,
+		  gdouble bpm);
+  gdouble (*get_bpm)(AgsSequencer *sequencer);
+
+  void (*set_start_note_offset)(AgsSequencer *sequencer,
+				guint64 start_note_offset);
+  guint64 (*get_start_note_offset)(AgsSequencer *sequencer);
+
+  GObject* (*get_frame_clock)(AgsSequencer *sequencer);
 
   void (*list_cards)(AgsSequencer *sequencer,
 		     GList **card_id, GList **card_name);
@@ -98,7 +108,7 @@ struct _AgsSequencerInterface
 
   void (*tic)(AgsSequencer *sequencer);
   void (*offset_changed)(AgsSequencer *sequencer,
-			 guint note_offset);
+			 guint64 note_offset);
 
   void* (*get_buffer)(AgsSequencer *sequencer,
 		      guint *buffer_length);
@@ -109,22 +119,6 @@ struct _AgsSequencerInterface
 		      void *buffer);
   void (*unlock_buffer)(AgsSequencer *sequencer,
 			void *buffer);
-  
-  void (*set_bpm)(AgsSequencer *sequencer,
-		  gdouble bpm);
-  gdouble (*get_bpm)(AgsSequencer *sequencer);
-
-  void (*set_delay_factor)(AgsSequencer *sequencer,
-			   gdouble delay_factor);
-  gdouble (*get_delay_factor)(AgsSequencer *sequencer);
-
-  void (*set_start_note_offset)(AgsSequencer *sequencer,
-				guint start_note_offset);
-  guint (*get_start_note_offset)(AgsSequencer *sequencer);
-
-  void (*set_note_offset)(AgsSequencer *sequencer,
-			  guint note_offset);
-  guint (*get_note_offset)(AgsSequencer *sequencer);
 
   AgsSequencerMidiVersion (*get_midi_version)(AgsSequencer *sequencer);  
   void (*set_midi_version)(AgsSequencer *sequencer,
@@ -136,6 +130,16 @@ GType ags_sequencer_get_type();
 void ags_sequencer_set_device(AgsSequencer *sequencer,
 			      gchar *card_id);
 gchar* ags_sequencer_get_device(AgsSequencer *sequencer);
+
+void ags_sequencer_set_bpm(AgsSequencer *sequencer,
+			   gdouble bpm);
+gdouble ags_sequencer_get_bpm(AgsSequencer *sequencer);
+
+void ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
+					 guint64 start_note_offset);
+guint64 ags_sequencer_get_start_note_offset(AgsSequencer *sequencer);
+
+GObject* ags_sequencer_get_frame_clock(AgsSequencer *sequencer);
 
 void ags_sequencer_list_cards(AgsSequencer *sequencer,
 			      GList **card_id, GList **card_name);
@@ -158,7 +162,7 @@ void ags_sequencer_stop(AgsSequencer *sequencer);
 
 void ags_sequencer_tic(AgsSequencer *sequencer);
 void ags_sequencer_offset_changed(AgsSequencer *sequencer,
-				  guint note_offset);
+				  guint64 note_offset);
 
 void* ags_sequencer_get_buffer(AgsSequencer *sequencer,
 			       guint *buffer_length);
@@ -169,22 +173,6 @@ void ags_sequencer_lock_buffer(AgsSequencer *sequencer,
 			       void *buffer);
 void ags_sequencer_unlock_buffer(AgsSequencer *sequencer,
 				 void *buffer);
-
-void ags_sequencer_set_bpm(AgsSequencer *sequencer,
-			   gdouble bpm);
-gdouble ags_sequencer_get_bpm(AgsSequencer *sequencer);
-
-void ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
-				    gdouble delay_factor);
-gdouble ags_sequencer_get_delay_factor(AgsSequencer *sequencer);
-
-void ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
-					 guint start_note_offset);
-guint ags_sequencer_get_start_note_offset(AgsSequencer *sequencer);
-
-void ags_sequencer_set_note_offset(AgsSequencer *sequencer,
-				   guint note_offset);
-guint ags_sequencer_get_note_offset(AgsSequencer *sequencer);
 
 AgsSequencerMidiVersion ags_sequencer_get_midi_version(AgsSequencer *sequencer);  
 

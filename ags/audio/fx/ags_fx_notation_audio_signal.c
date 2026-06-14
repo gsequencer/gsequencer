@@ -164,7 +164,7 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   GList *start_note, *note;
 
   guint64 note_256th_offset[16] = {0,};
-
+  
   gboolean pattern_mode;
   gboolean note_256th_mode;
   gdouble delay_counter;
@@ -173,11 +173,12 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
   gdouble delay;
   guint length;
   guint frame_count;
+  guint template_length;
   guint template_frame_count;
   guint buffer_size;
   guint i;
-  guint note_256th_offset_length;
   guint note_offset;
+  guint note_256th_offset_length;
   guint note_256th_offset_lower;
   guint note_256th_offset_upper;
   
@@ -241,15 +242,17 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
     offset_counter = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
 
     delay_counter = (gdouble) fx_notation_audio_processor->frame_clock->delay_counter;
-
+    
     note_256th_offset_length = 0;
     
     ags_frame_clock_get_note_256th_offset(fx_notation_audio_processor->frame_clock,
 					  &(note_256th_offset[0]),
 					  &note_256th_offset_length);
-    
-    note_256th_offset_lower = note_256th_offset[0];
-    note_256th_offset_upper = note_256th_offset[note_256th_offset_length - 1];
+
+    if(note_256th_offset_length > 0){
+      note_256th_offset_lower = note_256th_offset[0];
+      note_256th_offset_upper = note_256th_offset[note_256th_offset_length - 1];
+    }
     
     g_rec_mutex_unlock(fx_notation_audio_processor_mutex);
   }
@@ -282,7 +285,8 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
   length = 0;
   frame_count = 0;
-  
+
+  template_length = 0;    
   template_frame_count = 0;  
 
   g_object_get(source,
@@ -297,23 +301,21 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 
   note_offset = 0;
 
-  if(output_soundcard != NULL){
-    AgsFrameClock *frame_clock;
-
-    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  if(fx_notation_audio_processor != NULL){
+    absolute_delay = (gdouble) fx_notation_audio_processor->frame_clock->absolute_delay;
     
-    absolute_delay = (gdouble) frame_clock->absolute_delay;
-
-    delay_counter = (gdouble) frame_clock->delay_counter;
-
-    note_offset = ags_frame_clock_get_note_offset(frame_clock);
+    delay_counter = (gdouble) fx_notation_audio_processor->frame_clock->delay_counter;
+    
+    note_offset = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
   }
-  
+
   if(template != NULL){
     g_object_get(template,
+		 "length", &template_length,
 		 "frame-count", &template_frame_count,
 		 NULL);
   }else{
+    template_length = (guint) floor(absolute_delay) + 1;
     template_frame_count = ((guint) floor(absolute_delay) + 1) * buffer_size;
   }
   
@@ -346,8 +348,11 @@ ags_fx_notation_audio_signal_real_run_inter(AgsRecall *recall)
 		 NULL);
 
     if((!note_256th_mode && note_offset >= x0) ||
-       (note_256th_mode && note_256th_offset_lower >= x0_256th)){
-      if(note_offset <= x1 + 1){
+       (note_256th_mode && note_256th_offset_lower >= x0_256th) ||
+       (pattern_mode &&
+	frame_count <= template_frame_count)){
+      if(source->stream_current == NULL ||
+	 source->stream_current->next == NULL){
 	ags_audio_signal_add_stream(source);
       }
       
@@ -474,11 +479,11 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
   GObject *output_soundcard;
   
   guint64 note_256th_offset[16] = {0,};
-
+  
+  guint note_256th_offset_length;
   gboolean note_256th_mode;
   gdouble absolute_delay;
   guint note_offset;
-  guint note_256th_offset_length;
   guint note_256th_offset_lower;
   guint note_256th_offset_upper;
 
@@ -521,26 +526,24 @@ ags_fx_notation_audio_signal_real_stream_feed(AgsFxNotationAudioSignal *fx_notat
 
   note_256th_offset_lower = 0;
   note_256th_offset_upper = 16;
-
-  if(output_soundcard != NULL){
-    AgsFrameClock *frame_clock;
-
-    frame_clock = ags_soundcard_get_frame_clock(AGS_SOUNDCARD(output_soundcard));
+  
+  if(fx_notation_audio_processor != NULL){
+    absolute_delay = (gdouble) fx_notation_audio_processor->frame_clock->absolute_delay;
     
-    absolute_delay = (gdouble) frame_clock->absolute_delay;
-
-    delay_counter = (gdouble) frame_clock->delay_counter;
-
-    note_offset = ags_frame_clock_get_note_offset(frame_clock);
+    delay_counter = (gdouble) fx_notation_audio_processor->frame_clock->delay_counter;
+    
+    note_offset = ags_frame_clock_get_note_offset(fx_notation_audio_processor->frame_clock);
 
     note_256th_offset_length = 0;
     
-    ags_frame_clock_get_note_256th_offset(frame_clock,
+    ags_frame_clock_get_note_256th_offset(fx_notation_audio_processor->frame_clock,
 					  &(note_256th_offset[0]),
 					  &note_256th_offset_length);
-    
-    note_256th_offset_lower = note_256th_offset[0];
-    note_256th_offset_upper = note_256th_offset[0] + note_256th_offset_length;
+
+    if(note_256th_offset_length > 0){
+      note_256th_offset_lower = note_256th_offset[0];
+      note_256th_offset_upper = note_256th_offset[note_256th_offset_length - 1];
+    }
   }
 
   if(!note_256th_mode){

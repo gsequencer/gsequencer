@@ -7,11 +7,11 @@
 # without any warranty.
 # Process this file with autoconf to produce a configure script.
 
-LT_CURRENT=8
-LT_REVISION=4
-LT_AGE=2
+LT_CURRENT=9
+LT_REVISION=0
+LT_AGE=6
 
-m4_define([ags_version], [8.4.2])
+m4_define([ags_version], [9.0.6])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])

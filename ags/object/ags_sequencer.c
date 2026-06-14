@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,6 +18,8 @@
  */
 
 #include <ags/object/ags_sequencer.h>
+
+#include <ags/object/ags_marshal.h>
 
 void ags_sequencer_class_init(AgsSequencerInterface *ginterface);
 
@@ -92,9 +94,9 @@ ags_sequencer_class_init(AgsSequencerInterface *ginterface)
 	       G_SIGNAL_RUN_LAST,
 	       G_STRUCT_OFFSET(AgsSequencerInterface, offset_changed),
 	       NULL, NULL,
-	       g_cclosure_marshal_VOID__UINT,
+	       ags_cclosure_marshal_VOID__UINT64,
 	       G_TYPE_NONE, 1,
-	       G_TYPE_UINT);
+	       G_TYPE_UINT64);
 }
 
 /**
@@ -139,6 +141,116 @@ ags_sequencer_get_device(AgsSequencer *sequencer)
   g_return_val_if_fail(sequencer_interface->get_device, NULL);
 
   return(sequencer_interface->get_device(sequencer));
+}
+
+/**
+ * ags_sequencer_set_bpm:
+ * @sequencer: the #AgsSequencer
+ * @bpm: the bpm to set
+ *
+ * Set current playback bpm. 
+ *
+ * Since: 3.0.0
+ */
+void
+ags_sequencer_set_bpm(AgsSequencer *sequencer,
+		      gdouble bpm)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_if_fail(sequencer_interface->set_bpm);
+  sequencer_interface->set_bpm(sequencer,
+			       bpm);
+}
+
+/**
+ * ags_sequencer_get_bpm:
+ * @sequencer: the #AgsSequencer
+ *
+ * Get current playback bpm. 
+ *
+ * Returns: bpm
+ *
+ * Since: 3.0.0
+ */
+gdouble
+ags_sequencer_get_bpm(AgsSequencer *sequencer)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_val_if_fail(sequencer_interface->get_bpm, G_MAXUINT);
+
+  return(sequencer_interface->get_bpm(sequencer));
+}
+
+/**
+ * ags_sequencer_get_start_note_offset:
+ * @sequencer: the #AgsSequencer
+ *
+ * Get start playback note offset. 
+ *
+ * Returns: the start note offset
+ *
+ * Since: 3.0.0
+ */
+guint64
+ags_sequencer_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_val_if_fail(sequencer_interface->get_start_note_offset, G_MAXUINT);
+
+  return(sequencer_interface->get_start_note_offset(sequencer));
+}
+
+/**
+ * ags_sequencer_set_start_note_offset:
+ * @sequencer: the #AgsSequencer
+ * @start_note_offset: the start note offset to set
+ *
+ * Set start playback note offset. 
+ *
+ * Since: 3.0.0
+ */
+void
+ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
+				    guint64 start_note_offset)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_if_fail(sequencer_interface->set_start_note_offset);
+  sequencer_interface->set_start_note_offset(sequencer,
+					     start_note_offset);
+}
+
+/**
+ * ags_sequencer_get_frame_clock:
+ * @sequencer: the #AgsSequencer
+ *
+ * Get the frame clock.
+ *
+ * Returns: the #AgsFrameClock
+ *
+ * Since: 9.0.0
+ */
+GObject*
+ags_sequencer_get_frame_clock(AgsSequencer *sequencer)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), NULL);
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_val_if_fail(sequencer_interface->get_frame_clock, NULL);
+
+  return(sequencer_interface->get_frame_clock(sequencer));
 }
 
 /**
@@ -366,7 +478,7 @@ ags_sequencer_tic(AgsSequencer *sequencer)
  */
 void
 ags_sequencer_offset_changed(AgsSequencer *sequencer,
-			     guint note_offset)
+			     guint64 note_offset)
 {
   AgsSequencerInterface *sequencer_interface;
 
@@ -471,182 +583,6 @@ ags_sequencer_unlock_buffer(AgsSequencer *sequencer,
 
   sequencer_interface->unlock_buffer(sequencer,
 				     buffer);
-}
-
-/**
- * ags_sequencer_set_bpm:
- * @sequencer: the #AgsSequencer
- * @bpm: the bpm to set
- *
- * Set current playback bpm. 
- *
- * Since: 3.0.0
- */
-void
-ags_sequencer_set_bpm(AgsSequencer *sequencer,
-		      gdouble bpm)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->set_bpm);
-  sequencer_interface->set_bpm(sequencer,
-			       bpm);
-}
-
-/**
- * ags_sequencer_get_bpm:
- * @sequencer: the #AgsSequencer
- *
- * Get current playback bpm. 
- *
- * Returns: bpm
- *
- * Since: 3.0.0
- */
-gdouble
-ags_sequencer_get_bpm(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_bpm, G_MAXUINT);
-
-  return(sequencer_interface->get_bpm(sequencer));
-}
-
-/**
- * ags_sequencer_set_delay_factor:
- * @sequencer: the #AgsSequencer
- * @delay_factor: the delay factor to set
- *
- * Set current playback delay factor. 
- *
- * Since: 3.0.0
- */
-void
-ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
-			       gdouble delay_factor)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->set_delay_factor);
-  sequencer_interface->set_delay_factor(sequencer,
-					delay_factor);
-}
-
-/**
- * ags_sequencer_get_delay_factor:
- * @sequencer: the #AgsSequencer
- *
- * Get current playback delay factor. 
- *
- * Returns: delay factor
- *
- * Since: 3.0.0
- */
-gdouble
-ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_delay_factor, G_MAXUINT);
-
-  return(sequencer_interface->get_delay_factor(sequencer));
-}
-
-/**
- * ags_sequencer_get_start_note_offset:
- * @sequencer: the #AgsSequencer
- *
- * Get start playback note offset. 
- *
- * Returns: the start note offset
- *
- * Since: 3.0.0
- */
-guint
-ags_sequencer_get_start_note_offset(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_start_note_offset, G_MAXUINT);
-
-  return(sequencer_interface->get_start_note_offset(sequencer));
-}
-
-/**
- * ags_sequencer_set_start_note_offset:
- * @sequencer: the #AgsSequencer
- * @start_note_offset: the start note offset to set
- *
- * Set start playback note offset. 
- *
- * Since: 3.0.0
- */
-void
-ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
-				    guint start_note_offset)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->set_start_note_offset);
-  sequencer_interface->set_start_note_offset(sequencer,
-					     start_note_offset);
-}
-
-/**
- * ags_sequencer_get_note_offset:
- * @sequencer: the #AgsSequencer
- *
- * Get current playback note offset. 
- *
- * Returns: offset
- *
- * Since: 3.0.0
- */
-guint
-ags_sequencer_get_note_offset(AgsSequencer *sequencer)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_val_if_fail(sequencer_interface->get_note_offset, G_MAXUINT);
-
-  return(sequencer_interface->get_note_offset(sequencer));
-}
-
-/**
- * ags_sequencer_set_note_offset:
- * @sequencer: the #AgsSequencer
- * @note_offset: the note offset to set
- *
- * Set current playback note offset. 
- *
- * Since: 3.0.0
- */
-void
-ags_sequencer_set_note_offset(AgsSequencer *sequencer,
-			      guint note_offset)
-{
-  AgsSequencerInterface *sequencer_interface;
-
-  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
-  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
-  g_return_if_fail(sequencer_interface->set_note_offset);
-  sequencer_interface->set_note_offset(sequencer,
-				       note_offset);
 }
 
 /**

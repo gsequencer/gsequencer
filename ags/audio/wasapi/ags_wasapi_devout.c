@@ -1621,11 +1621,11 @@ ags_wasapi_devout_client_init(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_WASAPI
   wasapi_devout->flags |= AGS_WASAPI_DEVOUT_INITIALIZED;
 #endif
+
+  ags_frame_clock_set_start_note_offset(wasapi_devout->frame_clock,
+					wasapi_devout->start_note_offset);
   
   ags_frame_clock_start(wasapi_devout->frame_clock);
-
-  ags_frame_clock_set_note_offset(wasapi_devout->frame_clock,
-				  wasapi_devout->start_note_offset);
   
   wasapi_devout->app_buffer_mode = AGS_WASAPI_DEVOUT_APP_BUFFER_7;
   wasapi_devout->flags |= (AGS_WASAPI_DEVOUT_START_PLAY |

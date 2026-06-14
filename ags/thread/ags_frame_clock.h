@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 #define AGS_FRAME_CLOCK_GET_OBJ_MUTEX(obj) (&(((AgsFrameClock *) obj)->obj_mutex))
 
 #define AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH (2048.0)
-#define AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH (4.0)
+#define AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH (8192.0)
 #define AGS_FRAME_CLOCK_DEFAULT_PERIOD (AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH * AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH)
 #define AGS_FRAME_CLOCK_DEFAULT_PERIOD_256TH (16.0 * AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LIST_LENGTH * AGS_FRAME_CLOCK_DEFAULT_SYNC_POINT_ARRAY_LENGTH)
 
@@ -174,6 +174,10 @@ void ags_frame_clock_get_note_256th_offset(AgsFrameClock *frame_clock,
 void ags_frame_clock_get_note_256th_frame_offset(AgsFrameClock *frame_clock,
 						 guint64 *note_256th_frame_offset,
 						 guint *length);
+
+/* copy time */
+void ags_frame_clock_copy_time(AgsFrameClock *destination,
+			       AgsFrameClock *source);
 
 /*  */
 void ags_frame_clock_start(AgsFrameClock *frame_clock);

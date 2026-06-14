@@ -235,14 +235,14 @@ main(int argc, char **argv)
 			     sizeof(output_samplerate),
 			     &output_samplerate);
 
-  output_buffer_size_bytes = pcm_channels * buffer_size * sizeof(float);
+  output_buffer_size_bytes = (int) pcm_channels * buffer_size * sizeof(float);
 
   AudioObjectSetPropertyData(output_device,
 			     &output_buffer_size_property_address,
 			     0,
 			     NULL,
 			     sizeof(output_buffer_size_bytes),
-			     &output_buffer_size_bytes);
+			     (void *) &output_buffer_size_bytes);
       
   os_status = AudioDeviceCreateIOProcID(output_device,
 			    (OSStatus (*)(AudioObjectID inDevice, const AudioTimeStamp *inNow, const AudioBufferList *inInputData, const AudioTimeStamp *inInputTime, AudioBufferList *outOutputData, const AudioTimeStamp *inOutputTime, void *inClientData)) hw_output_callback,

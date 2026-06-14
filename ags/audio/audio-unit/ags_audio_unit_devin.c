@@ -1709,11 +1709,11 @@ ags_audio_unit_devin_port_init(AgsSoundcard *soundcard,
   memset(audio_unit_devin->app_buffer[7], 0, audio_unit_devin->pcm_channels * audio_unit_devin->buffer_size * word_size);
 
   /*  */
+  ags_frame_clock_set_start_note_offset(audio_unit_devin->frame_clock,
+					audio_unit_devin->start_note_offset);
+  
   ags_frame_clock_start(audio_unit_devin->frame_clock);
 
-  ags_frame_clock_set_note_offset(audio_unit_devin->frame_clock,
-				  audio_unit_devin->start_note_offset);
-  
   audio_unit_devin->flags |= (AGS_AUDIO_UNIT_DEVIN_INITIALIZED |
 			      AGS_AUDIO_UNIT_DEVIN_START_RECORD |
 			      AGS_AUDIO_UNIT_DEVIN_RECORD);

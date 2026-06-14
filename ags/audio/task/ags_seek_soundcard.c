@@ -302,7 +302,7 @@ ags_seek_soundcard_launch(AgsTask *task)
   GList *audio_start, *audio;
   GList *recall_start, *recall;
 
-  guint note_offset;
+  guint64 note_offset;
   
   seek_soundcard = AGS_SEEK_SOUNDCARD(task);
 
@@ -313,6 +313,7 @@ ags_seek_soundcard_launch(AgsTask *task)
   
   soundcard = seek_soundcard->soundcard;
 
+#if 0
   audio = 
     audio_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
   
@@ -363,7 +364,8 @@ ags_seek_soundcard_launch(AgsTask *task)
 
   g_list_free_full(audio_start,
 		   g_object_unref);
-
+#endif
+  
   /* seek soundcard */
   frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(seek_soundcard->soundcard));
   

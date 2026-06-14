@@ -517,6 +517,7 @@ ags_core_audio_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_sub_block_count = ags_core_audio_devout_get_sub_block_count;
 
   soundcard->trylock_sub_block = ags_core_audio_devout_trylock_sub_block;
+  soundcard->unlock_sub_block = ags_core_audio_devout_unlock_sub_block;
 }
 
 void
@@ -2067,10 +2068,10 @@ ags_core_audio_devout_port_init(AgsSoundcard *soundcard,
   memset(core_audio_devout->app_buffer[7], 0, core_audio_devout->pcm_channels * core_audio_devout->buffer_size * word_size);
 
   /*  */
-  ags_frame_clock_start(core_audio_devout->frame_clock);
+  ags_frame_clock_set_start_note_offset(core_audio_devout->frame_clock,
+					core_audio_devout->start_note_offset);
 
-  ags_frame_clock_set_note_offset(core_audio_devout->frame_clock,
-				  core_audio_devout->start_note_offset);
+  ags_frame_clock_start(core_audio_devout->frame_clock);
   
   core_audio_devout->flags |= (AGS_CORE_AUDIO_DEVOUT_INITIALIZED |
 			       AGS_CORE_AUDIO_DEVOUT_START_PLAY |
