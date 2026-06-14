@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -93,10 +93,10 @@
 
 #include <ags/i18n.h>
 
-void install_data();
+void gsequencer_install_data();
 
 void
-install_data()
+gsequencer_install_data()
 {
 #if defined(AGS_OSX_DMG_ENV)
   struct passwd *pw;
@@ -939,7 +939,7 @@ main(int argc, char **argv)
 				  NULL,
 				  &error);
 #else
-	install_data();
+	gsequencer_install_data();
 #endif
       }
       
