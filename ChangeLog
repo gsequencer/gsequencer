@@ -2,6 +2,8 @@ ags (9.0.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing core audio input sequencer
+	* added configure switch --enable-core-midi
+	* added autoconf header define AGS_WITH_CORE_MIDI
 
 ags (9.0.6)
 
