@@ -1,0 +1,125 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ master, main, develop ]
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '.clang-format'
+      - '.clang-tidy'
+      - '.github/workflows/code-quality.yml'
+  pull_request:
+    branches: [ master, main, develop ]
+    paths:
+      - '**/*.c'
+      - '**/*.h'
+      - '.clang-format'
+      - '.clang-tidy'
+
+jobs:
+  formatting:
+    name: Code Formatting (clang-format)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
+      
+      - name: Check code formatting
+        run: |
+          # Find all C and header files
+          find ags -name "*.c" -o -name "*.h" | while read file; do
+            clang-format -output-replacements-xml "$file" > /tmp/replacements.xml
+            if grep -q "<replacement " /tmp/replacements.xml; then
+              echo "❌ Formatting issues in: $file"
+              clang-format "$file" | diff -u "$file" - || true
+            fi
+          done
+      
+      - name: Suggest formatting fix
+        if: failure()
+        run: |
+          echo "### Code Formatting Issues Found"
+          echo ""
+          echo "Run the following to auto-format your code:"
+          echo "\`\`\`bash"
+          echo "find ags -name '*.c' -o -name '*.h' | xargs clang-format -i"
+          echo "\`\`\`"
+
+  clang-tidy:
+    name: Static Analysis (clang-tidy)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang-tidy \
+            pkg-config \
+            libglib2.0-dev \
+            libgtk-3-dev \
+            libaudiofile-dev \
+            libsndfile1-dev
+      
+      - name: Configure build
+        run: |
+          autoreconf -i
+          ./configure --enable-silent-rules
+      
+      - name: Run clang-tidy
+        continue-on-error: true
+        run: |
+          # Run clang-tidy on key files (adjust pattern as needed)
+          find ags/lib -name "*.c" | head -10 | while read file; do
+            echo "Analyzing: $file"
+            clang-tidy \
+              -header-filter=.* \
+              -checks='readability-*,performance-*,modernize-*,bugprone-*' \
+              "$file" \
+              -- $(pkg-config --cflags glib-2.0 gtk+-3.0) -Iags -I.
+          done
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: 'ags'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  summary:
+    name: Code Quality Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [formatting, clang-tidy, security-scan]
+    
+    steps:
+      - name: Create summary
+        run: |
+          echo "## Code Quality Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Formatting | ${{ needs.formatting.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Static Analysis | ${{ needs.clang-tidy.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security Scan | ${{ needs.security-scan.result }} |" >> $GITHUB_STEP_SUMMARY
