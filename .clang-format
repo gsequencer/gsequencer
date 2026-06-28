@@ -2,7 +2,7 @@
 # .clang-format configuration for GSequencer
 # This configuration is based on the existing code style
 
-Language: C
+Language: Cpp
 Standard: C11
 
 # Indentation
