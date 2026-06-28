@@ -1,0 +1,74 @@
+---
+# .clang-format configuration for GSequencer
+# This configuration is based on the existing code style
+
+Language: C
+Standard: C11
+
+# Indentation
+IndentWidth: 2
+UseTab: Never
+TabWidth: 2
+ContinuationIndentWidth: 2
+
+# Spaces and Braces
+SpaceBeforeParens: Never
+SpaceInEmptyParentheses: false
+SpaceInEmptyBlock: false
+SpaceBeforeSquareBrackets: false
+SpaceAroundPointerQualifiers: Default
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# Line Breaks
+ColumnLimit: 100
+BreakBeforeBraces: Attach
+BreakBeforeBinaryOperators: NonAssignment
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortBlocksOnASingleLine: false
+BreakStringLiterals: true
+
+# Alignment
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines: Right
+AlignOperands: Align
+AlignTrailingComments: true
+
+# Sorting and Ordering
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
+
+# Comments
+ReflowComments: true
+SpaceBeforeTrailingCommentMarker: 1
+
+# Wrapping
+BinPackArguments: true
+BinPackParameters: true
+BreakAfterReturnType: None
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 100
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 1000
+PenaltyReturnTypeOnItsOwnLine: 200
+
+# Macros and Constructs
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+DerivePointerAlignment: false
+IndentCaseLabels: true
+IndentGotoLabels: true
+IndentPPDirectives: None
+
+# Function declarations
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+
+# Disassemble constructs that we want to preserve
+DisableFormat: false
