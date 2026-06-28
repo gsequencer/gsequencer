@@ -235,7 +235,7 @@ main(int argc, char **argv)
 			     sizeof(output_samplerate),
 			     &output_samplerate);
 
-  output_buffer_size_bytes = (int) pcm_channels * buffer_size * sizeof(float);
+  output_buffer_size_bytes = pcm_channels * buffer_size * (int) sizeof(float);
 
   AudioObjectSetPropertyData(output_device,
 			     &output_buffer_size_property_address,
