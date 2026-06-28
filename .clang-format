@@ -3,7 +3,7 @@
 # This configuration is based on the existing code style
 
 Language: Cpp
-Standard: C11
+Standard: Cpp11
 
 # Indentation
 IndentWidth: 2
