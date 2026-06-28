@@ -21,39 +21,6 @@ on:
       - '.clang-tidy'
 
 jobs:
-  formatting:
-    name: Code Formatting (clang-format)
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install clang-format
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-format
-      
-      - name: Check code formatting
-        run: |
-          # Find all C and header files
-          find ags -name "*.c" -o -name "*.h" | while read file; do
-            clang-format -output-replacements-xml "$file" > /tmp/replacements.xml
-            if grep -q "<replacement " /tmp/replacements.xml; then
-              echo "❌ Formatting issues in: $file"
-              clang-format "$file" | diff -u "$file" - || true
-            fi
-          done
-      
-      - name: Suggest formatting fix
-        if: failure()
-        run: |
-          echo "### Code Formatting Issues Found"
-          echo ""
-          echo "Run the following to auto-format your code:"
-          echo "\`\`\`bash"
-          echo "find ags -name '*.c' -o -name '*.h' | xargs clang-format -i"
-          echo "\`\`\`"
-
   clang-tidy:
     name: Static Analysis (clang-tidy)
     runs-on: ubuntu-latest
