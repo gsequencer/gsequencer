@@ -73,8 +73,41 @@ jobs:
             libglib2.0-dev \
             libgtk-3-dev \
             libaudiofile-dev \
-            libsndfile1-dev
-      
+            libsndfile1-dev \
+	    make \
+            gcc \
+            gettext \
+            autoconf \
+            automake \
+            autopoint \
+            autotools-dev \
+            pkg-config \
+            gobject-introspection \
+            libgirepository1.0-dev \
+            gstreamer1.0-plugins-base \
+            gstreamer1.0-plugins-good \
+            libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev \
+            libgtk-4-dev \
+            libinstpatch-dev \
+            libsndfile-dev \
+            libsamplerate-dev \
+            libxml2-dev \
+            libsoup-3.0-dev \
+            libjson-glib-dev \
+            ladspa-sdk \
+            dssi-dev \
+            lv2-dev \
+            libfftw3-dev \
+            libasound2-dev \
+            libjack-jackd2-dev \
+            libpulse-dev \
+            libpoppler-glib-dev \
+            uuid-dev \
+            gtk-doc-tools \
+            xvfb \
+            libcunit1-dev
+
       - name: Configure build
         run: |
           autoreconf -i
