@@ -49,7 +49,7 @@ ReflowComments: true
 # Wrapping
 BinPackArguments: true
 BinPackParameters: true
-BreakAfterReturnType: None
+# BreakAfterReturnType: None
 PenaltyBreakAssignment: 100
 PenaltyBreakBeforeFirstCallParameter: 100
 PenaltyBreakComment: 300
