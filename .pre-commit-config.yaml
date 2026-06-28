@@ -1,0 +1,18 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: clang-format
+        name: clang-format
+        entry: clang-format -i
+        language: system
+        types: [c, header]
+        pass_filenames: true
+      
+      - id: clang-tidy
+        name: clang-tidy
+        entry: clang-tidy --fix
+        language: system
+        types: [c]
+        pass_filenames: true
+        stages: [commit]
