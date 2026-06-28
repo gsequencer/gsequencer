@@ -21,14 +21,14 @@
 
 #include <AppKit/AppKit.h>
 
-#include <Foundation/Foundation.h>
-#include <CoreFoundation/CoreFoundation.h>
 #include <AVFoundation/AVFoundation.h>
-#include <AudioToolbox/AudioToolbox.h>
 #include <AudioToolbox/AUComponent.h>
-#include <AudioUnit/AudioUnit.h>
+#include <AudioToolbox/AudioToolbox.h>
 #include <AudioUnit/AUComponent.h>
+#include <AudioUnit/AudioUnit.h>
 #include <CoreAudio/CoreAudio.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <Foundation/Foundation.h>
 
 #include <sys/wait.h>
 #include <unistd.h>
@@ -370,11 +370,11 @@ ags_audio_unit_test_plugin(gchar *au_type,
 void
 ags_audio_unit_test_print_usage()
 {
-   printf("GSequencerAudioUnitTest is an Audio Unit test utility\n\n");
+  printf("GSequencerAudioUnitTest is an Audio Unit test utility\n\n");
 
-   printf("Usage:\n\t%s\n\t%s\n\n",
-	  "Report bugs to <jkraehemann@gmail.com>\n",
-	  "type sub_type manufacturer pcm_channels samplerate buffer_size super_threaded_channel");
+  printf("Usage:\n\t%s\n\t%s\n\n",
+	 "Report bugs to <jkraehemann@gmail.com>\n",
+	 "type sub_type manufacturer pcm_channels samplerate buffer_size super_threaded_channel");
 }
 
 int
