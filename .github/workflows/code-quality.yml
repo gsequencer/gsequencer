@@ -118,7 +118,7 @@ jobs:
     name: Code Quality Summary
     runs-on: ubuntu-latest
     if: always()
-    needs: [formatting, clang-tidy, security-scan]
+    needs: [clang-tidy, security-scan]
     
     steps:
       - name: Create summary
