@@ -164,7 +164,7 @@ void PLUGIN_API HostMessage::setMessageID (const char* mid)
 	{
 		size_t len = strlen (mid) + 1;
 		messageId = new char[len];
-		strcpy (messageId, mid);
+		memcpy (messageId, mid, len);
 	}
 }
 
