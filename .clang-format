@@ -44,7 +44,7 @@ IncludeBlocks: Preserve
 
 # Comments
 ReflowComments: true
-SpaceBeforeTrailingCommentMarker: 1
+SpaceBeforeTrailingComments: true
 
 # Wrapping
 BinPackArguments: true
