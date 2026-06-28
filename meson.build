@@ -55,7 +55,7 @@ if get_option('poppler')
   poppler_dependency = dependency('poppler-glib')
 endif
 if get_option('gtk_unix_print')
-  poppler_dependency = dependency('gtk4-unix-print')
+  gtk_unix_print_dependency = dependency('gtk4-unix-print')
 endif
 if get_option('gstreamer')
   gstreamer_dependency = dependency('gstreamer-1.0')
