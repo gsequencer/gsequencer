@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,33 +27,33 @@
 
 G_BEGIN_DECLS
 
-#define ags_atomic_boolean_get(ptr) ((gboolean) __atomic_load_n(((gboolean *) ptr), __ATOMIC_SEQ_CST))
-#define ags_atomic_uint_get(ptr) ((guint) __atomic_load_n(((guint *) ptr), __ATOMIC_SEQ_CST))
-#define ags_atomic_int_get(ptr) ((gint) __atomic_load_n(((gint *) ptr), __ATOMIC_SEQ_CST))
-#define ags_atomic_pointer_get(ptr) ((gpointer) __atomic_load_n(((gpointer *) ptr), __ATOMIC_SEQ_CST))
+#define ags_atomic_boolean_get(ptr) ((gboolean) __atomic_load_n(((gboolean *) (ptr)), __ATOMIC_SEQ_CST))
+#define ags_atomic_uint_get(ptr) ((guint) __atomic_load_n(((guint *) (ptr)), __ATOMIC_SEQ_CST))
+#define ags_atomic_int_get(ptr) ((gint) __atomic_load_n(((gint *) (ptr)), __ATOMIC_SEQ_CST))
+#define ags_atomic_pointer_get(ptr) ((gpointer) __atomic_load_n(((gpointer *) (ptr)), __ATOMIC_SEQ_CST))
 
-#define ags_atomic_boolean_set(ptr, bval) (__atomic_store_n((gboolean *) ptr, bval, __ATOMIC_SEQ_CST))
-#define ags_atomic_uint_set(ptr, uval) (__atomic_store_n((guint *) ptr, uval, __ATOMIC_SEQ_CST))
-#define ags_atomic_int_set(ptr, ival) (__atomic_store_n((gint *) ptr, ival, __ATOMIC_SEQ_CST))
-#define ags_atomic_pointer_set(ptr, pval) (__atomic_store_n((gpointer *) ptr, pval, __ATOMIC_SEQ_CST))
+#define ags_atomic_boolean_set(ptr, bval) (__atomic_store_n((gboolean *) (ptr), (bval), __ATOMIC_SEQ_CST))
+#define ags_atomic_uint_set(ptr, uval) (__atomic_store_n((guint *) (ptr), (uval), __ATOMIC_SEQ_CST))
+#define ags_atomic_int_set(ptr, ival) (__atomic_store_n((gint *) (ptr), (ival), __ATOMIC_SEQ_CST))
+#define ags_atomic_pointer_set(ptr, pval) (__atomic_store_n((gpointer *) (ptr), (pval), __ATOMIC_SEQ_CST))
 
-#define ags_atomic_uint_or(ptr, uval) ((guint) __atomic_fetch_or((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_or(ptr, ival) ((gint) __atomic_fetch_or((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_or(ptr, uval) ((guint) __atomic_fetch_or((guint *) (ptr), (uval), __ATOMIC_RELEASE))
+#define ags_atomic_int_or(ptr, ival) ((gint) __atomic_fetch_or((gint *) (ptr), (ival), __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_and(ptr, uval) ((guint) __atomic_fetch_and((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_and(ptr, ival) ((gint) __atomic_fetch_and((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_and(ptr, uval) ((guint) __atomic_fetch_and((guint *) (ptr), (uval), __ATOMIC_RELEASE))
+#define ags_atomic_int_and(ptr, ival) ((gint) __atomic_fetch_and((gint *) (ptr), (ival), __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_increment(ptr) ((guint) __atomic_fetch_add((guint *) ptr, 1, __ATOMIC_RELEASE))
-#define ags_atomic_int_increment(ptr) ((gint) __atomic_fetch_add((gint *) ptr, 1, __ATOMIC_RELEASE))
+#define ags_atomic_uint_increment(ptr) ((guint) __atomic_fetch_add((guint *) (ptr), 1, __ATOMIC_RELEASE))
+#define ags_atomic_int_increment(ptr) ((gint) __atomic_fetch_add((gint *) (ptr), 1, __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_decrement(ptr) ((guint) __atomic_fetch_sub((guint *) ptr, 1, __ATOMIC_RELEASE))
-#define ags_atomic_int_decrement(ptr) ((gint) __atomic_fetch_sub((gint *) ptr, 1, __ATOMIC_RELEASE))
+#define ags_atomic_uint_decrement(ptr) ((guint) __atomic_fetch_sub((guint *) (ptr), 1, __ATOMIC_RELEASE))
+#define ags_atomic_int_decrement(ptr) ((gint) __atomic_fetch_sub((gint *) (ptr), 1, __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_add(ptr, uval) ((guint) __atomic_fetch_add((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_add(ptr, ival) ((gint) __atomic_fetch_add((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_add(ptr, uval) ((guint) __atomic_fetch_add((guint *) (ptr), (uval), __ATOMIC_RELEASE))
+#define ags_atomic_int_add(ptr, ival) ((gint) __atomic_fetch_add((gint *) (ptr), (ival), __ATOMIC_RELEASE))
 
-#define ags_atomic_uint_sub(ptr, uval) ((guint) __atomic_fetch_sub((guint *) ptr, uval, __ATOMIC_RELEASE))
-#define ags_atomic_int_sub(ptr, ival) ((gint) __atomic_fetch_sub((gint *) ptr, ival, __ATOMIC_RELEASE))
+#define ags_atomic_uint_sub(ptr, uval) ((guint) __atomic_fetch_sub((guint *) (ptr), (uval), __ATOMIC_RELEASE))
+#define ags_atomic_int_sub(ptr, ival) ((gint) __atomic_fetch_sub((gint *) (ptr), (ival), __ATOMIC_RELEASE))
 
 G_END_DECLS
 
