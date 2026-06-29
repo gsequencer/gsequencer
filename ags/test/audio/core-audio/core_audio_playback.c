@@ -98,7 +98,7 @@ main(int argc, char **argv)
   char *str;
   
   Float64 output_samplerate;
-  int duration;
+  Int64 duration;
   int output_buffer_size_bytes;
   
   int device_count;
@@ -118,9 +118,9 @@ main(int argc, char **argv)
   card_name = NULL;
   
   if(argc > 1){
-    duration = strtoull(argv[1],
-			NULL,
-			10);
+    duration = strtoll(argv[1],
+		       NULL,
+		       10);
   }
 
   if(argc > 2){
