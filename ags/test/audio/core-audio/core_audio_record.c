@@ -1,3 +1,22 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2026 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <AudioUnit/AudioUnit.h>
@@ -16,19 +35,24 @@
 #include <mach/clock.h>
 #include <mach/mach.h>
 
-unsigned int major_format;
+struct _CoreAudioRecord
+{
+  unsigned int major_format;
 
-char *wav_filename = "out.wav";
+  char *wav_filename;
 
-int samplerate = 44100;
-int pcm_channels = 1;
-int audio_channels = 2;
-int buffer_size = 2048;
+  int samplerate = 44100;
+  int pcm_channels = 1;
+  int audio_channels = 2;
+  int buffer_size = 2048;
 
-SF_INFO *info = NULL;
-SNDFILE *file = NULL;
+  SF_INFO *info = NULL;
+  SNDFILE *file = NULL;
 
-float stereo_buffer[4096];
+  float stereo_buffer[4096];
+};
+
+struct _CoreAudioRecord record = {0,};
 
 int
 hw_input_callback(unsigned int in_device, const struct AudioTimeStamp *in_now, const struct AudioBufferList *in_input_data, const struct AudioTimeStamp *in_input_time, struct AudioBufferList *out_output_data, const struct AudioTimeStamp *in_output_time, void *in_client_data)
@@ -43,12 +67,12 @@ hw_input_callback(unsigned int in_device, const struct AudioTimeStamp *in_now, c
   
   buffer = in_buffer->mData;
 
-  for(i = 0; i < buffer_size; i++){
-    stereo_buffer[2 * i] = buffer[i];
-    stereo_buffer[2 * i + 1] = buffer[i];
+  for(i = 0; i < record.buffer_size; i++){
+    record.stereo_buffer[2 * i] = buffer[i];
+    record.stereo_buffer[2 * i + 1] = buffer[i];
   }
   
-  sf_write_float(file, stereo_buffer, 2 * (in_buffer->mDataByteSize / sizeof(float)));
+  sf_write_float(record.file, record.stereo_buffer, 2 * (in_buffer->mDataByteSize / sizeof(float)));
   
   return(0);
 }
@@ -83,26 +107,36 @@ main(int argc, char **argv)
 			10);
   }
   
-  info = (SF_INFO *) malloc(sizeof(SF_INFO));
+  record.wav_filename = "out.wav";
 
-  info[0] = (SF_INFO) {0,};
+  record.samplerate = 44100;
+  record.pcm_channels = 1;
+  record.audio_channels = 2;
+  record.buffer_size = 2048;
 
-  info->samplerate = samplerate;
-  info->channels = audio_channels;
+  record.info = NULL;
+  record.file = NULL;
+  
+  record.info = (SF_INFO *) malloc(sizeof(SF_INFO));
 
-  major_format = SF_FORMAT_WAV;
+  record.info[0] = (SF_INFO) {0,};
+
+  record.info->samplerate = record.samplerate;
+  record.info->channels = record.audio_channels;
+
+  record.major_format = SF_FORMAT_WAV;
     
-  info->format = major_format | SF_FORMAT_FLOAT;
+  record.info->format = record.major_format | SF_FORMAT_FLOAT;
 
-  info->frames = 0;
-  info->seekable = 0;
-  info->sections = 0;
+  record.info->frames = 0;
+  record.info->seekable = 0;
+  record.info->sections = 0;
 
-  if(!sf_format_check(info)){
+  if(!sf_format_check(record.info)){
     fprintf(stderr, "invalid format\n");
   }
   
-  file = (SNDFILE *) sf_open(wav_filename, SFM_RDWR, info);
+  record.file = (SNDFILE *) sf_open(record.wav_filename, SFM_RDWR, record.info);
       
   input_property_address.mSelector = kAudioHardwarePropertyDefaultInputDevice;
   input_property_address.mElement = kAudioObjectPropertyElementMain;
@@ -131,7 +165,7 @@ main(int argc, char **argv)
 			     &property_size, 
 			     &(input_device));
       
-  input_samplerate = (Float64) samplerate;
+  input_samplerate = (Float64) record.samplerate;
       
   AudioObjectSetPropertyData(input_device,
 			     &input_samplerate_property_address,
@@ -140,7 +174,7 @@ main(int argc, char **argv)
 			     sizeof(input_samplerate),
 			     &input_samplerate);
 
-  input_buffer_size_bytes = pcm_channels * buffer_size * (int) sizeof(float);
+  input_buffer_size_bytes = record.pcm_channels * record.buffer_size * (int) sizeof(float);
 
   AudioObjectSetPropertyData(input_device,
 			     &input_buffer_size_property_address,
@@ -170,7 +204,7 @@ main(int argc, char **argv)
     usleep(5000000);
   }
   
-  sf_close(file);
+  sf_close(record.file);
   
   mach_port_deallocate(mach_task_self(), cclock);
 
