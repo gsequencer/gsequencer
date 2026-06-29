@@ -35,6 +35,9 @@
 #include <mach/clock.h>
 #include <mach/mach.h>
 
+#define CORE_AUDIO_RECORD_PCM_BUFFER_SIZE (4096)
+#define CORE_AUDIO_RECORD_BUFFER_SIZE (2048)
+
 struct _CoreAudioRecord
 {
   unsigned int major_format;
@@ -49,13 +52,13 @@ struct _CoreAudioRecord
   SF_INFO *info;
   SNDFILE *file;
 
-  float stereo_buffer[4096];
+  float stereo_buffer[CORE_AUDIO_RECORD_PCM_BUFFER_SIZE];
 };
 
 struct _CoreAudioRecord record = {0,};
 
 int
-hw_input_callback(unsigned int in_device, const struct AudioTimeStamp *in_now, const struct AudioBufferList *in_input_data, const struct AudioTimeStamp *in_input_time, struct AudioBufferList *out_output_data, const struct AudioTimeStamp *in_output_time, void *in_client_data)
+hw_input_callback(AudioObjectID in_device, const struct AudioTimeStamp *in_now, const struct AudioBufferList *in_input_data, const struct AudioTimeStamp *in_input_time, struct AudioBufferList *out_output_data, const struct AudioTimeStamp *in_output_time, void *in_client_data)
 {
   AudioBuffer *in_buffer;
   
@@ -67,12 +70,12 @@ hw_input_callback(unsigned int in_device, const struct AudioTimeStamp *in_now, c
   
   buffer = in_buffer->mData;
 
-  for(i = 0; i < record.buffer_size; i++){
+  for(i = 0; i < record.buffer_size && 2 * i < CORE_AUDIO_RECORD_PCM_BUFFER_SIZE && i < in_buffer->mDataByteSize / sizeof(float); i++){
     record.stereo_buffer[2 * i] = buffer[i];
     record.stereo_buffer[2 * i + 1] = buffer[i];
   }
   
-  sf_write_float(record.file, record.stereo_buffer, 2 * (in_buffer->mDataByteSize / sizeof(float)));
+  sf_write_float(record.file, record.stereo_buffer, CORE_AUDIO_RECORD_PCM_BUFFER_SIZE);
   
   return(0);
 }
@@ -92,7 +95,7 @@ main(int argc, char **argv)
   mach_timespec_t start_time, current_time;
   
   Float64 input_samplerate;
-  int duration;
+  Int64 duration;
   int input_buffer_size_bytes;
   
   UInt32 property_size;
@@ -102,9 +105,9 @@ main(int argc, char **argv)
   duration = 10;
 
   if(argc > 1){
-    duration = strtoull(argv[1],
-			NULL,
-			10);
+    duration = strtoll(argv[1],
+		       NULL,
+		       10);
   }
   
   record.wav_filename = "out.wav";
@@ -112,7 +115,7 @@ main(int argc, char **argv)
   record.samplerate = 44100;
   record.pcm_channels = 1;
   record.audio_channels = 2;
-  record.buffer_size = 2048;
+  record.buffer_size = CORE_AUDIO_RECORD_BUFFER_SIZE;
 
   record.info = NULL;
   record.file = NULL;
@@ -198,7 +201,7 @@ main(int argc, char **argv)
   current_time.tv_sec = 0;
   current_time.tv_nsec = 0;
   
-  while(current_time.tv_sec > start_time.tv_sec + duration){
+  while(current_time.tv_sec < start_time.tv_sec + duration){
     clock_get_time(cclock, &current_time);
 
     usleep(5000000);
