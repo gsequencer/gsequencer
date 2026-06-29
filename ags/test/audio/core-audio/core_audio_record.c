@@ -105,9 +105,9 @@ main(int argc, char **argv)
   duration = 10;
 
   if(argc > 1){
-    duration = strtoull(argv[1],
-			NULL,
-			10);
+    duration = strtoll(argv[1],
+		       NULL,
+		       10);
   }
   
   record.wav_filename = "out.wav";
