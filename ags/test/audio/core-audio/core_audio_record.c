@@ -41,13 +41,13 @@ struct _CoreAudioRecord
 
   char *wav_filename;
 
-  int samplerate = 44100;
-  int pcm_channels = 1;
-  int audio_channels = 2;
-  int buffer_size = 2048;
+  int samplerate;
+  int pcm_channels;
+  int audio_channels;
+  int buffer_size;
 
-  SF_INFO *info = NULL;
-  SNDFILE *file = NULL;
+  SF_INFO *info;
+  SNDFILE *file;
 
   float stereo_buffer[4096];
 };
