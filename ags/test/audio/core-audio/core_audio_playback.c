@@ -1,3 +1,22 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2026 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <AudioUnit/AudioUnit.h>
@@ -18,12 +37,17 @@
 #include <mach/clock.h>
 #include <mach/mach.h>
 
-int samplerate = 44100;
-int pcm_channels = 1;
-int audio_channels = 2;
-int buffer_size = 2048;
+struct _CoreAudioPlayback
+{
+  int samplerate;
+  int pcm_channels;
+  int audio_channels;
+  int buffer_size;
 
-int offset = 0;
+  int offset;
+};
+
+struct _CoreAudioPlayback playback = {0,};
 
 int
 hw_output_callback(AudioObjectID in_device, const AudioTimeStamp *in_now, const AudioBufferList *in_input_data, const AudioTimeStamp *in_input_time, AudioBufferList *out_output_data, const AudioTimeStamp *in_output_time, void *in_client_data)
@@ -38,12 +62,12 @@ hw_output_callback(AudioObjectID in_device, const AudioTimeStamp *in_now, const 
   
   buffer = out_buffer->mData;
 
-  for(i = 0; i < buffer_size; i++){
-    buffer[audio_channels * i] = 
-      buffer[audio_channels * i + 1] = sin((double) (offset + i) * 2.0 * M_PI * 440.0 / (double) samplerate);
+  for(i = 0; i < playback.buffer_size; i++){
+    buffer[playback.audio_channels * i] = 
+      buffer[playback.audio_channels * i + 1] = sin((double) (playback.offset + i) * 2.0 * M_PI * 440.0 / (double) playback.samplerate);
   }
 
-  offset += i;
+  playback.offset += i;
   
   return(0);
 }
@@ -102,6 +126,13 @@ main(int argc, char **argv)
   if(argc > 2){
     card_name = argv[2];
   }
+  
+  playback.samplerate = 44100;
+  playback.pcm_channels = 1;
+  playback.audio_channels = 2;
+  playback.buffer_size = 2048;
+
+  playback.offset = 0;
   
   output_device = 0;
   
@@ -226,7 +257,7 @@ main(int argc, char **argv)
       &(output_device));
   }
     
-  output_samplerate = (Float64) samplerate;
+  output_samplerate = (Float64) playback.samplerate;
       
   AudioObjectSetPropertyData(output_device,
 			     &output_samplerate_property_address,
@@ -235,7 +266,7 @@ main(int argc, char **argv)
 			     sizeof(output_samplerate),
 			     &output_samplerate);
 
-  output_buffer_size_bytes = pcm_channels * buffer_size * (int) sizeof(float);
+  output_buffer_size_bytes = playback.pcm_channels * playback.buffer_size * (int) sizeof(float);
 
   AudioObjectSetPropertyData(output_device,
 			     &output_buffer_size_property_address,
