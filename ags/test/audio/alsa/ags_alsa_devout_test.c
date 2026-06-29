@@ -500,7 +500,7 @@ ags_alsa_devout_test_get_prev_buffer()
   
   alsa_devout = ags_alsa_devout_new();
   
-  prev_buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(alsa_devout));
+  prev_buffer = ags_soundcard_get_prev_buffer(AGS_SOUNDCARD(alsa_devout));
 
   CU_ASSERT(prev_buffer != NULL);
 }
@@ -702,7 +702,7 @@ main(int argc, char **argv)
      (CU_add_test(pSuite, "test of AgsAlsaDevout get frame clock", ags_alsa_devout_test_get_frame_clock) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout get sub block count", ags_alsa_devout_test_get_sub_block_count) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAlsaDevout trylock sub block", ags_alsa_devout_test_trylock_sub_block) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsAlsaDevout unock sub block", ags_alsa_devout_test_unlock_sub_block) == NULL)){
+     (CU_add_test(pSuite, "test of AgsAlsaDevout unklock sub block", ags_alsa_devout_test_unlock_sub_block) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
