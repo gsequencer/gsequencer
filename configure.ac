@@ -9,9 +9,9 @@
 
 LT_CURRENT=9
 LT_REVISION=0
-LT_AGE=6
+LT_AGE=8
 
-m4_define([ags_version], [9.0.6])
+m4_define([ags_version], [9.0.8])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -155,6 +155,11 @@ AC_ARG_ENABLE(core-audio, [AS_HELP_STRING([--enable-core-audio],
                                           [enable core audio (default is no)])],
               [],
               [enable_core_audio=no])
+
+AC_ARG_ENABLE(core-midi, [AS_HELP_STRING([--enable-core-midi],
+                                          [enable core midi (default is no)])],
+              [],
+              [enable_core_midi=no])
 
 AC_ARG_ENABLE(audio-toolbox, [AS_HELP_STRING([--enable-audio-toolbox],
                                              [enable core audio (default is no)])],
@@ -466,6 +471,17 @@ AS_IF([test "x$enable_core_audio" != xno],
 
       AC_MSG_NOTICE([core audio enabled])],
       [AC_MSG_NOTICE([core audio disabled])])
+
+AS_IF([test "x$enable_core_midi" != xno],
+      [AC_DEFINE([AGS_WITH_CORE_MIDI], [1], [core-midi enabled])
+
+      CORE_MIDI_CFLAGS= 
+      CORE_MIDI_LIBS="-framework Foundation -framework CoreFoundation -framework AVFoundation -framework AVKit -framework CoreAudio -framework AudioToolbox -framework CoreMIDI"
+      AC_SUBST(CORE_MIDI_CFLAGS)
+      AC_SUBST(CORE_MIDI_LIBS)
+
+      AC_MSG_NOTICE([core midi enabled])],
+      [AC_MSG_NOTICE([core midi disabled])])
 
 AS_IF([test "x$enable_audio_toolbox" != xno],
       [AC_DEFINE([AGS_WITH_AUDIO_TOOLBOX], [1], [AUDIO_TOOLBOX enabled])

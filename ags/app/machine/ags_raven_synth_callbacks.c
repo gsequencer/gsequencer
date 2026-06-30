@@ -7406,7 +7406,7 @@ ags_raven_synth_pitch_type_callback(GObject *gobject,
 				    GParamSpec *pspec,
 				    AgsRavenSynth *raven_synth)
 {
-  AgsFxStarSynthAudio *fx_raven_synth_audio;
+  AgsFxRavenSynthAudio *fx_raven_synth_audio;
     
   guint selected;
 
@@ -7425,13 +7425,13 @@ ags_raven_synth_pitch_type_callback(GObject *gobject,
 		    (gfloat) selected);
 
   /* play */
-  fx_raven_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(raven_synth->raven_synth_play_container);
+  fx_raven_synth_audio = (AgsFxRavenSynthAudio *) ags_recall_container_get_recall_audio(raven_synth->raven_synth_play_container);
 
   ags_port_safe_write(fx_raven_synth_audio->pitch_type,
 		      &value);
 
   /* recall */
-  fx_raven_synth_audio = (AgsFxStarSynthAudio *) ags_recall_container_get_recall_audio(raven_synth->raven_synth_recall_container);
+  fx_raven_synth_audio = (AgsFxRavenSynthAudio *) ags_recall_container_get_recall_audio(raven_synth->raven_synth_recall_container);
   
   ags_port_safe_write(fx_raven_synth_audio->pitch_type,
 		      &value);
