@@ -219,7 +219,7 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   //nothing
 #endif
 
-#if defined(AGS_WITH_CORE_MIDI)
+#if defined(AGS_WITH_CORE_AUDIO)
   /* add Core Midi input sequencer */
   action = g_simple_action_new("add_core_midi_input_sequencer",
 			       NULL);
@@ -294,7 +294,7 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 #if defined(AGS_WITH_PULSE)
 #endif
 
-#if defined(AGS_WITH_CORE_MIDI)
+#if defined(AGS_WITH_CORE_AUDIO)
   item = g_menu_item_new(i18n("add Core Midi input sequencer"),
 			 "midi_preferences.add_core_midi_input_sequencer");
   g_menu_append_item(menu,
