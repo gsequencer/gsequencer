@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,6 +39,8 @@ G_BEGIN_DECLS
 
 #define AGS_TYPE_FILE_UTIL                (ags_file_util_get_type())
 #define AGS_FILE_UTIL(ptr) ((AgsFileUtil *)(ptr))
+
+#define AGS_BAD_CAST (gchar *)
 
 #define AGS_FILE_UTIL_64BIT_MAX_STRING_LENGTH (20)
 #define AGS_FILE_UTIL_DOUBLE_MAX_STRING_LENGTH (16)
