@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2647,11 +2647,56 @@ ags_stargazer_synth_chorus_output_volume_callback(AgsDial *dial, AgsStargazerSyn
 void
 ags_stargazer_synth_chorus_lfo_oscillator_callback(GtkComboBox *combo_box, AgsStargazerSynth *stargazer_synth)
 {
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gint chorus_lfo_oscillator;
+  
   if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(stargazer_synth)->flags)) != 0){
     return;
   }
 
-  //TODO:JK: implement me
+  audio = AGS_MACHINE(stargazer_synth)->audio;
+  
+  chorus_lfo_oscillator = gtk_combo_box_get_active(combo_box);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_STAR_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "chorus-lfo-oscillator", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) chorus_lfo_oscillator);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void

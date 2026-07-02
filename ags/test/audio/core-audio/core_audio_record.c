@@ -102,7 +102,7 @@ main(int argc, char **argv)
     fprintf(stderr, "invalid format\n");
   }
   
-  file = (SNDFILE *) sf_open(wav_filename, SFM_RDWR, info);
+  file = (SNDFILE *) sf_open(wav_filename, SFM_WRITE, info);
       
   input_property_address.mSelector = kAudioHardwarePropertyDefaultInputDevice;
   input_property_address.mElement = kAudioObjectPropertyElementMain;
@@ -170,7 +170,7 @@ main(int argc, char **argv)
     usleep(5000000);
   }
   
-  sf_close(file);
+  sf_close(record.file);
   
   mach_port_deallocate(mach_task_self(), cclock);
 
