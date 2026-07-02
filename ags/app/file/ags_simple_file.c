@@ -15506,6 +15506,7 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 
     /* filename */
     filename = g_strdup(&(str[7]));
+
     xmlFree(str);
     
     /* audio channel to read */
@@ -15613,6 +15614,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
       
       xpath_result = xpath_result->next;
     }
+
+    g_free(filename);
     
     g_list_free(start_xpath_result);
   }
@@ -15622,6 +15625,7 @@ void
 ags_simple_file_read_effect_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **effect_pad)
 {
   AgsEffectPad *current;
+
   GList *list;
   
   xmlNode *child;
@@ -16703,6 +16707,8 @@ ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
     
     if(gtk_tree_model_get_iter_first(model, &iter)){
       do{
+	value = NULL;
+	
 	gtk_tree_model_get(model, &iter,
 			   0, &value,
 			   -1);
@@ -18389,40 +18395,41 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
   xmlNode *node;
   
   xmlChar *type_name;
+  xmlChar *name;
   xmlChar *val;
   
   if(G_VALUE_HOLDS_BOOLEAN(&(property->value))){
-    type_name = g_type_name(G_TYPE_BOOLEAN);
+    type_name = BAD_CAST g_type_name(G_TYPE_BOOLEAN);
 
     if(g_value_get_boolean(&(property->value))){
-      val = g_strdup("true");
+      val = BAD_CAST g_strdup("true");
     }else{
-      val = g_strdup("false");
+      val = BAD_CAST g_strdup("false");
     }
   }else if(G_VALUE_HOLDS_UINT(&(property->value))){
-    type_name = g_type_name(G_TYPE_UINT);
+    type_name = BAD_CAST g_type_name(G_TYPE_UINT);
 
-    val = g_strdup_printf("%u",
-			  g_value_get_uint(&(property->value)));
+    val = BAD_CAST g_strdup_printf("%u",
+				   g_value_get_uint(&(property->value)));
   }else if(G_VALUE_HOLDS_INT(&(property->value))){
-    type_name = g_type_name(G_TYPE_INT);
+    type_name = BAD_CAST g_type_name(G_TYPE_INT);
 
-    val = g_strdup_printf("%d",
-			  g_value_get_int(&(property->value)));
+    val = BAD_CAST g_strdup_printf("%d",
+				   g_value_get_int(&(property->value)));
   }else if(G_VALUE_HOLDS_DOUBLE(&(property->value))){
-    type_name = g_type_name(G_TYPE_DOUBLE);
+    type_name = BAD_CAST g_type_name(G_TYPE_DOUBLE);
 
-    val = g_strdup_printf("%lf",
-			  g_value_get_double(&(property->value)));
+    val = BAD_CAST g_strdup_printf("%lf",
+				   g_value_get_double(&(property->value)));
   }else if(G_VALUE_HOLDS(&(property->value),
 			 AGS_TYPE_COMPLEX)){
     AgsComplex *z;
     
-    type_name = g_type_name(AGS_TYPE_COMPLEX);
+    type_name = gBAD_CAST _type_name(AGS_TYPE_COMPLEX);
 
     z = g_value_get_boxed(&(property->value));
-    val = g_strdup_printf("%lf %lf",
-			  z[0].real, z[0].imag);
+    val = BAD_CAST g_strdup_printf("%lf %lf",
+				   z[0].real, z[0].imag);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
     
@@ -18436,9 +18443,11 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
 	     BAD_CAST "type",
 	     type_name);
 
+  name = BAD_CAST (property->name);
+  
   xmlNewProp(node,
 	     BAD_CAST "name",
-	     property->name);
+	     name);
 
   xmlNewProp(node,
 	     BAD_CAST "value",
@@ -18500,37 +18509,37 @@ ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue 
   xmlChar *val;
   
   if(G_VALUE_HOLDS_BOOLEAN(value)){
-    type_name = g_type_name(G_TYPE_BOOLEAN);
+    type_name = BAD_CAST g_type_name(G_TYPE_BOOLEAN);
 
     if(g_value_get_boolean(value)){
-      val = g_strdup("true");
+      val = BAD_CAST g_strdup("true");
     }else{
-      val = g_strdup("false");
+      val = BAD_CAST g_strdup("false");
     }
   }else if(G_VALUE_HOLDS_UINT(value)){
-    type_name = g_type_name(G_TYPE_UINT);
+    type_name = BAD_CAST g_type_name(G_TYPE_UINT);
 
-    val = g_strdup_printf("%u",
-			  g_value_get_uint(value));
+    val = BAD_CAST g_strdup_printf("%u",
+				   g_value_get_uint(value));
   }else if(G_VALUE_HOLDS_INT(value)){
-    type_name = g_type_name(G_TYPE_INT);
+    type_name = BAD_CAST g_type_name(G_TYPE_INT);
 
-    val = g_strdup_printf("%d",
-			  g_value_get_int(value));
+    val = BAD_CAST g_strdup_printf("%d",
+				   g_value_get_int(value));
   }else if(G_VALUE_HOLDS_DOUBLE(value)){
-    type_name = g_type_name(G_TYPE_DOUBLE);
+    type_name = BAD_CAST g_type_name(G_TYPE_DOUBLE);
 
-    val = g_strdup_printf("%lf",
-			  g_value_get_double(value));
+    val = BAD_CAST g_strdup_printf("%lf",
+				   g_value_get_double(value));
   }else if(G_VALUE_HOLDS(value,
 			 AGS_TYPE_COMPLEX)){
     AgsComplex *z;
     
-    type_name = g_type_name(AGS_TYPE_COMPLEX);
+    type_name = BAD_CAST g_type_name(AGS_TYPE_COMPLEX);
 
     z = g_value_get_boxed(value);
-    val = g_strdup_printf("%lf %lf",
-			  z[0].real, z[0].imag);
+    val = BAD_CAST g_strdup_printf("%lf %lf",
+				   z[0].real, z[0].imag);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
     
@@ -18576,27 +18585,27 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
   /* properties */
   xmlNewProp(node,
 	     BAD_CAST "filename",
-	     simple_file->filename);
+	     BAD_CAST (simple_file->filename));
 
   str = g_strdup_printf("%lf",
 			gtk_spin_button_get_value(window->navigation->bpm));
 
   xmlNewProp(node,
 	     BAD_CAST "bpm",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
   xmlNewProp(node,
 	     BAD_CAST "loop",
-	     ((gtk_check_button_get_active((GtkCheckButton *) window->navigation->loop)) ? AGS_SIMPLE_FILE_TRUE: AGS_SIMPLE_FILE_FALSE));
+	     BAD_CAST ((gtk_check_button_get_active((GtkCheckButton *) window->navigation->loop)) ? AGS_SIMPLE_FILE_TRUE: AGS_SIMPLE_FILE_FALSE));
 
   str = g_strdup_printf(BAD_CAST "%lf",
 			gtk_spin_button_get_value(window->navigation->loop_left_tact));
   
   xmlNewProp(node,
 	     BAD_CAST "loop-start",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -18605,7 +18614,7 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
   
   xmlNewProp(node,
 	     BAD_CAST "loop-end",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -18684,7 +18693,7 @@ ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *pa
       
     xmlNewProp(pad,
 	       BAD_CAST "nth-pad",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
       
@@ -18703,7 +18712,7 @@ ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *pa
 	  
       xmlNewProp(line,
 		 BAD_CAST "id",
-		 id);
+		 BAD_CAST id);
 
       if(id != NULL){
 	free(id);
@@ -18725,7 +18734,7 @@ ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *pa
 	
       xmlNewProp(line,
 		 BAD_CAST "nth-line",
-		 str);
+		 BAD_CAST str);
 
       g_free(str);
 	
@@ -18808,36 +18817,36 @@ ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBu
       
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? AGS_SIMPLE_FILE_TRUE:  AGS_SIMPLE_FILE_FALSE));
+	       BAD_CAST ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? AGS_SIMPLE_FILE_TRUE:  AGS_SIMPLE_FILE_FALSE));
   }else if(GTK_IS_CHECK_BUTTON(child_widget)){
     control_node = xmlNewNode(NULL,
 			      BAD_CAST "ags-sf-control");
       
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       ((gtk_check_button_get_active((GtkCheckButton *) child_widget)) ? AGS_SIMPLE_FILE_TRUE:  AGS_SIMPLE_FILE_FALSE));
+	       BAD_CAST ((gtk_check_button_get_active((GtkCheckButton *) child_widget)) ? AGS_SIMPLE_FILE_TRUE:  AGS_SIMPLE_FILE_FALSE));
   }else if(AGS_IS_DIAL(child_widget)){
     control_node = xmlNewNode(NULL,
 			      BAD_CAST "ags-sf-control");
 
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
 
     str = g_strdup_printf("%lf",
 			  gtk_adjustment_get_value(AGS_DIAL(child_widget)->adjustment));
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else{
@@ -18848,7 +18857,7 @@ ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBu
 
   xmlNewProp(control_node,
 	     BAD_CAST "specifier",
-	     bulk_member->specifier);
+	     BAD_CAST (bulk_member->specifier));
 
   xmlAddChild(parent,
 	      control_node);
@@ -18895,14 +18904,14 @@ ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, A
 
 	xmlNewProp(effect_node,
 		   BAD_CAST "filename",
-		   AGS_BULK_MEMBER(list->data)->filename);
+		   BAD_CAST (AGS_BULK_MEMBER(list->data)->filename));
 
 	filename = g_list_prepend(filename,
 				  AGS_BULK_MEMBER(list->data)->filename);
 
 	xmlNewProp(effect_node,
 		   BAD_CAST "effect",
-		   AGS_BULK_MEMBER(list->data)->effect);
+		   BAD_CAST (AGS_BULK_MEMBER(list->data)->effect));
 
 	effect = g_list_prepend(effect,
 				AGS_BULK_MEMBER(list->data)->effect);
@@ -18939,6 +18948,8 @@ ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *paren
 {
   xmlNode *node, *child;    
 
+  xmlChar *scope;
+	
   node = NULL;
     
   if(automation_port != NULL){
@@ -18946,8 +18957,6 @@ ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *paren
 		      BAD_CAST "ags-sf-automation-port-list");
       
     while(automation_port != NULL){
-      gchar *scope;
-	
       child = xmlNewNode(NULL,
 			 BAD_CAST "ags-sf-automation-port");
 
@@ -18995,7 +19004,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   GList *start_list, *list;
 
   gchar *id;
-  xmlChar *str;    
+  gchar *str;    
 
   /* node and uuid */
   id = ags_id_generator_create_uuid();
@@ -19009,7 +19018,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
   xmlNewProp(node,
 	     BAD_CAST AGS_SIMPLE_FILE_TYPE_PROP,
-	     BAD_CAST G_OBJECT_TYPE_NAME(machine));
+	     BAD_CAST (G_OBJECT_TYPE_NAME(machine)));
 
   xmlNewProp(node,
 	     BAD_CAST AGS_SIMPLE_FILE_NAME_PROP,
@@ -19042,9 +19051,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   if(machine->audio != NULL){
     gchar *audio_name;
 
-    g_object_get(machine->audio,
-		 "audio-name", &audio_name,
-		 NULL);
+    audio_name = ags_audio_get_audio_name(machine->audio);
 
     if(audio_name != NULL){
       xmlNewProp(node,
@@ -19070,7 +19077,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   
   xmlNewProp(node,
 	     BAD_CAST "format",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -19082,21 +19089,21 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   g_free(str);
     
   /* bank and mapping */
-  str =  BAD_CAST g_strdup_printf("%d",
-				  machine->bank_0);
+  str =  g_strdup_printf("%d",
+			 machine->bank_0);
   
   xmlNewProp(node,
 	     BAD_CAST "bank-0",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
-  str = BAD_CAST g_strdup_printf("%d",
-				 machine->bank_1);
+  str = g_strdup_printf("%d",
+			machine->bank_1);
   
   xmlNewProp(node,
 	     BAD_CAST "bank-1",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -19107,29 +19114,29 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }
 
   /* channels and pads */
-  str = BAD_CAST g_strdup_printf("%d",
-				    machine->audio->audio_channels);
+  str = g_strdup_printf("%d",
+			machine->audio->audio_channels);
   
   xmlNewProp(node,
 	     BAD_CAST BAD_CAST "channels",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
-  str = BAD_CAST g_strdup_printf("%d",
-				    machine->audio->output_pads);
+  str = g_strdup_printf("%d",
+			machine->audio->output_pads);
   
   xmlNewProp(node,
 	     BAD_CAST "output-pads",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
-  str = BAD_CAST g_strdup_printf("%d", machine->audio->input_pads);
+  str = g_strdup_printf("%d", machine->audio->input_pads);
   
   xmlNewProp(node,
 	     BAD_CAST "input-pads",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -19150,7 +19157,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "audio-start-mapping",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19159,7 +19166,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "audio-end-mapping",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19168,14 +19175,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "midi-start-mapping",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%d",
 			  midi_end_mapping);
     
     xmlNewProp(node,
 	       BAD_CAST "midi-end-mapping",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }
@@ -19243,7 +19250,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19266,7 +19273,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19289,7 +19296,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19312,7 +19319,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19335,7 +19342,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19357,7 +19364,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19380,7 +19387,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19403,7 +19410,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19426,7 +19433,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19448,7 +19455,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19471,7 +19478,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_DRUM(machine)){
@@ -19490,7 +19497,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "length",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_MATRIX(machine)){
@@ -19508,7 +19515,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "length",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19517,7 +19524,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_SYNTH(machine)){
@@ -19530,7 +19537,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "base-note",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_FM_SYNTH(machine)){
@@ -19543,7 +19550,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "base-note",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_SYNCSYNTH(machine)){
@@ -19555,7 +19562,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "base-note",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19564,7 +19571,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "audio-loop-start",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -19573,7 +19580,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "audio-loop-end",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19582,7 +19589,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_FM_SYNCSYNTH(machine)){
@@ -19595,7 +19602,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "base-note",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19604,7 +19611,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "audio-loop-start",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19613,7 +19620,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "audio-loop-end",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19622,7 +19629,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_HYBRID_SYNTH(machine)){
@@ -19646,7 +19653,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19655,7 +19662,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19664,7 +19671,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19673,7 +19680,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19682,7 +19689,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19697,7 +19704,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-relative-attack-factor",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19706,7 +19713,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19715,7 +19722,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19724,7 +19731,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19733,7 +19740,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19742,7 +19749,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19751,7 +19758,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19759,7 +19766,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19768,7 +19775,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19777,7 +19784,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19786,7 +19793,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19795,7 +19802,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19804,7 +19811,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19813,7 +19820,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19828,7 +19835,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-relative-attack-factor",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19837,7 +19844,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19846,7 +19853,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19855,7 +19862,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19864,7 +19871,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19873,7 +19880,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19882,7 +19889,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19890,7 +19897,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19899,7 +19906,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19908,14 +19915,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(hybrid_synth->pitch_tuning));
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19924,7 +19931,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "noise-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19940,7 +19947,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-q-lin",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19949,7 +19956,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19965,7 +19972,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "high-pass-q-lin",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19974,7 +19981,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "high-pass-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -19984,7 +19991,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -19993,7 +20000,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20001,7 +20008,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20010,7 +20017,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20019,7 +20026,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20028,7 +20035,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20037,7 +20044,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
   }else if(AGS_IS_HYBRID_FM_SYNTH(machine)){
@@ -20061,7 +20068,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "synth-0-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20070,7 +20077,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20079,7 +20086,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20088,7 +20095,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20097,7 +20104,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20106,7 +20113,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20115,7 +20122,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20124,7 +20131,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20133,7 +20140,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20142,7 +20149,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20151,7 +20158,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20160,7 +20167,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20169,7 +20176,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20178,7 +20185,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20187,7 +20194,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20196,7 +20203,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20205,7 +20212,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20214,7 +20221,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20223,7 +20230,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20232,7 +20239,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20241,7 +20248,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20250,7 +20257,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20259,7 +20266,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20268,7 +20275,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20277,7 +20284,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20286,7 +20293,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20295,7 +20302,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-2-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -20304,14 +20311,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(hybrid_fm_synth->pitch_tuning));
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20320,7 +20327,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "noise-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20336,7 +20343,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-q-lin",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20345,7 +20352,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20361,7 +20368,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "high-pass-q-lin",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20370,7 +20377,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "high-pass-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20380,7 +20387,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20389,7 +20396,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20397,7 +20404,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20406,7 +20413,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20415,7 +20422,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20424,7 +20431,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20433,7 +20440,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
   }else if(AGS_IS_STARGAZER_SYNTH(machine)){
@@ -20457,7 +20464,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20466,7 +20473,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20475,7 +20482,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20484,7 +20491,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20493,7 +20500,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20508,7 +20515,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-relative-attack-factor",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20517,7 +20524,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20526,7 +20533,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20535,7 +20542,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20544,7 +20551,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20553,7 +20560,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20562,7 +20569,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20571,7 +20578,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20580,7 +20587,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -20588,7 +20595,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20597,7 +20604,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -20606,7 +20613,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20615,7 +20622,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20624,7 +20631,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20633,7 +20640,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20642,7 +20649,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20651,7 +20658,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20660,7 +20667,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20669,7 +20676,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20678,7 +20685,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20693,7 +20700,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-relative-attack-factor",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20702,7 +20709,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20711,7 +20718,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20720,7 +20727,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20729,7 +20736,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20738,7 +20745,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20747,7 +20754,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20756,7 +20763,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20765,7 +20772,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -20773,7 +20780,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20782,7 +20789,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20791,7 +20798,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20800,7 +20807,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20809,7 +20816,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20818,7 +20825,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20827,14 +20834,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(stargazer_synth->pitch_tuning));
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20843,7 +20850,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "noise-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20853,7 +20860,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20862,7 +20869,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20870,7 +20877,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -20879,7 +20886,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20888,7 +20895,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20897,7 +20904,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20906,7 +20913,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20916,7 +20923,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20925,7 +20932,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20934,7 +20941,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20943,7 +20950,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20952,7 +20959,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20961,7 +20968,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20970,7 +20977,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20979,7 +20986,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20988,7 +20995,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -20997,7 +21004,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
   }else if(AGS_IS_QUANTUM_SYNTH(machine)){
@@ -21021,7 +21028,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -21030,7 +21037,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21039,7 +21046,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21048,7 +21055,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21057,7 +21064,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21066,7 +21073,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21075,7 +21082,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21084,7 +21091,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21093,7 +21100,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21102,7 +21109,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21111,7 +21118,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21120,7 +21127,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21129,7 +21136,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21144,7 +21151,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21153,7 +21160,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21162,7 +21169,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21171,7 +21178,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21180,7 +21187,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21189,7 +21196,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21198,7 +21205,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21207,7 +21214,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21216,7 +21223,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21231,7 +21238,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -21246,7 +21253,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-relative-attack-factor",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21255,7 +21262,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21264,7 +21271,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21273,7 +21280,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21282,7 +21289,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21291,7 +21298,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21300,7 +21307,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21309,7 +21316,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21318,7 +21325,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -21326,7 +21333,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -21335,7 +21342,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -21344,7 +21351,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21353,7 +21360,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21362,7 +21369,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21371,7 +21378,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21380,7 +21387,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -21389,7 +21396,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21398,7 +21405,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21407,7 +21414,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21416,7 +21423,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21425,7 +21432,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21434,7 +21441,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21443,7 +21450,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21452,7 +21459,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21461,7 +21468,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21470,7 +21477,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21479,7 +21486,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21488,7 +21495,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21503,7 +21510,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21512,7 +21519,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21521,7 +21528,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21530,7 +21537,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21539,7 +21546,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21548,7 +21555,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21557,7 +21564,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21566,7 +21573,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21575,7 +21582,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21590,7 +21597,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -21605,7 +21612,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-relative-attack-factor",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21614,7 +21621,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21623,7 +21630,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21632,7 +21639,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21641,7 +21648,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21650,7 +21657,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21659,7 +21666,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21668,7 +21675,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21677,7 +21684,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -21685,7 +21692,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -21694,7 +21701,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21703,7 +21710,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21712,7 +21719,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21721,7 +21728,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21730,7 +21737,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21739,14 +21746,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(quantum_synth->pitch_tuning));
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21755,7 +21762,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "noise-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21765,7 +21772,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21774,7 +21781,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21782,7 +21789,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -21791,7 +21798,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       sBAD_CAST tr);
 
     g_free(str);    
 
@@ -21800,7 +21807,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21809,7 +21816,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21818,7 +21825,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21828,7 +21835,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21837,7 +21844,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21846,7 +21853,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21855,7 +21862,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21864,7 +21871,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21873,7 +21880,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21882,7 +21889,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21891,7 +21898,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21900,7 +21907,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21909,7 +21916,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
   }else if(AGS_IS_RAVEN_SYNTH(machine)){
@@ -21933,7 +21940,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -21942,7 +21949,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21951,7 +21958,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21960,7 +21967,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21969,7 +21976,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21978,7 +21985,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21987,7 +21994,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -21996,7 +22003,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22005,7 +22012,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22014,7 +22021,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22023,7 +22030,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22032,7 +22039,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22041,7 +22048,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22050,7 +22057,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-8",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22059,7 +22066,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-9",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22068,7 +22075,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-10",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22077,7 +22084,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-11",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22086,7 +22093,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-12",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22095,7 +22102,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-13",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22104,7 +22111,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-14",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22113,7 +22120,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-15",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22128,7 +22135,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-tuning-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22137,7 +22144,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22146,7 +22153,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22155,7 +22162,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22164,7 +22171,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22173,7 +22180,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22182,7 +22189,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22191,7 +22198,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22200,7 +22207,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22209,7 +22216,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-8",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22218,7 +22225,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-9",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22227,7 +22234,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-10",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22236,7 +22243,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-11",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22245,7 +22252,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-12",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22254,7 +22261,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-13",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22263,7 +22270,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-14",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22272,7 +22279,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-15",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22287,7 +22294,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-seq-volume-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -22302,7 +22309,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-relative-attack-factor-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22311,7 +22318,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22320,7 +22327,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22329,7 +22336,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-relative-attack-factor-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22338,7 +22345,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22347,7 +22354,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22356,7 +22363,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-relative-attack-factor-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22365,7 +22372,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22374,7 +22381,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22383,7 +22390,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-relative-attack-factor-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22392,7 +22399,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-attack-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22401,7 +22408,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-sync-phase-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -22410,7 +22417,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22419,7 +22426,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22428,7 +22435,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22437,7 +22444,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-0-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22446,7 +22453,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -22455,7 +22462,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22464,7 +22471,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22473,7 +22480,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22482,7 +22489,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22491,7 +22498,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22500,7 +22507,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22509,7 +22516,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22518,7 +22525,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22527,7 +22534,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22536,7 +22543,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22545,7 +22552,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22554,7 +22561,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22563,7 +22570,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-8",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22572,7 +22579,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-9",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22581,7 +22588,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-10",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22590,7 +22597,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-11",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22599,7 +22606,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-12",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22608,7 +22615,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-13",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22617,7 +22624,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-14",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22626,7 +22633,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-15",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22641,7 +22648,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-tuning-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22650,7 +22657,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22659,7 +22666,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22668,7 +22675,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22677,7 +22684,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22686,7 +22693,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-4",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22695,7 +22702,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-5",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22704,7 +22711,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-6",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22713,7 +22720,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-7",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22722,7 +22729,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-8",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22731,7 +22738,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-9",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22740,7 +22747,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-10",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22749,7 +22756,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-11",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22758,7 +22765,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-12",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22767,7 +22774,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-13",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22776,7 +22783,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-14",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22785,7 +22792,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-15",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22800,7 +22807,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-seq-volume-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -22815,7 +22822,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-relative-attack-factor-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22824,7 +22831,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22833,7 +22840,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22842,7 +22849,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       "synth-1-sync-relative-attack-factor-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22851,7 +22858,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22860,7 +22867,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22869,7 +22876,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-relative-attack-factor-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22878,7 +22885,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22887,7 +22894,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-2",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22896,7 +22903,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-relative-attack-factor-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22905,7 +22912,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-attack-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22914,7 +22921,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-sync-phase-3",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -22923,7 +22930,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22932,7 +22939,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22941,7 +22948,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22950,7 +22957,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-1-lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22960,7 +22967,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-0-cut-off-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22969,7 +22976,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-0-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22978,7 +22985,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-0-no-clip",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22987,7 +22994,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-1-cut-off-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -22996,7 +23003,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-1-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23005,7 +23012,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-1-no-clip",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23015,7 +23022,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-0-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23024,7 +23031,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-1-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23033,7 +23040,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-2-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23042,7 +23049,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-3-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23051,7 +23058,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23060,7 +23067,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-1-amp-0-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23069,7 +23076,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-1-amp-1-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23078,7 +23085,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-1-amp-2-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23087,7 +23094,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-1-amp-3-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23096,7 +23103,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-1-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23105,14 +23112,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(raven_synth->pitch_tuning));
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23121,7 +23128,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "noise-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23131,7 +23138,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23140,7 +23147,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23148,7 +23155,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23157,7 +23164,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23166,7 +23173,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23175,7 +23182,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23184,7 +23191,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23194,7 +23201,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23203,7 +23210,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23212,7 +23219,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23221,7 +23228,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23230,7 +23237,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23239,7 +23246,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23248,7 +23255,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23257,7 +23264,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23266,7 +23273,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23275,7 +23282,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
   }else if(AGS_IS_MODULAR_SYNTH(machine)){
@@ -23293,7 +23300,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-0-attack",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23302,7 +23309,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-0-decay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23311,7 +23318,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-0-sustain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23320,7 +23327,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-0-release",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23329,7 +23336,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-0-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23338,7 +23345,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-0-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23360,7 +23367,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "env-0-sends",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23370,7 +23377,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-1-attack",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23379,7 +23386,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-1-decay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23388,7 +23395,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-1-sustain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23397,7 +23404,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-1-release",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23406,7 +23413,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-1-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23415,7 +23422,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "env-1-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23437,7 +23444,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "env-1-sends",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23446,7 +23453,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-0-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23455,7 +23462,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-0-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23464,7 +23471,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-0-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23473,7 +23480,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-0-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23495,7 +23502,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "lfo-0-sends",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23504,7 +23511,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-1-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23513,7 +23520,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-1-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23522,7 +23529,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-1-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23531,7 +23538,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-1-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23553,7 +23560,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "lfo-1-sends",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -23563,7 +23570,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "noise-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23572,7 +23579,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "noise-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23594,7 +23601,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "noise-sends",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23603,7 +23610,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-0-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23612,7 +23619,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-0-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23621,7 +23628,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-0-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23630,7 +23637,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-0-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23639,7 +23646,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-0-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23648,7 +23655,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-1-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23657,7 +23664,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-1-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23666,7 +23673,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-1-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23675,7 +23682,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-1-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23684,7 +23691,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "osc-1-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23694,7 +23701,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23704,7 +23711,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23714,7 +23721,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-0-cut-off-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23723,7 +23730,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-0-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23732,7 +23739,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "low-pass-0-no-clip",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23742,7 +23749,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-0-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23751,7 +23758,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-1-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23760,7 +23767,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-2-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23769,7 +23776,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-amp-3-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23778,7 +23785,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "amplifier-0-filter-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23788,7 +23795,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23797,7 +23804,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23805,7 +23812,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23814,7 +23821,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23823,7 +23830,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23832,7 +23839,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23841,7 +23848,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
   }else if(AGS_IS_PITCH_SAMPLER(machine)){
@@ -23853,7 +23860,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
        pitch_sampler->audio_container->filename != NULL){
       xmlNewProp(node,
 		 BAD_CAST "filename",
-		 pitch_sampler->audio_container->filename);
+		 BAD_CAST (pitch_sampler->audio_container->filename));
     }
 
     if(gtk_check_button_get_active(pitch_sampler->enable_synth_generator)){
@@ -23866,7 +23873,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
       
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23875,7 +23882,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "base-note",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23884,7 +23891,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "key-count",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -23899,7 +23906,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-a-amount",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23908,7 +23915,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-a-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23917,7 +23924,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-b-amount",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23926,7 +23933,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-b-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23935,7 +23942,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23950,7 +23957,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23959,7 +23966,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23968,7 +23975,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -23977,7 +23984,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "lfo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_SFZ_SYNTH(machine)){
@@ -24008,7 +24015,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24017,7 +24024,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24025,14 +24032,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sfz_synth->synth_volume));
     
     xmlNewProp(node,
 	       BAD_CAST "synth-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24042,7 +24049,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24051,7 +24058,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24059,7 +24066,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24068,7 +24075,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24077,7 +24084,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24086,7 +24093,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24095,7 +24102,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24105,7 +24112,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24114,7 +24121,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24123,7 +24130,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24132,7 +24139,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24141,7 +24148,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24150,7 +24157,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24159,7 +24166,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24168,7 +24175,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24177,7 +24184,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24186,7 +24193,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24195,7 +24202,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24204,7 +24211,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-length",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24213,7 +24220,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-attack-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24222,7 +24229,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-attack-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24231,7 +24238,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-decay-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24240,7 +24247,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-decay-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24249,7 +24256,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-sustain-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24258,7 +24265,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-sustain-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24267,7 +24274,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-release-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24276,7 +24283,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-release-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24285,7 +24292,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-ratio",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24294,7 +24301,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24303,7 +24310,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24312,7 +24319,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -24331,7 +24338,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
       
       xmlNewProp(node,
 		 BAD_CAST "preset",
-		 str);
+		 BAD_CAST str);
 
       g_free(str);
 
@@ -24339,7 +24346,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
       
       xmlNewProp(node,
 		 BAD_CAST "instrument",
-		 str);
+		 BAD_CAST str);
 
       g_free(str);
     }
@@ -24354,7 +24361,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
       
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -24363,7 +24370,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "base-note",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24372,7 +24379,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "key-count",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24387,7 +24394,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-a-amount",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24396,7 +24403,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-a-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24405,7 +24412,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-b-amount",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24414,7 +24421,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "aliase-b-phase",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24423,7 +24430,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_SF2_SYNTH(machine)){
@@ -24454,7 +24461,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
       xmlNewProp(node,
 		 BAD_CAST "bank",
-		 str);
+		 BAD_CAST str);
 
       g_free(str);
 
@@ -24463,7 +24470,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
       xmlNewProp(node,
 		 BAD_CAST "program",
-		 str);
+		 BAD_CAST str);
 
       g_free(str);
     }
@@ -24474,7 +24481,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-octave",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24483,7 +24490,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "synth-key",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24491,14 +24498,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "pitch-type",
-	       str);
+	       BAD_CAST str);
 
     str = g_strdup_printf("%lf",
 			  ags_dial_get_value(sf2_synth->synth_volume));
     
     xmlNewProp(node,
 	       BAD_CAST "synth-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24508,7 +24515,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-input-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24517,7 +24524,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-output-volume",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24525,7 +24532,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-oscillator",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -24534,7 +24541,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24543,7 +24550,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24552,7 +24559,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-mix",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24561,7 +24568,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-delay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24571,7 +24578,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24580,7 +24587,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24589,7 +24596,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24598,7 +24605,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24607,7 +24614,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "tremolo-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24616,7 +24623,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24625,7 +24632,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-gain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24634,7 +24641,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24643,7 +24650,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24652,7 +24659,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "vibrato-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24661,7 +24668,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-enabled",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24670,7 +24677,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-length",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
     
@@ -24679,7 +24686,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-attack-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24688,7 +24695,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-attack-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24697,7 +24704,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-decay-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24706,7 +24713,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-decay-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24715,7 +24722,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-sustain-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24724,7 +24731,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-sustain-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24733,7 +24740,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-release-x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24742,7 +24749,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-release-y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24751,7 +24758,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-ratio",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24760,7 +24767,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-lfo-depth",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24769,7 +24776,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-lfo-freq",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -24778,7 +24785,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "wah-wah-tuning",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);    
 #endif
@@ -24789,7 +24796,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "filename",
-	       gtk_editable_get_text(GTK_EDITABLE(audiorec->filename)));
+	       BAD_CAST (gtk_editable_get_text(GTK_EDITABLE(audiorec->filename))));
   }else if(AGS_IS_LADSPA_BRIDGE(machine)){
     AgsLadspaBridge *ladspa_bridge;
 
@@ -24797,11 +24804,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "plugin-file",
-	       ladspa_bridge->filename);
+	       BAD_CAST (ladspa_bridge->filename));
 
     xmlNewProp(node,
 	       BAD_CAST "effect",
-	       ladspa_bridge->effect);
+	       BAD_CAST (ladspa_bridge->effect));
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
     AgsDssiBridge *dssi_bridge;
 
@@ -24809,17 +24816,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "plugin-file",
-	       dssi_bridge->filename);
+	       BAD_CAST (dssi_bridge->filename));
 
     xmlNewProp(node,
 	       BAD_CAST "effect",
-	       dssi_bridge->effect);
+	       BAD_CAST (dssi_bridge->effect));
 
     str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) dssi_bridge->program);
     
     xmlNewProp(node,
 	       BAD_CAST "program",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_LIVE_DSSI_BRIDGE(machine)){
@@ -24829,17 +24836,17 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "plugin-file",
-	       live_dssi_bridge->filename);
+	       BAD_CAST (live_dssi_bridge->filename));
 
     xmlNewProp(node,
 	       BAD_CAST "effect",
-	       live_dssi_bridge->effect);
+	       BAD_CAST (live_dssi_bridge->effect));
 
     str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) live_dssi_bridge->program);
     
     xmlNewProp(node,
 	       BAD_CAST "program",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(AGS_IS_LV2_BRIDGE(machine)){
@@ -24849,18 +24856,18 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "plugin-file",
-	       lv2_bridge->filename);
+	       BAD_CAST (lv2_bridge->filename));
 
     xmlNewProp(node,
 	       BAD_CAST "effect",
-	       lv2_bridge->effect);
+	       BAD_CAST (lv2_bridge->effect));
 
     if(lv2_bridge->preset != NULL){
       str = gtk_combo_box_text_get_active_text((GtkComboBoxText *) lv2_bridge->preset);
       
       xmlNewProp(node,
 		 BAD_CAST "preset",
-		 str);
+		 BAD_CAST str);
 
       g_free(str);
     }
@@ -24894,11 +24901,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "plugin-file",
-	       vst3_bridge->filename);
+	       BAD_CAST vst3_bridge->filename);
 
     xmlNewProp(node,
 	       BAD_CAST "effect",
-	       vst3_bridge->effect);
+	       BAD_CAST vst3_bridge->effect);
   }else if(AGS_IS_LIVE_VST3_BRIDGE(machine)){
     AgsLiveVst3Bridge *live_vst3_bridge;
 
@@ -24906,11 +24913,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "plugin-file",
-	       live_vst3_bridge->filename);
+	       BAD_CAST (live_vst3_bridge->filename));
 
     xmlNewProp(node,
 	       BAD_CAST "effect",
-	       live_vst3_bridge->effect);
+	       BAD_CAST (live_vst3_bridge->effect));
 #endif
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
   }else if(AGS_IS_AUDIO_UNIT_BRIDGE(machine)){
@@ -24920,11 +24927,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       BAD_CAST "plugin-file",
-	       audio_unit_bridge->filename);
+	       BAD_CAST (audio_unit_bridge->filename));
 
     xmlNewProp(node,
 	       BAD_CAST "effect",
-	       audio_unit_bridge->effect);
+	       BAD_CAST (audio_unit_bridge->effect));
 #endif
   }
   
@@ -25148,7 +25155,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	      
 	      xmlNewProp(pattern_node,
 			 BAD_CAST "nth-line",
-			 str);
+			 BAD_CAST str);
 
 	      g_free(str);
 
@@ -25157,14 +25164,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	      
 	      xmlNewProp(pattern_node,
 			 BAD_CAST "bank-0",
-			 str);
+			 BAD_CAST str);
 
 	      str = g_strdup_printf("%d",
 				    j);
 	      
 	      xmlNewProp(pattern_node,
 			 BAD_CAST "bank-1",
-			 str);
+			 BAD_CAST str);
 
 	      g_free(str);
 	      
@@ -25398,36 +25405,36 @@ ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *p
 
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
+	       BAD_CAST ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
   }else if(GTK_IS_CHECK_BUTTON(child_widget)){
     control_node = xmlNewNode(NULL,
 			      BAD_CAST "ags-sf-control");
 
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
     
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       ((gtk_check_button_get_active((GtkCheckButton *) child_widget)) ? "true": "false"));
+	       BAD_CAST ((gtk_check_button_get_active((GtkCheckButton *) child_widget)) ? "true": "false"));
   }else if(AGS_IS_DIAL(child_widget)){
     control_node = xmlNewNode(NULL,
 			      BAD_CAST "ags-sf-control");
 
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
 
     str = g_strdup_printf("%lf",
 			  gtk_adjustment_get_value(AGS_DIAL(child_widget)->adjustment));
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(GTK_IS_RANGE(child_widget)){
@@ -25436,14 +25443,14 @@ ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *p
 
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
 
     str = g_strdup_printf("%lf",
 			  gtk_range_get_value(GTK_RANGE(child_widget)));
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(GTK_IS_SPIN_BUTTON(child_widget)){
@@ -25452,14 +25459,14 @@ ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *p
 
     xmlNewProp(control_node,
 	       BAD_CAST "control-type",
-	       G_OBJECT_TYPE_NAME(child_widget));
+	       BAD_CAST (G_OBJECT_TYPE_NAME(child_widget)));
 
     str = g_strdup_printf("%lf",
 			  gtk_spin_button_get_value(GTK_SPIN_BUTTON(child_widget)));
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else{
@@ -25470,7 +25477,7 @@ ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *p
 
   xmlNewProp(control_node,
 	     BAD_CAST "specifier",
-	     line_member->specifier);
+	     BAD_CAST (line_member->specifier));
 
   xmlAddChild(parent,
 	      control_node);
@@ -25519,7 +25526,7 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   
   xmlNewProp(node,
 	     BAD_CAST "nth-line",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -25587,7 +25594,7 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     
 	xmlNewProp(node,
 		   BAD_CAST "filename",
-		   str);
+		   BAD_CAST str);
 
 	g_free(str);
 
@@ -25596,7 +25603,7 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
     
 	xmlNewProp(node,
 		   BAD_CAST "file-channel",
-		   str);
+		   BAD_CAST str);
 
 	g_free(str);
     
@@ -25658,11 +25665,11 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
 
 	xmlNewProp(effect_node,
 		   BAD_CAST "filename",
-		   AGS_LINE_MEMBER(list->data)->filename);
+		   BAD_CAST (AGS_LINE_MEMBER(list->data)->filename));
 
 	xmlNewProp(effect_node,
 		   BAD_CAST "effect",
-		   AGS_LINE_MEMBER(list->data)->effect);
+		   BAD_CAST (AGS_LINE_MEMBER(list->data)->effect));
 	
 	ags_simple_file_write_line_member_control(simple_file, effect_node, list->data);
 	  
@@ -25870,14 +25877,14 @@ ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *p
 
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
+	       BAD_CAST ((gtk_toggle_button_get_active((GtkToggleButton *) child_widget)) ? "true": "false"));
   }else if(GTK_IS_CHECK_BUTTON(child_widget)){
     control_node = xmlNewNode(NULL,
 			      BAD_CAST "ags-sf-control");
 
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       ((gtk_check_button_get_active((GtkCheckButton *) child_widget)) ? "true": "false"));
+	       BAD_CAST ((gtk_check_button_get_active((GtkCheckButton *) child_widget)) ? "true": "false"));
   }else if(AGS_IS_DIAL(child_widget)){
     control_node = xmlNewNode(NULL,
 			      BAD_CAST "ags-sf-control");
@@ -25887,7 +25894,7 @@ ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *p
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(GTK_IS_RANGE(child_widget)){
@@ -25899,7 +25906,7 @@ ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *p
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else if(GTK_IS_SPIN_BUTTON(child_widget)){
@@ -25911,7 +25918,7 @@ ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *p
       
     xmlNewProp(control_node,
 	       BAD_CAST "value",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
   }else{
@@ -25922,7 +25929,7 @@ ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *p
 
   xmlNewProp(control_node,
 	     BAD_CAST "specifier",
-	     line_member->specifier);
+	     BAD_CAST (line_member->specifier));
 
   xmlAddChild(parent,
 	      control_node);
@@ -26058,7 +26065,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 {
   xmlNode *node;
 
-  xmlChar *str, *tmp;
+  gchar *str, *tmp;
 
   guint i;
   
@@ -26070,7 +26077,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   
   xmlNewProp(node,
 	     BAD_CAST "wave",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26079,7 +26086,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   
   xmlNewProp(node,
 	     BAD_CAST "attack",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26088,7 +26095,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   
   xmlNewProp(node,
 	     BAD_CAST "length",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26097,7 +26104,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   
   xmlNewProp(node,
 	     BAD_CAST "frequency",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26106,7 +26113,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   
   xmlNewProp(node,
 	     BAD_CAST "phase",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26115,13 +26122,13 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   
   xmlNewProp(node,
 	     BAD_CAST "volume",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
   xmlNewProp(node,
 	     BAD_CAST "sync",
-	     (gtk_check_button_get_active((GtkCheckButton *) oscillator->do_sync) ? "true": "false"));
+	     BAD_CAST (gtk_check_button_get_active((GtkCheckButton *) oscillator->do_sync) ? "true": "false"));
 
   str = NULL;
 
@@ -26142,7 +26149,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
   xmlNewProp(node,
 	     BAD_CAST "sync-point",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -26179,7 +26186,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 {
   xmlNode *node;
 
-  xmlChar *str, *tmp;
+  gchar *str, *tmp;
 
   guint i;
   
@@ -26191,7 +26198,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   
   xmlNewProp(node,
 	     BAD_CAST "wave",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26200,7 +26207,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   
   xmlNewProp(node,
 	     BAD_CAST "attack",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26209,7 +26216,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   xmlNewProp(node,
 	     BAD_CAST "length",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26218,7 +26225,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   xmlNewProp(node,
 	     BAD_CAST "frequency",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26227,7 +26234,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   xmlNewProp(node,
 	     BAD_CAST "phase",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26236,7 +26243,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   xmlNewProp(node,
 	     BAD_CAST "volume",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26263,7 +26270,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   
   xmlNewProp(node,
 	     BAD_CAST "sync-point",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26271,7 +26278,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
   
   xmlNewProp(node,
 	     BAD_CAST "fm-lfo-wave",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26279,7 +26286,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   xmlNewProp(node,
 	     BAD_CAST "fm-lfo-frequency",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26287,7 +26294,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   xmlNewProp(node,
 	     BAD_CAST "fm-lfo-depth",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26295,7 +26302,7 @@ ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent,
 
   xmlNewProp(node,
 	     BAD_CAST "fm-tuning",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -26346,8 +26353,9 @@ ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_looku
   GList *start_list, *list;
   GList *file_id_ref;
 
-  xmlChar *xpath;
-  xmlChar *str;
+  gchar *xpath;
+
+  xmlChar *id_str;
   
   node = file_lookup->node;
   property_list = NULL;
@@ -26372,14 +26380,14 @@ ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_looku
       file_id_ref = ags_simple_file_find_id_ref_by_reference((AgsSimpleFile *) file_lookup->file,
 							     AGS_MACHINE_RADIO_BUTTON(list->data)->machine);
       if(file_id_ref != NULL){
-	str = xmlGetProp(AGS_FILE_ID_REF(file_id_ref->data)->node,
+	id_str = xmlGetProp(AGS_FILE_ID_REF(file_id_ref->data)->node,
 			 BAD_CAST "id");
 	
 	xpath = g_strdup_printf("xpath=//ags-sf-machine[@id='%s']",
-				str);
+				id_str);
 
-	if(str != NULL){
-	  xmlFree(str);
+	if(id_str != NULL){
+	  xmlFree(id_str);
 	}
       }else{
 	xpath = g_strdup("(null)");
@@ -26387,8 +26395,10 @@ ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_looku
       
       xmlNewProp(property,
 		 BAD_CAST "value",
-		 xpath);
+		 BAD_CAST xpath);
 
+      g_free(xpath);
+      
       /* add to parent */
       xmlAddChild(property_list,
 		  property);
@@ -26457,10 +26467,15 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
   node = xmlNewNode(NULL,
 		    BAD_CAST "ags-sf-notation");
 
+  str = g_strdup_printf("%d",
+			notation->audio_channel);
+  
   xmlNewProp(node,
 	     BAD_CAST "channel",
-	     g_strdup_printf("%d", notation->audio_channel));
+	     BAD_CAST str);
 
+  g_free(str);
+  
   /* timestamp */
   child = xmlNewNode(NULL,
 		     BAD_CAST "ags-sf-timestamp");
@@ -26470,7 +26485,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
   
   xmlNewProp(child,
 	     BAD_CAST "offset",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -26490,7 +26505,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "x0",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26499,7 +26514,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "x1",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26508,7 +26523,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26524,7 +26539,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "attack",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -26534,7 +26549,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "decay",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26544,7 +26559,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "sustain",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26554,7 +26569,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "release",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26564,7 +26579,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "ratio",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26574,7 +26589,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "x0-256th",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26583,7 +26598,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       BAD_CAST "x1-256th",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -26640,21 +26655,21 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   str = g_strdup_printf("%d", automation->line);
   xmlNewProp(node,
 	     BAD_CAST "line",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
   str = g_strdup_printf("%s", g_type_name(automation->channel_type));
   xmlNewProp(node,
 	     BAD_CAST "channel-type",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
   str = g_strdup_printf("%s", automation->control_name);
   xmlNewProp(node,
 	     BAD_CAST "control-name",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26662,10 +26677,14 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
   child = xmlNewNode(NULL,
 		     BAD_CAST "ags-sf-timestamp");
 
+  str = g_strdup_printf("%lu",
+			automation->timestamp->timer.ags_offset.offset);
+  
   xmlNewProp(child,
 	     BAD_CAST "offset",
-	     g_strdup_printf("%lu",
-			     automation->timestamp->timer.ags_offset.offset));
+	     BAD_CAST str);
+
+  g_free(str);
     
   /* add to parent */
   xmlAddChild(node,
@@ -26683,7 +26702,7 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
     
     xmlNewProp(child,
 	       BAD_CAST "x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -26692,7 +26711,7 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
     
     xmlNewProp(child,
 	       BAD_CAST "y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
@@ -26761,18 +26780,19 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   /* scope and preset name */
   xmlNewProp(node,
 	     BAD_CAST "scope",
-	     g_strdup(preset->scope));
+	     BAD_CAST (preset->scope));
 
   xmlNewProp(node,
 	     BAD_CAST "preset-name",
-	     g_strdup(preset->preset_name));
+	     BAD_CAST (preset->preset_name));
 
   /* mapping */
-  str = g_strdup_printf("%d", preset->audio_channel_start);
+  str = g_strdup_printf("%d",
+			preset->audio_channel_start);
   
   xmlNewProp(node,
 	     BAD_CAST "audio-channel-start",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
   
@@ -26780,7 +26800,7 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   
   xmlNewProp(node,
 	     BAD_CAST "audio-channel-end",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26788,7 +26808,7 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   
   xmlNewProp(node,
 	     BAD_CAST "pad-start",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26796,7 +26816,7 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   
   xmlNewProp(node,
 	     BAD_CAST "pad-end",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26804,7 +26824,7 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   
   xmlNewProp(node,
 	     BAD_CAST "x-start",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26812,7 +26832,7 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   
   xmlNewProp(node,
 	     BAD_CAST "x-end",
-	     str);
+	     BAD_CAST str);
 
   g_free(str);
 
@@ -26874,16 +26894,20 @@ ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsPr
 
   xmlNewProp(node,
 	     BAD_CAST "control-name",
-	     g_strdup(program->control_name));
+	     BAD_CAST (program->control_name));
 
   /* timestamp */
   child = xmlNewNode(NULL,
 		     BAD_CAST "ags-sf-timestamp");
 
+  str = g_strdup_printf("%lu",
+			program->timestamp->timer.ags_offset.offset);
+  
   xmlNewProp(child,
 	     BAD_CAST "offset",
-	     g_strdup_printf("%lu",
-			     program->timestamp->timer.ags_offset.offset));
+	     BAD_CAST str);
+
+  g_free(str);
     
   /* add to parent */
   xmlAddChild(node,
@@ -26901,7 +26925,7 @@ ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsPr
     
     xmlNewProp(child,
 	       BAD_CAST "x",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
     
@@ -26910,7 +26934,7 @@ ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsPr
     
     xmlNewProp(child,
 	       BAD_CAST "y",
-	       str);
+	       BAD_CAST str);
 
     g_free(str);
 
