@@ -49,7 +49,7 @@ struct _CoreAudioPlayback
 
 struct _CoreAudioPlayback playback = {0,};
 
-int
+OSStatus
 hw_output_callback(AudioObjectID in_device, const AudioTimeStamp *in_now, const AudioBufferList *in_input_data, const AudioTimeStamp *in_input_time, AudioBufferList *out_output_data, const AudioTimeStamp *in_output_time, void *in_client_data)
 {
   AudioBuffer *out_buffer;
