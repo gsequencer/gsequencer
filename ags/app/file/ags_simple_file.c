@@ -12979,6 +12979,8 @@ ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *nod
   GtkTreeIter iter;
 
   xmlChar *str;
+  
+  gchar *value;
 
   /* program */
   //NOTE:JK: work-around
@@ -12992,6 +12994,8 @@ ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *nod
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
 			 0, &value,
 			 -1);
@@ -13018,6 +13022,8 @@ ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode
   GtkTreeIter iter;
 
   xmlChar *str;
+  
+  gchar *value;  
 
   /* program */
   //NOTE:JK: work-around
@@ -13031,6 +13037,8 @@ ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
 			 0, &value,
 			 -1);
@@ -13059,6 +13067,8 @@ ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node
   xmlChar *version;
   xmlChar *preset;
 
+  gchar *value;
+  
   guint major, minor, micro;
 
   if(lv2_bridge->preset == NULL){
@@ -13132,6 +13142,8 @@ ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
 			 0, &value,
 			 -1);
@@ -13159,6 +13171,8 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode 
 
   xmlChar *version;
   xmlChar *preset;
+
+  gchar *value;
 
   guint major, minor, micro;
 
@@ -13233,6 +13247,8 @@ ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode 
 
   if(gtk_tree_model_get_iter_first(model, &iter)){
     do{
+      value = NULL;
+      
       gtk_tree_model_get(model, &iter,
 			 0, &value,
 			 -1);
@@ -15553,6 +15569,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
       ags_recycling_add_audio_signal(channel->first_recycling,
 				     audio_signal_list->data);
     }
+    
+    g_free(filename);
   }else{
     if(str != NULL){
       xmlFree(str);
@@ -15614,8 +15632,6 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
       
       xpath_result = xpath_result->next;
     }
-
-    g_free(filename);
     
     g_list_free(start_xpath_result);
   }
@@ -18425,7 +18441,7 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
 			 AGS_TYPE_COMPLEX)){
     AgsComplex *z;
     
-    type_name = gBAD_CAST _type_name(AGS_TYPE_COMPLEX);
+    type_name = BAD_CAST g_type_name(AGS_TYPE_COMPLEX);
 
     z = g_value_get_boxed(&(property->value));
     val = BAD_CAST g_strdup_printf("%lf %lf",
@@ -21798,7 +21814,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(node,
 	       BAD_CAST "chorus-lfo-frequency",
-	       sBAD_CAST tr);
+	       BAD_CAST str);
 
     g_free(str);    
 
@@ -27006,7 +27022,7 @@ ags_simple_file_start_queue_timeout(AgsSimpleFile *simple_file)
       label = (GtkLabel *) gtk_header_bar_get_title_widget(window->header_bar);
 
       if(label != NULL){
-	window_title = g_strdup_printf("GSequencer\n<small>%s</small>"n,
+	window_title = g_strdup_printf("GSequencer\n<small>%s</small>",
 				       window->loaded_filename);
 
 	gtk_label_set_label(label,
