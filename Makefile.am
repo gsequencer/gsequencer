@@ -670,6 +670,7 @@ libags_la_SOURCES = \
 	$(libags_file_task_c_sources)
 libags_la_HEADERS_0 = \
 	ags/libags.h \
+	ags/libags-globals.h \
 	$(libags_h_sources) \
 	$(libags_util_h_sources) \
 	$(libags_object_h_sources) \
