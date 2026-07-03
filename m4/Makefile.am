@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2024 Joel Kraehemann
+#Copyright (C) 2005-2026 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -12,7 +12,6 @@ EXTRA_DIST = host-cpu-c-abi.m4 \
         ags-listings.m4 \
         ags-marshallers.m4 \
         ags-potfiles.m4 \
-        ags-symbols.m4 \
         gnulib-comp.m4 \
         codeset.m4 \
         extern-inline.m4 \
