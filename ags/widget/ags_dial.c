@@ -558,16 +558,22 @@ ags_dial_set_property(GObject *gobject,
   case PROP_RADIUS:
     {
       dial->radius = g_value_get_uint(value);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_OUTLINE_STRENGTH:
     {
       dial->outline_strength = g_value_get_uint(value);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_FONT_SIZE:
     {
       dial->font_size = g_value_get_uint(value);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_FONT_NAME:
@@ -579,26 +585,36 @@ ags_dial_set_property(GObject *gobject,
       g_free(dial->font_name);
 
       dial->font_name = g_strdup(font_name);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_BUTTON_WIDTH:
     {
       dial->button_width = g_value_get_int(value);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_BUTTON_HEIGHT:
     {
       dial->button_height = g_value_get_int(value);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_MARGIN_LEFT:
     {
       dial->margin_left = g_value_get_int(value);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_MARGIN_RIGHT:
     {
       dial->margin_right = g_value_get_int(value);
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_ADJUSTMENT:
@@ -644,6 +660,8 @@ ags_dial_set_property(GObject *gobject,
       }
 
       dial->adjustment = adjustment;
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   case PROP_SCALE_PRECISION:
@@ -659,6 +677,8 @@ ags_dial_set_property(GObject *gobject,
       }else{
 	dial->scale_precision = scale_precision;
       }
+
+      gtk_widget_queue_draw((GtkWidget *) dial);
     }
     break;
   default:

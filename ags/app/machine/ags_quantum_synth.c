@@ -1320,6 +1320,8 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  1, 1);
 
   quantum_synth->synth_0_sync_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 10.0, 0.01);
+  gtk_spin_button_set_value(quantum_synth->synth_0_sync_lfo_frequency,
+			    10.0);
   gtk_grid_attach(synth_0_grid,
 		  (GtkWidget *) quantum_synth->synth_0_sync_lfo_frequency,
 		  23, 1,
@@ -2409,6 +2411,10 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 		  1, 1);
 
   quantum_synth->synth_1_sync_lfo_frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(0.01, 10.0, 0.01);
+
+  gtk_spin_button_set_value(quantum_synth->synth_1_sync_lfo_frequency,
+			    10.0);
+
   gtk_grid_attach(synth_1_grid,
 		  (GtkWidget *) quantum_synth->synth_1_sync_lfo_frequency,
 		  23, 1,
