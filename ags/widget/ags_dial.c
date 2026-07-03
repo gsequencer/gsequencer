@@ -211,8 +211,9 @@ ags_dial_flags_get_type(void)
   if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_WITH_BUTTONS", "dial-with-buttons" },
-      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_SEEMLESS_MODE", "dial-seemless-mode" },
-      { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_INVERSE_LIGHT", "dial-inverse-light" },
+      { AGS_DIAL_SEEMLESS_MODE, "AGS_DIAL_SEEMLESS_MODE", "dial-seemless-mode" },
+      { AGS_DIAL_INVERSE_LIGHT, "AGS_DIAL_INVERSE_LIGHT", "dial-inverse-light" },
+      { AGS_DIAL_NO_UPDATE, "AGS_DIAL_NO_UPDATE", "dial-no-update" },
       { 0, NULL, NULL }
     };
 
@@ -2587,6 +2588,10 @@ ags_dial_adjustment_value_changed_callback(GtkAdjustment *adjustment,
 				 -1);
   
   ags_dial_value_changed(dial);
+
+  if(!ags_dial_test_flags(dial, AGS_DIAL_NO_UPDATE)){
+    gtk_widget_queue_draw((GtkWidget *) dial);
+  }
 }
 
 /**
@@ -2606,11 +2611,17 @@ ags_dial_set_value(AgsDial *dial,
     return;
   }
 
+  ags_dial_set_flags(dial,
+		     AGS_DIAL_NO_UPDATE);
+  
   gtk_adjustment_set_value(dial->adjustment,
 			   value);
   
   ags_dial_value_changed(dial);
   gtk_widget_queue_draw((GtkWidget *) dial);
+
+  ags_dial_unset_flags(dial,
+		       AGS_DIAL_NO_UPDATE);
 }
 
 /**
