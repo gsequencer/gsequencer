@@ -107,7 +107,7 @@ gboolean ags_dial_modifiers_callback(GtkEventControllerKey *event_controller,
 void ags_dial_motion_notify_do_dial(AgsDial *dial,
 				    gdouble x,
 				    gdouble y);
-void ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
+void ags_dial_motion_notify_do_seamless_dial(AgsDial *dial,
 					     gdouble x,
 					     gdouble y);
 
@@ -211,7 +211,7 @@ ags_dial_flags_get_type(void)
   if(g_once_init_enter(&g_flags_type_id__static)){
     static const GFlagsValue values[] = {
       { AGS_DIAL_WITH_BUTTONS, "AGS_DIAL_WITH_BUTTONS", "dial-with-buttons" },
-      { AGS_DIAL_SEEMLESS_MODE, "AGS_DIAL_SEEMLESS_MODE", "dial-seemless-mode" },
+      { AGS_DIAL_SEAMLESS_MODE, "AGS_DIAL_SEAMLESS_MODE", "dial-seamless-mode" },
       { AGS_DIAL_INVERSE_LIGHT, "AGS_DIAL_INVERSE_LIGHT", "dial-inverse-light" },
       { AGS_DIAL_NO_UPDATE, "AGS_DIAL_NO_UPDATE", "dial-no-update" },
       { 0, NULL, NULL }
@@ -467,7 +467,7 @@ ags_dial_init(AgsDial *dial)
   GtkEventController *event_controller;
     
   dial->flags = (AGS_DIAL_WITH_BUTTONS |
-		 AGS_DIAL_SEEMLESS_MODE |
+		 AGS_DIAL_SEAMLESS_MODE |
 		 AGS_DIAL_INVERSE_LIGHT);
   dial->state_flags = 0;
 
@@ -1230,7 +1230,7 @@ ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
   widget_height = gtk_widget_get_height((GtkWidget *) dial);
 
   if((AGS_DIAL_STATE_MOTION_CAPTURING & (dial->state_flags)) != 0){
-    if((AGS_DIAL_SEEMLESS_MODE & (dial->flags)) != 0){
+    if((AGS_DIAL_SEAMLESS_MODE & (dial->flags)) != 0){
       if((AGS_DIAL_STATE_MOTION_CAPTURING_INIT & (dial->state_flags)) != 0){
 	dial->current_x = x;
 	dial->current_y = y;
@@ -1241,7 +1241,7 @@ ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
 	dial->current_y = y;
       }
 
-      ags_dial_motion_notify_do_seemless_dial(dial,
+      ags_dial_motion_notify_do_seamless_dial(dial,
 					      x, y);
     }else{
       if((AGS_DIAL_STATE_MOTION_CAPTURING_INIT & (dial->state_flags)) != 0){
@@ -1316,7 +1316,7 @@ ags_dial_motion_notify_do_dial(AgsDial *dial,
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
   }else{
-    if(gtk_adjustment_get_value(adjustment) < gtk_adjustment_get_lower(adjustment)){
+    if(gtk_adjustment_get_value(adjustment) < gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
 			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment));
 
@@ -1327,7 +1327,7 @@ ags_dial_motion_notify_do_dial(AgsDial *dial,
 }
 
 void
-ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
+ags_dial_motion_notify_do_seamless_dial(AgsDial *dial,
 					gdouble x,
 					gdouble y)
 {
@@ -2247,7 +2247,7 @@ ags_dial_get_font_name(AgsDial *dial)
   gchar *font_name;
   
   if(!AGS_IS_DIAL(dial)){
-    return(0);
+    return(NULL);
   }
 
   font_name = NULL;
@@ -2444,7 +2444,7 @@ ags_dial_get_margin_left(AgsDial *dial)
     return(-1);
   }
   
-  g_object_set(dial,
+  g_object_get(dial,
 	       "margin-left", &margin_left,
 	       NULL);
 

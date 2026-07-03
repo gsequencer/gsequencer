@@ -19,6 +19,8 @@
 
 #include <ags/object/ags_application_context.h>
 
+#include <ags/config.h>
+
 #include <ags/lib/ags_log.h>
 
 #include <ags/file/ags_file.h>
@@ -129,7 +131,12 @@ enum{
 static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
 
+#if defined(__clang__)
 AgsApplicationContext *ags_application_context = NULL;
+#elif defined(__GNUC__)
+__attribute__((visibility("default"))) AgsApplicationContext *ags_application_context = NULL;
+#endif
+
 
 GType
 ags_application_context_get_type()
