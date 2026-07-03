@@ -54,7 +54,7 @@ typedef struct _AgsDialClass AgsDialClass;
 /**
  * AgsDialFlags: 
  * @AGS_DIAL_WITH_BUTTONS: with buttons
- * @AGS_DIAL_SEAMLESS_MODE: seamless mode
+ * @AGS_DIAL_SEEMLESS_MODE: seemless mode
  * @AGS_DIAL_INVERSE_LIGTH: inverse light
  * @AGS_DIAL_NO_UPDATE: no update
  * 
@@ -62,7 +62,7 @@ typedef struct _AgsDialClass AgsDialClass;
  */
 typedef enum{
   AGS_DIAL_WITH_BUTTONS           = 1,
-  AGS_DIAL_SEAMLESS_MODE          = 1 <<  1,
+  AGS_DIAL_SEEMLESS_MODE          = 1 <<  1,
   AGS_DIAL_INVERSE_LIGHT          = 1 <<  2,
   AGS_DIAL_NO_UPDATE              = 1 <<  3,
 }AgsDialFlags;
