@@ -1,0 +1,6 @@
+{
+    global:
+        ags_application_context;
+    local:
+        *;
+};
