@@ -1,4 +1,4 @@
-ags (9.1.0)
+ags (9.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added libags-globlas.txt exporting ags_application_context as extern variable
