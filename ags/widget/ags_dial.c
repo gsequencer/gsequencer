@@ -978,7 +978,7 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   radius = (gdouble) dial->radius;
   outline_strength = (gdouble) dial->outline_strength;
 
-  width = 2 * (button_height + radius + outline_strength + 2) + (margin_left + margin_right);
+  width = 2 * (button_width + radius + outline_strength + 2) + (margin_left + margin_right);
   height = 2 * (radius + outline_strength + 1);
 
   padding_top = (widget_height - height + 2) / 2;
@@ -1575,12 +1575,12 @@ ags_dial_draw(AgsDial *dial,
     g_object_get(settings,
 		 "gtk-font-name", &font_name,
 		 NULL);
-
+    
     ags_dial_set_font_name(dial,
 			   font_name);
-  }else{
-    font_name = dial->font_name;
   }
+
+  font_name = dial->font_name;
 
   if(font_name == NULL){
     font_name = "sans";

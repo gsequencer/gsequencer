@@ -2007,6 +2007,10 @@ ags_cartesian_draw(AgsCartesian *cartesian,
 	       "gtk-application-prefer-dark-theme", &dark_theme,
 	       NULL);
 
+  if(font_name == NULL){
+    font_name = "sans";
+  }
+
   /* colors */
   fg_success = gtk_style_context_lookup_color(style_context,
 					      "theme_fg_color",

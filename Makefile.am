@@ -411,14 +411,6 @@ CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
 EXTRA_DIST += Doxyfile.in
 
 EXTRA_DIST += \
-	libags.sym \
-	libags_thread.sym \
-	libags_server.sym \
-	libags_audio.sym \
-	libags_vst.sym \
-	libags_gui.sym
-
-EXTRA_DIST += \
 	docs/reference/libags/git.mk \
 	docs/reference/libags/gtk-doc.make \
 	docs/reference/libags/Makefile.am \
@@ -989,9 +981,9 @@ if WITH_W32API
 libags_vst_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_vst.dll.a
 else
 if WITH_OSXAPI
-libags_vst_la_LDFLAGS += -export-symbols libags_vst.sym -Wl,-install_name,libags_vst.dylib
+libags_vst_la_LDFLAGS += -Wl,-install_name,libags_vst.dylib
 else
-libags_vst_la_LDFLAGS += -export-symbols libags_vst.sym -Wl,-soname,libags_vst.so
+libags_vst_la_LDFLAGS += -Wl,-soname,libags_vst.so
 libags_vst_la_LIBADD += -ldl
 endif
 endif
