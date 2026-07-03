@@ -220,9 +220,6 @@ EXTRA_DIST += \
 	license-notice-permissive-xml.txt
 
 EXTRA_DIST += \
-	libags-globals.txt
-
-EXTRA_DIST += \
 	unit-system-tests.mk.am \
 	unit-system-tests.mk.in \
 	functional-system-tests.mk.am \
@@ -800,9 +797,9 @@ libags-$(DLL_VERSION).def: libags.la
 defexec_DATA += libags-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
-libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,--dynamic-list=$(srcdir)/libags-globals.txt -Wl,-install_name,libags.dylib
+libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,-install_name,libags.dylib
 else
-libags_la_LDFLAGS += -Wl,--dynamic-list=$(srcdir)/libags-globals.txt -Wl,-soname,libags.so
+libags_la_LDFLAGS += -Wl,-soname,libags.so
 libags_la_LIBADD += -ldl -lcrypt
 endif
 endif
