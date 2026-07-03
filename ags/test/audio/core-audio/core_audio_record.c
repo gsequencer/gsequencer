@@ -57,25 +57,34 @@ struct _CoreAudioRecord
 
 struct _CoreAudioRecord record = {0,};
 
-int
+OSStatus
 hw_input_callback(AudioObjectID in_device, const struct AudioTimeStamp *in_now, const struct AudioBufferList *in_input_data, const struct AudioTimeStamp *in_input_time, struct AudioBufferList *out_output_data, const struct AudioTimeStamp *in_output_time, void *in_client_data)
 {
   AudioBuffer *in_buffer;
   
   float *buffer;
 
+  UInt32 sample_count;
   int i;
   
   in_buffer = in_input_data->mBuffers;
   
   buffer = in_buffer->mData;
+  		
+  if((in_buffer->mDataByteSize % sizeof(float)) != 0){
+    return(0);
+  }
 
-  for(i = 0; i < record.buffer_size && 2 * i < CORE_AUDIO_RECORD_PCM_BUFFER_SIZE && i < in_buffer->mDataByteSize / sizeof(float); i++){
+  sample_count = in_buffer->mDataByteSize / sizeof(float);
+  
+  for(i = 0; i < record.buffer_size && 2 * i < CORE_AUDIO_RECORD_PCM_BUFFER_SIZE && i < sample_count; i++){
     record.stereo_buffer[2 * i] = buffer[i];
     record.stereo_buffer[2 * i + 1] = buffer[i];
   }
   
-  sf_write_float(record.file, record.stereo_buffer, CORE_AUDIO_RECORD_PCM_BUFFER_SIZE);
+  if(i > 0){
+    sf_write_float(record.file, record.stereo_buffer, 2 * i);
+  }
   
   return(0);
 }
@@ -139,7 +148,7 @@ main(int argc, char **argv)
     fprintf(stderr, "invalid format\n");
   }
   
-  record.file = (SNDFILE *) sf_open(record.wav_filename, SFM_RDWR, record.info);
+  file = (SNDFILE *) sf_open(wav_filename, SFM_WRITE, info);
       
   input_property_address.mSelector = kAudioHardwarePropertyDefaultInputDevice;
   input_property_address.mElement = kAudioObjectPropertyElementMain;
@@ -208,6 +217,11 @@ main(int argc, char **argv)
   }
   
   sf_close(record.file);
+  
+  if(record.info != NULL){
+    free(record.info);
+    record.info = NULL;
+  }
   
   mach_port_deallocate(mach_task_self(), cclock);
 

@@ -921,13 +921,6 @@ AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
 
 AGS_POTFILES([])
 
-LIBAGS_SYMBOLS([])
-LIBAGS_THREAD_SYMBOLS([])
-LIBAGS_SERVER_SYMBOLS([])
-LIBAGS_AUDIO_SYMBOLS([])
-LIBAGS_VST_SYMBOLS([])
-LIBAGS_GUI_SYMBOLS([])
-
 AS_IF([test "x$enable_w32api" != xno],
       [LIBAGS_DEF([])
        LIBAGS_THREAD_DEF([])
