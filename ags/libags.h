@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -122,5 +122,8 @@
 #include <ags/server/controller/ags_controller.h>
 #include <ags/server/controller/ags_front_controller.h>
 #include <ags/server/controller/ags_plugin_controller.h>
+
+/* framework */
+#include <ags/libags-globals.h>
 
 #endif /*__LIBAGS_H__*/
