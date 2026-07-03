@@ -1,7 +1,7 @@
 ags (9.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* added libags-globlas.txt exporting ags_application_context as extern variable
+	* added visibility attribute to global variable in ags/object/ags_application_context.c
 	* removed gen-sym-libags-audio.pl
 	* removed gen-sym-libags-gui.pl
 	* removed gen-sym-libags-server.pl
