@@ -2246,11 +2246,11 @@ install_headers(libags_audio_audio_thread_headers, install_dir: gsequencer_inclu
 install_headers(libags_audio_audio_wasapi_headers, install_dir: gsequencer_includedir / 'ags/audio/wasapi')
 
 if get_option('vst3')
-  install_headers(libags_audio_audio_vst3_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+  install_headers(libags_audio_audio_vst3_headers, install_dir: gsequencer_includedir / 'ags/vst3-capi')
 endif
 
 if get_option('audio-unit-plugins')
-  install_headers(libags_audio_audio_audio_unit_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+  install_headers(libags_audio_audio_audio_unit_headers, install_dir: gsequencer_includedir / 'ags/audio/audio-unit')
 endif
 
 install_headers(libags_gui_widget_headers, install_dir: gsequencer_includedir / 'ags/widget')
