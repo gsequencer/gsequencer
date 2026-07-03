@@ -2246,16 +2246,16 @@ install_headers(libags_audio_audio_thread_headers, install_dir: gsequencer_inclu
 install_headers(libags_audio_audio_wasapi_headers, install_dir: gsequencer_includedir / 'ags/audio/wasapi')
 
 if get_option('vst3')
-  install_headers(libags_audio_audio_vst3_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+  install_headers(libags_audio_audio_vst3_headers, install_dir: gsequencer_includedir / 'ags/vst3-capi')
 endif
 
 if get_option('audio-unit-plugins')
-  install_headers(libags_audio_audio_audio_unit_headers, install_dir: gsequencer_includedir / 'ags/audio/gstreamer')
+  install_headers(libags_audio_audio_audio_unit_headers, install_dir: gsequencer_includedir / 'ags/audio/audio-unit')
 endif
 
 install_headers(libags_gui_widget_headers, install_dir: gsequencer_includedir / 'ags/widget')
 
-install_headers('libags.h', 'libags-audio.h', 'libags-gui.h', install_dir: gsequencer_includedir / 'ags')
+install_headers('libags.h', 'libags-globals.h', 'libags-audio.h', 'libags-gui.h', install_dir: gsequencer_includedir / 'ags')
 
 libags_dep_sources = []
 libags_audio_dep_sources = []
@@ -2273,7 +2273,7 @@ if build_gir
     [ libags, libags_thread, libags_server ],
     sources: libags_sources + libags_headers + libags_thread_sources + libags_thread_headers + libags_server_sources + libags_server_headers,
     namespace: 'Ags',
-    nsversion: '8.0',
+    nsversion: '9.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'Ags',
@@ -2289,11 +2289,11 @@ if build_gir
     libags_audio,
     sources: libags_audio_sources + libags_audio_headers,
     namespace: 'AgsAudio',
-    nsversion: '8.0',
+    nsversion: '9.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsAudio',
-    includes: [ 'Gst-1.0', 'GstBase-1.0', 'GstAudio-1.0', 'Soup-3.0', 'GObject-2.0', 'libxml2-2.0', 'Ags-8.0', ],
+    includes: [ 'Gst-1.0', 'GstBase-1.0', 'GstAudio-1.0', 'Soup-3.0', 'GObject-2.0', 'libxml2-2.0', 'Ags-9.0', ],
     header: 'libags-audio.h',
     install: true,
     dependencies: libags_gir_dep,
@@ -2306,7 +2306,7 @@ if build_gir
     libags_gui,
     sources: libags_gui_sources + libags_gui_headers,
     namespace: 'AgsGui',
-    nsversion: '8.0',
+    nsversion: '9.0',
     identifier_prefix: 'Ags',
     symbol_prefix: 'ags_',
     export_packages: 'AgsGui',

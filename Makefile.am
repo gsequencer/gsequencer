@@ -220,19 +220,7 @@ EXTRA_DIST += \
 	license-notice-permissive-xml.txt
 
 EXTRA_DIST += \
-	gen-symbols-all.pl \
-	gen-sym-libags.pl \
-	gen-sym-libags-thread.pl \
-	gen-sym-libags-server.pl \
-	gen-sym-libags-audio.pl \
-	gen-sym-libags-vst.pl \
-	gen-sym-libags-gui.pl \
-	libags.sym.in \
-	libags_thread.sym.in \
-	libags_server.sym.in \
-	libags_audio.sym.in \
-	libags_vst.sym.in \
-	libags_gui.sym.in
+	libags-globals.txt
 
 EXTRA_DIST += \
 	unit-system-tests.mk.am \
@@ -295,12 +283,6 @@ CLEANFILES = \
 	functional-system-tests.mk \
 	m4/Makefile \
 	lib/Makefile \
-	libags.sym \
-	libags_thread.sym \
-	libags_server.sym \
-	libags_audio.sym \
-	libags_vst.sym \
-	libags_gui.sym \
 	ags/object/ags_marshallers.list \
 	ags/widget/ags_widget_marshallers.list \
 	docs/listings/add_pattern.c \
@@ -688,6 +670,7 @@ libags_la_SOURCES = \
 	$(libags_file_task_c_sources)
 libags_la_HEADERS_0 = \
 	ags/libags.h \
+	ags/libags-globals.h \
 	$(libags_h_sources) \
 	$(libags_util_h_sources) \
 	$(libags_object_h_sources) \
@@ -806,7 +789,7 @@ libags_la_CFLAGS =  $(PICFLAGS) $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I.
 libags_la_CXXFLAGS = $(PICFLAGS) $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS) $(W32API_CFLAGS)
 libags_la_LDFLAGS = $(LDFLAGS) -version-info 9:0:0 -pthread
 libags_la_LIBADD = -lm
-libags_la_LDFLAGS += $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(W32API_LIBS) 
+libags_la_LDFLAGS += $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS) $(W32API_LIBS)
 
 if WITH_W32API
 libags_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags.dll.a
@@ -817,9 +800,9 @@ libags-$(DLL_VERSION).def: libags.la
 defexec_DATA += libags-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
-libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags.sym -Wl,-install_name,libags.dylib
+libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,--dynamic-list=$(srcdir)/libags-globals.txt -Wl,-install_name,libags.dylib
 else
-libags_la_LDFLAGS += -export-symbols libags.sym -Wl,-soname,libags.so
+libags_la_LDFLAGS += -Wl,--dynamic-list=$(srcdir)/libags-globals.txt -Wl,-soname,libags.so
 libags_la_LIBADD += -ldl -lcrypt
 endif
 endif
@@ -848,9 +831,9 @@ libags_thread-$(DLL_VERSION).def: libags_thread.la
 defexec_DATA += libags_thread-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
-libags_thread_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_thread.sym -Wl,-install_name,libags_thread.dylib
+libags_thread_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,-install_name,libags_thread.dylib
 else
-libags_thread_la_LDFLAGS += -export-symbols libags_thread.sym -Wl,-soname,libags_thread.so
+libags_thread_la_LDFLAGS += -Wl,-soname,libags_thread.so
 libags_thread_la_LIBADD += -ldl -lcrypt
 endif
 endif
@@ -879,9 +862,9 @@ libags_server-$(DLL_VERSION).def: libags_server.la
 defexec_DATA += libags_server-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
-libags_server_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_server.sym -Wl,-install_name,libags_server.dylib
+libags_server_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,-install_name,libags_server.dylib
 else
-libags_server_la_LDFLAGS += -export-symbols libags_server.sym -Wl,-soname,libags_server.so
+libags_server_la_LDFLAGS += -Wl,-soname,libags_server.so
 libags_server_la_LIBADD += -ldl -lcrypt
 endif
 endif
@@ -919,10 +902,10 @@ defexec_DATA += libags_audio-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
 libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_OSXAPI=1 -I/usr/include -I/opt/local/include -I/opt/local/include/dssi -DAGS_LIBRARY_SUFFIX=\".dylib\"
-libags_audio_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_audio.sym -Wl,-install_name,libags_audio.dylib
+libags_audio_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,-install_name,libags_audio.dylib
 else
 libags_audio_la_CPPFLAGS += -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 -DAGS_VECTOR_256_FUNCTIONS=1 -DAGS_LIBRARY_SUFFIX=\".so\" -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized
-libags_audio_la_LDFLAGS += -export-symbols libags_audio.sym -Wl,-soname,libags_audio.so
+libags_audio_la_LDFLAGS += -Wl,-soname,libags_audio.so
 libags_audio_la_LIBADD += -ldl
 endif
 endif
@@ -949,9 +932,9 @@ libags_gui-$(DLL_VERSION).def: libags_gui.la
 defexec_DATA += libags_gui-$(DLL_VERSION).def
 else
 if WITH_OSXAPI
-libags_gui_la_LDFLAGS += -Wl,-headerpad_max_install_names -export-symbols libags_gui.sym -Wl,-install_name,libags_gui.dylib
+libags_gui_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,-install_name,libags_gui.dylib
 else
-libags_gui_la_LDFLAGS += -export-symbols libags_gui.sym -Wl,-soname,libags_gui.so
+libags_gui_la_LDFLAGS += -Wl,-soname,libags_gui.so
 libags_gui_la_LIBADD += -ldl
 endif
 endif
