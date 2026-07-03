@@ -148,16 +148,8 @@ main(int argc, char **argv)
     fprintf(stderr, "invalid format\n");
   }
   
-  record.file = (SNDFILE *) sf_open(record.wav_filename, SFM_RDWR, record.info);
-
-  if(record.file == NULL){
-    fprintf(stderr, "failed to open output file '%s': %s\n",
-            record.wav_filename,
-            sf_strerror(NULL));
-    
-    return(EXIT_FAILURE);
-  }
-  
+  file = (SNDFILE *) sf_open(wav_filename, SFM_WRITE, info);
+      
   input_property_address.mSelector = kAudioHardwarePropertyDefaultInputDevice;
   input_property_address.mElement = kAudioObjectPropertyElementMain;
   input_property_address.mScope = kAudioObjectPropertyScopeGlobal;
@@ -223,8 +215,8 @@ main(int argc, char **argv)
 
     usleep(5000000);
   }
-
-  sf_close(file);
+  
+  sf_close(record.file);
   
   if(record.info != NULL){
     free(record.info);

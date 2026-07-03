@@ -1,3 +1,30 @@
+ags (9.1.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added libags-globlas.txt exporting ags_application_context as extern variable
+	* removed gen-sym-libags-audio.pl
+	* removed gen-sym-libags-gui.pl
+	* removed gen-sym-libags-server.pl
+	* removed gen-sym-libags-thread.pl
+	* removed gen-sym-libags-vst.pl
+	* removed gen-sym-libags.pl
+	* removed gen-symbols-all.pl
+	* removed libags.sym.in
+	* removed libags_audio.sym.in
+	* removed libags_gui.sym.in
+	* removed libags_server.sym.in
+	* removed libags_thread.sym.in
+	* removed libags_vst.sym.in
+	* removed m4/ags-symbols.m4
+
+ags (9.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing chorus LFO oscillator callback in quantum synth
+	* implemented missing chorus LFO oscillator callback in stargazer synth
+	* implemented missing chorus LFO oscillator callback in raven synth
+	* implemented missing chorus LFO oscillator callback in modular synth
+
 ags (9.0.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

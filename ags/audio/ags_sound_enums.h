@@ -93,8 +93,8 @@ typedef enum{
  * AgsSoundScope:
  * @AGS_SOUND_SCOPE_PLAYBACK: playback scope
  * @AGS_SOUND_SCOPE_SEQUENCER: sequencer scope
- * @AGS_SOUND_SCOPE_NOTATION: notation ability
- * @AGS_SOUND_SCOPE_WAVE: wave ability
+ * @AGS_SOUND_SCOPE_NOTATION: notation scope
+ * @AGS_SOUND_SCOPE_WAVE: wave scope
  * @AGS_SOUND_SCOPE_MIDI: MIDI scope
  * @AGS_SOUND_SCOPE_LAST: the last scope
  * 
