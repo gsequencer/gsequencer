@@ -5226,6 +5226,7 @@ ags_midi_ump_util_is_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
  * @group: the group
  * @channel: the channel number
  * @index_key: the index key
+ * @data: the data
  * @extension_name: the extension name string vector
  * @extension_value: the extension value array
  * @extension_count: the extension count
@@ -5317,6 +5318,7 @@ ags_midi_ump_util_put_midi2_control_change(AgsMidiUmpUtil *midi_ump_util,
  * @group: (out): the return location of group
  * @channel: (out): the return location of channel number
  * @index_key: (out): the return location of index key
+ * @data: (out): the return location of data
  * @extension_name: (out): the return location of extension name string vector
  * @extension_value: (out): the return location of extension value array
  * @extension_count: (out): the return location of extension count

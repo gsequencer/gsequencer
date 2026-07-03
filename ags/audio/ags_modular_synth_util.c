@@ -1637,7 +1637,7 @@ ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_env_1_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @env_1_sends: the env-1 sends
- * @env_1_Sends_count: the env-1 sends count
+ * @env_1_sends_count: the env-1 sends count
  *
  * Set @env_1_sends of @modular_synth_util.
  *
@@ -2160,6 +2160,7 @@ ags_modular_synth_util_set_noise_gain(AgsModularSynthUtil *modular_synth_util,
 /**
  * ags_modular_synth_util_get_noise_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @noise_send_count: (out): return location of noise sends count
  * 
  * Get noise sends of @modular_synth_util.
  * 
@@ -2186,6 +2187,7 @@ ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_noise_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @noise_sends: the noise sends
+ * @noise_sends_count: the noise sends count
  *
  * Set @noise_sends of @modular_synth_util.
  *
