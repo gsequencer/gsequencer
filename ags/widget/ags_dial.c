@@ -1316,7 +1316,7 @@ ags_dial_motion_notify_do_dial(AgsDial *dial,
       gtk_widget_queue_draw((GtkWidget *) dial);
     }
   }else{
-    if(gtk_adjustment_get_value(adjustment) < gtk_adjustment_get_lower(adjustment)){
+    if(gtk_adjustment_get_value(adjustment) < gtk_adjustment_get_upper(adjustment)){
       gtk_adjustment_set_value(adjustment,
 			       gtk_adjustment_get_value(adjustment) + gtk_adjustment_get_step_increment(adjustment));
 
@@ -2247,7 +2247,7 @@ ags_dial_get_font_name(AgsDial *dial)
   gchar *font_name;
   
   if(!AGS_IS_DIAL(dial)){
-    return(0);
+    return(NULL);
   }
 
   font_name = NULL;
@@ -2444,7 +2444,7 @@ ags_dial_get_margin_left(AgsDial *dial)
     return(-1);
   }
   
-  g_object_set(dial,
+  g_object_get(dial,
 	       "margin-left", &margin_left,
 	       NULL);
 
