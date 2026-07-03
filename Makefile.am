@@ -802,7 +802,7 @@ else
 if WITH_OSXAPI
 libags_la_LDFLAGS += -Wl,-headerpad_max_install_names -Wl,--version-script,$(srcdir)/libags.map -Wl,-install_name,libags.dylib
 else
-libags_la_LDFLAGS += -Wl,--dynamic-list=$(srcdir)/libags-globals.txt -Wl,-soname,libags.so
+libags_la_LDFLAGS += -Wl,--version-script,$(srcdir)/libags.map -Wl,-soname,libags.so
 libags_la_LIBADD += -ldl -lcrypt
 endif
 endif
