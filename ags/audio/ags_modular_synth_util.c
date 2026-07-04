@@ -2160,7 +2160,7 @@ ags_modular_synth_util_set_noise_gain(AgsModularSynthUtil *modular_synth_util,
 /**
  * ags_modular_synth_util_get_noise_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
- * @noise_send_count: (out): return location of noise sends count
+ * @noise_sends_count: (out): return location of noise sends count
  * 
  * Get noise sends of @modular_synth_util.
  * 
