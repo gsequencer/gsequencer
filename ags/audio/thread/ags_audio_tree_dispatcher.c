@@ -1139,7 +1139,7 @@ ags_audio_tree_dispatcher_remove_dispatch_source(AgsAudioTreeDispatcher *audio_t
 }
 
 /**
- * ags_audio_tree_dispatcher_get_tree_list:
+ * ags_audio_tree_dispatcher_get_staging_program:
  * @audio_tree_dispatcher: the #AgsAudioTreeDispatcher
  * @staging_program_count: (out): the staging program count return value
  * 

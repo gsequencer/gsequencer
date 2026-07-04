@@ -212,11 +212,11 @@ ags_export_window_export_callback(GObject *gobject,
 
 	  tmp = text;
 	  
-	  text = g_strdup_printf("%s\n%s", text, remove_filename->data);
+	  text = g_strdup_printf("%s\n%s", text, (gchar *) remove_filename->data);
 
 	  g_free(tmp);
 	}else{
-	  text = g_strdup_printf("%s", remove_filename->data);
+	  text = g_strdup_printf("%s", (gchar *) remove_filename->data);
 	}
 
 	remove_filename = remove_filename->next;

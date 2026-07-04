@@ -412,7 +412,7 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 			     BAD_CAST "direction");
 
       if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT) &&
-	 !g_strcmp0(direction, "output")){
+	 !g_strcmp0(AGS_BAD_CAST direction, "output")){
 	bulk = ags_connection_editor_bulk_new();
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
@@ -430,7 +430,7 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 
 	ags_connectable_connect(AGS_CONNECTABLE(bulk));
       }else if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_INPUT) &&
-	       !g_strcmp0(direction, "input")){
+	       !g_strcmp0(AGS_BAD_CAST direction, "input")){
 	bulk = ags_connection_editor_bulk_new();
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
@@ -448,6 +448,8 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 
 	ags_connectable_connect(AGS_CONNECTABLE(bulk));
       }
+
+      xmlFree(direction);
     }
     
     /* iterate */

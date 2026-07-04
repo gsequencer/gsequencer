@@ -112,7 +112,7 @@ G_BEGIN_DECLS
 typedef struct _AgsNoiseUtil AgsNoiseUtil;
 
 /**
- * AgsNoiseuUtilMode:
+ * AgsNoiseUtilMode:
  * @AGS_NOISE_UTIL_WHITE_NOISE: white noise
  * @AGS_NOISE_UTIL_PINK_NOISE: pink noise
  * 
@@ -121,7 +121,7 @@ typedef struct _AgsNoiseUtil AgsNoiseUtil;
 typedef enum{
   AGS_NOISE_UTIL_WHITE_NOISE,
   AGS_NOISE_UTIL_PINK_NOISE,
-}AgsNoiseuUtilMode;
+}AgsNoiseUtilMode;
 
 struct _AgsNoiseUtil
 {
@@ -137,7 +137,7 @@ struct _AgsNoiseUtil
   AgsSoundcardFormat format;
   guint samplerate;
 
-  AgsNoiseuUtilMode mode;
+  AgsNoiseUtilMode mode;
   
   gdouble volume;
   
@@ -186,9 +186,9 @@ guint ags_noise_util_get_samplerate(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_samplerate(AgsNoiseUtil *noise_util,
 				   guint samplerate);
 
-guint ags_noise_util_get_mode(AgsNoiseUtil *noise_util);
+AgsNoiseUtilMode ags_noise_util_get_mode(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_mode(AgsNoiseUtil *noise_util,
-			     guint mode);
+			     AgsNoiseUtilMode mode);
 
 gdouble ags_noise_util_get_volume(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_volume(AgsNoiseUtil *noise_util,

@@ -1248,7 +1248,7 @@ ags_fx_raven_synth_audio_class_init(AgsFxRavenSynthAudioClass *fx_raven_synth_au
 				  param_spec);
 
   /**
-   * AgsFxRavenSynthAudio:synth-0-sync-relative-attack-factor-1:
+   * AgsFxRavenSynthAudio:synth-0-sync-relative-attack-factor-2:
    *
    * The synth-0 sync relative attack factor 1.
    * 

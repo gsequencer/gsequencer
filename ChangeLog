@@ -1,3 +1,15 @@
+ags (9.0.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed some typos
+
+ags (9.0.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* hide more symbols
+	* minor improvements
+	* fixed some memory leaks
+
 ags (9.0.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

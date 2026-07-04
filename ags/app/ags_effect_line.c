@@ -4015,13 +4015,17 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
   while(message_envelope != NULL){
     xmlNode *root_node;
 
+    xmlChar *method;
+
     root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
     if(!xmlStrncmp(root_node->name,
 		   "ags-command",
 		   12)){
-      if(!xmlStrncmp(xmlGetProp(root_node,
-				"method"),
+      method = xmlGetProp(root_node,
+			  BAD_CAST "method");
+      
+      if(!xmlStrncmp(method,
 		     BAD_CAST "AgsChannel::set-samplerate",
 		     27)){
 	guint samplerate;
@@ -4035,8 +4039,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 	g_object_set(effect_line,
 		     "samplerate", samplerate,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::set-buffer-size",
 			   28)){
 	guint buffer_size;
@@ -4050,8 +4053,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 	g_object_set(effect_line,
 		     "buffer-size", buffer_size,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::set-format",
 			   23)){
 	guint format;
@@ -4065,8 +4067,7 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 	g_object_set(effect_line,
 		     "format", format,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::done",
 			   16)){
 	AgsRecallID *recall_id;
@@ -4082,6 +4083,8 @@ ags_effect_line_check_message(AgsEffectLine *effect_line)
 	ags_effect_line_done(effect_line,
 			     (GObject *) recall_id);
       }
+
+      xmlFree(method);
     }
     
     message_envelope = message_envelope->next;
