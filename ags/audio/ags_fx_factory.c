@@ -411,6 +411,16 @@ static GList* ags_fx_factory_create_synth(AgsAudio *audio,
 					  gint position,
 					  guint create_flags, AgsRecallFlags recall_flags);
 
+static GList* ags_fx_factory_create_fm_synth(AgsAudio *audio,
+					     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					     gchar *plugin_name,
+					     gchar *filename,
+					     gchar *effect,
+					     guint start_audio_channel, guint stop_audio_channel,
+					     guint start_pad, guint stop_pad,
+					     gint position,
+					     guint create_flags, AgsRecallFlags recall_flags);
+
 static GList* ags_fx_factory_create_sf2_synth(AgsAudio *audio,
 					      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					      gchar *plugin_name,

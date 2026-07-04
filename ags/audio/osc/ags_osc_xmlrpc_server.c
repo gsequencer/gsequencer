@@ -60,6 +60,11 @@ static void ags_osc_xmlrpc_server_finalize(GObject *gobject);
 static void ags_osc_xmlrpc_server_start(AgsOscServer *osc_server);
 static void ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server);
 
+static void ags_osc_xmlrpc_server_websocket_message_callback(SoupWebsocketConnection *websocket_connection,
+							     gint type,
+							     GBytes *message,
+							     AgsOscXmlrpcServer *osc_xmlrpc_server);
+
 static void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
 						     SoupServerMessage *server_msg,
 						     const char *path,

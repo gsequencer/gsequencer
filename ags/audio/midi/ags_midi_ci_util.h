@@ -486,6 +486,9 @@ guint ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 						 guint32 *profile_specific_data_length,
 						 guchar **profile_specific_data);
 
+gboolean ags_midi_ci_util_is_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
+							    guchar *buffer);
+
 void ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 							 guchar *buffer,
 							 guchar device_id,
@@ -504,6 +507,9 @@ guint ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci
 							  guchar *supported_property_exchange_count,
 							  guchar *property_exchange_major,
 							  guchar *property_exchange_minor);
+
+gboolean ags_midi_ci_util_is_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+								  guchar *buffer);
 
 void ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 							       guchar *buffer,

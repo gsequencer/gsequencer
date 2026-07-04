@@ -56,6 +56,9 @@ static void ags_fx_star_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 static void ags_fx_star_synth_audio_pitch_type_callback(AgsPort *port, GValue *value,
 							AgsFxStarSynthAudio *fx_star_synth_audio);
 
+static void ags_fx_star_synth_audio_chorus_pitch_type_callback(AgsPort *port, GValue *value,
+							       AgsFxStarSynthAudio *fx_star_synth_audio);
+
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_oscillator_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_octave_plugin_port();
 static AgsPluginPort* ags_fx_star_synth_audio_get_synth_0_key_plugin_port();

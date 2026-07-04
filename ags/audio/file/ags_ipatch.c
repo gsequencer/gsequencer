@@ -68,7 +68,7 @@ static guint ags_ipatch_select_level_by_id(AgsSoundContainer *sound_container,
 					   gchar *level_id);
 static guint ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
 					      guint level_index);
-gchar** ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container);
+static gchar** ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container);
 static GList* ags_ipatch_get_resource_all(AgsSoundContainer *sound_container);
 static GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
 					      gchar *resource_name);

@@ -77,7 +77,7 @@ static guint ags_sfz_file_select_level_by_id(AgsSoundContainer *sound_container,
 					     gchar *level_id);
 static guint ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
 						guint level_index);
-gchar** ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container);
+static gchar** ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container);
 static GList* ags_sfz_file_get_resource_all(AgsSoundContainer *sound_container);
 static GList* ags_sfz_file_get_resource_by_name(AgsSoundContainer *sound_container,
 						gchar *resource_name);
