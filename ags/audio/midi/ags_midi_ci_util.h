@@ -41,10 +41,10 @@ G_BEGIN_DECLS
 
 #define AGS_MIDI_CI_UTIL_VERSION_MIDI_1_0 (0x00)
 
-#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_SIZE_OF_PACKET(p) (((1 < 6) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
-#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_SIZE_OF_PACKET(p) (((1 << 6) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 << 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
 
-#define AGS_MIDI_CI_UTIL_PROTOCOL_2_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_2_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 << 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
 
 typedef struct _AgsMidiCIUtil AgsMidiCIUtil;
 typedef guint32 AgsMUID;

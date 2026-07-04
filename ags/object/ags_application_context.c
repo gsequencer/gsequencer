@@ -131,12 +131,17 @@ enum{
 static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
 
-#if defined(__clang__)
-AgsApplicationContext *ags_application_context = NULL;
-#elif defined(__GNUC__)
-__attribute__((visibility("default"))) AgsApplicationContext *ags_application_context = NULL;
+#if defined(__has_attribute)
+#if __has_attribute(visibility)
+#define AGS_HAVE_ATTRIBUTE_VISIBILITY 1
+#endif
 #endif
 
+#if defined(AGS_HAVE_ATTRIBUTE_VISIBILITY)
+__attribute__((visibility("default"))) AgsApplicationContext *ags_application_context = NULL;
+#else
+AgsApplicationContext *ags_application_context = NULL;
+#endif
 
 GType
 ags_application_context_get_type()
