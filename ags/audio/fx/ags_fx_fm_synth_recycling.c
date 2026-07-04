@@ -40,7 +40,7 @@ static void ags_fx_fm_synth_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_fm_synth_recycling_parent_class = NULL;
 
-const gchar *ags_fx_fm_synth_recycling_plugin_name = "ags-fx-fm-synth";
+static const gchar *ags_fx_fm_synth_recycling_plugin_name = "ags-fx-fm-synth";
 
 GType
 ags_fx_fm_synth_recycling_get_type()

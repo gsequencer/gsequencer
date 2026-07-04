@@ -61,7 +61,7 @@ static void ags_fx_star_synth_audio_signal_notify_remove(AgsFxNotationAudioSigna
 
 static gpointer ags_fx_star_synth_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_star_synth_audio_signal_plugin_name = "ags-fx-star-synth";
+static const gchar *ags_fx_star_synth_audio_signal_plugin_name = "ags-fx-star-synth";
 
 GType
 ags_fx_star_synth_audio_signal_get_type()

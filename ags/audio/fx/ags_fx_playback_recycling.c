@@ -62,7 +62,7 @@ static void ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling 
 static gpointer ags_fx_playback_recycling_parent_class = NULL;
 static AgsConnectableInterface* ags_fx_playback_recycling_parent_connectable_interface;
 
-const gchar *ags_fx_playback_recycling_plugin_name = "ags-fx-playback";
+static const gchar *ags_fx_playback_recycling_plugin_name = "ags-fx-playback";
 
 GType
 ags_fx_playback_recycling_get_type()

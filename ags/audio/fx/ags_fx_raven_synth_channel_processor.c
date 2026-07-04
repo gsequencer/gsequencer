@@ -40,7 +40,7 @@ static void ags_fx_raven_synth_channel_processor_finalize(GObject *gobject);
 
 static gpointer ags_fx_raven_synth_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_raven_synth_channel_processor_plugin_name = "ags-fx-raven-synth";
+static const gchar *ags_fx_raven_synth_channel_processor_plugin_name = "ags-fx-raven-synth";
 
 GType
 ags_fx_raven_synth_channel_processor_get_type()

@@ -60,7 +60,7 @@ static void ags_fx_dssi_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_
 
 static gpointer ags_fx_dssi_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_dssi_audio_signal_plugin_name = "ags-fx-dssi";
+static const gchar *ags_fx_dssi_audio_signal_plugin_name = "ags-fx-dssi";
 
 GType
 ags_fx_dssi_audio_signal_get_type()

@@ -40,7 +40,7 @@ static void ags_fx_wah_wah_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_wah_wah_recycling_parent_class = NULL;
 
-const gchar *ags_fx_wah_wah_recycling_plugin_name = "ags-fx-wah-wah";
+static const gchar *ags_fx_wah_wah_recycling_plugin_name = "ags-fx-wah-wah";
 
 GType
 ags_fx_wah_wah_recycling_get_type()

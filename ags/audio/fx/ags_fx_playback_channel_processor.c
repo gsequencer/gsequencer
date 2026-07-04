@@ -55,7 +55,7 @@ static void ags_fx_playback_channel_processor_real_run_inter(AgsRecall *recall);
 static gpointer ags_fx_playback_channel_processor_parent_class = NULL;
 static AgsConnectableInterface* ags_fx_playback_channel_processor_parent_connectable_interface;
 
-const gchar *ags_fx_playback_channel_processor_plugin_name = "ags-fx-playback";
+static const gchar *ags_fx_playback_channel_processor_plugin_name = "ags-fx-playback";
 
 GType
 ags_fx_playback_channel_processor_get_type()

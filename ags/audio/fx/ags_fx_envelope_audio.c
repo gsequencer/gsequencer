@@ -50,14 +50,14 @@ static AgsPluginPort* ags_fx_envelope_audio_get_lfo_enabled_plugin_port();
 
 static gpointer ags_fx_envelope_audio_parent_class = NULL;
 
-const gchar *ags_fx_envelope_audio_plugin_name = "ags-fx-envelope";
+static const gchar *ags_fx_envelope_audio_plugin_name = "ags-fx-envelope";
 
-const gchar* ags_fx_envelope_audio_specifier[] = {
+static const gchar* ags_fx_envelope_audio_specifier[] = {
   "./lfo-enabled[0]",
   NULL,
 };
 
-const gchar* ags_fx_envelope_audio_control_port[] = {
+static const gchar* ags_fx_envelope_audio_control_port[] = {
   "1/1",
   NULL,
 };

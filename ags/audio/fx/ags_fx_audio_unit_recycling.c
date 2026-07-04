@@ -40,7 +40,7 @@ static void ags_fx_audio_unit_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_audio_unit_recycling_parent_class = NULL;
 
-const gchar *ags_fx_audio_unit_recycling_plugin_name = "ags-fx-audio-unit";
+static const gchar *ags_fx_audio_unit_recycling_plugin_name = "ags-fx-audio-unit";
 
 GType
 ags_fx_audio_unit_recycling_get_type()

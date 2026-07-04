@@ -132,9 +132,9 @@ static AgsPluginPort* ags_fx_modular_synth_audio_get_chorus_delay_plugin_port();
 
 static gpointer ags_fx_modular_synth_audio_parent_class = NULL;
 
-const gchar *ags_fx_modular_synth_audio_plugin_name = "ags-fx-modular-synth";
+static const gchar *ags_fx_modular_synth_audio_plugin_name = "ags-fx-modular-synth";
 
-const gchar* ags_fx_modular_synth_audio_specifier[] = {
+static const gchar* ags_fx_modular_synth_audio_specifier[] = {
   "./synth-0-osc-0-oscillator[0]",
   "./synth-0-osc-0-octave[0]",
   "./synth-0-osc-0-key[0]",

@@ -44,7 +44,7 @@ static void ags_fx_peak_audio_signal_run_inter(AgsRecall *recall);
 
 static gpointer ags_fx_peak_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_peak_audio_signal_plugin_name = "ags-fx-peak";
+static const gchar *ags_fx_peak_audio_signal_plugin_name = "ags-fx-peak";
 
 GType
 ags_fx_peak_audio_signal_get_type()

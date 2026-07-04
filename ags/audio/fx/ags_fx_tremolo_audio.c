@@ -54,9 +54,9 @@ static AgsPluginPort* ags_fx_tremolo_audio_get_tremolo_tuning_plugin_port();
 
 static gpointer ags_fx_tremolo_audio_parent_class = NULL;
 
-const gchar *ags_fx_tremolo_audio_plugin_name = "ags-fx-tremolo";
+static const gchar *ags_fx_tremolo_audio_plugin_name = "ags-fx-tremolo";
 
-const gchar* ags_fx_tremolo_audio_specifier[] = {
+static const gchar* ags_fx_tremolo_audio_specifier[] = {
   "./tremolo-enabled[0]",
   "./tremolo-gain[0]",
   "./tremolo-lfo-depth[0]",
@@ -65,7 +65,7 @@ const gchar* ags_fx_tremolo_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_tremolo_audio_control_port[] = {
+static const gchar* ags_fx_tremolo_audio_control_port[] = {
   "1/5",
   "2/5",
   "3/5",
