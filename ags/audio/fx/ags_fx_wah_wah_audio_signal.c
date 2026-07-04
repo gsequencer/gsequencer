@@ -60,7 +60,7 @@ static void ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall);
 
 static gpointer ags_fx_wah_wah_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_wah_wah_audio_signal_plugin_name = "ags-fx-wah_wah";
+static const gchar *ags_fx_wah_wah_audio_signal_plugin_name = "ags-fx-wah_wah";
 
 GType
 ags_fx_wah_wah_audio_signal_get_type()

@@ -58,9 +58,9 @@ static AgsPluginPort* ags_fx_lfo_channel_get_lfo_tuning_plugin_port();
 
 static gpointer ags_fx_lfo_channel_parent_class = NULL;
 
-const gchar *ags_fx_lfo_channel_plugin_name = "ags-fx-lfo";
+static const gchar *ags_fx_lfo_channel_plugin_name = "ags-fx-lfo";
 
-const gchar* ags_fx_lfo_channel_specifier[] = {
+static const gchar* ags_fx_lfo_channel_specifier[] = {
   "./enabled[0]",
   "./lfo-wave[0]",
   "./lfo-freq[0]",
@@ -70,7 +70,7 @@ const gchar* ags_fx_lfo_channel_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_lfo_channel_control_port[] = {
+static const gchar* ags_fx_lfo_channel_control_port[] = {
   "1/6",
   "2/6",
   "3/6",

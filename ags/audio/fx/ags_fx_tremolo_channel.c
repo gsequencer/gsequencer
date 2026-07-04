@@ -40,13 +40,13 @@ static void ags_fx_tremolo_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_tremolo_channel_parent_class = NULL;
 
-const gchar *ags_fx_tremolo_channel_plugin_name = "ags-fx-tremolo";
+static const gchar *ags_fx_tremolo_channel_plugin_name = "ags-fx-tremolo";
 
-const gchar* ags_fx_tremolo_channel_specifier[] = {
+static const gchar* ags_fx_tremolo_channel_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_tremolo_channel_control_port[] = {
+static const gchar* ags_fx_tremolo_channel_control_port[] = {
   NULL,
 };
 

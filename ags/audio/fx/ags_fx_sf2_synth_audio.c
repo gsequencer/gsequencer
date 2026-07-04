@@ -91,9 +91,9 @@ static AgsPluginPort* ags_fx_sf2_synth_audio_get_vibrato_tuning_plugin_port();
 
 static gpointer ags_fx_sf2_synth_audio_parent_class = NULL;
 
-const gchar *ags_fx_sf2_synth_audio_plugin_name = "ags-fx-sf2-synth";
+static const gchar *ags_fx_sf2_synth_audio_plugin_name = "ags-fx-sf2-synth";
 
-const gchar* ags_fx_sf2_synth_audio_specifier[] = {
+static const gchar* ags_fx_sf2_synth_audio_specifier[] = {
   "./synth-octave[0]",
   "./synth-key[0]",
   "./synth-pitch-type[0]",
@@ -115,7 +115,7 @@ const gchar* ags_fx_sf2_synth_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_sf2_synth_audio_control_port[] = {
+static const gchar* ags_fx_sf2_synth_audio_control_port[] = {
   "1/18",
   "2/18",
   "3/18",

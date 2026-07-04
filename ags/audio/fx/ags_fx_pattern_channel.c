@@ -38,7 +38,7 @@ static void ags_fx_pattern_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_pattern_channel_parent_class = NULL;
 
-const gchar *ags_fx_pattern_channel_plugin_name = "ags-fx-pattern";
+static const gchar *ags_fx_pattern_channel_plugin_name = "ags-fx-pattern";
 
 GType
 ags_fx_pattern_channel_get_type()

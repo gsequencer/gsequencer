@@ -40,7 +40,7 @@ static void ags_fx_fm_synth_channel_processor_finalize(GObject *gobject);
 
 static gpointer ags_fx_fm_synth_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_fm_synth_channel_processor_plugin_name = "ags-fx-fm-synth";
+static const gchar *ags_fx_fm_synth_channel_processor_plugin_name = "ags-fx-fm-synth";
 
 GType
 ags_fx_fm_synth_channel_processor_get_type()

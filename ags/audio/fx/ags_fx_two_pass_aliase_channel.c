@@ -60,9 +60,9 @@ static AgsPluginPort* ags_fx_two_pass_aliase_channel_get_b_phase_plugin_port();
 
 static gpointer ags_fx_two_pass_aliase_channel_parent_class = NULL;
 
-const gchar *ags_fx_two_pass_aliase_channel_plugin_name = "ags-fx-two-pass-aliase";
+static const gchar *ags_fx_two_pass_aliase_channel_plugin_name = "ags-fx-two-pass-aliase";
 
-const gchar* ags_fx_two_pass_aliase_channel_specifier[] = {
+static const gchar* ags_fx_two_pass_aliase_channel_specifier[] = {
   "./enabled[0]",
   "./a-amount[0]",
   "./a-phase[0]",
@@ -71,7 +71,7 @@ const gchar* ags_fx_two_pass_aliase_channel_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_two_pass_aliase_channel_control_port[] = {
+static const gchar* ags_fx_two_pass_aliase_channel_control_port[] = {
   "1/5",
   "2/5",
   "3/5",

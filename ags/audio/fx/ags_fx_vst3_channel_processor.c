@@ -51,7 +51,7 @@ static void ags_fx_vst3_channel_processor_done(AgsRecall *recall);
 
 static gpointer ags_fx_vst3_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_vst3_channel_processor_plugin_name = "ags-fx-vst3";
+static const gchar *ags_fx_vst3_channel_processor_plugin_name = "ags-fx-vst3";
 
 GType
 ags_fx_vst3_channel_processor_get_type()

@@ -40,13 +40,13 @@ static void ags_fx_low_pass_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_low_pass_audio_parent_class = NULL;
 
-const gchar *ags_fx_low_pass_audio_plugin_name = "ags-fx-low-pass";
+static const gchar *ags_fx_low_pass_audio_plugin_name = "ags-fx-low-pass";
 
-const gchar* ags_fx_low_pass_audio_specifier[] = {
+static const gchar* ags_fx_low_pass_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_low_pass_audio_control_port[] = {
+static const gchar* ags_fx_low_pass_audio_control_port[] = {
   NULL,
 };
 

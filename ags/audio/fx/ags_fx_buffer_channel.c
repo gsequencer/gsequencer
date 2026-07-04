@@ -38,7 +38,7 @@ static void ags_fx_buffer_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_buffer_channel_parent_class = NULL;
 
-const gchar *ags_fx_buffer_channel_plugin_name = "ags-fx-buffer";
+static const gchar *ags_fx_buffer_channel_plugin_name = "ags-fx-buffer";
 
 GType
 ags_fx_buffer_channel_get_type()

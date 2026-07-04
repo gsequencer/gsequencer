@@ -43,7 +43,7 @@ static void ags_fx_analyse_channel_processor_real_run_inter(AgsRecall *recall);
 
 static gpointer ags_fx_analyse_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_analyse_channel_processor_plugin_name = "ags-fx-analyse";
+static const gchar *ags_fx_analyse_channel_processor_plugin_name = "ags-fx-analyse";
 
 GType
 ags_fx_analyse_channel_processor_get_type()

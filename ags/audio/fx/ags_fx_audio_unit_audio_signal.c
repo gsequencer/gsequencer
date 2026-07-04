@@ -73,7 +73,7 @@ static void ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSigna
 static gpointer ags_fx_audio_unit_audio_signal_recall_audio_signal_class = NULL;
 static gpointer ags_fx_audio_unit_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_audio_unit_audio_signal_plugin_name = "ags-fx-audio-unit";
+static const gchar *ags_fx_audio_unit_audio_signal_plugin_name = "ags-fx-audio-unit";
 
 GType
 ags_fx_audio_unit_audio_signal_get_type()

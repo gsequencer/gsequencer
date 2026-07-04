@@ -54,15 +54,15 @@ static AgsPluginPort* ags_fx_volume_channel_get_volume_plugin_port();
 
 static gpointer ags_fx_volume_channel_parent_class = NULL;
 
-const gchar *ags_fx_volume_channel_plugin_name = "ags-fx-volume";
+static const gchar *ags_fx_volume_channel_plugin_name = "ags-fx-volume";
 
-const gchar* ags_fx_volume_channel_specifier[] = {
+static const gchar* ags_fx_volume_channel_specifier[] = {
   "./muted[0]",
   "./volume[0]",
   NULL,
 };
 
-const gchar* ags_fx_volume_channel_control_port[] = {
+static const gchar* ags_fx_volume_channel_control_port[] = {
   "1/2",
   "2/2",
   NULL,

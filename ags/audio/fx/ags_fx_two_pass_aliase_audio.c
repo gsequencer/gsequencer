@@ -38,13 +38,13 @@ static void ags_fx_two_pass_aliase_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_two_pass_aliase_audio_parent_class = NULL;
 
-const gchar *ags_fx_two_pass_aliase_audio_plugin_name = "ags-fx-two-pass-aliase";
+static const gchar *ags_fx_two_pass_aliase_audio_plugin_name = "ags-fx-two-pass-aliase";
 
-const gchar* ags_fx_two_pass_aliase_audio_specifier[] = {
+static const gchar* ags_fx_two_pass_aliase_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_two_pass_aliase_audio_control_port[] = {
+static const gchar* ags_fx_two_pass_aliase_audio_control_port[] = {
   NULL,
 };
 

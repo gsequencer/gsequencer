@@ -57,15 +57,15 @@ static void ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
 
 static gpointer ags_fx_analyse_channel_parent_class = NULL;
 
-const gchar *ags_fx_analyse_channel_plugin_name = "ags-fx-analyse";
+static const gchar *ags_fx_analyse_channel_plugin_name = "ags-fx-analyse";
 
-const gchar* ags_fx_analyse_channel_specifier[] = {
+static const gchar* ags_fx_analyse_channel_specifier[] = {
   "./frequency[0]",
   "./magnitude[0]",
   NULL,
 };
 
-const gchar* ags_fx_analyse_channel_control_port[] = {
+static const gchar* ags_fx_analyse_channel_control_port[] = {
   "1/2",
   "2/2",
   NULL,
