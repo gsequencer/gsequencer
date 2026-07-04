@@ -302,12 +302,12 @@ ags_apply_bpm_launch(AgsTask *task)
       doc = xmlNewDoc("1.0");
 
       root_node = xmlNewNode(NULL,
-			     "ags-command");
+			     BAD_CAST "ags-command");
       xmlDocSetRootElement(doc, root_node);    
 
       xmlNewProp(root_node,
-		 "method",
-		 "AgsApplyBpm::launch");
+		 BAD_CAST "method",
+		 BAD_CAST "AgsApplyBpm::launch");
 
       /* add message */
       message = ags_message_envelope_new((GObject *) apply_bpm,

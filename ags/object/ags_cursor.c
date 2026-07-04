@@ -20,6 +20,7 @@
 #include <ags/object/ags_cursor.h>
 
 static void ags_cursor_class_init(AgsCursorInterface *ginterface);
+static void ags_cursor_base_init(AgsCursorInterface *ginterface);
 
 /**
  * SECTION:ags_cursor
