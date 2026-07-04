@@ -62,7 +62,7 @@ static void ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
 
 static gpointer ags_fx_lv2_channel_parent_class = NULL;
 
-const gchar *ags_fx_lv2_channel_plugin_name = "ags-fx-lv2";
+static const gchar *ags_fx_lv2_channel_plugin_name = "ags-fx-lv2";
 
 GType
 ags_fx_lv2_channel_get_type()

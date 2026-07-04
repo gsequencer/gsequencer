@@ -40,7 +40,7 @@ static void ags_fx_tremolo_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_tremolo_recycling_parent_class = NULL;
 
-const gchar *ags_fx_tremolo_recycling_plugin_name = "ags-fx-tremolo";
+static const gchar *ags_fx_tremolo_recycling_plugin_name = "ags-fx-tremolo";
 
 GType
 ags_fx_tremolo_recycling_get_type()

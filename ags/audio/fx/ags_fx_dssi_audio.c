@@ -83,7 +83,7 @@ static void ags_fx_dssi_audio_scope_data_load_port(AgsFxDssiAudio *fx_dssi_audio
 
 static gpointer ags_fx_dssi_audio_parent_class = NULL;
 
-const gchar *ags_fx_dssi_audio_plugin_name = "ags-fx-dssi";
+static const gchar *ags_fx_dssi_audio_plugin_name = "ags-fx-dssi";
 
 GType
 ags_fx_dssi_audio_get_type()

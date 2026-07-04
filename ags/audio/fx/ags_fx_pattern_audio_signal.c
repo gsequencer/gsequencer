@@ -54,7 +54,7 @@ static void ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal
 
 static gpointer ags_fx_pattern_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_pattern_audio_signal_plugin_name = "ags-fx-pattern";
+static const gchar *ags_fx_pattern_audio_signal_plugin_name = "ags-fx-pattern";
 
 GType
 ags_fx_pattern_audio_signal_get_type()

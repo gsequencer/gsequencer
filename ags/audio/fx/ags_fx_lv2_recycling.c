@@ -40,7 +40,7 @@ static void ags_fx_lv2_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_lv2_recycling_parent_class = NULL;
 
-const gchar *ags_fx_lv2_recycling_plugin_name = "ags-fx-lv2";
+static const gchar *ags_fx_lv2_recycling_plugin_name = "ags-fx-lv2";
 
 GType
 ags_fx_lv2_recycling_get_type()

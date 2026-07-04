@@ -43,11 +43,11 @@
 void ags_fluid_interpolate_4th_order_util_config();
 
 /* 4th Order interpolation table (2 coefficients centered on 1st) */
-gboolean interp_coeff_4th_order_initialized = FALSE;
+gboolean ags_fluid_interp_coeff_4th_order_initialized = FALSE;
 
-gdouble interp_coeff_4th_order[AGS_FLUID_INTERP_MAX][4];
+gdouble ags_fluid_interp_coeff_4th_order[AGS_FLUID_INTERP_MAX][4];
 
-GMutex interp_coeff_4th_order_mutex;
+GMutex ags_fluid_interp_coeff_4th_order_mutex;
 
 /**
  * SECTION:ags_fluid_interpolate_4th_order_util
@@ -86,10 +86,10 @@ ags_fluid_interpolate_4th_order_util_config()
   gdouble x;
   gint i;
   
-  g_mutex_lock(&interp_coeff_4th_order_mutex);
+  g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
   
-  if(interp_coeff_4th_order_initialized){
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+  if(ags_fluid_interp_coeff_4th_order_initialized){
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     return;
   }
@@ -97,15 +97,15 @@ ags_fluid_interpolate_4th_order_util_config()
   for(i = 0; i < AGS_FLUID_INTERP_MAX; i++){
     x = (double) i / (double) AGS_FLUID_INTERP_MAX;
 
-    interp_coeff_4th_order[i][0] = (x * (-0.5 + x * (1 - 0.5 * x)));
-    interp_coeff_4th_order[i][1] = (1.0 + x * x * (1.5 * x - 2.5));
-    interp_coeff_4th_order[i][2] = (x * (0.5 + x * (2.0 - 1.5 * x)));
-    interp_coeff_4th_order[i][3] = (0.5 * x * x * (x - 1.0));
+    ags_fluid_interp_coeff_4th_order[i][0] = (x * (-0.5 + x * (1 - 0.5 * x)));
+    ags_fluid_interp_coeff_4th_order[i][1] = (1.0 + x * x * (1.5 * x - 2.5));
+    ags_fluid_interp_coeff_4th_order[i][2] = (x * (0.5 + x * (2.0 - 1.5 * x)));
+    ags_fluid_interp_coeff_4th_order[i][3] = (0.5 * x * x * (x - 1.0));
   }
   
-  interp_coeff_4th_order_initialized = TRUE;
+  ags_fluid_interp_coeff_4th_order_initialized = TRUE;
   
-  g_mutex_unlock(&interp_coeff_4th_order_mutex);
+  g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 }
 
 /**
@@ -1089,14 +1089,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs_0 * start_point
@@ -1131,14 +1131,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s8(AgsFluidInterpolate4thOrderUtil *f
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -1261,14 +1261,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index + 2 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs_0 * start_point
@@ -1303,14 +1303,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s16(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -1433,14 +1433,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs_0 * start_point
@@ -1475,14 +1475,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s24(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -1605,14 +1605,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs_0 * start_point
@@ -1647,14 +1647,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s32(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -1777,14 +1777,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs_0 * start_point
@@ -1819,14 +1819,14 @@ ags_fluid_interpolate_4th_order_util_pitch_s64(AgsFluidInterpolate4thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -1949,14 +1949,14 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs_0 * start_point
@@ -1991,14 +1991,14 @@ ags_fluid_interpolate_4th_order_util_pitch_float(AgsFluidInterpolate4thOrderUtil
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -2121,14 +2121,14 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs_0 * start_point
@@ -2163,14 +2163,14 @@ ags_fluid_interpolate_4th_order_util_pitch_double(AgsFluidInterpolate4thOrderUti
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -2293,14 +2293,14 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       ags_complex_set(destination + (dsp_i * destination_stride),
@@ -2336,14 +2336,14 @@ ags_fluid_interpolate_4th_order_util_pitch_complex(AgsFluidInterpolate4thOrderUt
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){

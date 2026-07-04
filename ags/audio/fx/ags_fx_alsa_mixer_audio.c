@@ -51,9 +51,9 @@ static AgsPluginPort* ags_fx_alsa_mixer_audio_get_muted_plugin_port();
 
 static gpointer ags_fx_alsa_mixer_audio_parent_class = NULL;
 
-const gchar *ags_fx_alsa_mixer_audio_plugin_name = "ags-fx-alsa-mixer";
+static const gchar *ags_fx_alsa_mixer_audio_plugin_name = "ags-fx-alsa-mixer";
 
-const gchar* ags_fx_alsa_mixer_audio_specifier[] = {
+static const gchar* ags_fx_alsa_mixer_audio_specifier[] = {
   "./master-volume[0]",
   "./master-muted[0]",
   "./pcm-volume[0]",

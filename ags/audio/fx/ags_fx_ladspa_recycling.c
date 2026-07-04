@@ -40,7 +40,7 @@ static void ags_fx_ladspa_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_ladspa_recycling_parent_class = NULL;
 
-const gchar *ags_fx_ladspa_recycling_plugin_name = "ags-fx-ladspa";
+static const gchar *ags_fx_ladspa_recycling_plugin_name = "ags-fx-ladspa";
 
 GType
 ags_fx_ladspa_recycling_get_type()

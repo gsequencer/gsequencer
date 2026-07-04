@@ -44,7 +44,7 @@ static void ags_fx_two_pass_aliase_audio_signal_real_run_inter(AgsRecall *recall
 
 static gpointer ags_fx_two_pass_aliase_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_two_pass_aliase_audio_signal_plugin_name = "ags-fx-two-pass-aliase";
+static const gchar *ags_fx_two_pass_aliase_audio_signal_plugin_name = "ags-fx-two-pass-aliase";
 
 GType
 ags_fx_two_pass_aliase_audio_signal_get_type()

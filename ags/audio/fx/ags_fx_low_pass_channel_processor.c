@@ -40,7 +40,7 @@ static void ags_fx_low_pass_channel_processor_finalize(GObject *gobject);
 
 static gpointer ags_fx_low_pass_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_low_pass_channel_processor_plugin_name = "ags-fx-low-pass";
+static const gchar *ags_fx_low_pass_channel_processor_plugin_name = "ags-fx-low-pass";
 
 GType
 ags_fx_low_pass_channel_processor_get_type()

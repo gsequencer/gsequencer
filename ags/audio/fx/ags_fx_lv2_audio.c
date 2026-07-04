@@ -94,13 +94,13 @@ static void ags_fx_lv2_audio_scope_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
 
 static gpointer ags_fx_lv2_audio_parent_class = NULL;
 
-const gchar *ags_fx_lv2_audio_plugin_name = "ags-fx-lv2";
+static const gchar *ags_fx_lv2_audio_plugin_name = "ags-fx-lv2";
 
-const gchar *ags_fx_lv2_audio_specifier[] = {
+static const gchar *ags_fx_lv2_audio_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_lv2_audio_control_port[] = {
+static const gchar *ags_fx_lv2_audio_control_port[] = {
   NULL,
 };
 

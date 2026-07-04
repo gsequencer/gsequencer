@@ -72,7 +72,7 @@ static void ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value
 
 static gpointer ags_fx_vst3_channel_parent_class = NULL;
 
-const gchar *ags_fx_vst3_channel_plugin_name = "ags-fx-vst3";
+static const gchar *ags_fx_vst3_channel_plugin_name = "ags-fx-vst3";
 
 GType
 ags_fx_vst3_channel_get_type()

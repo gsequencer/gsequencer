@@ -130,9 +130,9 @@ static AgsPluginPort* ags_fx_synth_audio_get_high_pass_filter_gain_plugin_port()
 
 static gpointer ags_fx_synth_audio_parent_class = NULL;
 
-const gchar *ags_fx_synth_audio_plugin_name = "ags-fx-synth";
+static const gchar *ags_fx_synth_audio_plugin_name = "ags-fx-synth";
 
-const gchar* ags_fx_synth_audio_specifier[] = {
+static const gchar* ags_fx_synth_audio_specifier[] = {
   "./synth-0-oscillator[0]",
   "./synth-0-octave[0]",
   "./synth-0-key[0]",
@@ -186,7 +186,7 @@ const gchar* ags_fx_synth_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_synth_audio_control_port[] = {
+static const gchar* ags_fx_synth_audio_control_port[] = {
   "1/50",
   "2/50",
   "3/50",
