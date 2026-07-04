@@ -43,6 +43,14 @@ static void ags_program_insert_native_level_from_clipboard(AgsProgram *program,
 							   gboolean reset_x_offset, guint x_offset,
 							   gboolean do_replace);
 
+static void ags_program_insert_native_level_from_clipboard_version_5_1_0(AgsProgram *program,
+									 xmlNode *root_node, char *version,
+									 char *x_boundary,
+									 gboolean reset_x_offset, guint x_offset,
+									 gboolean do_replace,
+									 guint relative_offset,
+									 gboolean match_timestamp);
+
 //TODO:JK: remove this functions
 static gint ags_program_port_compare_func(gconstpointer a,
 					  gconstpointer b);

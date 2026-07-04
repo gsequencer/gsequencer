@@ -81,7 +81,6 @@ enum{
 
 static gpointer ags_sf2_synth_generator_parent_class = NULL;
 
-
 GType
 ags_sf2_synth_generator_get_type()
 {

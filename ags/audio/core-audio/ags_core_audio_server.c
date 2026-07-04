@@ -97,6 +97,8 @@ static GObject* ags_core_audio_server_register_sequencer_with_params(AgsSoundSer
 static void ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
 						       GObject *sequencer);
 
+static GObject* ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_server);
+
 static void* ags_core_audio_server_do_poll_loop(void *ptr);
 
 /**

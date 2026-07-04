@@ -43,7 +43,7 @@ static void ags_reset_recall_staging_launch(AgsTask *task);
 
 static gpointer ags_reset_recall_staging_parent_class = NULL;
 
-AgsResetRecallStaging *ags_reset_recall_staging = NULL;
+static AgsResetRecallStaging *ags_reset_recall_staging = NULL;
 
 GType
 ags_reset_recall_staging_get_type()

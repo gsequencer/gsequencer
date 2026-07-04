@@ -55,7 +55,7 @@ enum{
 
 static gpointer ags_program_control_name_key_manager_parent_class = NULL;
 
-AgsProgramControlNameKeyManager *ags_program_control_name_key_manager = NULL;
+static AgsProgramControlNameKeyManager *ags_program_control_name_key_manager = NULL;
 
 GType
 ags_program_control_name_key_manager_get_type()

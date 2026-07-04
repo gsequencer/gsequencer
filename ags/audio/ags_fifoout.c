@@ -127,6 +127,7 @@ static GObject* ags_fifoout_get_frame_clock(AgsSoundcard *soundcard);
 
 static void* ags_fifoout_get_buffer(AgsSoundcard *soundcard);
 static void* ags_fifoout_get_next_buffer(AgsSoundcard *soundcard);
+static void* ags_fifoout_get_prev_buffer(AgsSoundcard *soundcard);
 
 /**
  * SECTION:ags_fifoout

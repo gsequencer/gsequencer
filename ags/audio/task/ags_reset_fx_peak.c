@@ -43,7 +43,7 @@ static void ags_reset_fx_peak_launch(AgsTask *task);
 
 static gpointer ags_reset_fx_peak_parent_class = NULL;
 
-AgsResetFxPeak *ags_reset_fx_peak = NULL;
+static AgsResetFxPeak *ags_reset_fx_peak = NULL;
 
 GType
 ags_reset_fx_peak_get_type()
