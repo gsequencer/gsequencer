@@ -1,6 +1,7 @@
 ags (9.0.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved visibitity attribute check in ags_application_context.c
 	* fixed some typos
 
 ags (9.0.14)
