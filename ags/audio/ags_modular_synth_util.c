@@ -35,33 +35,33 @@
 #include <math.h>
 #include <complex.h>
 
-gboolean ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-							 gint64 *sends,
-							 AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_0_phase_receives(AgsModularSynthUtil *modular_synth_util,
-						     gint64 *sends,
-						     AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_0_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint64 *sends,
-						      AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_synth_util,
+								gint64 *sends,
+								AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_0_phase_receives(AgsModularSynthUtil *modular_synth_util,
+							    gint64 *sends,
+							    AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_0_volume_receives(AgsModularSynthUtil *modular_synth_util,
+							     gint64 *sends,
+							     AgsModularSynthSends modular_synth_sends);
 
-gboolean ags_modular_synth_util_osc_1_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-							 gint64 *sends,
-							 AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_1_phase_receives(AgsModularSynthUtil *modular_synth_util,
-						     gint64 *sends,
-						     AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_1_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint64 *sends,
-						      AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_1_frequency_receives(AgsModularSynthUtil *modular_synth_util,
+								gint64 *sends,
+								AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_1_phase_receives(AgsModularSynthUtil *modular_synth_util,
+							    gint64 *sends,
+							    AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_1_volume_receives(AgsModularSynthUtil *modular_synth_util,
+							     gint64 *sends,
+							     AgsModularSynthSends modular_synth_sends);
 
-gboolean ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint64 *sends,
-						      AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modular_synth_util,
+							     gint64 *sends,
+							     AgsModularSynthSends modular_synth_sends);
 
-gboolean ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						gint64 *sends,
-						AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
+						       gint64 *sends,
+						       AgsModularSynthSends modular_synth_sends);
 
 extern void ags_fluid_interpolate_4th_order_util_config();
 
@@ -1637,7 +1637,7 @@ ags_modular_synth_util_get_env_1_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_env_1_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @env_1_sends: the env-1 sends
- * @env_1_Sends_count: the env-1 sends count
+ * @env_1_sends_count: the env-1 sends count
  *
  * Set @env_1_sends of @modular_synth_util.
  *
@@ -2160,6 +2160,7 @@ ags_modular_synth_util_set_noise_gain(AgsModularSynthUtil *modular_synth_util,
 /**
  * ags_modular_synth_util_get_noise_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @noise_send_count: (out): return location of noise sends count
  * 
  * Get noise sends of @modular_synth_util.
  * 
@@ -2186,6 +2187,7 @@ ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_noise_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @noise_sends: the noise sends
+ * @noise_sends_count: the noise sends count
  *
  * Set @noise_sends of @modular_synth_util.
  *

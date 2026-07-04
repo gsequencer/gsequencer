@@ -26,20 +26,20 @@
 
 #include <ags/i18n.h>
 
-void ags_export_output_class_init(AgsExportOutputClass *export_output);
-void ags_export_output_init(AgsExportOutput *export_output);
-void ags_export_output_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_export_output_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_export_output_dispose(GObject *gobject);
-void ags_export_output_finalize(GObject *gobject);
+static void ags_export_output_class_init(AgsExportOutputClass *export_output);
+static void ags_export_output_init(AgsExportOutput *export_output);
+static void ags_export_output_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_export_output_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_export_output_dispose(GObject *gobject);
+static void ags_export_output_finalize(GObject *gobject);
 
-void ags_export_output_launch(AgsTask *task);
+static void ags_export_output_launch(AgsTask *task);
 
 /**
  * SECTION:ags_export_output

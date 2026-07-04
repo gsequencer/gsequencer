@@ -30,17 +30,17 @@
 
 #include <ags/ags_api_config.h>
 
-void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
-void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
+static void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
+static void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
 
-void ags_drum_input_line_connect(AgsConnectable *connectable);
-void ags_drum_input_line_disconnect(AgsConnectable *connectable);
+static void ags_drum_input_line_connect(AgsConnectable *connectable);
+static void ags_drum_input_line_disconnect(AgsConnectable *connectable);
 
-void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
-void ags_drum_input_line_group_changed(AgsLine *line);
-void ags_drum_input_line_map_recall(AgsLine *line,
-				    guint output_pad_start);
+static void ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel);
+static void ags_drum_input_line_group_changed(AgsLine *line);
+static void ags_drum_input_line_map_recall(AgsLine *line,
+					   guint output_pad_start);
 
 /**
  * SECTION:ags_drum_input_line

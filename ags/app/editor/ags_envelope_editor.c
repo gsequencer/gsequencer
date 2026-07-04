@@ -31,23 +31,23 @@
 
 #include <ags/i18n.h>
 
-void ags_envelope_editor_class_init(AgsEnvelopeEditorClass *envelope_editor);
-void ags_envelope_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_envelope_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor);
+static void ags_envelope_editor_class_init(AgsEnvelopeEditorClass *envelope_editor);
+static void ags_envelope_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_envelope_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor);
 
-gboolean ags_envelope_editor_is_connected(AgsConnectable *connectable);
-void ags_envelope_editor_connect(AgsConnectable *connectable);
-void ags_envelope_editor_disconnect(AgsConnectable *connectable);
+static gboolean ags_envelope_editor_is_connected(AgsConnectable *connectable);
+static void ags_envelope_editor_connect(AgsConnectable *connectable);
+static void ags_envelope_editor_disconnect(AgsConnectable *connectable);
 
-void ags_envelope_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_envelope_editor_apply(AgsApplicable *applicable);
-void ags_envelope_editor_reset(AgsApplicable *applicable);
+static void ags_envelope_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_envelope_editor_apply(AgsApplicable *applicable);
+static void ags_envelope_editor_reset(AgsApplicable *applicable);
 
-gchar* ags_envelope_editor_x_label_func(gdouble value,
-					gpointer data);
-gchar* ags_envelope_editor_y_label_func(gdouble value,
-					gpointer data);
+static gchar* ags_envelope_editor_x_label_func(gdouble value,
+					       gpointer data);
+static gchar* ags_envelope_editor_y_label_func(gdouble value,
+					       gpointer data);
 
 /**
  * SECTION:ags_envelope_editor

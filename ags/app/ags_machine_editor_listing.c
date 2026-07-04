@@ -27,25 +27,25 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_editor_listing_class_init(AgsMachineEditorListingClass *machine_editor_listing);
-void ags_machine_editor_listing_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_editor_listing_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_machine_editor_listing_init(AgsMachineEditorListing *machine_editor_listing);
-void ags_machine_editor_listing_set_property(GObject *gobject,
-					     guint prop_id,
-					     const GValue *value,
-					     GParamSpec *param_spec);
-void ags_machine_editor_listing_get_property(GObject *gobject,
-					     guint prop_id,
-					     GValue *value,
-					     GParamSpec *param_spec);
+static void ags_machine_editor_listing_class_init(AgsMachineEditorListingClass *machine_editor_listing);
+static void ags_machine_editor_listing_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_editor_listing_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_machine_editor_listing_init(AgsMachineEditorListing *machine_editor_listing);
+static void ags_machine_editor_listing_set_property(GObject *gobject,
+						    guint prop_id,
+						    const GValue *value,
+						    GParamSpec *param_spec);
+static void ags_machine_editor_listing_get_property(GObject *gobject,
+						    guint prop_id,
+						    GValue *value,
+						    GParamSpec *param_spec);
 
-void ags_machine_editor_listing_connect(AgsConnectable *connectable);
-void ags_machine_editor_listing_disconnect(AgsConnectable *connectable);
+static void ags_machine_editor_listing_connect(AgsConnectable *connectable);
+static void ags_machine_editor_listing_disconnect(AgsConnectable *connectable);
 
-void ags_machine_editor_listing_set_update(AgsApplicable *applicable, gboolean update);
-void ags_machine_editor_listing_apply(AgsApplicable *applicable);
-void ags_machine_editor_listing_reset(AgsApplicable *applicable);
+static void ags_machine_editor_listing_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_machine_editor_listing_apply(AgsApplicable *applicable);
+static void ags_machine_editor_listing_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_machine_editor_listing

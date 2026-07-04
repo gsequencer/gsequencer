@@ -29,10 +29,10 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-void ags_editor_history_class_init(AgsEditorHistoryClass *editor_history);
-void ags_editor_history_init (AgsEditorHistory *editor_history);
-void ags_editor_history_dispose(GObject *gobject);
-void ags_editor_history_finalize(GObject *gobject);
+static void ags_editor_history_class_init(AgsEditorHistoryClass *editor_history);
+static void ags_editor_history_init (AgsEditorHistory *editor_history);
+static void ags_editor_history_dispose(GObject *gobject);
+static void ags_editor_history_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_editor_history

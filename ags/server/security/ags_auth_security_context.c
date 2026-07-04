@@ -23,9 +23,9 @@
 
 #include <ags/i18n.h>
 
-void ags_auth_security_context_class_init(AgsAuthSecurityContextClass *auth_security_context);
-void ags_auth_security_context_init(AgsAuthSecurityContext *auth_security_context);
-void ags_auth_security_context_finalize(GObject *gobject);
+static void ags_auth_security_context_class_init(AgsAuthSecurityContextClass *auth_security_context);
+static void ags_auth_security_context_init(AgsAuthSecurityContext *auth_security_context);
+static void ags_auth_security_context_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_auth_security_context
@@ -39,7 +39,7 @@ void ags_auth_security_context_finalize(GObject *gobject);
 
 static gpointer ags_auth_security_context_parent_class = NULL;
 
-AgsAuthSecurityContext *ags_auth_security_context = NULL;
+static AgsAuthSecurityContext *ags_auth_security_context = NULL;
 
 GType
 ags_auth_security_context_get_type()

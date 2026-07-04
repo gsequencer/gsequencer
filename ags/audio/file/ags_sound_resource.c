@@ -29,7 +29,7 @@
 
 #include <math.h>
 
-void ags_sound_resource_base_init(AgsSoundResourceInterface *ginterface);
+static void ags_sound_resource_base_init(AgsSoundResourceInterface *ginterface);
 
 /**
  * SECTION:ags_sound_resource

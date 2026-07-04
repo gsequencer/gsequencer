@@ -26,17 +26,17 @@
 
 #include <ags/i18n.h>
 
-void ags_line_preset_editor_class_init(AgsLinePresetEditorClass *line_preset_editor);
-void ags_line_preset_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_line_preset_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_line_preset_editor_init(AgsLinePresetEditor *line_preset_editor);
+static void ags_line_preset_editor_class_init(AgsLinePresetEditorClass *line_preset_editor);
+static void ags_line_preset_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_line_preset_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_line_preset_editor_init(AgsLinePresetEditor *line_preset_editor);
 
-void ags_line_preset_editor_connect(AgsConnectable *connectable);
-void ags_line_preset_editor_disconnect(AgsConnectable *connectable);
+static void ags_line_preset_editor_connect(AgsConnectable *connectable);
+static void ags_line_preset_editor_disconnect(AgsConnectable *connectable);
 
-void ags_line_preset_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_line_preset_editor_apply(AgsApplicable *applicable);
-void ags_line_preset_editor_reset(AgsApplicable *applicable);
+static void ags_line_preset_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_line_preset_editor_apply(AgsApplicable *applicable);
+static void ags_line_preset_editor_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_line_preset_editor

@@ -37,53 +37,53 @@
 
 #include <ags/server/ags_service_provider.h>
 
-void ags_server_application_context_class_init(AgsServerApplicationContextClass *server_application_context);
-void ags_server_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
-void ags_server_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider);
-void ags_server_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_server_application_context_init(AgsServerApplicationContext *server_application_context);
-void ags_server_application_context_set_property(GObject *gobject,
-						 guint prop_id,
-						 const GValue *value,
-						 GParamSpec *param_spec);
-void ags_server_application_context_get_property(GObject *gobject,
-						 guint prop_id,
-						 GValue *value,
-						 GParamSpec *param_spec);
-void ags_server_application_context_connect(AgsConnectable *connectable);
-void ags_server_application_context_disconnect(AgsConnectable *connectable);
-void ags_server_application_context_dispose(GObject *gobject);
-void ags_server_application_context_finalize(GObject *gobject);
+static void ags_server_application_context_class_init(AgsServerApplicationContextClass *server_application_context);
+static void ags_server_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
+static void ags_server_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider);
+static void ags_server_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_server_application_context_init(AgsServerApplicationContext *server_application_context);
+static void ags_server_application_context_set_property(GObject *gobject,
+							guint prop_id,
+							const GValue *value,
+							GParamSpec *param_spec);
+static void ags_server_application_context_get_property(GObject *gobject,
+							guint prop_id,
+							GValue *value,
+							GParamSpec *param_spec);
+static void ags_server_application_context_connect(AgsConnectable *connectable);
+static void ags_server_application_context_disconnect(AgsConnectable *connectable);
+static void ags_server_application_context_dispose(GObject *gobject);
+static void ags_server_application_context_finalize(GObject *gobject);
 
-AgsThread* ags_server_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
-void ags_server_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
-						  AgsThread *main_loop);
-AgsTaskLauncher* ags_server_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
-void ags_server_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
-						      AgsTaskLauncher *task_launcher);
-AgsThreadPool* ags_server_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
-void ags_server_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
-						    AgsThreadPool *thread_pool);
-GList* ags_server_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
-void ags_server_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
-					       GList *worker);
+static AgsThread* ags_server_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+static void ags_server_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+							 AgsThread *main_loop);
+static AgsTaskLauncher* ags_server_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
+static void ags_server_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+							     AgsTaskLauncher *task_launcher);
+static AgsThreadPool* ags_server_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+static void ags_server_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+							   AgsThreadPool *thread_pool);
+static GList* ags_server_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+static void ags_server_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+						      GList *worker);
 
-gboolean ags_server_application_context_is_operating(AgsServiceProvider *service_provider);
+static gboolean ags_server_application_context_is_operating(AgsServiceProvider *service_provider);
 
-AgsServerStatus* ags_server_application_context_server_status(AgsServiceProvider *service_provider);
+static AgsServerStatus* ags_server_application_context_server_status(AgsServiceProvider *service_provider);
 
-void ags_server_application_context_set_registry(AgsServiceProvider *service_provider,
-						 AgsRegistry *registry);
-AgsRegistry* ags_server_application_context_get_registry(AgsServiceProvider *service_provider);
+static void ags_server_application_context_set_registry(AgsServiceProvider *service_provider,
+							AgsRegistry *registry);
+static AgsRegistry* ags_server_application_context_get_registry(AgsServiceProvider *service_provider);
 
-void ags_server_application_context_set_server(AgsServiceProvider *service_provider,
-					       GList *server);
-GList* ags_server_application_context_get_server(AgsServiceProvider *service_provider);
+static void ags_server_application_context_set_server(AgsServiceProvider *service_provider,
+						      GList *server);
+static GList* ags_server_application_context_get_server(AgsServiceProvider *service_provider);
 
-void ags_server_application_context_prepare(AgsApplicationContext *application_context);
-void ags_server_application_context_setup(AgsApplicationContext *application_context);
+static void ags_server_application_context_prepare(AgsApplicationContext *application_context);
+static void ags_server_application_context_setup(AgsApplicationContext *application_context);
 
-void* ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop);
+static void* ags_server_application_context_server_main_loop_thread(GMainLoop *main_loop);
 
 static gpointer ags_server_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_server_application_context_parent_connectable_interface;

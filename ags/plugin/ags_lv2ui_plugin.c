@@ -45,37 +45,37 @@
 
 #include <ags/i18n.h>
 
-void ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin);
-void ags_lv2ui_plugin_init (AgsLv2uiPlugin *lv2ui_plugin);
-void ags_lv2ui_plugin_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_lv2ui_plugin_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_lv2ui_plugin_dispose(GObject *gobject);
-void ags_lv2ui_plugin_finalize(GObject *gobject);
+static void ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin);
+static void ags_lv2ui_plugin_init (AgsLv2uiPlugin *lv2ui_plugin);
+static void ags_lv2ui_plugin_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_lv2ui_plugin_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_lv2ui_plugin_dispose(GObject *gobject);
+static void ags_lv2ui_plugin_finalize(GObject *gobject);
 
-gpointer ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
-						  guint *n_params,
-						  gchar ***parameter_name,
-						  GValue **value);
+static gpointer ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
+							 guint *n_params,
+							 gchar ***parameter_name,
+							 GValue **value);
 
-void ags_lv2ui_plugin_connect_port(AgsBasePlugin *base_plugin,
-				   gpointer plugin_handle,
-				   guint port_index,
-				   gpointer data_location);
-void ags_lv2ui_plugin_activate(AgsBasePlugin *base_plugin,
-			       gpointer plugin_handle);
-void ags_lv2ui_plugin_deactivate(AgsBasePlugin *base_plugin,
-				 gpointer plugin_handle);
-void ags_lv2ui_plugin_run(AgsBasePlugin *base_plugin,
-			  gpointer plugin_handle,
-			  snd_seq_event_t *seq_event,
-			  guint frame_count);
-void ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin);
+static void ags_lv2ui_plugin_connect_port(AgsBasePlugin *base_plugin,
+					  gpointer plugin_handle,
+					  guint port_index,
+					  gpointer data_location);
+static void ags_lv2ui_plugin_activate(AgsBasePlugin *base_plugin,
+				      gpointer plugin_handle);
+static void ags_lv2ui_plugin_deactivate(AgsBasePlugin *base_plugin,
+					gpointer plugin_handle);
+static void ags_lv2ui_plugin_run(AgsBasePlugin *base_plugin,
+				 gpointer plugin_handle,
+				 snd_seq_event_t *seq_event,
+				 guint frame_count);
+static void ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
 /**
  * SECTION:ags_lv2ui_plugin

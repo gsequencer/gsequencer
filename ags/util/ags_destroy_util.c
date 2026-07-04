@@ -19,8 +19,8 @@
 
 #include <ags/util/ags_destroy_util.h>
 
-gpointer ags_destroy_util_copy(gpointer ptr);
-void ags_destroy_util_free(gpointer ptr);
+static gpointer ags_destroy_util_copy(gpointer ptr);
+static void ags_destroy_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_destroy_util

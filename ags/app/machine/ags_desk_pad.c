@@ -29,13 +29,13 @@
 
 #include <ags/i18n.h>
 
-void ags_desk_pad_class_init(AgsDeskPadClass *desk_pad);
-void ags_desk_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_desk_pad_init(AgsDeskPad *desk_pad);
+static void ags_desk_pad_class_init(AgsDeskPadClass *desk_pad);
+static void ags_desk_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_desk_pad_init(AgsDeskPad *desk_pad);
 static void ags_desk_pad_finalize(GObject *gobject);
 
-void ags_desk_pad_connect(AgsConnectable *connectable);
-void ags_desk_pad_disconnect(AgsConnectable *connectable);
+static void ags_desk_pad_connect(AgsConnectable *connectable);
+static void ags_desk_pad_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_desk_pad

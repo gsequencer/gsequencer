@@ -31,78 +31,78 @@
 
 #include <ags/i18n.h>
 
-void ags_line_class_init(AgsLineClass *line);
-void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_line_init(AgsLine *line);
-void ags_line_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_line_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_line_dispose(GObject *gobject);
-void ags_line_finalize(GObject *gobject);
+static void ags_line_class_init(AgsLineClass *line);
+static void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_line_init(AgsLine *line);
+static void ags_line_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_line_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_line_dispose(GObject *gobject);
+static void ags_line_finalize(GObject *gobject);
 
-gboolean ags_line_is_connected(AgsConnectable *connectable);
-void ags_line_connect(AgsConnectable *connectable);
-void ags_line_disconnect(AgsConnectable *connectable);
+static gboolean ags_line_is_connected(AgsConnectable *connectable);
+static void ags_line_connect(AgsConnectable *connectable);
+static void ags_line_disconnect(AgsConnectable *connectable);
 
-void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
+static void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 
-void ags_line_add_ladspa_plugin(AgsLine *line,
-				GList *control_type_name,
-				AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				gchar *plugin_name,
-				gchar *filename,
-				gchar *effect,
-				guint start_audio_channel, guint stop_audio_channel,
-				guint start_pad, guint stop_pad,
-				gint position,
-				guint create_flags, guint recall_flags);
-void ags_line_add_lv2_plugin(AgsLine *line,
-			     GList *control_type_name,
-			     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-			     gchar *plugin_name,
-			     gchar *filename,
-			     gchar *effect,
-			     guint start_audio_channel, guint stop_audio_channel,
-			     guint start_pad, guint stop_pad,
-			     gint position,
-			     guint create_flags, guint recall_flags);
+static void ags_line_add_ladspa_plugin(AgsLine *line,
+				       GList *control_type_name,
+				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				       gchar *plugin_name,
+				       gchar *filename,
+				       gchar *effect,
+				       guint start_audio_channel, guint stop_audio_channel,
+				       guint start_pad, guint stop_pad,
+				       gint position,
+				       guint create_flags, guint recall_flags);
+static void ags_line_add_lv2_plugin(AgsLine *line,
+				    GList *control_type_name,
+				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				    gchar *plugin_name,
+				    gchar *filename,
+				    gchar *effect,
+				    guint start_audio_channel, guint stop_audio_channel,
+				    guint start_pad, guint stop_pad,
+				    gint position,
+				    guint create_flags, guint recall_flags);
 
 #if defined(AGS_WITH_VST3)
-void ags_line_add_vst3_plugin(AgsLine *line,
-			      GList *control_type_name,
-			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-			      gchar *plugin_name,
-			      gchar *filename,
-			      gchar *effect,
-			      guint start_audio_channel, guint stop_audio_channel,
-			      guint start_pad, guint stop_pad,
-			      gint position,
-			      guint create_flags, guint recall_flags);
+static void ags_line_add_vst3_plugin(AgsLine *line,
+				     GList *control_type_name,
+				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				     gchar *plugin_name,
+				     gchar *filename,
+				     gchar *effect,
+				     guint start_audio_channel, guint stop_audio_channel,
+				     guint start_pad, guint stop_pad,
+				     gint position,
+				     guint create_flags, guint recall_flags);
 #endif
 
-void ags_line_real_add_plugin(AgsLine *line,
-			      GList *control_type_name,
-			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-			      gchar *plugin_name,
-			      gchar *filename,
-			      gchar *effect,
-			      guint start_audio_channel, guint stop_audio_channel,
-			      guint start_pad, guint stop_pad,
-			      gint position,
-			      guint create_flags, guint recall_flags);
-void ags_line_real_remove_plugin(AgsLine *line,
-				 guint nth);
+static void ags_line_real_add_plugin(AgsLine *line,
+				     GList *control_type_name,
+				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				     gchar *plugin_name,
+				     gchar *filename,
+				     gchar *effect,
+				     guint start_audio_channel, guint stop_audio_channel,
+				     guint start_pad, guint stop_pad,
+				     gint position,
+				     guint create_flags, guint recall_flags);
+static void ags_line_real_remove_plugin(AgsLine *line,
+					guint nth);
 
-void ags_line_real_map_recall(AgsLine *line,
-			      guint output_pad_start);
-GList* ags_line_real_find_port(AgsLine *line);
+static void ags_line_real_map_recall(AgsLine *line,
+				     guint output_pad_start);
+static GList* ags_line_real_find_port(AgsLine *line);
 
-void ags_line_real_refresh_port(AgsLine *line);
+static void ags_line_real_refresh_port(AgsLine *line);
 
 /**
  * SECTION:ags_line

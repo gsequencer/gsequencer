@@ -19,7 +19,7 @@
 
 #include <ags/audio/osc/controller/ags_osc_plugin_controller.h>
 
-void ags_osc_plugin_controller_class_init(AgsOscPluginControllerInterface *ginterface);
+static void ags_osc_plugin_controller_class_init(AgsOscPluginControllerInterface *ginterface);
 
 /**
  * SECTION:ags_osc_plugin_controller

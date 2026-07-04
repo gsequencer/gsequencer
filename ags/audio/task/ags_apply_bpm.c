@@ -28,27 +28,27 @@
 
 #include <ags/i18n.h>
 
-void ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm);
-void ags_apply_bpm_init(AgsApplyBpm *apply_bpm);
-void ags_apply_bpm_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_apply_bpm_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_apply_bpm_dispose(GObject *gobject);
-void ags_apply_bpm_finalize(GObject *gobject);
+static void ags_apply_bpm_class_init(AgsApplyBpmClass *apply_bpm);
+static void ags_apply_bpm_init(AgsApplyBpm *apply_bpm);
+static void ags_apply_bpm_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_apply_bpm_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_apply_bpm_dispose(GObject *gobject);
+static void ags_apply_bpm_finalize(GObject *gobject);
 
-void ags_apply_bpm_launch(AgsTask *task);
+static void ags_apply_bpm_launch(AgsTask *task);
 
-void ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall);
-void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
-void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
-void ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard);
-void ags_apply_bpm_sequencer(AgsApplyBpm *apply_bpm, GObject *sequencer);
-void ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext *application_context);
+static void ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall);
+static void ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel);
+static void ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio);
+static void ags_apply_bpm_soundcard(AgsApplyBpm *apply_bpm, GObject *soundcard);
+static void ags_apply_bpm_sequencer(AgsApplyBpm *apply_bpm, GObject *sequencer);
+static void ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext *application_context);
 
 /**
  * SECTION:ags_apply_bpm

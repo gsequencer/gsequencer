@@ -88,97 +88,97 @@
 
 #include <ags/i18n.h>
 
-void ags_audio_application_context_signal_handler(int signr);
+static void ags_audio_application_context_signal_handler(int signr);
 static void ags_audio_application_context_signal_cleanup();
 
-void ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_application_context);
-void ags_audio_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
-void ags_audio_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider);
-void ags_audio_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider);
-void ags_audio_application_context_init(AgsAudioApplicationContext *audio_application_context);
-void ags_audio_application_context_set_property(GObject *gobject,
-						guint prop_id,
-						const GValue *value,
-						GParamSpec *param_spec);
-void ags_audio_application_context_get_property(GObject *gobject,
-						guint prop_id,
-						GValue *value,
-						GParamSpec *param_spec);
-void ags_audio_application_context_dispose(GObject *gobject);
-void ags_audio_application_context_finalize(GObject *gobject);
+static void ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_application_context);
+static void ags_audio_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
+static void ags_audio_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider);
+static void ags_audio_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider);
+static void ags_audio_application_context_init(AgsAudioApplicationContext *audio_application_context);
+static void ags_audio_application_context_set_property(GObject *gobject,
+						       guint prop_id,
+						       const GValue *value,
+						       GParamSpec *param_spec);
+static void ags_audio_application_context_get_property(GObject *gobject,
+						       guint prop_id,
+						       GValue *value,
+						       GParamSpec *param_spec);
+static void ags_audio_application_context_dispose(GObject *gobject);
+static void ags_audio_application_context_finalize(GObject *gobject);
 
-void ags_audio_application_context_connect(AgsConnectable *connectable);
-void ags_audio_application_context_disconnect(AgsConnectable *connectable);
+static void ags_audio_application_context_connect(AgsConnectable *connectable);
+static void ags_audio_application_context_disconnect(AgsConnectable *connectable);
 
-AgsThread* ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
-void ags_audio_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
-						 AgsThread *main_loop);
-AgsTaskLauncher* ags_audio_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
-void ags_audio_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
-						     AgsTaskLauncher *task_launcher);
-AgsThreadPool* ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
-void ags_audio_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
-						   AgsThreadPool *thread_pool);
-GList* ags_audio_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
-void ags_audio_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
-					      GList *worker);
+static AgsThread* ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+static void ags_audio_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+							AgsThread *main_loop);
+static AgsTaskLauncher* ags_audio_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
+static void ags_audio_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+							    AgsTaskLauncher *task_launcher);
+static AgsThreadPool* ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+static void ags_audio_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+							  AgsThreadPool *thread_pool);
+static GList* ags_audio_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+static void ags_audio_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+						     GList *worker);
 
-gboolean ags_audio_application_context_is_operating(AgsServiceProvider *service_provider);
+static gboolean ags_audio_application_context_is_operating(AgsServiceProvider *service_provider);
 
-AgsServerStatus* ags_audio_application_context_server_status(AgsServiceProvider *service_provider);
+static AgsServerStatus* ags_audio_application_context_server_status(AgsServiceProvider *service_provider);
 
-void ags_audio_application_context_set_registry(AgsServiceProvider *service_provider,
-						AgsRegistry *registry);
-AgsRegistry* ags_audio_application_context_get_registry(AgsServiceProvider *service_provider);
+static void ags_audio_application_context_set_registry(AgsServiceProvider *service_provider,
+						       AgsRegistry *registry);
+static AgsRegistry* ags_audio_application_context_get_registry(AgsServiceProvider *service_provider);
 
-void ags_audio_application_context_set_server(AgsServiceProvider *service_provider,
-					      GList *server);
-GList* ags_audio_application_context_get_server(AgsServiceProvider *service_provider);
+static void ags_audio_application_context_set_server(AgsServiceProvider *service_provider,
+						     GList *server);
+static GList* ags_audio_application_context_get_server(AgsServiceProvider *service_provider);
 
-GObject* ags_audio_application_context_get_default_soundcard(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
-							 GObject *soundcard);
-GObject* ags_audio_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
-								GObject *soundcard_thread);
-GList* ags_audio_application_context_get_soundcard(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
-						 GList *soundcard);
-GList* ags_audio_application_context_get_sequencer(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
-						 GList *sequencer);
-GList* ags_audio_application_context_get_audio(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_audio(AgsSoundProvider *sound_provider,
-					     GList *audio);
-GList* ags_audio_application_context_get_sound_server(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_sound_server(AgsSoundProvider *sound_provider,
-						    GList *sound_server);
-GList* ags_audio_application_context_get_osc_server(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_osc_server(AgsSoundProvider *sound_provider,
-						  GList *osc_server);
-GList* ags_audio_application_context_get_program(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_program(AgsSoundProvider *sound_provider,
-					       GList *program);
-GList* ags_audio_application_context_get_tempo(AgsSoundProvider *sound_provider);
-void ags_audio_application_context_set_tempo(AgsSoundProvider *sound_provider,
-					     GList *tempo);
+static GObject* ags_audio_application_context_get_default_soundcard(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
+								GObject *soundcard);
+static GObject* ags_audio_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
+								       GObject *soundcard_thread);
+static GList* ags_audio_application_context_get_soundcard(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_soundcard(AgsSoundProvider *sound_provider,
+							GList *soundcard);
+static GList* ags_audio_application_context_get_sequencer(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_sequencer(AgsSoundProvider *sound_provider,
+							GList *sequencer);
+static GList* ags_audio_application_context_get_audio(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_audio(AgsSoundProvider *sound_provider,
+						    GList *audio);
+static GList* ags_audio_application_context_get_sound_server(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_sound_server(AgsSoundProvider *sound_provider,
+							   GList *sound_server);
+static GList* ags_audio_application_context_get_osc_server(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_osc_server(AgsSoundProvider *sound_provider,
+							 GList *osc_server);
+static GList* ags_audio_application_context_get_program(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_program(AgsSoundProvider *sound_provider,
+						      GList *program);
+static GList* ags_audio_application_context_get_tempo(AgsSoundProvider *sound_provider);
+static void ags_audio_application_context_set_tempo(AgsSoundProvider *sound_provider,
+						    GList *tempo);
 
-void ags_audio_application_context_prepare(AgsApplicationContext *application_context);
-void ags_audio_application_context_setup(AgsApplicationContext *application_context);
+static void ags_audio_application_context_prepare(AgsApplicationContext *application_context);
+static void ags_audio_application_context_setup(AgsApplicationContext *application_context);
 
-void ags_audio_application_context_register_types(AgsApplicationContext *application_context);
+static void ags_audio_application_context_register_types(AgsApplicationContext *application_context);
 
-void ags_audio_application_context_read(GObject *file, xmlNode *node, GObject **application_context);
-xmlNode* ags_audio_application_context_write(GObject *file, xmlNode *parent, GObject *application_context);
+static void ags_audio_application_context_read(GObject *file, xmlNode *node, GObject **application_context);
+static xmlNode* ags_audio_application_context_write(GObject *file, xmlNode *parent, GObject *application_context);
 
-void ags_audio_application_context_quit(AgsApplicationContext *application_context);
+static void ags_audio_application_context_quit(AgsApplicationContext *application_context);
 
-void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
-						      AgsAudioApplicationContext *audio_application_context);
+static void ags_audio_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
+							     AgsAudioApplicationContext *audio_application_context);
 
-void* ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop);
-void* ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop);
+static void* ags_audio_application_context_server_main_loop_thread(GMainLoop *main_loop);
+static void* ags_audio_application_context_audio_main_loop_thread(GMainLoop *main_loop);
 
 /**
  * SECTION:ags_audio_application_context

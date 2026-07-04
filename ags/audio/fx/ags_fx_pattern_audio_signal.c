@@ -26,21 +26,21 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_pattern_audio_signal_class_init(AgsFxPatternAudioSignalClass *fx_pattern_audio_signal);
-void ags_fx_pattern_audio_signal_init(AgsFxPatternAudioSignal *fx_pattern_audio_signal);
-void ags_fx_pattern_audio_signal_dispose(GObject *gobject);
-void ags_fx_pattern_audio_signal_finalize(GObject *gobject);
+static void ags_fx_pattern_audio_signal_class_init(AgsFxPatternAudioSignalClass *fx_pattern_audio_signal);
+static void ags_fx_pattern_audio_signal_init(AgsFxPatternAudioSignal *fx_pattern_audio_signal);
+static void ags_fx_pattern_audio_signal_dispose(GObject *gobject);
+static void ags_fx_pattern_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_pattern_audio_signal_run_inter(AgsRecall *recall);
+static void ags_fx_pattern_audio_signal_run_inter(AgsRecall *recall);
 
-void ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal *fx_pattern_audio_signal,
-						  AgsAudioSignal *source,
-						  AgsNote *note,
-						  guint x0, guint x1,
-						  guint y,
-						  gdouble delay_counter, guint64 offset_counter,
-						  guint frame_count,
-						  gdouble delay, guint buffer_size);
+static void ags_fx_pattern_audio_signal_real_stream_feed(AgsFxPatternAudioSignal *fx_pattern_audio_signal,
+							 AgsAudioSignal *source,
+							 AgsNote *note,
+							 guint x0, guint x1,
+							 guint y,
+							 gdouble delay_counter, guint64 offset_counter,
+							 guint frame_count,
+							 gdouble delay, guint buffer_size);
 
 /**
  * SECTION:ags_fx_pattern_audio_signal

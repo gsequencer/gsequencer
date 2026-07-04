@@ -23,20 +23,20 @@
 
 #include <ags/i18n.h>
 
-void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
-void ags_cancel_channel_init(AgsCancelChannel *cancel_channel);
-void ags_cancel_channel_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_cancel_channel_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_cancel_channel_dispose(GObject *gobject);
-void ags_cancel_channel_finalize(GObject *gobject);
+static void ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel);
+static void ags_cancel_channel_init(AgsCancelChannel *cancel_channel);
+static void ags_cancel_channel_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_cancel_channel_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_cancel_channel_dispose(GObject *gobject);
+static void ags_cancel_channel_finalize(GObject *gobject);
 
-void ags_cancel_channel_launch(AgsTask *task);
+static void ags_cancel_channel_launch(AgsTask *task);
 
 /**
  * SECTION:ags_cancel_channel

@@ -21,9 +21,9 @@
 
 #include <ags/server/security/ags_auth_security_context.h>
 
-void ags_authentication_manager_class_init(AgsAuthenticationManagerClass *authentication_manager);
-void ags_authentication_manager_init (AgsAuthenticationManager *authentication_manager);
-void ags_authentication_manager_finalize(GObject *gobject);
+static void ags_authentication_manager_class_init(AgsAuthenticationManagerClass *authentication_manager);
+static void ags_authentication_manager_init (AgsAuthenticationManager *authentication_manager);
+static void ags_authentication_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_authentication_manager
@@ -37,7 +37,7 @@ void ags_authentication_manager_finalize(GObject *gobject);
 
 static gpointer ags_authentication_manager_parent_class = NULL;
 
-AgsAuthenticationManager *ags_authentication_manager = NULL;
+static AgsAuthenticationManager *ags_authentication_manager = NULL;
 
 GType
 ags_authentication_manager_get_type (void)

@@ -27,24 +27,24 @@
 
 #include <ags/i18n.h>
 
-void ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequencer_length);
-void ags_apply_sequencer_length_init(AgsApplySequencerLength *apply_sequencer_length);
-void ags_apply_sequencer_length_set_property(GObject *gobject,
-					     guint prop_id,
-					     const GValue *value,
-					     GParamSpec *param_spec);
-void ags_apply_sequencer_length_get_property(GObject *gobject,
-					     guint prop_id,
-					     GValue *value,
-					     GParamSpec *param_spec);
-void ags_apply_sequencer_length_dispose(GObject *gobject);
-void ags_apply_sequencer_length_finalize(GObject *gobject);
+static void ags_apply_sequencer_length_class_init(AgsApplySequencerLengthClass *apply_sequencer_length);
+static void ags_apply_sequencer_length_init(AgsApplySequencerLength *apply_sequencer_length);
+static void ags_apply_sequencer_length_set_property(GObject *gobject,
+						    guint prop_id,
+						    const GValue *value,
+						    GParamSpec *param_spec);
+static void ags_apply_sequencer_length_get_property(GObject *gobject,
+						    guint prop_id,
+						    GValue *value,
+						    GParamSpec *param_spec);
+static void ags_apply_sequencer_length_dispose(GObject *gobject);
+static void ags_apply_sequencer_length_finalize(GObject *gobject);
 
-void ags_apply_sequencer_length_recall(AgsApplySequencerLength *apply_sequencer_length, AgsRecall *recall);
-void ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_length, AgsChannel *channel);
-void ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length, AgsAudio *audio);
+static void ags_apply_sequencer_length_recall(AgsApplySequencerLength *apply_sequencer_length, AgsRecall *recall);
+static void ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_length, AgsChannel *channel);
+static void ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length, AgsAudio *audio);
 
-void ags_apply_sequencer_length_launch(AgsTask *task);
+static void ags_apply_sequencer_length_launch(AgsTask *task);
 
 /**
  * SECTION:ags_apply_sequencer_length

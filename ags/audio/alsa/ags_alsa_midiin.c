@@ -55,75 +55,75 @@
  * #AgsAlsaMidiin represents a sequencer and supports midi input.
  */
 
-void ags_alsa_midiin_class_init(AgsAlsaMidiinClass *alsa_midiin);
-void ags_alsa_midiin_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_alsa_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer);
-void ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin);
-void ags_alsa_midiin_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_alsa_midiin_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_alsa_midiin_dispose(GObject *gobject);
-void ags_alsa_midiin_finalize(GObject *gobject);
+static void ags_alsa_midiin_class_init(AgsAlsaMidiinClass *alsa_midiin);
+static void ags_alsa_midiin_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_alsa_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer);
+static void ags_alsa_midiin_init(AgsAlsaMidiin *alsa_midiin);
+static void ags_alsa_midiin_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_alsa_midiin_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_alsa_midiin_dispose(GObject *gobject);
+static void ags_alsa_midiin_finalize(GObject *gobject);
 
-AgsUUID* ags_alsa_midiin_get_uuid(AgsConnectable *connectable);
-gboolean ags_alsa_midiin_has_resource(AgsConnectable *connectable);
-gboolean ags_alsa_midiin_is_ready(AgsConnectable *connectable);
-void ags_alsa_midiin_add_to_registry(AgsConnectable *connectable);
-void ags_alsa_midiin_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_alsa_midiin_list_resource(AgsConnectable *connectable);
-xmlNode* ags_alsa_midiin_xml_compose(AgsConnectable *connectable);
-void ags_alsa_midiin_xml_parse(AgsConnectable *connectable,
-			       xmlNode *node);
-gboolean ags_alsa_midiin_is_connected(AgsConnectable *connectable);
-void ags_alsa_midiin_connect(AgsConnectable *connectable);
-void ags_alsa_midiin_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_alsa_midiin_get_uuid(AgsConnectable *connectable);
+static gboolean ags_alsa_midiin_has_resource(AgsConnectable *connectable);
+static gboolean ags_alsa_midiin_is_ready(AgsConnectable *connectable);
+static void ags_alsa_midiin_add_to_registry(AgsConnectable *connectable);
+static void ags_alsa_midiin_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_alsa_midiin_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_alsa_midiin_xml_compose(AgsConnectable *connectable);
+static void ags_alsa_midiin_xml_parse(AgsConnectable *connectable,
+				      xmlNode *node);
+static gboolean ags_alsa_midiin_is_connected(AgsConnectable *connectable);
+static void ags_alsa_midiin_connect(AgsConnectable *connectable);
+static void ags_alsa_midiin_disconnect(AgsConnectable *connectable);
 
-void ags_alsa_midiin_set_device(AgsSequencer *sequencer,
-				gchar *device);
-gchar* ags_alsa_midiin_get_device(AgsSequencer *sequencer);
+static void ags_alsa_midiin_set_device(AgsSequencer *sequencer,
+				       gchar *device);
+static gchar* ags_alsa_midiin_get_device(AgsSequencer *sequencer);
 
-void ags_alsa_midiin_set_bpm(AgsSequencer *sequencer,
-			     gdouble bpm);
-gdouble ags_alsa_midiin_get_bpm(AgsSequencer *sequencer);
+static void ags_alsa_midiin_set_bpm(AgsSequencer *sequencer,
+				    gdouble bpm);
+static gdouble ags_alsa_midiin_get_bpm(AgsSequencer *sequencer);
 
-void ags_alsa_midiin_set_start_note_offset(AgsSequencer *sequencer,
-					   guint64 start_note_offset);
-guint64 ags_alsa_midiin_get_start_note_offset(AgsSequencer *sequencer);
+static void ags_alsa_midiin_set_start_note_offset(AgsSequencer *sequencer,
+						  guint64 start_note_offset);
+static guint64 ags_alsa_midiin_get_start_note_offset(AgsSequencer *sequencer);
 
-GObject* ags_alsa_midiin_get_frame_clock(AgsSequencer *sequencer);
+static GObject* ags_alsa_midiin_get_frame_clock(AgsSequencer *sequencer);
 
-void ags_alsa_midiin_list_cards(AgsSequencer *sequencer,
-				GList **card_id, GList **card_name);
+static void ags_alsa_midiin_list_cards(AgsSequencer *sequencer,
+				       GList **card_id, GList **card_name);
 
-gboolean ags_alsa_midiin_is_starting(AgsSequencer *sequencer);
-gboolean ags_alsa_midiin_is_recording(AgsSequencer *sequencer);
+static gboolean ags_alsa_midiin_is_starting(AgsSequencer *sequencer);
+static gboolean ags_alsa_midiin_is_recording(AgsSequencer *sequencer);
 
-void ags_alsa_midiin_device_record_init(AgsSequencer *sequencer,
-					GError **error);
-void ags_alsa_midiin_device_record(AgsSequencer *sequencer,
-				   GError **error);
-void ags_alsa_midiin_device_free(AgsSequencer *sequencer);
+static void ags_alsa_midiin_device_record_init(AgsSequencer *sequencer,
+					       GError **error);
+static void ags_alsa_midiin_device_record(AgsSequencer *sequencer,
+					  GError **error);
+static void ags_alsa_midiin_device_free(AgsSequencer *sequencer);
 
-void ags_alsa_midiin_tic(AgsSequencer *sequencer);
-void ags_alsa_midiin_offset_changed(AgsSequencer *sequencer,
-				    guint64 note_offset);
+static void ags_alsa_midiin_tic(AgsSequencer *sequencer);
+static void ags_alsa_midiin_offset_changed(AgsSequencer *sequencer,
+					   guint64 note_offset);
 
-void* ags_alsa_midiin_get_buffer(AgsSequencer *sequencer,
-				 guint *buffer_length);
-void* ags_alsa_midiin_get_next_buffer(AgsSequencer *sequencer,
-				      guint *buffer_length);
+static void* ags_alsa_midiin_get_buffer(AgsSequencer *sequencer,
+					guint *buffer_length);
+static void* ags_alsa_midiin_get_next_buffer(AgsSequencer *sequencer,
+					     guint *buffer_length);
 
-void ags_alsa_midiin_lock_buffer(AgsSequencer *sequencer,
-				 void *buffer);
-void ags_alsa_midiin_unlock_buffer(AgsSequencer *sequencer,
-				   void *buffer);
+static void ags_alsa_midiin_lock_buffer(AgsSequencer *sequencer,
+					void *buffer);
+static void ags_alsa_midiin_unlock_buffer(AgsSequencer *sequencer,
+					  void *buffer);
 
-AgsSequencerMidiVersion ags_alsa_midiin_get_midi_version(AgsSequencer *sequencer);  
+static AgsSequencerMidiVersion ags_alsa_midiin_get_midi_version(AgsSequencer *sequencer);  
 
 enum{
   PROP_0,

@@ -44,26 +44,26 @@
 
 #include <ags/i18n.h>
 
-void ags_window_class_init(AgsWindowClass *window);
-void ags_window_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_window_init(AgsWindow *window);
-void ags_window_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_window_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_window_finalize(GObject *gobject);
+static void ags_window_class_init(AgsWindowClass *window);
+static void ags_window_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_window_init(AgsWindow *window);
+static void ags_window_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_window_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_window_finalize(GObject *gobject);
 
-gboolean ags_window_tick_callback(GtkWidget *widget,
-				  GdkFrameClock *frame_clock,
-				  gpointer user_data);
+static gboolean ags_window_tick_callback(GtkWidget *widget,
+					 GdkFrameClock *frame_clock,
+					 gpointer user_data);
 
-gboolean ags_window_is_connected(AgsConnectable *connectable);
-void ags_window_connect(AgsConnectable *connectable);
-void ags_window_disconnect(AgsConnectable *connectable);
+static gboolean ags_window_is_connected(AgsConnectable *connectable);
+static void ags_window_connect(AgsConnectable *connectable);
+static void ags_window_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_window

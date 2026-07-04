@@ -25,19 +25,19 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_lfo_channel_class_init(AgsFxLfoChannelClass *fx_lfo_channel);
-void ags_fx_lfo_channel_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel);
-void ags_fx_lfo_channel_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_fx_lfo_channel_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_fx_lfo_channel_dispose(GObject *gobject);
-void ags_fx_lfo_channel_finalize(GObject *gobject);
+static void ags_fx_lfo_channel_class_init(AgsFxLfoChannelClass *fx_lfo_channel);
+static void ags_fx_lfo_channel_mutable_interface_init(AgsMutableInterface *mutable);
+static void ags_fx_lfo_channel_init(AgsFxLfoChannel *fx_lfo_channel);
+static void ags_fx_lfo_channel_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_fx_lfo_channel_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_fx_lfo_channel_dispose(GObject *gobject);
+static void ags_fx_lfo_channel_finalize(GObject *gobject);
 
 static AgsPluginPort* ags_fx_lfo_channel_get_enabled_plugin_port();
 static AgsPluginPort* ags_fx_lfo_channel_get_lfo_wave_plugin_port();

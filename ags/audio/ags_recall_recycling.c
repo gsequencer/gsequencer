@@ -32,37 +32,37 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
-void ags_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_recycling_init(AgsRecallRecycling *recall_recycling);
-void ags_recall_recycling_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_recall_recycling_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_recall_recycling_dispose(GObject *gobject);
-void ags_recall_recycling_finalize(GObject *gobject);
+static void ags_recall_recycling_class_init(AgsRecallRecyclingClass *recall_recycling);
+static void ags_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_recycling_init(AgsRecallRecycling *recall_recycling);
+static void ags_recall_recycling_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_recall_recycling_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_recall_recycling_dispose(GObject *gobject);
+static void ags_recall_recycling_finalize(GObject *gobject);
 
-void ags_recall_recycling_connect(AgsConnectable *connectable);
-void ags_recall_recycling_disconnect(AgsConnectable *connectable);
-void ags_recall_recycling_connect_connection(AgsConnectable *connectable,
-					     GObject *connection);
-void ags_recall_recycling_disconnect_connection(AgsConnectable *connectable,
-						GObject *connection);
+static void ags_recall_recycling_connect(AgsConnectable *connectable);
+static void ags_recall_recycling_disconnect(AgsConnectable *connectable);
+static void ags_recall_recycling_connect_connection(AgsConnectable *connectable,
+						    GObject *connection);
+static void ags_recall_recycling_disconnect_connection(AgsConnectable *connectable,
+						       GObject *connection);
 
-AgsRecall* ags_recall_recycling_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id,
-					  guint *n_params, gchar **parameter_name, GValue *value);
+static AgsRecall* ags_recall_recycling_duplicate(AgsRecall *recall,
+						 AgsRecallID *recall_id,
+						 guint *n_params, gchar **parameter_name, GValue *value);
 
-void ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
-							   AgsAudioSignal *audio_signal,
-							   AgsRecallRecycling *recall_recycling);
-void ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
-							      AgsAudioSignal *audio_signal,
-							      AgsRecallRecycling *recall_recycling);
+static void ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
+								  AgsAudioSignal *audio_signal,
+								  AgsRecallRecycling *recall_recycling);
+static void ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
+								     AgsAudioSignal *audio_signal,
+								     AgsRecallRecycling *recall_recycling);
 
 /**
  * SECTION:ags_recall_recycling

@@ -27,26 +27,26 @@
 
 #include <ags/i18n.h>
 
-void ags_set_presets_class_init(AgsSetPresetsClass *set_presets);
-void ags_set_presets_init(AgsSetPresets *set_presets);
-void ags_set_presets_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_set_presets_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_set_presets_dispose(GObject *gobject);
-void ags_set_presets_finalize(GObject *gobject);
+static void ags_set_presets_class_init(AgsSetPresetsClass *set_presets);
+static void ags_set_presets_init(AgsSetPresets *set_presets);
+static void ags_set_presets_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_set_presets_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_set_presets_dispose(GObject *gobject);
+static void ags_set_presets_finalize(GObject *gobject);
 
-void ags_set_presets_launch(AgsTask *task);
+static void ags_set_presets_launch(AgsTask *task);
 
-void ags_set_presets_audio_signal(AgsSetPresets *set_presets, AgsAudioSignal *audio_signal);
-void ags_set_presets_recycling(AgsSetPresets *set_presets, AgsRecycling *recycling);
-void ags_set_presets_channel(AgsSetPresets *set_presets, AgsChannel *channel);
-void ags_set_presets_audio(AgsSetPresets *set_presets, AgsAudio *audio);
-void ags_set_presets_soundcard(AgsSetPresets *set_presets, GObject *soundcard);
+static void ags_set_presets_audio_signal(AgsSetPresets *set_presets, AgsAudioSignal *audio_signal);
+static void ags_set_presets_recycling(AgsSetPresets *set_presets, AgsRecycling *recycling);
+static void ags_set_presets_channel(AgsSetPresets *set_presets, AgsChannel *channel);
+static void ags_set_presets_audio(AgsSetPresets *set_presets, AgsAudio *audio);
+static void ags_set_presets_soundcard(AgsSetPresets *set_presets, GObject *soundcard);
 
 /**
  * SECTION:ags_set_presets

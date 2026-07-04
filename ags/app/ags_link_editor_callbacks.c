@@ -29,8 +29,8 @@
 
 #include <ags/i18n.h>
 
-void ags_link_editor_pcm_file_dialog_response_callback(AgsPCMFileDialog *pcm_file_dialog, guint response,
-						       AgsLinkEditor *link_editor);
+static void ags_link_editor_pcm_file_dialog_response_callback(AgsPCMFileDialog *pcm_file_dialog, guint response,
+							      AgsLinkEditor *link_editor);
 
 #define AGS_LINK_EDITOR_OPEN_SPIN_BUTTON "AgsLinkEditorOpenSpinButton"
 

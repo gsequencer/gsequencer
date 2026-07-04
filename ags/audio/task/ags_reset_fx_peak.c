@@ -23,13 +23,13 @@
 
 #include <ags/i18n.h>
 
-void ags_reset_fx_peak_class_init(AgsResetFxPeakClass *reset_fx_peak);
-void ags_reset_fx_peak_init(AgsResetFxPeak *reset_fx_peak);
-void ags_reset_fx_peak_connect(AgsConnectable *connectable);
-void ags_reset_fx_peak_dispose(GObject *gobject);
-void ags_reset_fx_peak_finalize(GObject *gobject);
+static void ags_reset_fx_peak_class_init(AgsResetFxPeakClass *reset_fx_peak);
+static void ags_reset_fx_peak_init(AgsResetFxPeak *reset_fx_peak);
+static void ags_reset_fx_peak_connect(AgsConnectable *connectable);
+static void ags_reset_fx_peak_dispose(GObject *gobject);
+static void ags_reset_fx_peak_finalize(GObject *gobject);
 
-void ags_reset_fx_peak_launch(AgsTask *task);
+static void ags_reset_fx_peak_launch(AgsTask *task);
 
 /**
  * SECTION:ags_reset_fx_peak

@@ -181,9 +181,10 @@ ags_complex_get_term(AgsComplex *ptr,
  *
  * Since: 3.7.11
  */
-void ags_complex_set_term(AgsComplex *ptr,
-			  gdouble real,
-			  gdouble imag)
+void
+ags_complex_set_term(AgsComplex *ptr,
+		     gdouble real,
+		     gdouble imag)
 {
   ptr->real = real;
   ptr->imag = imag;

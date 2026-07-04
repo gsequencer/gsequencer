@@ -29,17 +29,17 @@
 
 #include <ags/i18n.h>
 
-void ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad);
-void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
+static void ags_drum_input_pad_class_init(AgsDrumInputPadClass *drum_input_pad);
+static void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
 static void ags_drum_input_pad_finalize(GObject *gobject);
 
-void ags_drum_input_pad_connect(AgsConnectable *connectable);
-void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
+static void ags_drum_input_pad_connect(AgsConnectable *connectable);
+static void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
 
-void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
-void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
-				     guint audio_channels, guint audio_channels_old);
+static void ags_drum_input_pad_set_channel(AgsPad *pad, AgsChannel *channel);
+static void ags_drum_input_pad_resize_lines(AgsPad *pad, GType line_type,
+					    guint audio_channels, guint audio_channels_old);
 
 /**
  * SECTION:ags_drum_input_pad

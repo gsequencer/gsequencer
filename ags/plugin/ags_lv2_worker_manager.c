@@ -22,9 +22,9 @@
 
 #include <ags/thread/ags_returnable_thread.h>
 
-void ags_lv2_worker_manager_class_init(AgsLv2WorkerManagerClass *lv2_worker_manager);
-void ags_lv2_worker_manager_init(AgsLv2WorkerManager *lv2_worker_manager);
-void ags_lv2_worker_manager_finalize(GObject *gobject);
+static void ags_lv2_worker_manager_class_init(AgsLv2WorkerManagerClass *lv2_worker_manager);
+static void ags_lv2_worker_manager_init(AgsLv2WorkerManager *lv2_worker_manager);
+static void ags_lv2_worker_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_worker_manager
@@ -38,7 +38,7 @@ void ags_lv2_worker_manager_finalize(GObject *gobject);
 
 static gpointer ags_lv2_worker_manager_parent_class = NULL;
 
-AgsLv2WorkerManager *ags_lv2_worker_manager = NULL;
+static AgsLv2WorkerManager *ags_lv2_worker_manager = NULL;
 
 GType
 ags_lv2_worker_manager_get_type()

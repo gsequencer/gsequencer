@@ -40,40 +40,40 @@
 
 #include <time.h>
 
-void ags_audio_unit_port_class_init(AgsAudioUnitPortClass *audio_unit_port);
-void ags_audio_unit_port_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_unit_port_init(AgsAudioUnitPort *audio_unit_port);
-void ags_audio_unit_port_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_audio_unit_port_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_audio_unit_port_dispose(GObject *gobject);
-void ags_audio_unit_port_finalize(GObject *gobject);
+static void ags_audio_unit_port_class_init(AgsAudioUnitPortClass *audio_unit_port);
+static void ags_audio_unit_port_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_unit_port_init(AgsAudioUnitPort *audio_unit_port);
+static void ags_audio_unit_port_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_audio_unit_port_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_audio_unit_port_dispose(GObject *gobject);
+static void ags_audio_unit_port_finalize(GObject *gobject);
 
-AgsUUID* ags_audio_unit_port_get_uuid(AgsConnectable *connectable);
-gboolean ags_audio_unit_port_has_resource(AgsConnectable *connectable);
-gboolean ags_audio_unit_port_is_ready(AgsConnectable *connectable);
-void ags_audio_unit_port_add_to_registry(AgsConnectable *connectable);
-void ags_audio_unit_port_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_audio_unit_port_list_resource(AgsConnectable *connectable);
-xmlNode* ags_audio_unit_port_xml_compose(AgsConnectable *connectable);
-void ags_audio_unit_port_xml_parse(AgsConnectable *connectable,
-				   xmlNode *node);
-gboolean ags_audio_unit_port_is_connected(AgsConnectable *connectable);
-void ags_audio_unit_port_connect(AgsConnectable *connectable);
-void ags_audio_unit_port_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_audio_unit_port_get_uuid(AgsConnectable *connectable);
+static gboolean ags_audio_unit_port_has_resource(AgsConnectable *connectable);
+static gboolean ags_audio_unit_port_is_ready(AgsConnectable *connectable);
+static void ags_audio_unit_port_add_to_registry(AgsConnectable *connectable);
+static void ags_audio_unit_port_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_audio_unit_port_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_audio_unit_port_xml_compose(AgsConnectable *connectable);
+static void ags_audio_unit_port_xml_parse(AgsConnectable *connectable,
+					  xmlNode *node);
+static gboolean ags_audio_unit_port_is_connected(AgsConnectable *connectable);
+static void ags_audio_unit_port_connect(AgsConnectable *connectable);
+static void ags_audio_unit_port_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_AUDIO_UNIT
-OSStatus ags_audio_unit_port_output_render_callback(AgsAudioUnitPort *audio_unit_port,
-						    AudioUnitRenderActionFlags *io_action_flags,
-						    const AudioTimeStamp *in_time_stamp,
-						    UInt32 in_bus_number,
-						    UInt32 in_number_frames,
-						    AudioBufferList *io_data);
+static OSStatus ags_audio_unit_port_output_render_callback(AgsAudioUnitPort *audio_unit_port,
+							   AudioUnitRenderActionFlags *io_action_flags,
+							   const AudioTimeStamp *in_time_stamp,
+							   UInt32 in_bus_number,
+							   UInt32 in_number_frames,
+							   AudioBufferList *io_data);
 #endif
 
 /**

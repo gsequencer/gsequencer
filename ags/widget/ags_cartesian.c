@@ -22,48 +22,48 @@
 #include <stdlib.h>
 #include <math.h>
 
-void ags_cartesian_class_init(AgsCartesianClass *cartesian);
-void ags_cartesian_init(AgsCartesian *cartesian);
-void ags_cartesian_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_cartesian_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_cartesian_finalize(GObject *gobject);
-void ags_cartesian_show(GtkWidget *widget);
+static void ags_cartesian_class_init(AgsCartesianClass *cartesian);
+static void ags_cartesian_init(AgsCartesian *cartesian);
+static void ags_cartesian_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_cartesian_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_cartesian_finalize(GObject *gobject);
+static void ags_cartesian_show(GtkWidget *widget);
 
-void ags_cartesian_realize(GtkWidget *widget);
-void ags_cartesian_unrealize(GtkWidget *widget);
+static void ags_cartesian_realize(GtkWidget *widget);
+static void ags_cartesian_unrealize(GtkWidget *widget);
 
-void ags_cartesian_measure(GtkWidget *widget,
-			   GtkOrientation orientation,
-			   int for_size,
-			   int *minimum,
-			   int *natural,
-			   int *minimum_baseline,
-			   int *natural_baseline);
-void ags_cartesian_size_allocate(GtkWidget *widget,
-				 int width,
-				 int height,
-				 int baseline);
+static void ags_cartesian_measure(GtkWidget *widget,
+				  GtkOrientation orientation,
+				  int for_size,
+				  int *minimum,
+				  int *natural,
+				  int *minimum_baseline,
+				  int *natural_baseline);
+static void ags_cartesian_size_allocate(GtkWidget *widget,
+					int width,
+					int height,
+					int baseline);
 
-void ags_cartesian_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					       AgsCartesian *cartesian);
+static void ags_cartesian_frame_clock_update_callback(GdkFrameClock *frame_clock,
+						      AgsCartesian *cartesian);
 
-void ags_cartesian_snapshot(GtkWidget *widget,
-			    GtkSnapshot *snapshot);
+static void ags_cartesian_snapshot(GtkWidget *widget,
+				   GtkSnapshot *snapshot);
 
-void ags_cartesian_draw_putpixel(guchar *data,
-				 gdouble width, gdouble height,
-				 guint stride,
-				 int x, int y, unsigned long int pixel);
+static void ags_cartesian_draw_putpixel(guchar *data,
+					gdouble width, gdouble height,
+					guint stride,
+					int x, int y, unsigned long int pixel);
 
-void ags_cartesian_draw(AgsCartesian *cartesian,
-			cairo_t *cr,
-			gboolean is_animation);
+static void ags_cartesian_draw(AgsCartesian *cartesian,
+			       cairo_t *cr,
+			       gboolean is_animation);
 
 /**
  * SECTION:ags_cartesian

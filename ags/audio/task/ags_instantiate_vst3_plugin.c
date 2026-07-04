@@ -29,20 +29,20 @@
 
 #include <ags/i18n.h>
 
-void ags_instantiate_vst3_plugin_class_init(AgsInstantiateVst3PluginClass *instantiate_vst3_plugin);
-void ags_instantiate_vst3_plugin_init(AgsInstantiateVst3Plugin *instantiate_vst3_plugin);
-void ags_instantiate_vst3_plugin_set_property(GObject *gobject,
-					      guint prop_id,
-					      const GValue *value,
-					      GParamSpec *param_spec);
-void ags_instantiate_vst3_plugin_get_property(GObject *gobject,
-					      guint prop_id,
-					      GValue *value,
-					      GParamSpec *param_spec);
-void ags_instantiate_vst3_plugin_dispose(GObject *gobject);
-void ags_instantiate_vst3_plugin_finalize(GObject *gobject);
+static void ags_instantiate_vst3_plugin_class_init(AgsInstantiateVst3PluginClass *instantiate_vst3_plugin);
+static void ags_instantiate_vst3_plugin_init(AgsInstantiateVst3Plugin *instantiate_vst3_plugin);
+static void ags_instantiate_vst3_plugin_set_property(GObject *gobject,
+						     guint prop_id,
+						     const GValue *value,
+						     GParamSpec *param_spec);
+static void ags_instantiate_vst3_plugin_get_property(GObject *gobject,
+						     guint prop_id,
+						     GValue *value,
+						     GParamSpec *param_spec);
+static void ags_instantiate_vst3_plugin_dispose(GObject *gobject);
+static void ags_instantiate_vst3_plugin_finalize(GObject *gobject);
 
-void ags_instantiate_vst3_plugin_launch(AgsTask *task);
+static void ags_instantiate_vst3_plugin_launch(AgsTask *task);
 
 /**
  * SECTION:ags_instantiate_vst3_plugin

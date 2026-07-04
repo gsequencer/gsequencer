@@ -31,22 +31,22 @@
 
 #include <ags/i18n.h>
 
-void ags_matrix_class_init(AgsMatrixClass *matrix);
-void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_matrix_init(AgsMatrix *matrix);
-void ags_matrix_finalize(GObject *gobject);
+static void ags_matrix_class_init(AgsMatrixClass *matrix);
+static void ags_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_matrix_init(AgsMatrix *matrix);
+static void ags_matrix_finalize(GObject *gobject);
 
-void ags_matrix_connect(AgsConnectable *connectable);
-void ags_matrix_disconnect(AgsConnectable *connectable);
+static void ags_matrix_connect(AgsConnectable *connectable);
+static void ags_matrix_disconnect(AgsConnectable *connectable);
 
-void ags_matrix_map_recall(AgsMachine *machine);
+static void ags_matrix_map_recall(AgsMachine *machine);
 
-void ags_matrix_resize_audio_channels(AgsMachine *machine,
-				      guint audio_channels, guint audio_channels_old,
-				      gpointer data);
-void ags_matrix_resize_pads(AgsMachine *machine, GType type,
-			    guint pads, guint pads_old,
-			    gpointer data);
+static void ags_matrix_resize_audio_channels(AgsMachine *machine,
+					     guint audio_channels, guint audio_channels_old,
+					     gpointer data);
+static void ags_matrix_resize_pads(AgsMachine *machine, GType type,
+				   guint pads, guint pads_old,
+				   gpointer data);
 
 #define AGS_MATRIX_INPUT_LINE_MAPPED_KEY "AGS_MATRIX_INPUT_LINE_MAPPED_KEY"
 #define AGS_MATRIX_INPUT_LINE_MAPPED_DATA "AGS_MATRIX_INPUT_LINE_MAPPED_DATA"

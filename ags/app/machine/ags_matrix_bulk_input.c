@@ -24,13 +24,13 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-void ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input);
-void ags_matrix_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input);
-void ags_matrix_bulk_input_finalize(GObject *gobject);
+static void ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input);
+static void ags_matrix_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input);
+static void ags_matrix_bulk_input_finalize(GObject *gobject);
 
-void ags_matrix_bulk_input_connect(AgsConnectable *connectable);
-void ags_matrix_bulk_input_disconnect(AgsConnectable *connectable);
+static void ags_matrix_bulk_input_connect(AgsConnectable *connectable);
+static void ags_matrix_bulk_input_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_matrix_bulk_input

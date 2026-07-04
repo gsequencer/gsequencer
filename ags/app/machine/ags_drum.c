@@ -38,26 +38,26 @@
 
 #include <ags/i18n.h>
 
-void ags_drum_class_init(AgsDrumClass *drum);
-void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_init(AgsDrum *drum);
-void ags_drum_dispose(GObject *gobject);
-void ags_drum_finalize(GObject *gobject);
+static void ags_drum_class_init(AgsDrumClass *drum);
+static void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_drum_init(AgsDrum *drum);
+static void ags_drum_dispose(GObject *gobject);
+static void ags_drum_finalize(GObject *gobject);
 
-void ags_drum_connect(AgsConnectable *connectable);
-void ags_drum_disconnect(AgsConnectable *connectable);
+static void ags_drum_connect(AgsConnectable *connectable);
+static void ags_drum_disconnect(AgsConnectable *connectable);
 
-void ags_drum_show(GtkWidget *widget);
+static void ags_drum_show(GtkWidget *widget);
 
-void ags_drum_resize_audio_channels(AgsMachine *machine,
-				    guint audio_channels, guint audio_channels_old,
-				    gpointer data);
-void ags_drum_resize_pads(AgsMachine *machine,
-			  GType channel_type,
-			  guint pads, guint pads_old,
-			  gpointer data);
+static void ags_drum_resize_audio_channels(AgsMachine *machine,
+					   guint audio_channels, guint audio_channels_old,
+					   gpointer data);
+static void ags_drum_resize_pads(AgsMachine *machine,
+				 GType channel_type,
+				 guint pads, guint pads_old,
+				 gpointer data);
 
-void ags_drum_map_recall(AgsMachine *machine);
+static void ags_drum_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_drum

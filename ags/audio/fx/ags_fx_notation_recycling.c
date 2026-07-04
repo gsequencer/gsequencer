@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_notation_recycling_class_init(AgsFxNotationRecyclingClass *fx_notation_recycling);
-void ags_fx_notation_recycling_init(AgsFxNotationRecycling *fx_notation_recycling);
-void ags_fx_notation_recycling_dispose(GObject *gobject);
-void ags_fx_notation_recycling_finalize(GObject *gobject);
+static void ags_fx_notation_recycling_class_init(AgsFxNotationRecyclingClass *fx_notation_recycling);
+static void ags_fx_notation_recycling_init(AgsFxNotationRecycling *fx_notation_recycling);
+static void ags_fx_notation_recycling_dispose(GObject *gobject);
+static void ags_fx_notation_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_notation_recycling

@@ -19,9 +19,9 @@
 
 #include <ags/plugin/ags_lv2_event_manager.h>
 
-void ags_lv2_event_manager_class_init(AgsLv2EventManagerClass *lv2_event_manager);
-void ags_lv2_event_manager_init(AgsLv2EventManager *lv2_event_manager);
-void ags_lv2_event_manager_finalize(GObject *gobject);
+static void ags_lv2_event_manager_class_init(AgsLv2EventManagerClass *lv2_event_manager);
+static void ags_lv2_event_manager_init(AgsLv2EventManager *lv2_event_manager);
+static void ags_lv2_event_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_event_manager
@@ -35,7 +35,7 @@ void ags_lv2_event_manager_finalize(GObject *gobject);
 
 static gpointer ags_lv2_event_manager_parent_class = NULL;
 
-AgsLv2EventManager *ags_lv2_event_manager = NULL;
+static AgsLv2EventManager *ags_lv2_event_manager = NULL;
 
 GType
 ags_lv2_event_manager_get_type()

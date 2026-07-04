@@ -24,28 +24,28 @@
 
 #include <errno.h>
 
-void ags_program_class_init(AgsProgramClass *program);
-void ags_program_init(AgsProgram *program);
-void ags_program_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec);
-void ags_program_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec);
-void ags_program_dispose(GObject *gobject);
-void ags_program_finalize(GObject *gobject);
+static void ags_program_class_init(AgsProgramClass *program);
+static void ags_program_init(AgsProgram *program);
+static void ags_program_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+static void ags_program_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
+static void ags_program_dispose(GObject *gobject);
+static void ags_program_finalize(GObject *gobject);
 
-void ags_program_insert_native_level_from_clipboard(AgsProgram *program,
-						    xmlNode *root_node, char *version,
-						    char *x_boundary,
-						    gboolean reset_x_offset, guint x_offset,
-						    gboolean do_replace);
+static void ags_program_insert_native_level_from_clipboard(AgsProgram *program,
+							   xmlNode *root_node, char *version,
+							   char *x_boundary,
+							   gboolean reset_x_offset, guint x_offset,
+							   gboolean do_replace);
 
 //TODO:JK: remove this functions
-gint ags_program_port_compare_func(gconstpointer a,
-				   gconstpointer b);
+static gint ags_program_port_compare_func(gconstpointer a,
+					  gconstpointer b);
 
 /**
  * SECTION:ags_program

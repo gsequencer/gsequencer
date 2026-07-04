@@ -40,70 +40,45 @@
 
 #include <ags/i18n.h>
 
-void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
-void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_bulk_init(AgsEffectBulk *effect_bulk);
-void ags_effect_bulk_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_effect_bulk_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_effect_bulk_dispose(GObject *gobject);
-void ags_effect_bulk_finalize(GObject *gobject);
+static void ags_effect_bulk_class_init(AgsEffectBulkClass *effect_bulk);
+static void ags_effect_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_effect_bulk_init(AgsEffectBulk *effect_bulk);
+static void ags_effect_bulk_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_effect_bulk_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_effect_bulk_dispose(GObject *gobject);
+static void ags_effect_bulk_finalize(GObject *gobject);
 
-gboolean ags_effect_bulk_is_connected(AgsConnectable *connectable);
-void ags_effect_bulk_connect(AgsConnectable *connectable);
-void ags_effect_bulk_disconnect(AgsConnectable *connectable);
+static gboolean ags_effect_bulk_is_connected(AgsConnectable *connectable);
+static void ags_effect_bulk_connect(AgsConnectable *connectable);
+static void ags_effect_bulk_disconnect(AgsConnectable *connectable);
 
-void ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
-				       GList *control_type_name,
-				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				       gchar *plugin_name,
-				       gchar *filename,
-				       gchar *effect,
-				       guint start_audio_channel, guint stop_audio_channel,
-				       guint start_pad, guint stop_pad,
-				       gint position,
-				       guint create_flags, guint recall_flags);
-void ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
-				     GList *control_type_name,
-				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				     gchar *plugin_name,
-				     gchar *filename,
-				     gchar *effect,
-				     guint start_audio_channel, guint stop_audio_channel,
-				     guint start_pad, guint stop_pad,
-				     gint position,
-				     guint create_flags, guint recall_flags);
-void ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
-				    GList *control_type_name,
-				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				    gchar *plugin_name,
-				    gchar *filename,
-				    gchar *effect,
-				    guint start_audio_channel, guint stop_audio_channel,
-				    guint start_pad, guint stop_pad,
-				    gint position,
-				    guint create_flags, guint recall_flags);
-
-#if defined(AGS_WITH_VST3)
-void ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
-				     GList *control_type_name,
-				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				     gchar *plugin_name,
-				     gchar *filename,
-				     gchar *effect,
-				     guint start_audio_channel, guint stop_audio_channel,
-				     guint start_pad, guint stop_pad,
-				     gint position,
-				     guint create_flags, guint recall_flags);
-#endif
-
-#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-void ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
+static void ags_effect_bulk_add_ladspa_plugin(AgsEffectBulk *effect_bulk,
+					      GList *control_type_name,
+					      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					      gchar *plugin_name,
+					      gchar *filename,
+					      gchar *effect,
+					      guint start_audio_channel, guint stop_audio_channel,
+					      guint start_pad, guint stop_pad,
+					      gint position,
+					      guint create_flags, guint recall_flags);
+static void ags_effect_bulk_add_dssi_plugin(AgsEffectBulk *effect_bulk,
+					    GList *control_type_name,
+					    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					    gchar *plugin_name,
+					    gchar *filename,
+					    gchar *effect,
+					    guint start_audio_channel, guint stop_audio_channel,
+					    guint start_pad, guint stop_pad,
+					    gint position,
+					    guint create_flags, guint recall_flags);
+static void ags_effect_bulk_add_lv2_plugin(AgsEffectBulk *effect_bulk,
 					   GList *control_type_name,
 					   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					   gchar *plugin_name,
@@ -113,31 +88,56 @@ void ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
 					   guint start_pad, guint stop_pad,
 					   gint position,
 					   guint create_flags, guint recall_flags);
+
+#if defined(AGS_WITH_VST3)
+static void ags_effect_bulk_add_vst3_plugin(AgsEffectBulk *effect_bulk,
+					    GList *control_type_name,
+					    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					    gchar *plugin_name,
+					    gchar *filename,
+					    gchar *effect,
+					    guint start_audio_channel, guint stop_audio_channel,
+					    guint start_pad, guint stop_pad,
+					    gint position,
+					    guint create_flags, guint recall_flags);
 #endif
 
-void ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
-				     GList *control_type_name,
-				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				     gchar *plugin_name,
-				     gchar *filename,
-				     gchar *effect,
-				     guint start_audio_channel, guint stop_audio_channel,
-				     guint start_pad, guint stop_pad,
-				     gint position,
-				     guint create_flags, guint recall_flags);
-void ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
-					guint nth);
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+static void ags_effect_bulk_add_audio_unit_plugin(AgsEffectBulk *effect_bulk,
+						  GList *control_type_name,
+						  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+						  gchar *plugin_name,
+						  gchar *filename,
+						  gchar *effect,
+						  guint start_audio_channel, guint stop_audio_channel,
+						  guint start_pad, guint stop_pad,
+						  gint position,
+						  guint create_flags, guint recall_flags);
+#endif
 
-void ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
-						guint new_size,
-						guint old_size);
-void ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
-				      guint new_size,
-				      guint old_size);
-void ags_effect_bulk_real_map_recall(AgsEffectBulk *effect_bulk);
-GList* ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk);
+static void ags_effect_bulk_real_add_plugin(AgsEffectBulk *effect_bulk,
+					    GList *control_type_name,
+					    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					    gchar *plugin_name,
+					    gchar *filename,
+					    gchar *effect,
+					    guint start_audio_channel, guint stop_audio_channel,
+					    guint start_pad, guint stop_pad,
+					    gint position,
+					    guint create_flags, guint recall_flags);
+static void ags_effect_bulk_real_remove_plugin(AgsEffectBulk *effect_bulk,
+					       guint nth);
 
-void ags_effect_bulk_real_refresh_port(AgsEffectBulk *effect_bulk);
+static void ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
+						       guint new_size,
+						       guint old_size);
+static void ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
+					     guint new_size,
+					     guint old_size);
+static void ags_effect_bulk_real_map_recall(AgsEffectBulk *effect_bulk);
+static GList* ags_effect_bulk_real_find_port(AgsEffectBulk *effect_bulk);
+
+static void ags_effect_bulk_real_refresh_port(AgsEffectBulk *effect_bulk);
 
 /**
  * SECTION:ags_effect_bulk

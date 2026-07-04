@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_lfo_audio_class_init(AgsFxLfoAudioClass *fx_lfo_audio);
-void ags_fx_lfo_audio_init(AgsFxLfoAudio *fx_lfo_audio);
-void ags_fx_lfo_audio_dispose(GObject *gobject);
-void ags_fx_lfo_audio_finalize(GObject *gobject);
+static void ags_fx_lfo_audio_class_init(AgsFxLfoAudioClass *fx_lfo_audio);
+static void ags_fx_lfo_audio_init(AgsFxLfoAudio *fx_lfo_audio);
+static void ags_fx_lfo_audio_dispose(GObject *gobject);
+static void ags_fx_lfo_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_lfo_audio

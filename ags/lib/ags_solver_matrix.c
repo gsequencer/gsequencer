@@ -26,17 +26,17 @@
 
 #include <ags/i18n.h>
 
-void ags_solver_matrix_class_init(AgsSolverMatrixClass *solver_matrix);
-void ags_solver_matrix_init (AgsSolverMatrix *solver_matrix);
-void ags_solver_matrix_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_solver_matrix_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_solver_matrix_finalize(GObject *gobject);
+static void ags_solver_matrix_class_init(AgsSolverMatrixClass *solver_matrix);
+static void ags_solver_matrix_init (AgsSolverMatrix *solver_matrix);
+static void ags_solver_matrix_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_solver_matrix_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_solver_matrix_finalize(GObject *gobject);
 
 gchar** ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
 					     guint *symbolic_strv_length);

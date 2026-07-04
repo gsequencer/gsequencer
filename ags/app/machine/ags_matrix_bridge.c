@@ -22,13 +22,13 @@
 
 #include <ags/app/machine/ags_matrix_bulk_input.h>
 
-void ags_matrix_bridge_class_init(AgsMatrixBridgeClass *matrix_bridge);
-void ags_matrix_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge);
-void ags_matrix_bridge_finalize(GObject *gobject);
+static void ags_matrix_bridge_class_init(AgsMatrixBridgeClass *matrix_bridge);
+static void ags_matrix_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge);
+static void ags_matrix_bridge_finalize(GObject *gobject);
 
-void ags_matrix_bridge_connect(AgsConnectable *connectable);
-void ags_matrix_bridge_disconnect(AgsConnectable *connectable);
+static void ags_matrix_bridge_connect(AgsConnectable *connectable);
+static void ags_matrix_bridge_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_matrix_bridge

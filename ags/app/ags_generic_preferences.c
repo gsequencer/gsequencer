@@ -26,21 +26,21 @@
 
 #include <ags/i18n.h>
 
-void ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_preferences);
-void ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_generic_preferences_init(AgsGenericPreferences *generic_preferences);
+static void ags_generic_preferences_class_init(AgsGenericPreferencesClass *generic_preferences);
+static void ags_generic_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_generic_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_generic_preferences_init(AgsGenericPreferences *generic_preferences);
 static void ags_generic_preferences_finalize(GObject *gobject);
 
-gboolean ags_generic_preferences_is_connected(AgsConnectable *connectable);
-void ags_generic_preferences_connect(AgsConnectable *connectable);
-void ags_generic_preferences_disconnect(AgsConnectable *connectable);
+static gboolean ags_generic_preferences_is_connected(AgsConnectable *connectable);
+static void ags_generic_preferences_connect(AgsConnectable *connectable);
+static void ags_generic_preferences_disconnect(AgsConnectable *connectable);
 
-void ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean update);
-void ags_generic_preferences_apply(AgsApplicable *applicable);
-void ags_generic_preferences_reset(AgsApplicable *applicable);
+static void ags_generic_preferences_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_generic_preferences_apply(AgsApplicable *applicable);
+static void ags_generic_preferences_reset(AgsApplicable *applicable);
 
-GtkListStore* ags_generic_preferences_create_segmentation();
+static GtkListStore* ags_generic_preferences_create_segmentation();
 
 /**
  * SECTION:ags_generic_preferences

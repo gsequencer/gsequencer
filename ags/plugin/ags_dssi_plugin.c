@@ -35,38 +35,38 @@
 
 #include <ags/i18n.h>
 
-void ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin);
-void ags_dssi_plugin_init (AgsDssiPlugin *dssi_plugin);
-void ags_dssi_plugin_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_dssi_plugin_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_dssi_plugin_finalize(GObject *gobject);
+static void ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin);
+static void ags_dssi_plugin_init (AgsDssiPlugin *dssi_plugin);
+static void ags_dssi_plugin_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_dssi_plugin_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_dssi_plugin_finalize(GObject *gobject);
 
-gpointer ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
-				     guint samplerate, guint buffer_size);
-void ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
-				  gpointer plugin_handle,
-				  guint port_index,
-				  gpointer data_location);
-void ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
-			      gpointer plugin_handle);
-void ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
-				gpointer plugin_handle);
-void ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
-			 gpointer plugin_handle,
-			 snd_seq_event_t *seq_event,
-			 guint frame_count);
-void ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin);
+static gpointer ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
+					    guint samplerate, guint buffer_size);
+static void ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
+					 gpointer plugin_handle,
+					 guint port_index,
+					 gpointer data_location);
+static void ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
+				     gpointer plugin_handle);
+static void ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
+				       gpointer plugin_handle);
+static void ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
+				gpointer plugin_handle,
+				snd_seq_event_t *seq_event,
+				guint frame_count);
+static void ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
-void ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
-					 gpointer ladspa_handle,
-					 guint bank_index,
-					 guint program_index);
+static void ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
+						gpointer ladspa_handle,
+						guint bank_index,
+						guint program_index);
 
 /**
  * SECTION:ags_dssi_plugin

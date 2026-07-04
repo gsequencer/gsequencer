@@ -40,10 +40,10 @@
 
 #include <math.h>
 
-gpointer ags_fluid_util_copy(gpointer ptr);
-void ags_fluid_util_free(gpointer ptr);
+static gpointer ags_fluid_util_copy(gpointer ptr);
+static void ags_fluid_util_free(gpointer ptr);
 
-void ags_fluid_conversion_config();
+static void ags_fluid_conversion_config();
 
 gboolean ct2hz_tab_initialized = FALSE;
 

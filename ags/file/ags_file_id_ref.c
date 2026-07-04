@@ -21,17 +21,17 @@
 
 #include <ags/i18n.h>
 
-void ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref);
-void ags_file_id_ref_init(AgsFileIdRef *file_id_ref);
-void ags_file_id_ref_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_id_ref_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_id_ref_finalize(GObject *gobject);
+static void ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref);
+static void ags_file_id_ref_init(AgsFileIdRef *file_id_ref);
+static void ags_file_id_ref_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_id_ref_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_id_ref_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_file_id_ref

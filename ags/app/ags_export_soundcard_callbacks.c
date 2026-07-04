@@ -27,9 +27,9 @@
 
 #include <ags/i18n.h>
 
-void ags_export_soundcard_open_response_callback(AgsPCMFileDialog *pcm_file_dialog,
-						 gint response,
-						 AgsExportSoundcard *export_soundcard);
+static void ags_export_soundcard_open_response_callback(AgsPCMFileDialog *pcm_file_dialog,
+							gint response,
+							AgsExportSoundcard *export_soundcard);
 
 void
 ags_export_soundcard_backend_callback(GtkWidget *combo_box,

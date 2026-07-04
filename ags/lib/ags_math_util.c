@@ -25,8 +25,8 @@
 
 static GMutex regex_mutex;
 
-gpointer ags_math_util_copy(gpointer ptr);
-void ags_math_util_free(gpointer ptr);
+static gpointer ags_math_util_copy(gpointer ptr);
+static void ags_math_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_math_util

@@ -28,18 +28,18 @@
 
 #include <ags/i18n.h>
 
-void ags_base_plugin_class_init(AgsBasePluginClass *base_plugin);
-void ags_base_plugin_init (AgsBasePlugin *base_plugin);
-void ags_base_plugin_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_base_plugin_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_base_plugin_dispose(GObject *gobject);
-void ags_base_plugin_finalize(GObject *gobject);
+static void ags_base_plugin_class_init(AgsBasePluginClass *base_plugin);
+static void ags_base_plugin_init (AgsBasePlugin *base_plugin);
+static void ags_base_plugin_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_base_plugin_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_base_plugin_dispose(GObject *gobject);
+static void ags_base_plugin_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_base_plugin

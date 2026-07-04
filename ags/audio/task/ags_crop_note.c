@@ -23,20 +23,20 @@
 
 #include <math.h>
 
-void ags_crop_note_class_init(AgsCropNoteClass *crop_note);
-void ags_crop_note_init(AgsCropNote *crop_note);
-void ags_crop_note_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_crop_note_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_crop_note_dispose(GObject *gobject);
-void ags_crop_note_finalize(GObject *gobject);
+static void ags_crop_note_class_init(AgsCropNoteClass *crop_note);
+static void ags_crop_note_init(AgsCropNote *crop_note);
+static void ags_crop_note_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_crop_note_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_crop_note_dispose(GObject *gobject);
+static void ags_crop_note_finalize(GObject *gobject);
 
-void ags_crop_note_launch(AgsTask *task);
+static void ags_crop_note_launch(AgsTask *task);
 
 /**
  * SECTION:ags_crop_note

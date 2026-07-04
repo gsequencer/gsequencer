@@ -23,21 +23,21 @@
 
 #include <ags/i18n.h>
 
-void ags_lv2_conversion_class_init(AgsLv2ConversionClass *conversion);
-void ags_lv2_conversion_init (AgsLv2Conversion *conversion);
-void ags_lv2_conversion_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_lv2_conversion_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_lv2_conversion_finalize(GObject *gobject);
+static void ags_lv2_conversion_class_init(AgsLv2ConversionClass *conversion);
+static void ags_lv2_conversion_init (AgsLv2Conversion *conversion);
+static void ags_lv2_conversion_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_lv2_conversion_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_lv2_conversion_finalize(GObject *gobject);
 
-gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
-				   gdouble value,
-				   gboolean reverse);
+static gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
+					  gdouble value,
+					  gboolean reverse);
 
 /**
  * SECTION:ags_lv2_conversion

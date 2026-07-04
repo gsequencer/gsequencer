@@ -46,10 +46,10 @@
 
 #include <ags/config.h>
 
-void ags_vst3_manager_class_init(AgsVst3ManagerClass *vst3_manager);
-void ags_vst3_manager_init (AgsVst3Manager *vst3_manager);
-void ags_vst3_manager_dispose(GObject *gobject);
-void ags_vst3_manager_finalize(GObject *gobject);
+static void ags_vst3_manager_class_init(AgsVst3ManagerClass *vst3_manager);
+static void ags_vst3_manager_init (AgsVst3Manager *vst3_manager);
+static void ags_vst3_manager_dispose(GObject *gobject);
+static void ags_vst3_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_vst3_manager
@@ -63,8 +63,8 @@ void ags_vst3_manager_finalize(GObject *gobject);
 
 static gpointer ags_vst3_manager_parent_class = NULL;
 
-AgsVst3Manager *ags_vst3_manager = NULL;
-gchar **ags_vst3_default_path = NULL;
+static AgsVst3Manager *ags_vst3_manager = NULL;
+static gchar **ags_vst3_default_path = NULL;
 
 GType
 ags_vst3_manager_get_type (void)

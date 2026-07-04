@@ -23,17 +23,17 @@
 
 #include <ags/i18n.h>
 
-void ags_solver_vector_class_init(AgsSolverVectorClass *solver_vector);
-void ags_solver_vector_init (AgsSolverVector *solver_vector);
-void ags_solver_vector_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_solver_vector_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_solver_vector_finalize(GObject *gobject);
+static void ags_solver_vector_class_init(AgsSolverVectorClass *solver_vector);
+static void ags_solver_vector_init (AgsSolverVector *solver_vector);
+static void ags_solver_vector_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_solver_vector_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_solver_vector_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_solver_vector

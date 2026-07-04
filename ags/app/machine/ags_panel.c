@@ -27,25 +27,25 @@
 #include <ags/app/machine/ags_panel_input_pad.h>
 #include <ags/app/machine/ags_panel_input_line.h>
 
-void ags_panel_class_init(AgsPanelClass *panel);
-void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_panel_init(AgsPanel *panel);
+static void ags_panel_class_init(AgsPanelClass *panel);
+static void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_panel_init(AgsPanel *panel);
 static void ags_panel_finalize(GObject *gobject);
 
-void ags_panel_connect(AgsConnectable *connectable);
-void ags_panel_disconnect(AgsConnectable *connectable);
+static void ags_panel_connect(AgsConnectable *connectable);
+static void ags_panel_disconnect(AgsConnectable *connectable);
 
-void ags_panel_map_recall(AgsMachine *machine);
+static void ags_panel_map_recall(AgsMachine *machine);
 
-void ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel);
-xmlNode* ags_file_write_panel(AgsFile *file, xmlNode *parent, AgsMachine *panel);
+static void ags_file_read_panel(AgsFile *file, xmlNode *node, AgsMachine *panel);
+static xmlNode* ags_file_write_panel(AgsFile *file, xmlNode *parent, AgsMachine *panel);
 
-void ags_panel_resize_audio_channels(AgsMachine *machine,
+static void ags_panel_resize_audio_channels(AgsMachine *machine,
 				     guint audio_channels, guint audio_channels_old,
 				     gpointer data);
-void ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
-			   guint pads, guint pads_old,
-			   gpointer data);
+static void ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
+				  guint pads, guint pads_old,
+				  gpointer data);
 
 /**
  * SECTION:ags_panel

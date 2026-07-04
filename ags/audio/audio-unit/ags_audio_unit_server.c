@@ -30,61 +30,61 @@
 
 #include <ags/i18n.h>
 
-void ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server);
-void ags_audio_unit_server_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_unit_server_sound_server_interface_init(AgsSoundServerInterface *sound_server);
-void ags_audio_unit_server_init(AgsAudioUnitServer *audio_unit_server);
-void ags_audio_unit_server_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_audio_unit_server_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_audio_unit_server_dispose(GObject *gobject);
-void ags_audio_unit_server_finalize(GObject *gobject);
+static void ags_audio_unit_server_class_init(AgsAudioUnitServerClass *audio_unit_server);
+static void ags_audio_unit_server_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_unit_server_sound_server_interface_init(AgsSoundServerInterface *sound_server);
+static void ags_audio_unit_server_init(AgsAudioUnitServer *audio_unit_server);
+static void ags_audio_unit_server_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_audio_unit_server_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_audio_unit_server_dispose(GObject *gobject);
+static void ags_audio_unit_server_finalize(GObject *gobject);
 
-AgsUUID* ags_audio_unit_server_get_uuid(AgsConnectable *connectable);
-gboolean ags_audio_unit_server_has_resource(AgsConnectable *connectable);
-gboolean ags_audio_unit_server_is_ready(AgsConnectable *connectable);
-void ags_audio_unit_server_add_to_registry(AgsConnectable *connectable);
-void ags_audio_unit_server_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_audio_unit_server_list_resource(AgsConnectable *connectable);
-xmlNode* ags_audio_unit_server_xml_compose(AgsConnectable *connectable);
-void ags_audio_unit_server_xml_parse(AgsConnectable *connectable,
-				     xmlNode *node);
-gboolean ags_audio_unit_server_is_connected(AgsConnectable *connectable);
-void ags_audio_unit_server_connect(AgsConnectable *connectable);
-void ags_audio_unit_server_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_audio_unit_server_get_uuid(AgsConnectable *connectable);
+static gboolean ags_audio_unit_server_has_resource(AgsConnectable *connectable);
+static gboolean ags_audio_unit_server_is_ready(AgsConnectable *connectable);
+static void ags_audio_unit_server_add_to_registry(AgsConnectable *connectable);
+static void ags_audio_unit_server_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_audio_unit_server_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_audio_unit_server_xml_compose(AgsConnectable *connectable);
+static void ags_audio_unit_server_xml_parse(AgsConnectable *connectable,
+					    xmlNode *node);
+static gboolean ags_audio_unit_server_is_connected(AgsConnectable *connectable);
+static void ags_audio_unit_server_connect(AgsConnectable *connectable);
+static void ags_audio_unit_server_disconnect(AgsConnectable *connectable);
 
-void ags_audio_unit_server_set_url(AgsSoundServer *sound_server,
-				   gchar *url);
-gchar* ags_audio_unit_server_get_url(AgsSoundServer *sound_server);
-void ags_audio_unit_server_set_ports(AgsSoundServer *sound_server,
-				     guint *ports, guint port_count);
-guint* ags_audio_unit_server_get_ports(AgsSoundServer *sound_server,
-				       guint *port_count);
-void ags_audio_unit_server_set_soundcard(AgsSoundServer *sound_server,
-					 gchar *client_uuid,
-					 GList *soundcard);
-GList* ags_audio_unit_server_get_soundcard(AgsSoundServer *sound_server,
-					   gchar *client_uuid);
-void ags_audio_unit_server_set_sequencer(AgsSoundServer *sound_server,
-					 gchar *client_uuid,
-					 GList *sequencer);
-GList* ags_audio_unit_server_get_sequencer(AgsSoundServer *sound_server,
-					   gchar *client_uuid);
-GObject* ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
-						  gboolean is_output);
-void ags_audio_unit_server_unregister_soundcard(AgsSoundServer *sound_server,
-						GObject *soundcard);
-GObject* ags_audio_unit_server_register_sequencer(AgsSoundServer *sound_server,
-						  gboolean is_output);
-void ags_audio_unit_server_unregister_sequencer(AgsSoundServer *sound_server,
-						GObject *sequencer);
+static void ags_audio_unit_server_set_url(AgsSoundServer *sound_server,
+					  gchar *url);
+static gchar* ags_audio_unit_server_get_url(AgsSoundServer *sound_server);
+static void ags_audio_unit_server_set_ports(AgsSoundServer *sound_server,
+					    guint *ports, guint port_count);
+static guint* ags_audio_unit_server_get_ports(AgsSoundServer *sound_server,
+					      guint *port_count);
+static void ags_audio_unit_server_set_soundcard(AgsSoundServer *sound_server,
+						gchar *client_uuid,
+						GList *soundcard);
+static GList* ags_audio_unit_server_get_soundcard(AgsSoundServer *sound_server,
+						  gchar *client_uuid);
+static void ags_audio_unit_server_set_sequencer(AgsSoundServer *sound_server,
+						gchar *client_uuid,
+						GList *sequencer);
+static GList* ags_audio_unit_server_get_sequencer(AgsSoundServer *sound_server,
+						  gchar *client_uuid);
+static GObject* ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
+							 gboolean is_output);
+static void ags_audio_unit_server_unregister_soundcard(AgsSoundServer *sound_server,
+						       GObject *soundcard);
+static GObject* ags_audio_unit_server_register_sequencer(AgsSoundServer *sound_server,
+							 gboolean is_output);
+static void ags_audio_unit_server_unregister_sequencer(AgsSoundServer *sound_server,
+						       GObject *sequencer);
 
-void* ags_audio_unit_server_do_poll_loop(void *ptr);
+static void* ags_audio_unit_server_do_poll_loop(void *ptr);
 
 /**
  * SECTION:ags_audio_unit_server

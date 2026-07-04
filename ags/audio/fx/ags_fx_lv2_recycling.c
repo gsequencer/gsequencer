@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_lv2_recycling_class_init(AgsFxLv2RecyclingClass *fx_lv2_recycling);
-void ags_fx_lv2_recycling_init(AgsFxLv2Recycling *fx_lv2_recycling);
-void ags_fx_lv2_recycling_dispose(GObject *gobject);
-void ags_fx_lv2_recycling_finalize(GObject *gobject);
+static void ags_fx_lv2_recycling_class_init(AgsFxLv2RecyclingClass *fx_lv2_recycling);
+static void ags_fx_lv2_recycling_init(AgsFxLv2Recycling *fx_lv2_recycling);
+static void ags_fx_lv2_recycling_dispose(GObject *gobject);
+static void ags_fx_lv2_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_lv2_recycling

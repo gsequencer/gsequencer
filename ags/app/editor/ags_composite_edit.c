@@ -33,23 +33,23 @@
 
 #include <ags/i18n.h>
 
-void ags_composite_edit_class_init(AgsCompositeEditClass *composite_edit);
-void ags_composite_edit_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_composite_edit_init(AgsCompositeEdit *composite_edit);
+static void ags_composite_edit_class_init(AgsCompositeEditClass *composite_edit);
+static void ags_composite_edit_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_composite_edit_init(AgsCompositeEdit *composite_edit);
 
-AgsUUID* ags_composite_edit_get_uuid(AgsConnectable *connectable);
-gboolean ags_composite_edit_has_resource(AgsConnectable *connectable);
-gboolean ags_composite_edit_is_ready(AgsConnectable *connectable);
-void ags_composite_edit_add_to_registry(AgsConnectable *connectable);
-void ags_composite_edit_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_composite_edit_list_resource(AgsConnectable *connectable);
-xmlNode* ags_composite_edit_xml_compose(AgsConnectable *connectable);
-void ags_composite_edit_xml_parse(AgsConnectable *connectable,
-				  xmlNode *node);
+static AgsUUID* ags_composite_edit_get_uuid(AgsConnectable *connectable);
+static gboolean ags_composite_edit_has_resource(AgsConnectable *connectable);
+static gboolean ags_composite_edit_is_ready(AgsConnectable *connectable);
+static void ags_composite_edit_add_to_registry(AgsConnectable *connectable);
+static void ags_composite_edit_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_composite_edit_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_composite_edit_xml_compose(AgsConnectable *connectable);
+static void ags_composite_edit_xml_parse(AgsConnectable *connectable,
+					 xmlNode *node);
 
-gboolean ags_composite_edit_is_connected(AgsConnectable *connectable);
-void ags_composite_edit_connect(AgsConnectable *connectable);
-void ags_composite_edit_disconnect(AgsConnectable *connectable);
+static gboolean ags_composite_edit_is_connected(AgsConnectable *connectable);
+static void ags_composite_edit_connect(AgsConnectable *connectable);
+static void ags_composite_edit_disconnect(AgsConnectable *connectable);
 
 static gpointer ags_composite_edit_parent_class = NULL;
 

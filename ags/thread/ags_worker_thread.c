@@ -21,15 +21,13 @@
 
 #include <stdlib.h>
 
-void ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread);
-void ags_worker_thread_init(AgsWorkerThread *worker_thread);
-void ags_worker_thread_finalize(GObject *gobject);
+static void ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread);
+static void ags_worker_thread_init(AgsWorkerThread *worker_thread);
+static void ags_worker_thread_finalize(GObject *gobject);
 
-void ags_worker_thread_start(AgsThread *thread);
-void ags_worker_thread_run(AgsThread *thread);
-void ags_worker_thread_stop(AgsThread *thread);
-
-void* ags_woker_thread_do_poll_loop(void *ptr);
+static void ags_worker_thread_start(AgsThread *thread);
+static void ags_worker_thread_run(AgsThread *thread);
+static void ags_worker_thread_stop(AgsThread *thread);
 
 /**
  * SECTION:ags_worker_thread
