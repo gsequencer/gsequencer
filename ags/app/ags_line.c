@@ -3977,13 +3977,17 @@ ags_line_check_message(AgsLine *line)
   while(message_envelope != NULL){
     xmlNode *root_node;
 
+    xmlChar *method;
+    
     root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
     if(!xmlStrncmp(root_node->name,
 		   BAD_CAST "ags-command",
 		   12)){
-      if(!xmlStrncmp(xmlGetProp(root_node,
-				"method"),
+      method = xmlGetProp(root_node,
+			  BAD_CAST "method");
+      
+      if(!xmlStrncmp(method,
 		     BAD_CAST "AgsChannel::set-samplerate",
 		     27)){
 	guint samplerate;
@@ -3997,8 +4001,7 @@ ags_line_check_message(AgsLine *line)
 	g_object_set(line,
 		     "samplerate", samplerate,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::set-buffer-size",
 			   28)){
 	guint buffer_size;
@@ -4012,8 +4015,7 @@ ags_line_check_message(AgsLine *line)
 	g_object_set(line,
 		     "buffer-size", buffer_size,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::set-format",
 			   23)){
 	guint format;
@@ -4027,8 +4029,7 @@ ags_line_check_message(AgsLine *line)
 	g_object_set(line,
 		     "format", format,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::stop",
 			   18)){
 	GList *recall_id;
@@ -4049,6 +4050,8 @@ ags_line_check_message(AgsLine *line)
 	ags_line_stop(line,
 		      recall_id, sound_scope);
       }
+
+      xmlFree(method);
     }
       
     message_envelope = message_envelope->next;

@@ -330,9 +330,9 @@ ags_file_util_get_uint(AgsFileUtil *file_util,
     return(0);
   }
 
-  value = (gint) g_ascii_strtoull(str,
-				  NULL,
-				  10);
+  value = (guint) g_ascii_strtoull(str,
+				   NULL,
+				   10);
   
   return(value);
 }

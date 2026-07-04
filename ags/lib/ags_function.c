@@ -41,9 +41,39 @@ static void ags_function_get_property(GObject *gobject,
 				      GParamSpec *param_spec);
 static void ags_function_finalize(GObject *gobject);
 
+static gchar** ags_function_collapse_parenthesis(AgsFunction *function,
+						 guint *function_count);
+
+static AgsComplex* ags_function_compute_term(gchar *term,
+					     gchar *substitute_symbol, AgsComplex *substitute_value);
+
+static gchar** ags_function_find_literals(AgsFunction *function,
+					  guint *symbol_count);
+
+static gchar* ags_function_get_expanded(AgsFunction *function,
+					gchar **symbol,
+					guint symbol_count);
+
+static gchar* ags_function_get_normalized(AgsFunction *function);
+
 static gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
 static gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
 static guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
+
+static void ags_function_literal_solve(AgsFunction *function);
+
+static gboolean ags_function_push_equation(AgsFunction *function,
+					   gchar *equation);
+
+static void ags_function_pop_equation(AgsFunction *function,
+				      GError **error);
+
+static gboolean ags_function_substitute_values(AgsFunction *function,
+					       gchar *symbol, ...);
+
+static AgsComplex** ags_function_symbolic_translate_value(AgsFunction *function,
+							  gchar *symbol,
+							  AgsComplex *value);
 
 /**
  * SECTION:ags_function
