@@ -34,21 +34,21 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_websocket_connection);
-void ags_osc_websocket_connection_init(AgsOscWebsocketConnection *osc_websocket_connection);
-void ags_osc_websocket_connection_set_property(GObject *gobject,
-					       guint prop_id,
-					       const GValue *value,
-					       GParamSpec *param_spec);
-void ags_osc_websocket_connection_get_property(GObject *gobject,
-					       guint prop_id,
-					       GValue *value,
-					       GParamSpec *param_spec);
-void ags_osc_websocket_connection_dispose(GObject *gobject);
-void ags_osc_websocket_connection_finalize(GObject *gobject);
+static void ags_osc_websocket_connection_class_init(AgsOscWebsocketConnectionClass *osc_websocket_connection);
+static void ags_osc_websocket_connection_init(AgsOscWebsocketConnection *osc_websocket_connection);
+static void ags_osc_websocket_connection_set_property(GObject *gobject,
+						      guint prop_id,
+						      const GValue *value,
+						      GParamSpec *param_spec);
+static void ags_osc_websocket_connection_get_property(GObject *gobject,
+						      guint prop_id,
+						      GValue *value,
+						      GParamSpec *param_spec);
+static void ags_osc_websocket_connection_dispose(GObject *gobject);
+static void ags_osc_websocket_connection_finalize(GObject *gobject);
 
-gint64 ags_osc_websocket_connection_write_response(AgsOscConnection *osc_websocket_connection,
-						   GObject *osc_response);
+static gint64 ags_osc_websocket_connection_write_response(AgsOscConnection *osc_websocket_connection,
+							  GObject *osc_response);
 
 /**
  * SECTION:ags_osc_websocket_connection

@@ -19,10 +19,10 @@
 
 #include <ags/audio/ags_vdsp_256_manager.h>
 
-void ags_vdsp_256_manager_class_init(AgsVDSP256ManagerClass *vdsp_256_manager);
-void ags_vdsp_256_manager_init (AgsVDSP256Manager *vdsp_256_manager);
-void ags_vdsp_256_manager_dispose(GObject *gobject);
-void ags_vdsp_256_manager_finalize(GObject *gobject);
+static void ags_vdsp_256_manager_class_init(AgsVDSP256ManagerClass *vdsp_256_manager);
+static void ags_vdsp_256_manager_init (AgsVDSP256Manager *vdsp_256_manager);
+static void ags_vdsp_256_manager_dispose(GObject *gobject);
+static void ags_vdsp_256_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_vdsp_256_manager
@@ -36,7 +36,7 @@ void ags_vdsp_256_manager_finalize(GObject *gobject);
 
 static gpointer ags_vdsp_256_manager_parent_class = NULL;
 
-AgsVDSP256Manager *ags_vdsp_256_manager = NULL;
+static AgsVDSP256Manager *ags_vdsp_256_manager = NULL;
 
 GType
 ags_vdsp_256_manager_get_type (void)

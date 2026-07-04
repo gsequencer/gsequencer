@@ -109,194 +109,193 @@
 #include <locale.h>
 #include <string.h>
 
-void ags_simple_file_class_init(AgsSimpleFileClass *simple_file);
-void ags_simple_file_init(AgsSimpleFile *simple_file);
-void ags_simple_file_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_simple_file_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_simple_file_finalize(GObject *gobject);
+static void ags_simple_file_class_init(AgsSimpleFileClass *simple_file);
+static void ags_simple_file_init(AgsSimpleFile *simple_file);
+static void ags_simple_file_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_simple_file_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_simple_file_finalize(GObject *gobject);
 
-void ags_simple_file_real_open(AgsSimpleFile *simple_file,
-			       GError **error);
-void ags_simple_file_real_open_from_data(AgsSimpleFile *simple_file,
-					 gchar *data, guint length,
+static void ags_simple_file_real_open(AgsSimpleFile *simple_file,
+				      GError **error);
+static void ags_simple_file_real_open_from_data(AgsSimpleFile *simple_file,
+						gchar *data, guint length,
+						GError **error);
+static void ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
+					 gboolean create,
 					 GError **error);
-void ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
-				  gboolean create,
-				  GError **error);
 
-void ags_simple_file_real_write(AgsSimpleFile *simple_file);
-void ags_simple_file_real_write_resolve(AgsSimpleFile *simple_file);
+static void ags_simple_file_real_write(AgsSimpleFile *simple_file);
+static void ags_simple_file_real_write_resolve(AgsSimpleFile *simple_file);
 
-void ags_simple_file_real_read(AgsSimpleFile *simple_file);
-void ags_simple_file_real_read_resolve(AgsSimpleFile *simple_file);
-void ags_simple_file_real_read_start(AgsSimpleFile *simple_file);
+static void ags_simple_file_real_read(AgsSimpleFile *simple_file);
+static void ags_simple_file_real_read_resolve(AgsSimpleFile *simple_file);
+static void ags_simple_file_real_read_start(AgsSimpleFile *simple_file);
 
-void ags_simple_file_read_change_max_precision(AgsThread *thread,
-					       gdouble max_precision);
+static void ags_simple_file_read_change_max_precision(AgsThread *thread,
+						      gdouble max_precision);
 
-void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **config);
-void ags_simple_file_read_meta_data_window(AgsSimpleFile *simple_file, xmlNode *node, AgsMetaDataWindow **meta_data_window);
-void ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property);
-void ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property);
-void ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***strv);
-void ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **value);
-void ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window);
-void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
-					AgsWindow *window);
+static void ags_simple_file_read_meta_data_window(AgsSimpleFile *simple_file, xmlNode *node, AgsMetaDataWindow **meta_data_window);
+static void ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property);
+static void ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property);
+static void ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***strv);
+static void ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **value);
+static void ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window);
+static void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
+					       AgsWindow *window);
 
-void ags_simple_file_read_automation_port_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation_port);
-void ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, AgsMachineAutomationPort **automation_port);
+static void ags_simple_file_read_automation_port_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation_port);
+static void ags_simple_file_read_automation_port(AgsSimpleFile *simple_file, xmlNode *node, AgsMachineAutomationPort **automation_port);
 
-void ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine);
-void ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine);
-void ags_simple_file_read_machine_resize_audio_channels(AgsMachine *machine,
-							guint new_size, guint old_size,
-							gpointer data);
-void ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
-					      GType channel_type,
-					      guint new_size, guint old_size,
-					      gpointer data);
+static void ags_simple_file_read_machine_list(AgsSimpleFile *simple_file, xmlNode *node, GList **machine);
+static void ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine **machine);
+static void ags_simple_file_read_machine_resize_audio_channels(AgsMachine *machine,
+							       guint new_size, guint old_size,
+							       gpointer data);
+static void ags_simple_file_read_machine_resize_pads(AgsMachine *machine,
+						     GType channel_type,
+						     guint new_size, guint old_size,
+						     gpointer data);
 
-void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEqualizer10 *equalizer10);
-void ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDrum *drum);
-void ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsMatrix *matrix);
-void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSyncsynth *syncsynth);
-void ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSyncsynth *fm_syncsynth);
-void ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridSynth *hybrid_synth);
-void ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridFMSynth *hybrid_fm_synth);
-void ags_simple_file_read_stargazer_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsStargazerSynth *stargazer_synth);
-void ags_simple_file_read_quantum_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsQuantumSynth *quantum_synth);
-void ags_simple_file_read_raven_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsRavenSynth *raven_synth);
-void ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsModularSynth *modular_synth);
-void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler);
-void ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSFZSynth *sfz_synth);
+static void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEqualizer10 *equalizer10);
+static void ags_simple_file_read_drum_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDrum *drum);
+static void ags_simple_file_read_matrix_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsMatrix *matrix);
+static void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSyncsynth *syncsynth);
+static void ags_simple_file_read_fm_syncsynth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFMSyncsynth *fm_syncsynth);
+static void ags_simple_file_read_hybrid_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridSynth *hybrid_synth);
+static void ags_simple_file_read_hybrid_fm_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsHybridFMSynth *hybrid_fm_synth);
+static void ags_simple_file_read_stargazer_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsStargazerSynth *stargazer_synth);
+static void ags_simple_file_read_quantum_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsQuantumSynth *quantum_synth);
+static void ags_simple_file_read_raven_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsRavenSynth *raven_synth);
+static void ags_simple_file_read_modular_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsModularSynth *modular_synth);
+static void ags_simple_file_read_pitch_sampler_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsPitchSampler *pitch_sampler);
+static void ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSFZSynth *sfz_synth);
 #ifdef AGS_WITH_LIBINSTPATCH
-void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer);
-void ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSF2Synth *sf2_synth);
+static void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsFFPlayer *ffplayer);
+static void ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsSF2Synth *sf2_synth);
 #endif
-void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudiorec *audiorec);
-void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDssiBridge *dssi_bridge);
-void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
-void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLv2Bridge *lv2_bridge);
-void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
+static void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudiorec *audiorec);
+static void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsDssiBridge *dssi_bridge);
+static void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
+static void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLv2Bridge *lv2_bridge);
+static void ags_simple_file_read_live_lv2_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveLv2Bridge *live_lv2_bridge);
 #if defined(AGS_WITH_VST3)
-void ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine *machine, AgsVst3Plugin *vst3_plugin);
+static void ags_simple_file_read_instantiate_vst3_plugin(AgsSimpleFile *simple_file, xmlNode *node, AgsMachine *machine, AgsVst3Plugin *vst3_plugin);
 
-void ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge);
-void ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge);
+static void ags_simple_file_read_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsVst3Bridge *vst3_bridge);
+static void ags_simple_file_read_live_vst3_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsLiveVst3Bridge *live_vst3_bridge);
 #endif
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-void ags_simple_file_read_audio_unit_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudioUnitBridge *audio_unit_bridge);
+static void ags_simple_file_read_audio_unit_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsAudioUnitBridge *audio_unit_bridge);
 #endif
-void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
-void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
-void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member);
+static void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
+static void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
+static void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member);
 
-void ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
-					 AgsMachine *machine);
-void ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **pad);
-void ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad);
-void ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
-				     AgsPad *pad);
-void ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList **line);
+static void ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
+						AgsMachine *machine);
+static void ags_simple_file_read_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **pad);
+static void ags_simple_file_read_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsPad **pad);
+static void ags_simple_file_read_pad_launch(AgsFileLaunch *file_launch,
+					    AgsPad *pad);
+static void ags_simple_file_read_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList **line);
 
-void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);  
+static void ags_simple_file_read_line_member(AgsSimpleFile *simple_file, xmlNode *node, AgsLineMember *line_member);  
 
-void ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **line);
-void ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
-				      AgsLine *line);
-void ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
-					      AgsChannel *channel);
-void ags_simple_file_read_effect_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **effect_pad);
-void ags_simple_file_read_effect_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectPad **effect_pad);
-void ags_simple_file_read_effect_pad_launch(AgsFileLaunch *file_launch,
-					    AgsEffectPad *effect_pad);
-void ags_simple_file_read_effect_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList **effect_line);
-void ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectLine **effect_line);
-void ags_simple_file_read_effect_line_launch(AgsFileLaunch *file_launch,
-					     AgsEffectLine *effect_line);
-void ags_simple_file_read_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **oscillator);
-void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator **oscillator);
-void ags_simple_file_read_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **fm_oscillator);
-void ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsFMOscillator **fm_oscillator);
+static void ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **line);
+static void ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
+					     AgsLine *line);
+static void ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
+						     AgsChannel *channel);
+static void ags_simple_file_read_effect_pad_list(AgsSimpleFile *simple_file, xmlNode *node, GList **effect_pad);
+static void ags_simple_file_read_effect_pad(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectPad **effect_pad);
+static void ags_simple_file_read_effect_pad_launch(AgsFileLaunch *file_launch,
+						   AgsEffectPad *effect_pad);
+static void ags_simple_file_read_effect_line_list(AgsSimpleFile *simple_file, xmlNode *node, GList **effect_line);
+static void ags_simple_file_read_effect_line(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectLine **effect_line);
+static void ags_simple_file_read_effect_line_launch(AgsFileLaunch *file_launch,
+						    AgsEffectLine *effect_line);
+static void ags_simple_file_read_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **oscillator);
+static void ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOscillator **oscillator);
+static void ags_simple_file_read_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *node, GList **fm_oscillator);
+static void ags_simple_file_read_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsFMOscillator **fm_oscillator);
 
-void ags_simple_file_read_composite_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsCompositeEditor **composite_editor);
-void ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
-						  AgsCompositeEditor *composite_editor);
+static void ags_simple_file_read_composite_editor(AgsSimpleFile *simple_file, xmlNode *node, AgsCompositeEditor **composite_editor);
+static void ags_simple_file_read_composite_editor_launch(AgsFileLaunch *file_launch,
+							 AgsCompositeEditor *composite_editor);
 
-void ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
-void ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNotation **notation);
+static void ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
+static void ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNotation **notation);
 
-void ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
+static void ags_simple_file_read_notation_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
 
-void ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
+static void ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, xmlNode *node, GList **notation);
 
-void ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
-void ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation);
+static void ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
+static void ags_simple_file_read_automation(AgsSimpleFile *simple_file, xmlNode *node, AgsAutomation **automation);
 
-void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
+static void ags_simple_file_read_automation_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
 
-void ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
-void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
-void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
+static void ags_simple_file_read_automation_list_fixup_1_0_to_1_3(AgsSimpleFile *simple_file, xmlNode *node, GList **automation);
+static void ags_simple_file_read_preset_list(AgsSimpleFile *simple_file, xmlNode *node, GList **preset);
+static void ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset **preset);
 
-void ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GList **program);
-void ags_simple_file_read_program(AgsSimpleFile *simple_file, xmlNode *node, AgsProgram **program);
+static void ags_simple_file_read_program_list(AgsSimpleFile *simple_file, xmlNode *node, GList **program);
+static void ags_simple_file_read_program(AgsSimpleFile *simple_file, xmlNode *node, AgsProgram **program);
 
-xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config);
-xmlNode* ags_simple_file_write_meta_data_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsMetaDataWindow *meta_data_window);
-xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
-xmlNode* ags_simple_file_write_property_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *property);
-xmlNode* ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GParameter *property);
-xmlNode* ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent, gchar **strv);
-xmlNode* ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue *value);
-xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
-xmlNode* ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *machine);
+static xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *parent, AgsConfig *config);
+static xmlNode* ags_simple_file_write_meta_data_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsMetaDataWindow *meta_data_window);
+static xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
+static xmlNode* ags_simple_file_write_property_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *property);
+static xmlNode* ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GParameter *property);
+static xmlNode* ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent, gchar **strv);
+static xmlNode* ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue *value);
+static xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
+static xmlNode* ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *machine);
 
-gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
-xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member);
-xmlNode* ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk);
-xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port);
+static gboolean ags_simple_file_write_machine_inline_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsChannel *channel);
+static xmlNode* ags_simple_file_write_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsBulkMember *bulk_member);
+static xmlNode* ags_simple_file_write_effect_list(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectBulk *effect_bulk);
+static xmlNode* ags_simple_file_write_automation_port(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation_port);
 
-xmlNode* ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine);
-xmlNode* ags_simple_file_write_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *pad);
-xmlNode* ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *pad);
-xmlNode* ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *line);
+static xmlNode* ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine);
+static xmlNode* ags_simple_file_write_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *pad);
+static xmlNode* ags_simple_file_write_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsPad *pad);
+static xmlNode* ags_simple_file_write_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *line);
 
-void ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
+static void ags_simple_file_write_line_member_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
 
-xmlNode* ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine *line);
-void ags_simple_file_write_line_resolve_link(AgsFileLookup *file_lookup,
-					     AgsChannel *channel);
-xmlNode* ags_simple_file_write_effect_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_pad);
-xmlNode* ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectPad *effect_pad);
-xmlNode* ags_simple_file_write_effect_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_line);
+static xmlNode* ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine *line);
+static void ags_simple_file_write_line_resolve_link(AgsFileLookup *file_lookup,
+						    AgsChannel *channel);
+static xmlNode* ags_simple_file_write_effect_pad_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_pad);
+static xmlNode* ags_simple_file_write_effect_pad(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectPad *effect_pad);
+static xmlNode* ags_simple_file_write_effect_line_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *effect_line);
 
-void ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
+static void ags_simple_file_write_effect_line_control(AgsSimpleFile *simple_file, xmlNode *parent, AgsLineMember *line_member);
 
-xmlNode* ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectLine *effect_line);
-xmlNode* ags_simple_file_write_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *oscillator);
-xmlNode* ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
-xmlNode* ags_simple_file_write_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *fm_oscillator);
-xmlNode* ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsFMOscillator *fm_oscillator);
+static xmlNode* ags_simple_file_write_effect_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsEffectLine *effect_line);
+static xmlNode* ags_simple_file_write_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *oscillator);
+static xmlNode* ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsOscillator *oscillator);
+static xmlNode* ags_simple_file_write_fm_oscillator_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *fm_oscillator);
+static xmlNode* ags_simple_file_write_fm_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, AgsFMOscillator *fm_oscillator);
 
-xmlNode* ags_simple_file_write_composite_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsCompositeEditor *composite_editor);
-void ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_lookup,
-							    AgsCompositeEditor *composite_editor);
-xmlNode* ags_simple_file_write_notation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *notation);
-xmlNode* ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotation *notation);
-xmlNode* ags_simple_file_write_automation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation);
-xmlNode* ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomation *automation);
-xmlNode* ags_simple_file_write_preset_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *preset);
-xmlNode* ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPreset *preset);
-xmlNode* ags_simple_file_write_program_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *program);
-xmlNode* ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsProgram *program);
+static xmlNode* ags_simple_file_write_composite_editor(AgsSimpleFile *simple_file, xmlNode *parent, AgsCompositeEditor *composite_editor);
+static void ags_simple_file_write_composite_editor_resolve_machine(AgsFileLookup *file_lookup,
+								   AgsCompositeEditor *composite_editor);
+static xmlNode* ags_simple_file_write_notation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *notation);
+static xmlNode* ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsNotation *notation);
+static xmlNode* ags_simple_file_write_automation_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *automation);
+static xmlNode* ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, AgsAutomation *automation);
+static xmlNode* ags_simple_file_write_preset_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *preset);
+static xmlNode* ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPreset *preset);
+static xmlNode* ags_simple_file_write_program_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *program);
+static xmlNode* ags_simple_file_write_program(AgsSimpleFile *simple_file, xmlNode *parent, AgsProgram *program);
 
 /**
  * SECTION:ags_simple_file

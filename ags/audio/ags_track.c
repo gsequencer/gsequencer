@@ -25,17 +25,17 @@
 
 #include <stdlib.h>
 
-void ags_track_class_init(AgsTrackClass *track);
-void ags_track_init(AgsTrack *track);
-void ags_track_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_track_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
-void ags_track_finalize(GObject *gobject);
+static void ags_track_class_init(AgsTrackClass *track);
+static void ags_track_init(AgsTrack *track);
+static void ags_track_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+static void ags_track_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+static void ags_track_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_track

@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-void ags_main_loop_class_init(AgsMainLoopInterface *ginterface);
+static void ags_main_loop_class_init(AgsMainLoopInterface *ginterface);
 
 /**
  * SECTION:ags_main_loop

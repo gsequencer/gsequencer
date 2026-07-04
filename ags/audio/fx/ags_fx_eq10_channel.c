@@ -25,22 +25,22 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_eq10_channel_class_init(AgsFxEq10ChannelClass *fx_eq10_channel);
-void ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel);
-void ags_fx_eq10_channel_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_fx_eq10_channel_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_fx_eq10_channel_dispose(GObject *gobject);
-void ags_fx_eq10_channel_finalize(GObject *gobject);
+static void ags_fx_eq10_channel_class_init(AgsFxEq10ChannelClass *fx_eq10_channel);
+static void ags_fx_eq10_channel_init(AgsFxEq10Channel *fx_eq10_channel);
+static void ags_fx_eq10_channel_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_fx_eq10_channel_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_fx_eq10_channel_dispose(GObject *gobject);
+static void ags_fx_eq10_channel_finalize(GObject *gobject);
 
-void ags_fx_eq10_channel_notify_buffer_size_callback(GObject *gobject,
-						     GParamSpec *pspec,
-						     gpointer user_data);
+static void ags_fx_eq10_channel_notify_buffer_size_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    gpointer user_data);
 
 static AgsPluginPort* ags_fx_eq10_channel_get_peak_28hz_plugin_port();
 static AgsPluginPort* ags_fx_eq10_channel_get_peak_56hz_plugin_port();
@@ -66,9 +66,9 @@ static AgsPluginPort* ags_fx_eq10_channel_get_pressure_plugin_port();
 
 static gpointer ags_fx_eq10_channel_parent_class = NULL;
 
-const gchar *ags_fx_eq10_channel_plugin_name = "ags-fx-eq10";
+static const gchar *ags_fx_eq10_channel_plugin_name = "ags-fx-eq10";
 
-const gchar* ags_fx_eq10_channel_specifier[] = {
+static const gchar* ags_fx_eq10_channel_specifier[] = {
   "./peak-28hz[0]",
   "./peak-56hz[0]",
   "./peak-112hz[0]",
@@ -83,7 +83,7 @@ const gchar* ags_fx_eq10_channel_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_eq10_channel_control_port[] = {
+static const gchar* ags_fx_eq10_channel_control_port[] = {
   "1/11",
   "2/11",
   "3/11",

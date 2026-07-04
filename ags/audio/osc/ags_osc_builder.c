@@ -27,55 +27,55 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder);
-void ags_osc_builder_init(AgsOscBuilder *osc_builder);
-void ags_osc_builder_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_osc_builder_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_osc_builder_finalize(GObject *gobject);
+static void ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder);
+static void ags_osc_builder_init(AgsOscBuilder *osc_builder);
+static void ags_osc_builder_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_osc_builder_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_osc_builder_finalize(GObject *gobject);
 
-void ags_osc_builder_real_osc_putc(AgsOscBuilder *osc_builder,
-				   gint c);
-void ags_osc_builder_real_on_error(AgsOscBuilder *osc_builder,
-				   GError **error);
+static void ags_osc_builder_real_osc_putc(AgsOscBuilder *osc_builder,
+					  gint c);
+static void ags_osc_builder_real_on_error(AgsOscBuilder *osc_builder,
+					  GError **error);
 
-void ags_osc_builder_real_append_packet(AgsOscBuilder *osc_builder);
+static void ags_osc_builder_real_append_packet(AgsOscBuilder *osc_builder);
 
-void ags_osc_builder_real_append_bundle(AgsOscBuilder *osc_builder,
-					AgsOscBuilderBundle *parent_bundle,
-					gint tv_secs, gint tv_fraction, gboolean immediately);
+static void ags_osc_builder_real_append_bundle(AgsOscBuilder *osc_builder,
+					       AgsOscBuilderBundle *parent_bundle,
+					       gint tv_secs, gint tv_fraction, gboolean immediately);
 
-void ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
-					 AgsOscBuilderBundle *parent_bundle,
-					 gchar *address_pattern,
-					 gchar *type_tag);
+static void ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
+						AgsOscBuilderBundle *parent_bundle,
+						gchar *address_pattern,
+						gchar *type_tag);
 
-void ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
-				       AgsOscBuilderMessage *message,
-				       gint v_type,
-				       GValue *value);
+static void ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
+					      AgsOscBuilderMessage *message,
+					      gint v_type,
+					      GValue *value);
 
-void ags_osc_builder_skip_empty_types(AgsOscBuilder *osc_builder);
-void ags_osc_builder_bundle_resize(AgsOscBuilder *osc_builder,
-				   AgsOscBuilderBundle *parent_bundle,
-				   gsize grow_data);
-void ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
+static void ags_osc_builder_skip_empty_types(AgsOscBuilder *osc_builder);
+static void ags_osc_builder_bundle_resize(AgsOscBuilder *osc_builder,
+					  AgsOscBuilderBundle *parent_bundle,
+					  gsize grow_data);
+static void ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
+						 AgsOscBuilderMessage *message,
+						 gsize append_size);
+
+static void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
+					 AgsOscBuilderBundle *bundle,
+					 guchar *data,
+					 gsize *offset);
+static void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
 					  AgsOscBuilderMessage *message,
-					  gsize append_size);
-
-void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
-				  AgsOscBuilderBundle *bundle,
-				  guchar *data,
-				  gsize *offset);
-void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
-				   AgsOscBuilderMessage *message,
-				   guchar *data,
-				   gsize *offset);
+					  guchar *data,
+					  gsize *offset);
 
 /**
  * SECTION:ags_osc_builder

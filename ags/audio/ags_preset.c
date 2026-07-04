@@ -24,17 +24,17 @@
 
 #include <ags/i18n.h>
 
-void ags_preset_class_init(AgsPresetClass *preset);
-void ags_preset_init (AgsPreset *preset);
-void ags_preset_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_preset_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_preset_finalize(GObject *gobject);
+static void ags_preset_class_init(AgsPresetClass *preset);
+static void ags_preset_init (AgsPreset *preset);
+static void ags_preset_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_preset_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_preset_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_preset

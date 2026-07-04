@@ -23,18 +23,18 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_high_pass_channel_class_init(AgsFxHighPassChannelClass *fx_high_pass_channel);
-void ags_fx_high_pass_channel_init(AgsFxHighPassChannel *fx_high_pass_channel);
-void ags_fx_high_pass_channel_set_property(GObject *gobject,
-					   guint prop_id,
-					   const GValue *value,
-					   GParamSpec *param_spec);
-void ags_fx_high_pass_channel_get_property(GObject *gobject,
-					   guint prop_id,
-					   GValue *value,
-					   GParamSpec *param_spec);
-void ags_fx_high_pass_channel_dispose(GObject *gobject);
-void ags_fx_high_pass_channel_finalize(GObject *gobject);
+static void ags_fx_high_pass_channel_class_init(AgsFxHighPassChannelClass *fx_high_pass_channel);
+static void ags_fx_high_pass_channel_init(AgsFxHighPassChannel *fx_high_pass_channel);
+static void ags_fx_high_pass_channel_set_property(GObject *gobject,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *param_spec);
+static void ags_fx_high_pass_channel_get_property(GObject *gobject,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *param_spec);
+static void ags_fx_high_pass_channel_dispose(GObject *gobject);
+static void ags_fx_high_pass_channel_finalize(GObject *gobject);
 
 static AgsPluginPort* ags_fx_high_pass_channel_get_enabled_plugin_port();
 static AgsPluginPort* ags_fx_high_pass_channel_get_q_lin_plugin_port();
@@ -52,16 +52,16 @@ static AgsPluginPort* ags_fx_high_pass_channel_get_filter_gain_plugin_port();
 
 static gpointer ags_fx_high_pass_channel_parent_class = NULL;
 
-const gchar *ags_fx_high_pass_channel_plugin_name = "ags-fx-high-pass";
+static const gchar *ags_fx_high_pass_channel_plugin_name = "ags-fx-high-pass";
 
-const gchar* ags_fx_high_pass_channel_specifier[] = {
+static const gchar* ags_fx_high_pass_channel_specifier[] = {
   "./enabled[0]",
   "./q-lin[0]",
   "./filter-gain[0]",
   NULL,
 };
 
-const gchar* ags_fx_high_pass_channel_control_port[] = {
+static const gchar* ags_fx_high_pass_channel_control_port[] = {
   "1/3",
   "2/3",
   "3/3",

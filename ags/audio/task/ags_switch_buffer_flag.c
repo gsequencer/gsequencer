@@ -43,20 +43,20 @@
 
 #include <ags/i18n.h>
 
-void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
-void ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag);
-void ags_switch_buffer_flag_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_switch_buffer_flag_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_switch_buffer_flag_dispose(GObject *gobject);
-void ags_switch_buffer_flag_finalize(GObject *gobject);
+static void ags_switch_buffer_flag_class_init(AgsSwitchBufferFlagClass *switch_buffer_flag);
+static void ags_switch_buffer_flag_init(AgsSwitchBufferFlag *switch_buffer_flag);
+static void ags_switch_buffer_flag_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_switch_buffer_flag_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_switch_buffer_flag_dispose(GObject *gobject);
+static void ags_switch_buffer_flag_finalize(GObject *gobject);
 
-void ags_switch_buffer_flag_launch(AgsTask *task);
+static void ags_switch_buffer_flag_launch(AgsTask *task);
 
 /**
  * SECTION:ags_switch_buffer_flag

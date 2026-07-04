@@ -23,36 +23,36 @@
 
 #include <ags/i18n.h>
 
-void ags_task_launcher_class_init(AgsTaskLauncherClass *task_launcher);
-void ags_task_launcher_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_task_launcher_init(AgsTaskLauncher *task_launcher);
-void ags_task_launcher_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_task_launcher_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_task_launcher_dispose(GObject *gobject);
-void ags_task_launcher_finalize(GObject *gobject);
+static void ags_task_launcher_class_init(AgsTaskLauncherClass *task_launcher);
+static void ags_task_launcher_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_task_launcher_init(AgsTaskLauncher *task_launcher);
+static void ags_task_launcher_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_task_launcher_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_task_launcher_dispose(GObject *gobject);
+static void ags_task_launcher_finalize(GObject *gobject);
 
-AgsUUID* ags_task_launcher_get_uuid(AgsConnectable *connectable);
-gboolean ags_task_launcher_has_resource(AgsConnectable *connectable);
-gboolean ags_task_launcher_is_ready(AgsConnectable *connectable);
-void ags_task_launcher_add_to_registry(AgsConnectable *connectable);
-void ags_task_launcher_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_task_launcher_list_resource(AgsConnectable *connectable);
-xmlNode* ags_task_launcher_xml_compose(AgsConnectable *connectable);
-void ags_task_launcher_xml_parse(AgsConnectable *connectable,
-				 xmlNode *node);
-gboolean ags_task_launcher_is_connected(AgsConnectable *connectable);
-void ags_task_launcher_connect(AgsConnectable *connectable);
-void ags_task_launcher_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_task_launcher_get_uuid(AgsConnectable *connectable);
+static gboolean ags_task_launcher_has_resource(AgsConnectable *connectable);
+static gboolean ags_task_launcher_is_ready(AgsConnectable *connectable);
+static void ags_task_launcher_add_to_registry(AgsConnectable *connectable);
+static void ags_task_launcher_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_task_launcher_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_task_launcher_xml_compose(AgsConnectable *connectable);
+static void ags_task_launcher_xml_parse(AgsConnectable *connectable,
+					xmlNode *node);
+static gboolean ags_task_launcher_is_connected(AgsConnectable *connectable);
+static void ags_task_launcher_connect(AgsConnectable *connectable);
+static void ags_task_launcher_disconnect(AgsConnectable *connectable);
 
-void ags_task_launcher_real_run(AgsTaskLauncher *task_launcher);
+static void ags_task_launcher_real_run(AgsTaskLauncher *task_launcher);
 
-gboolean ags_task_launcher_source_func(AgsTaskLauncher *task_launcher);
+static gboolean ags_task_launcher_source_func(AgsTaskLauncher *task_launcher);
 
 /**
  * SECTION:ags_task_launcher

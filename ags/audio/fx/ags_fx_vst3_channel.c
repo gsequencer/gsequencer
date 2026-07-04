@@ -39,26 +39,26 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_vst3_channel_class_init(AgsFxVst3ChannelClass *fx_vst3_channel);
-void ags_fx_vst3_channel_init(AgsFxVst3Channel *fx_vst3_channel);
-void ags_fx_vst3_channel_dispose(GObject *gobject);
-void ags_fx_vst3_channel_finalize(GObject *gobject);
+static void ags_fx_vst3_channel_class_init(AgsFxVst3ChannelClass *fx_vst3_channel);
+static void ags_fx_vst3_channel_init(AgsFxVst3Channel *fx_vst3_channel);
+static void ags_fx_vst3_channel_dispose(GObject *gobject);
+static void ags_fx_vst3_channel_finalize(GObject *gobject);
 
-void ags_fx_vst3_channel_notify_filename_callback(GObject *gobject,
-						  GParamSpec *pspec,
-						  gpointer user_data);
-void ags_fx_vst3_channel_notify_effect_callback(GObject *gobject,
-						GParamSpec *pspec,
-						gpointer user_data);
-void ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
-						     GParamSpec *pspec,
-						     gpointer user_data);
-void ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
-						    GParamSpec *pspec,
-						    gpointer user_data);
+static void ags_fx_vst3_channel_notify_filename_callback(GObject *gobject,
+							 GParamSpec *pspec,
+							 gpointer user_data);
+static void ags_fx_vst3_channel_notify_effect_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data);
+static void ags_fx_vst3_channel_notify_buffer_size_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    gpointer user_data);
+static void ags_fx_vst3_channel_notify_samplerate_callback(GObject *gobject,
+							   GParamSpec *pspec,
+							   gpointer user_data);
 
-void ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
-					     AgsFxVst3Channel *fx_vst3_channel);
+static void ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
+						    AgsFxVst3Channel *fx_vst3_channel);
 
 /**
  * SECTION:ags_fx_vst3_channel
@@ -72,7 +72,7 @@ void ags_fx_vst3_channel_safe_write_callback(AgsPort *port, GValue *value,
 
 static gpointer ags_fx_vst3_channel_parent_class = NULL;
 
-const gchar *ags_fx_vst3_channel_plugin_name = "ags-fx-vst3";
+static const gchar *ags_fx_vst3_channel_plugin_name = "ags-fx-vst3";
 
 GType
 ags_fx_vst3_channel_get_type()

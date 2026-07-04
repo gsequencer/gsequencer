@@ -35,17 +35,17 @@
 
 #include <ags/i18n.h>
 
-void ags_sf2_synth_generator_class_init(AgsSF2SynthGeneratorClass *sf2_synth_generator);
-void ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator);
-void ags_sf2_synth_generator_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_sf2_synth_generator_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_sf2_synth_generator_finalize(GObject *gobject);
+static void ags_sf2_synth_generator_class_init(AgsSF2SynthGeneratorClass *sf2_synth_generator);
+static void ags_sf2_synth_generator_init(AgsSF2SynthGenerator *sf2_synth_generator);
+static void ags_sf2_synth_generator_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_sf2_synth_generator_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_sf2_synth_generator_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_sf2_synth_generator
@@ -80,7 +80,6 @@ enum{
 };
 
 static gpointer ags_sf2_synth_generator_parent_class = NULL;
-
 
 GType
 ags_sf2_synth_generator_get_type()
@@ -2571,8 +2570,8 @@ ags_sf2_synth_generator_compute_midi_locale(AgsSF2SynthGenerator *sf2_synth_gene
   ags_sf2_synth_generator_set_bank(sf2_synth_generator,
 				   bank);
 
- ags_sf2_synth_generator_set_program(sf2_synth_generator,
-				     program);
+  ags_sf2_synth_generator_set_program(sf2_synth_generator,
+				      program);
 
   ags_sf2_synth_util_set_buffer_length(sf2_synth_generator->sf2_synth_util,
 				       requested_frame_count);

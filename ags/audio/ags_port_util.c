@@ -32,8 +32,8 @@
 #include <ags/plugin/ags_audio_unit_conversion.h>
 #endif
 
-gpointer ags_port_util_copy(gpointer ptr);
-void ags_port_util_free(gpointer ptr);
+static gpointer ags_port_util_copy(gpointer ptr);
+static void ags_port_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_port_util

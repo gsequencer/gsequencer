@@ -28,19 +28,19 @@
 
 #include <ags/i18n.h>
 
-void ags_ramp_marker_dialog_class_init(AgsRampMarkerDialogClass *ramp_marker_dialog);
-void ags_ramp_marker_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ramp_marker_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog);
-void ags_ramp_marker_dialog_finalize(GObject *gobject);
+static void ags_ramp_marker_dialog_class_init(AgsRampMarkerDialogClass *ramp_marker_dialog);
+static void ags_ramp_marker_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ramp_marker_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_ramp_marker_dialog_init(AgsRampMarkerDialog *ramp_marker_dialog);
+static void ags_ramp_marker_dialog_finalize(GObject *gobject);
 
-gboolean ags_ramp_marker_dialog_is_connected(AgsConnectable *connectable);
-void ags_ramp_marker_dialog_connect(AgsConnectable *connectable);
-void ags_ramp_marker_dialog_disconnect(AgsConnectable *connectable);
+static gboolean ags_ramp_marker_dialog_is_connected(AgsConnectable *connectable);
+static void ags_ramp_marker_dialog_connect(AgsConnectable *connectable);
+static void ags_ramp_marker_dialog_disconnect(AgsConnectable *connectable);
 
-void ags_ramp_marker_dialog_set_update(AgsApplicable *applicable, gboolean update);
-void ags_ramp_marker_dialog_apply(AgsApplicable *applicable);
-void ags_ramp_marker_dialog_reset(AgsApplicable *applicable);
+static void ags_ramp_marker_dialog_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_ramp_marker_dialog_apply(AgsApplicable *applicable);
+static void ags_ramp_marker_dialog_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_ramp_marker_dialog

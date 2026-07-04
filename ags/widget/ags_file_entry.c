@@ -31,83 +31,86 @@
 
 #include <ags/i18n.h>
 
-void ags_file_entry_class_init(AgsFileEntryClass *file_entry);
-void ags_file_entry_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_file_entry_init(AgsFileEntry *file_entry);
-void ags_file_entry_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_file_entry_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_file_entry_dispose(GObject *gobject);
-void ags_file_entry_finalize(GObject *gobject);
+static void ags_file_entry_class_init(AgsFileEntryClass *file_entry);
+static void ags_file_entry_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_file_entry_init(AgsFileEntry *file_entry);
+static void ags_file_entry_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_file_entry_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_file_entry_dispose(GObject *gobject);
+static void ags_file_entry_finalize(GObject *gobject);
 
-void ags_file_entry_realize(GtkWidget *widget);
-void ags_file_entry_unrealize(GtkWidget *widget);
+static void ags_file_entry_realize(GtkWidget *widget);
+static void ags_file_entry_unrealize(GtkWidget *widget);
 
-void ags_file_entry_focus_out(GtkWidget *widget);
-void ags_file_entry_focus_in(GtkWidget *widget);
+static void ags_file_entry_focus_out(GtkWidget *widget);
+static void ags_file_entry_focus_in(GtkWidget *widget);
 
-void ags_file_entry_commit_handler(GtkIMContext *context,
-				   const char *str,
-				   AgsFileEntry *file_entry);
-void ags_file_entry_preedit_start_handler(GtkIMContext *context,
+static void ags_file_entry_commit_handler(GtkIMContext *context,
+					  const char *str,
 					  AgsFileEntry *file_entry);
-void ags_file_entry_preedit_changed_handler(GtkIMContext *context,
-					    AgsFileEntry *file_entry);
-gboolean ags_file_entry_retrieve_surrounding_handler(GtkIMContext *context,
+static void ags_file_entry_preedit_start_handler(GtkIMContext *context,
+						 AgsFileEntry *file_entry);
+static void ags_file_entry_preedit_changed_handler(GtkIMContext *context,
+						   AgsFileEntry *file_entry);
+static gboolean ags_file_entry_retrieve_surrounding_handler(GtkIMContext *context,
+							    AgsFileEntry *file_entry);
+static gboolean ags_file_entry_delete_surrounding_handler(GtkIMContext *context,
+							  int offset,
+							  int n_chars,
+							  AgsFileEntry *file_entry);
+
+static gboolean ags_file_entry_im_context_filter_keypress(AgsFileEntry *file_entry,
+							  GdkEvent *event);
+
+static gboolean ags_file_entry_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							      gint n_press,
+							      gdouble x,
+							      gdouble y,
+							      AgsFileEntry *file_entry);
+static gboolean ags_file_entry_gesture_click_released_callback(GtkGestureClick *event_controller,
+							       gint n_press,
+							       gdouble x,
+							       gdouble y,
+							       AgsFileEntry *file_entry);
+
+static gboolean ags_file_entry_motion_callback(GtkEventControllerMotion *event_controller,
+					       gdouble x,
+					       gdouble y,
+					       AgsFileEntry *file_entry);
+
+static gboolean ags_file_entry_key_pressed_callback(GtkEventControllerKey *event_controller,
+						    guint keyval,
+						    guint keycode,
+						    GdkModifierType state,
+						    AgsFileEntry *file_entry);
+static gboolean ags_file_entry_key_released_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
 						     AgsFileEntry *file_entry);
-gboolean ags_file_entry_delete_surrounding_handler(GtkIMContext *context,
-						   int offset,
-						   int n_chars,
+static gboolean ags_file_entry_modifiers_callback(GtkEventControllerKey *event_controller,
+						  GdkModifierType keyval,
+						  AgsFileEntry *file_entry);
+
+static void ags_file_entry_key_controller_im_update(GtkEventControllerKey *controller,
+						    AgsFileEntry *file_entry);
+
+static void ags_file_entry_draw_callback(GtkWidget *drawing_area,
+					 cairo_t *cr,
+					 int width, int height,
+					 AgsFileEntry *file_entry);
+
+static void ags_file_entry_edit_drop_down_callback(GObject *gobject,
+						   GParamSpec *pspec,
 						   AgsFileEntry *file_entry);
 
-gboolean ags_file_entry_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						       gint n_press,
-						       gdouble x,
-						       gdouble y,
-						       AgsFileEntry *file_entry);
-gboolean ags_file_entry_gesture_click_released_callback(GtkGestureClick *event_controller,
-							gint n_press,
-							gdouble x,
-							gdouble y,
-							AgsFileEntry *file_entry);
-
-gboolean ags_file_entry_motion_callback(GtkEventControllerMotion *event_controller,
-					gdouble x,
-					gdouble y,
-					AgsFileEntry *file_entry);
-
-gboolean ags_file_entry_key_pressed_callback(GtkEventControllerKey *event_controller,
-					     guint keyval,
-					     guint keycode,
-					     GdkModifierType state,
-					     AgsFileEntry *file_entry);
-gboolean ags_file_entry_key_released_callback(GtkEventControllerKey *event_controller,
-					      guint keyval,
-					      guint keycode,
-					      GdkModifierType state,
-					      AgsFileEntry *file_entry);
-gboolean ags_file_entry_modifiers_callback(GtkEventControllerKey *event_controller,
-					   GdkModifierType keyval,
-					   AgsFileEntry *file_entry);
-
-void ags_file_entry_key_controller_im_update(GtkEventControllerKey *controller,
-					     AgsFileEntry *file_entry);
-
-void ags_file_entry_draw_callback(GtkWidget *drawing_area,
-				  cairo_t *cr,
-				  int width, int height,
-				  AgsFileEntry *file_entry);
-
-void ags_file_entry_edit_drop_down_callback(GObject *gobject,
-					    GParamSpec *pspec,
-					    AgsFileEntry *file_entry);
-
-void ags_file_entry_real_activate(AgsFileEntry *file_entry);
+static void ags_file_entry_real_activate(AgsFileEntry *file_entry);
 
 /**
  * SECTION:ags_file_entry

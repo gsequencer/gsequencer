@@ -44,31 +44,31 @@
 
 #include <ags/i18n.h>
 
-void ags_audio_file_class_init(AgsAudioFileClass *audio_file);
-void ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_file_init(AgsAudioFile *audio_file);
-void ags_audio_file_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_audio_file_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_audio_file_finalize(GObject *object);
+static void ags_audio_file_class_init(AgsAudioFileClass *audio_file);
+static void ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_file_init(AgsAudioFile *audio_file);
+static void ags_audio_file_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_audio_file_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_audio_file_finalize(GObject *object);
 
-AgsUUID* ags_audio_file_get_uuid(AgsConnectable *connectable);
-gboolean ags_audio_file_has_resource(AgsConnectable *connectable);
-gboolean ags_audio_file_is_ready(AgsConnectable *connectable);
-void ags_audio_file_add_to_registry(AgsConnectable *connectable);
-void ags_audio_file_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_audio_file_list_resource(AgsConnectable *connectable);
-xmlNode* ags_audio_file_xml_compose(AgsConnectable *connectable);
-void ags_audio_file_xml_parse(AgsConnectable *connectable,
-				   xmlNode *node);
-gboolean ags_audio_file_is_connected(AgsConnectable *connectable);
-void ags_audio_file_connect(AgsConnectable *connectable);
-void ags_audio_file_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_audio_file_get_uuid(AgsConnectable *connectable);
+static gboolean ags_audio_file_has_resource(AgsConnectable *connectable);
+static gboolean ags_audio_file_is_ready(AgsConnectable *connectable);
+static void ags_audio_file_add_to_registry(AgsConnectable *connectable);
+static void ags_audio_file_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_audio_file_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_audio_file_xml_compose(AgsConnectable *connectable);
+static void ags_audio_file_xml_parse(AgsConnectable *connectable,
+				     xmlNode *node);
+static gboolean ags_audio_file_is_connected(AgsConnectable *connectable);
+static void ags_audio_file_connect(AgsConnectable *connectable);
+static void ags_audio_file_disconnect(AgsConnectable *connectable);
 
 enum{
   PROP_0,

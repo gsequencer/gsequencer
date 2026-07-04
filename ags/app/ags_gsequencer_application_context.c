@@ -116,166 +116,166 @@
 
 #include <ags/i18n.h>
 
-void ags_gsequencer_application_context_signal_handler(int signr);
+static void ags_gsequencer_application_context_signal_handler(int signr);
 static void ags_gsequencer_application_context_signal_cleanup();
 
-void ags_gsequencer_application_context_class_init(AgsGSequencerApplicationContextClass *gsequencer_application_context);
-void ags_gsequencer_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_gsequencer_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
-void ags_gsequencer_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider);
-void ags_gsequencer_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider);
-void ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInterface *ui_provider);
-void ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequencer_application_context);
-void ags_gsequencer_application_context_set_property(GObject *gobject,
-						     guint prop_id,
-						     const GValue *value,
-						     GParamSpec *param_spec);
-void ags_gsequencer_application_context_get_property(GObject *gobject,
-						     guint prop_id,
-						     GValue *value,
-						     GParamSpec *param_spec);
-void ags_gsequencer_application_context_dispose(GObject *gobject);
-void ags_gsequencer_application_context_finalize(GObject *gobject);
+static void ags_gsequencer_application_context_class_init(AgsGSequencerApplicationContextClass *gsequencer_application_context);
+static void ags_gsequencer_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_gsequencer_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
+static void ags_gsequencer_application_context_service_provider_interface_init(AgsServiceProviderInterface *service_provider);
+static void ags_gsequencer_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider);
+static void ags_gsequencer_application_context_ui_provider_interface_init(AgsUiProviderInterface *ui_provider);
+static void ags_gsequencer_application_context_init(AgsGSequencerApplicationContext *gsequencer_application_context);
+static void ags_gsequencer_application_context_set_property(GObject *gobject,
+							    guint prop_id,
+							    const GValue *value,
+							    GParamSpec *param_spec);
+static void ags_gsequencer_application_context_get_property(GObject *gobject,
+							    guint prop_id,
+							    GValue *value,
+							    GParamSpec *param_spec);
+static void ags_gsequencer_application_context_dispose(GObject *gobject);
+static void ags_gsequencer_application_context_finalize(GObject *gobject);
 
-void ags_gsequencer_application_context_connect(AgsConnectable *connectable);
-void ags_gsequencer_application_context_disconnect(AgsConnectable *connectable);
+static void ags_gsequencer_application_context_connect(AgsConnectable *connectable);
+static void ags_gsequencer_application_context_disconnect(AgsConnectable *connectable);
 
-AgsThread* ags_gsequencer_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
-void ags_gsequencer_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
-						      AgsThread *main_loop);
-AgsTaskLauncher* ags_gsequencer_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
-void ags_gsequencer_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
-							  AgsTaskLauncher *task_launcher);
-AgsThreadPool* ags_gsequencer_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
-void ags_gsequencer_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
-							AgsThreadPool *thread_pool);
-GList* ags_gsequencer_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
-void ags_gsequencer_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
-						   GList *worker);
+static AgsThread* ags_gsequencer_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+static void ags_gsequencer_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+							     AgsThread *main_loop);
+static AgsTaskLauncher* ags_gsequencer_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
+static void ags_gsequencer_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+								 AgsTaskLauncher *task_launcher);
+static AgsThreadPool* ags_gsequencer_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+static void ags_gsequencer_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+							       AgsThreadPool *thread_pool);
+static GList* ags_gsequencer_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+static void ags_gsequencer_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+							  GList *worker);
 
-gboolean ags_gsequencer_application_context_is_operating(AgsServiceProvider *service_provider);
+static gboolean ags_gsequencer_application_context_is_operating(AgsServiceProvider *service_provider);
 
-AgsServerStatus* ags_gsequencer_application_context_server_status(AgsServiceProvider *service_provider);
+static AgsServerStatus* ags_gsequencer_application_context_server_status(AgsServiceProvider *service_provider);
 
-void ags_gsequencer_application_context_set_registry(AgsServiceProvider *service_provider,
-						     AgsRegistry *registry);
-AgsRegistry* ags_gsequencer_application_context_get_registry(AgsServiceProvider *service_provider);
+static void ags_gsequencer_application_context_set_registry(AgsServiceProvider *service_provider,
+							    AgsRegistry *registry);
+static AgsRegistry* ags_gsequencer_application_context_get_registry(AgsServiceProvider *service_provider);
 
-void ags_gsequencer_application_context_set_server(AgsServiceProvider *service_provider,
-						   GList *server);
-GList* ags_gsequencer_application_context_get_server(AgsServiceProvider *service_provider);
+static void ags_gsequencer_application_context_set_server(AgsServiceProvider *service_provider,
+							  GList *server);
+static GList* ags_gsequencer_application_context_get_server(AgsServiceProvider *service_provider);
 
-GObject* ags_gsequencer_application_context_get_default_soundcard(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
-							      GObject *soundcard);
-GObject* ags_gsequencer_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
-								     GObject *soundcard_thread);
-GList* ags_gsequencer_application_context_get_soundcard(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_soundcard(AgsSoundProvider *sound_provider,
-						      GList *soundcard);
-GList* ags_gsequencer_application_context_get_sequencer(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_sequencer(AgsSoundProvider *sound_provider,
-						      GList *sequencer);
-GList* ags_gsequencer_application_context_get_audio(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_audio(AgsSoundProvider *sound_provider,
-						  GList *audio);
-GList* ags_gsequencer_application_context_get_sound_server(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_sound_server(AgsSoundProvider *sound_provider,
-							 GList *sound_server);
-GList* ags_gsequencer_application_context_get_osc_server(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_osc_server(AgsSoundProvider *sound_provider,
-						       GList *osc_server);
-GList* ags_gsequencer_application_context_get_program(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_program(AgsSoundProvider *sound_provider,
-						    GList *program);
-GList* ags_gsequencer_application_context_get_tempo(AgsSoundProvider *sound_provider);
-void ags_gsequencer_application_context_set_tempo(AgsSoundProvider *sound_provider,
-						  GList *tempo);
+static GObject* ags_gsequencer_application_context_get_default_soundcard(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
+								     GObject *soundcard);
+static GObject* ags_gsequencer_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
+									    GObject *soundcard_thread);
+static GList* ags_gsequencer_application_context_get_soundcard(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_soundcard(AgsSoundProvider *sound_provider,
+							     GList *soundcard);
+static GList* ags_gsequencer_application_context_get_sequencer(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_sequencer(AgsSoundProvider *sound_provider,
+							     GList *sequencer);
+static GList* ags_gsequencer_application_context_get_audio(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_audio(AgsSoundProvider *sound_provider,
+							 GList *audio);
+static GList* ags_gsequencer_application_context_get_sound_server(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_sound_server(AgsSoundProvider *sound_provider,
+								GList *sound_server);
+static GList* ags_gsequencer_application_context_get_osc_server(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_osc_server(AgsSoundProvider *sound_provider,
+							      GList *osc_server);
+static GList* ags_gsequencer_application_context_get_program(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_program(AgsSoundProvider *sound_provider,
+							   GList *program);
+static GList* ags_gsequencer_application_context_get_tempo(AgsSoundProvider *sound_provider);
+static void ags_gsequencer_application_context_set_tempo(AgsSoundProvider *sound_provider,
+							 GList *tempo);
 
-gboolean ags_gsequencer_application_context_get_show_animation(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_show_animation(AgsUiProvider *ui_provider,
-							   gboolean show_animation);
-gboolean ags_gsequencer_application_context_get_gui_ready(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_gui_ready(AgsUiProvider *ui_provider,
-						      gboolean gui_ready);
-gboolean ags_gsequencer_application_context_get_file_ready(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_file_ready(AgsUiProvider *ui_provider,
-						       gboolean file_ready);
-gdouble ags_gsequencer_application_context_get_gui_scale_factor(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
-							     gdouble gui_scale_factor);
-void ags_gsequencer_application_context_schedule_task(AgsUiProvider *ui_provider,
-						      AgsTask *task);
-void ags_gsequencer_application_context_schedule_task_all(AgsUiProvider *ui_provider,
-							  GList *task);
-void ags_gsequencer_application_context_clean_message(AgsUiProvider *ui_provider);
-GtkWidget* ags_gsequencer_application_context_get_animation_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_animation_window(AgsUiProvider *ui_provider,
-							     GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_window(AgsUiProvider *ui_provider,
-						   GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_export_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_export_window(AgsUiProvider *ui_provider,
+static gboolean ags_gsequencer_application_context_get_show_animation(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_show_animation(AgsUiProvider *ui_provider,
+								  gboolean show_animation);
+static gboolean ags_gsequencer_application_context_get_gui_ready(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_gui_ready(AgsUiProvider *ui_provider,
+							     gboolean gui_ready);
+static gboolean ags_gsequencer_application_context_get_file_ready(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_file_ready(AgsUiProvider *ui_provider,
+							      gboolean file_ready);
+static gdouble ags_gsequencer_application_context_get_gui_scale_factor(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_gui_scale_factor(AgsUiProvider *ui_provider,
+								    gdouble gui_scale_factor);
+static void ags_gsequencer_application_context_schedule_task(AgsUiProvider *ui_provider,
+							     AgsTask *task);
+static void ags_gsequencer_application_context_schedule_task_all(AgsUiProvider *ui_provider,
+								 GList *task);
+static void ags_gsequencer_application_context_clean_message(AgsUiProvider *ui_provider);
+static GtkWidget* ags_gsequencer_application_context_get_animation_window(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_animation_window(AgsUiProvider *ui_provider,
+								    GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_window(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_window(AgsUiProvider *ui_provider,
 							  GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_online_help_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_online_help_window(AgsUiProvider *ui_provider,
+static GtkWidget* ags_gsequencer_application_context_get_export_window(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_export_window(AgsUiProvider *ui_provider,
+								 GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_online_help_window(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_online_help_window(AgsUiProvider *ui_provider,
+								      GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_preferences(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_preferences(AgsUiProvider *ui_provider,
 							       GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_preferences(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_preferences(AgsUiProvider *ui_provider,
-							GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_history_browser(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_history_browser(AgsUiProvider *ui_provider,
-							    GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_midi_browser(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_midi_browser(AgsUiProvider *ui_provider,
-							 GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_sample_browser(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_sample_browser(AgsUiProvider *ui_provider,
-							   GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_midi_import_wizard(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_midi_import_wizard(AgsUiProvider *ui_provider,
-							       GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_midi_export_wizard(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_midi_export_wizard(AgsUiProvider *ui_provider,
-							       GtkWidget *widget);
-GList* ags_gsequencer_application_context_get_machine(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
-						    GList *machine);
-GtkWidget* ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
-							     GtkWidget *widget);
-GtkWidget* ags_gsequencer_application_context_get_navigation(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provider,
-						       GtkWidget *widget);
-GtkApplication* ags_gsequencer_application_context_get_app(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_app(AgsUiProvider *ui_provider,
-						GtkApplication *app);
-GtkWidget* ags_gsequencer_application_context_get_meta_data_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_provider,
-							     GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_history_browser(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_history_browser(AgsUiProvider *ui_provider,
+								   GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_midi_browser(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_midi_browser(AgsUiProvider *ui_provider,
+								GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_sample_browser(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_sample_browser(AgsUiProvider *ui_provider,
+								  GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_midi_import_wizard(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_midi_import_wizard(AgsUiProvider *ui_provider,
+								      GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_midi_export_wizard(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_midi_export_wizard(AgsUiProvider *ui_provider,
+								      GtkWidget *widget);
+static GList* ags_gsequencer_application_context_get_machine(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_machine(AgsUiProvider *ui_provider,
+							   GList *machine);
+static GtkWidget* ags_gsequencer_application_context_get_composite_editor(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_composite_editor(AgsUiProvider *ui_provider,
+								    GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_navigation(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_navigation(AgsUiProvider *ui_provider,
+							      GtkWidget *widget);
+static GtkApplication* ags_gsequencer_application_context_get_app(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_app(AgsUiProvider *ui_provider,
+						       GtkApplication *app);
+static GtkWidget* ags_gsequencer_application_context_get_meta_data_window(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_meta_data_window(AgsUiProvider *ui_provider,
+								    GtkWidget *widget);
 
-GList* ags_gsequencer_application_context_get_visible_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_visible_window(AgsUiProvider *ui_provider,
-							   GList *visible_window);
+static GList* ags_gsequencer_application_context_get_visible_window(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_visible_window(AgsUiProvider *ui_provider,
+								  GList *visible_window);
 
-GtkWidget* ags_gsequencer_application_context_get_download_window(AgsUiProvider *ui_provider);
-void ags_gsequencer_application_context_set_download_window(AgsUiProvider *ui_provider,
-							  GtkWidget *widget);
+static GtkWidget* ags_gsequencer_application_context_get_download_window(AgsUiProvider *ui_provider);
+static void ags_gsequencer_application_context_set_download_window(AgsUiProvider *ui_provider,
+								   GtkWidget *widget);
 
-void ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context);
-void ags_gsequencer_application_context_setup(AgsApplicationContext *application_context);
+static void ags_gsequencer_application_context_prepare(AgsApplicationContext *application_context);
+static void ags_gsequencer_application_context_setup(AgsApplicationContext *application_context);
 
-void ags_gsequencer_application_context_register_types(AgsApplicationContext *application_context);
+static void ags_gsequencer_application_context_register_types(AgsApplicationContext *application_context);
 
-void ags_gsequencer_application_context_quit(AgsApplicationContext *application_context);
+static void ags_gsequencer_application_context_quit(AgsApplicationContext *application_context);
 
-void ags_gsequencer_application_context_read(GObject *file, xmlNode *node, GObject **application_context);
-xmlNode* ags_gsequencer_application_context_write(GObject *file, xmlNode *parent, GObject *application_context);
+static void ags_gsequencer_application_context_read(GObject *file, xmlNode *node, GObject **application_context);
+static xmlNode* ags_gsequencer_application_context_write(GObject *file, xmlNode *parent, GObject *application_context);
 
-void* ags_gsequencer_application_context_server_main_loop_thread(GMainLoop *main_loop);
-void* ags_gsequencer_application_context_audio_main_loop_thread(GMainLoop *main_loop);
+static void* ags_gsequencer_application_context_server_main_loop_thread(GMainLoop *main_loop);
+static void* ags_gsequencer_application_context_audio_main_loop_thread(GMainLoop *main_loop);
 
 /**
  * SECTION:ags_gsequencer_application_context
@@ -296,8 +296,6 @@ enum{
 static gpointer ags_gsequencer_application_context_parent_class = NULL;
 static AgsConnectableInterface* ags_gsequencer_application_context_parent_connectable_interface;
 
-extern AgsApplicationContext *ags_application_context;
-
 //TODO:JK: implement get functions
 #if !defined(AGS_W32API)
 static struct sigaction ags_sigact;
@@ -313,7 +311,7 @@ static locale_t c_locale;
 
 static gboolean locale_initialized = FALSE;
 
-gboolean ags_gsequencer_application_context_update_ui = TRUE;
+static gboolean ags_gsequencer_application_context_update_ui = TRUE;
 
 GType
 ags_gsequencer_application_context_get_type()

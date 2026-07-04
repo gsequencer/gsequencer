@@ -28,20 +28,20 @@
 
 #include <ags/i18n.h>
 
-void ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line);
-void ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_panel_input_line_init(AgsPanelInputLine *panel_input_line);
-void ags_panel_input_line_finalize(GObject *gobject);
+static void ags_panel_input_line_class_init(AgsPanelInputLineClass *panel_input_line);
+static void ags_panel_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_panel_input_line_init(AgsPanelInputLine *panel_input_line);
+static void ags_panel_input_line_finalize(GObject *gobject);
 
-void ags_panel_input_line_connect(AgsConnectable *connectable);
-void ags_panel_input_line_disconnect(AgsConnectable *connectable);
+static void ags_panel_input_line_connect(AgsConnectable *connectable);
+static void ags_panel_input_line_disconnect(AgsConnectable *connectable);
 
-void ags_panel_input_line_show(GtkWidget *line);
+static void ags_panel_input_line_show(GtkWidget *line);
 
-void ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel);
-void ags_panel_input_line_group_changed(AgsLine *line);
-void ags_panel_input_line_map_recall(AgsLine *line,
-				     guint output_pad_start);
+static void ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel);
+static void ags_panel_input_line_group_changed(AgsLine *line);
+static void ags_panel_input_line_map_recall(AgsLine *line,
+					    guint output_pad_start);
 
 /**
  * SECTION:ags_panel_input_line

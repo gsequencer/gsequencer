@@ -31,24 +31,24 @@
 
 #include <ags/i18n.h>
 
-void ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info);
-void ags_envelope_info_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_envelope_info_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_envelope_info_init(AgsEnvelopeInfo *envelope_info);
-void ags_envelope_info_finalize(GObject *gobject);
+static void ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info);
+static void ags_envelope_info_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_envelope_info_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_envelope_info_init(AgsEnvelopeInfo *envelope_info);
+static void ags_envelope_info_finalize(GObject *gobject);
 
-gboolean ags_envelope_info_is_connected(AgsConnectable *connectable);
-void ags_envelope_info_connect(AgsConnectable *connectable);
-void ags_envelope_info_disconnect(AgsConnectable *connectable);
+static gboolean ags_envelope_info_is_connected(AgsConnectable *connectable);
+static void ags_envelope_info_connect(AgsConnectable *connectable);
+static void ags_envelope_info_disconnect(AgsConnectable *connectable);
 
-void ags_envelope_info_set_update(AgsApplicable *applicable, gboolean update);
-void ags_envelope_info_apply(AgsApplicable *applicable);
-void ags_envelope_info_reset(AgsApplicable *applicable);
+static void ags_envelope_info_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_envelope_info_apply(AgsApplicable *applicable);
+static void ags_envelope_info_reset(AgsApplicable *applicable);
 
-gchar* ags_envelope_info_x_label_func(gdouble value,
-				      gpointer data);
-gchar* ags_envelope_info_y_label_func(gdouble value,
-				      gpointer data);
+static gchar* ags_envelope_info_x_label_func(gdouble value,
+					     gpointer data);
+static gchar* ags_envelope_info_y_label_func(gdouble value,
+					     gpointer data);
 
 /**
  * SECTION:ags_envelope_info

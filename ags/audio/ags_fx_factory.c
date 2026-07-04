@@ -242,106 +242,16 @@
  * Factory function to instantiate fx recalls.
  */
 
-void ags_fx_factory_class_init(AgsFxFactoryClass *fx_factory_class);
-void ags_fx_factory_init(AgsFxFactory *fx_factory);
+static void ags_fx_factory_class_init(AgsFxFactoryClass *fx_factory_class);
+static void ags_fx_factory_init(AgsFxFactory *fx_factory);
 
-gint ags_fx_factory_get_output_position(AgsAudio *audio,
-					gint position);
-gint ags_fx_factory_get_input_position(AgsAudio *audio,
-				       gint position);
+static gint ags_fx_factory_get_output_position(AgsAudio *audio,
+					       gint position);
+static gint ags_fx_factory_get_input_position(AgsAudio *audio,
+					      gint position);
 
 /* declaration */
-GList* ags_fx_factory_create_playback(AgsAudio *audio,
-				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				      gchar *plugin_name,
-				      gchar *filename,
-				      gchar *effect,
-				      guint start_audio_channel, guint stop_audio_channel,
-				      guint start_pad, guint stop_pad,
-				      gint position,
-				      guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_buffer(AgsAudio *audio,
-				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				    gchar *plugin_name,
-				    gchar *filename,
-				    gchar *effect,
-				    guint start_audio_channel, guint stop_audio_channel,
-				    guint start_pad, guint stop_pad,
-				    gint position,
-				    guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_volume(AgsAudio *audio,
-				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				    gchar *plugin_name,
-				    gchar *filename,
-				    gchar *effect,
-				    guint start_audio_channel, guint stop_audio_channel,
-				    guint start_pad, guint stop_pad,
-				    gint position,
-				    guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_tremolo(AgsAudio *audio,
-				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				     gchar *plugin_name,
-				     gchar *filename,
-				     gchar *effect,
-				     guint start_audio_channel, guint stop_audio_channel,
-				     guint start_pad, guint stop_pad,
-				     gint position,
-				     guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_low_pass(AgsAudio *audio,
-				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				      gchar *plugin_name,
-				      gchar *filename,
-				      gchar *effect,
-				      guint start_audio_channel, guint stop_audio_channel,
-				      guint start_pad, guint stop_pad,
-				      gint position,
-				      guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_high_pass(AgsAudio *audio,
-				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				       gchar *plugin_name,
-				       gchar *filename,
-				       gchar *effect,
-				       guint start_audio_channel, guint stop_audio_channel,
-				       guint start_pad, guint stop_pad,
-				       gint position,
-				       guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_peak(AgsAudio *audio,
-				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				  gchar *plugin_name,
-				  gchar *filename,
-				  gchar *effect,
-				  guint start_audio_channel, guint stop_audio_channel,
-				  guint start_pad, guint stop_pad,
-				  gint position,
-				  guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_eq10(AgsAudio *audio,
-				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				  gchar *plugin_name,
-				  gchar *filename,
-				  gchar *effect,
-				  guint start_audio_channel, guint stop_audio_channel,
-				  guint start_pad, guint stop_pad,
-				  gint position,
-				  guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_analyse(AgsAudio *audio,
-				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				     gchar *plugin_name,
-				     gchar *filename,
-				     gchar *effect,
-				     guint start_audio_channel, guint stop_audio_channel,
-				     guint start_pad, guint stop_pad,
-				     gint position,
-				     guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
+static GList* ags_fx_factory_create_playback(AgsAudio *audio,
 					     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					     gchar *plugin_name,
 					     gchar *filename,
@@ -351,117 +261,7 @@ GList* ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
 					     gint position,
 					     guint create_flags, AgsRecallFlags recall_flags);
 
-GList* ags_fx_factory_create_lfo(AgsAudio *audio,
-				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				 gchar *plugin_name,
-				 gchar *filename,
-				 gchar *effect,
-				 guint start_audio_channel, guint stop_audio_channel,
-				 guint start_pad, guint stop_pad,
-				 gint position,
-				 guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_envelope(AgsAudio *audio,
-				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				      gchar *plugin_name,
-				      gchar *filename,
-				      gchar *effect,
-				      guint start_audio_channel, guint stop_audio_channel,
-				      guint start_pad, guint stop_pad,
-				      gint position,
-				      guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_wah_wah(AgsAudio *audio,
-				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				     gchar *plugin_name,
-				     gchar *filename,
-				     gchar *effect,
-				     guint start_audio_channel, guint stop_audio_channel,
-				     guint start_pad, guint stop_pad,
-				     gint position,
-				     guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_pattern(AgsAudio *audio,
-				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				     gchar *plugin_name,
-				     gchar *filename,
-				     gchar *effect,
-				     guint start_audio_channel, guint stop_audio_channel,
-				     guint start_pad, guint stop_pad,
-				     gint position,
-				     guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_notation(AgsAudio *audio,
-				      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				      gchar *plugin_name,
-				      gchar *filename,
-				      gchar *effect,
-				      guint start_audio_channel, guint stop_audio_channel,
-				      guint start_pad, guint stop_pad,
-				      gint position,
-				      guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_synth(AgsAudio *audio,
-				   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				   gchar *plugin_name,
-				   gchar *filename,
-				   gchar *effect,
-				   guint start_audio_channel, guint stop_audio_channel,
-				   guint start_pad, guint stop_pad,
-				   gint position,
-				   guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_sf2_synth(AgsAudio *audio,
-				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				       gchar *plugin_name,
-				       gchar *filename,
-				       gchar *effect,
-				       guint start_audio_channel, guint stop_audio_channel,
-				       guint start_pad, guint stop_pad,
-				       gint position,
-				       guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_sfz_synth(AgsAudio *audio,
-				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				       gchar *plugin_name,
-				       gchar *filename,
-				       gchar *effect,
-				       guint start_audio_channel, guint stop_audio_channel,
-				       guint start_pad, guint stop_pad,
-				       gint position,
-				       guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_star_synth(AgsAudio *audio,
-					AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-					gchar *plugin_name,
-					gchar *filename,
-					gchar *effect,
-					guint start_audio_channel, guint stop_audio_channel,
-					guint start_pad, guint stop_pad,
-					gint position,
-					guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_seq_synth(AgsAudio *audio,
-					AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-					gchar *plugin_name,
-					gchar *filename,
-					gchar *effect,
-					guint start_audio_channel, guint stop_audio_channel,
-					guint start_pad, guint stop_pad,
-					gint position,
-					guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_raven_synth(AgsAudio *audio,
-					 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-					 gchar *plugin_name,
-					 gchar *filename,
-					 gchar *effect,
-					 guint start_audio_channel, guint stop_audio_channel,
-					 guint start_pad, guint stop_pad,
-					 gint position,
-					 guint create_flags, AgsRecallFlags recall_flags);
-
-GList* ags_fx_factory_create_modular_synth(AgsAudio *audio,
+static GList* ags_fx_factory_create_buffer(AgsAudio *audio,
 					   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					   gchar *plugin_name,
 					   gchar *filename,
@@ -471,50 +271,87 @@ GList* ags_fx_factory_create_modular_synth(AgsAudio *audio,
 					   gint position,
 					   guint create_flags, AgsRecallFlags recall_flags);
 
-GList* ags_fx_factory_create_ladspa(AgsAudio *audio,
-				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				    gchar *plugin_name,
-				    gchar *filename,
-				    gchar *effect,
-				    guint start_audio_channel, guint stop_audio_channel,
-				    guint start_pad, guint stop_pad,
-				    gint position,
-				    guint create_flags, AgsRecallFlags recall_flags);
+static GList* ags_fx_factory_create_volume(AgsAudio *audio,
+					   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					   gchar *plugin_name,
+					   gchar *filename,
+					   gchar *effect,
+					   guint start_audio_channel, guint stop_audio_channel,
+					   guint start_pad, guint stop_pad,
+					   gint position,
+					   guint create_flags, AgsRecallFlags recall_flags);
 
-GList* ags_fx_factory_create_dssi(AgsAudio *audio,
-				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				  gchar *plugin_name,
-				  gchar *filename,
-				  gchar *effect,
-				  guint start_audio_channel, guint stop_audio_channel,
-				  guint start_pad, guint stop_pad,
-				  gint position,
-				  guint create_flags, AgsRecallFlags recall_flags);
+static GList* ags_fx_factory_create_tremolo(AgsAudio *audio,
+					    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					    gchar *plugin_name,
+					    gchar *filename,
+					    gchar *effect,
+					    guint start_audio_channel, guint stop_audio_channel,
+					    guint start_pad, guint stop_pad,
+					    gint position,
+					    guint create_flags, AgsRecallFlags recall_flags);
 
-GList* ags_fx_factory_create_lv2(AgsAudio *audio,
-				 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				 gchar *plugin_name,
-				 gchar *filename,
-				 gchar *effect,
-				 guint start_audio_channel, guint stop_audio_channel,
-				 guint start_pad, guint stop_pad,
-				 gint position,
-				 guint create_flags, AgsRecallFlags recall_flags);
+static GList* ags_fx_factory_create_low_pass(AgsAudio *audio,
+					     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					     gchar *plugin_name,
+					     gchar *filename,
+					     gchar *effect,
+					     guint start_audio_channel, guint stop_audio_channel,
+					     guint start_pad, guint stop_pad,
+					     gint position,
+					     guint create_flags, AgsRecallFlags recall_flags);
 
-#if defined(AGS_WITH_VST3)
-GList* ags_fx_factory_create_vst3(AgsAudio *audio,
-				  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				  gchar *plugin_name,
-				  gchar *filename,
-				  gchar *effect,
-				  guint start_audio_channel, guint stop_audio_channel,
-				  guint start_pad, guint stop_pad,
-				  gint position,
-				  guint create_flags, AgsRecallFlags recall_flags);
-#endif
+static GList* ags_fx_factory_create_high_pass(AgsAudio *audio,
+					      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					      gchar *plugin_name,
+					      gchar *filename,
+					      gchar *effect,
+					      guint start_audio_channel, guint stop_audio_channel,
+					      guint start_pad, guint stop_pad,
+					      gint position,
+					      guint create_flags, AgsRecallFlags recall_flags);
 
-#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-GList* ags_fx_factory_create_audio_unit(AgsAudio *audio,
+static GList* ags_fx_factory_create_peak(AgsAudio *audio,
+					 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					 gchar *plugin_name,
+					 gchar *filename,
+					 gchar *effect,
+					 guint start_audio_channel, guint stop_audio_channel,
+					 guint start_pad, guint stop_pad,
+					 gint position,
+					 guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_eq10(AgsAudio *audio,
+					 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					 gchar *plugin_name,
+					 gchar *filename,
+					 gchar *effect,
+					 guint start_audio_channel, guint stop_audio_channel,
+					 guint start_pad, guint stop_pad,
+					 gint position,
+					 guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_analyse(AgsAudio *audio,
+					    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					    gchar *plugin_name,
+					    gchar *filename,
+					    gchar *effect,
+					    guint start_audio_channel, guint stop_audio_channel,
+					    guint start_pad, guint stop_pad,
+					    gint position,
+					    guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_two_pass_aliase(AgsAudio *audio,
+						    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+						    gchar *plugin_name,
+						    gchar *filename,
+						    gchar *effect,
+						    guint start_audio_channel, guint stop_audio_channel,
+						    guint start_pad, guint stop_pad,
+						    gint position,
+						    guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_lfo(AgsAudio *audio,
 					AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					gchar *plugin_name,
 					gchar *filename,
@@ -523,6 +360,179 @@ GList* ags_fx_factory_create_audio_unit(AgsAudio *audio,
 					guint start_pad, guint stop_pad,
 					gint position,
 					guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_envelope(AgsAudio *audio,
+					     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					     gchar *plugin_name,
+					     gchar *filename,
+					     gchar *effect,
+					     guint start_audio_channel, guint stop_audio_channel,
+					     guint start_pad, guint stop_pad,
+					     gint position,
+					     guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_wah_wah(AgsAudio *audio,
+					    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					    gchar *plugin_name,
+					    gchar *filename,
+					    gchar *effect,
+					    guint start_audio_channel, guint stop_audio_channel,
+					    guint start_pad, guint stop_pad,
+					    gint position,
+					    guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_pattern(AgsAudio *audio,
+					    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					    gchar *plugin_name,
+					    gchar *filename,
+					    gchar *effect,
+					    guint start_audio_channel, guint stop_audio_channel,
+					    guint start_pad, guint stop_pad,
+					    gint position,
+					    guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_notation(AgsAudio *audio,
+					     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					     gchar *plugin_name,
+					     gchar *filename,
+					     gchar *effect,
+					     guint start_audio_channel, guint stop_audio_channel,
+					     guint start_pad, guint stop_pad,
+					     gint position,
+					     guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_synth(AgsAudio *audio,
+					  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					  gchar *plugin_name,
+					  gchar *filename,
+					  gchar *effect,
+					  guint start_audio_channel, guint stop_audio_channel,
+					  guint start_pad, guint stop_pad,
+					  gint position,
+					  guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_fm_synth(AgsAudio *audio,
+					     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					     gchar *plugin_name,
+					     gchar *filename,
+					     gchar *effect,
+					     guint start_audio_channel, guint stop_audio_channel,
+					     guint start_pad, guint stop_pad,
+					     gint position,
+					     guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_sf2_synth(AgsAudio *audio,
+					      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					      gchar *plugin_name,
+					      gchar *filename,
+					      gchar *effect,
+					      guint start_audio_channel, guint stop_audio_channel,
+					      guint start_pad, guint stop_pad,
+					      gint position,
+					      guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_sfz_synth(AgsAudio *audio,
+					      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					      gchar *plugin_name,
+					      gchar *filename,
+					      gchar *effect,
+					      guint start_audio_channel, guint stop_audio_channel,
+					      guint start_pad, guint stop_pad,
+					      gint position,
+					      guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_star_synth(AgsAudio *audio,
+					       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					       gchar *plugin_name,
+					       gchar *filename,
+					       gchar *effect,
+					       guint start_audio_channel, guint stop_audio_channel,
+					       guint start_pad, guint stop_pad,
+					       gint position,
+					       guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_seq_synth(AgsAudio *audio,
+					      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					      gchar *plugin_name,
+					      gchar *filename,
+					      gchar *effect,
+					      guint start_audio_channel, guint stop_audio_channel,
+					      guint start_pad, guint stop_pad,
+					      gint position,
+					      guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_raven_synth(AgsAudio *audio,
+						AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+						gchar *plugin_name,
+						gchar *filename,
+						gchar *effect,
+						guint start_audio_channel, guint stop_audio_channel,
+						guint start_pad, guint stop_pad,
+						gint position,
+						guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_modular_synth(AgsAudio *audio,
+						  AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+						  gchar *plugin_name,
+						  gchar *filename,
+						  gchar *effect,
+						  guint start_audio_channel, guint stop_audio_channel,
+						  guint start_pad, guint stop_pad,
+						  gint position,
+						  guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_ladspa(AgsAudio *audio,
+					   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					   gchar *plugin_name,
+					   gchar *filename,
+					   gchar *effect,
+					   guint start_audio_channel, guint stop_audio_channel,
+					   guint start_pad, guint stop_pad,
+					   gint position,
+					   guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_dssi(AgsAudio *audio,
+					 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					 gchar *plugin_name,
+					 gchar *filename,
+					 gchar *effect,
+					 guint start_audio_channel, guint stop_audio_channel,
+					 guint start_pad, guint stop_pad,
+					 gint position,
+					 guint create_flags, AgsRecallFlags recall_flags);
+
+static GList* ags_fx_factory_create_lv2(AgsAudio *audio,
+					AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					gchar *plugin_name,
+					gchar *filename,
+					gchar *effect,
+					guint start_audio_channel, guint stop_audio_channel,
+					guint start_pad, guint stop_pad,
+					gint position,
+					guint create_flags, AgsRecallFlags recall_flags);
+
+#if defined(AGS_WITH_VST3)
+static GList* ags_fx_factory_create_vst3(AgsAudio *audio,
+					 AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					 gchar *plugin_name,
+					 gchar *filename,
+					 gchar *effect,
+					 guint start_audio_channel, guint stop_audio_channel,
+					 guint start_pad, guint stop_pad,
+					 gint position,
+					 guint create_flags, AgsRecallFlags recall_flags);
+#endif
+
+#if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
+static GList* ags_fx_factory_create_audio_unit(AgsAudio *audio,
+					       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					       gchar *plugin_name,
+					       gchar *filename,
+					       gchar *effect,
+					       guint start_audio_channel, guint stop_audio_channel,
+					       guint start_pad, guint stop_pad,
+					       gint position,
+					       guint create_flags, AgsRecallFlags recall_flags);
 #endif
 
 static gpointer ags_fx_factory_parent_class = NULL;

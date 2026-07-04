@@ -28,27 +28,27 @@
 
 #include <ags/i18n.h>
 
-void ags_apply_tact_class_init(AgsApplyTactClass *apply_tact);
-void ags_apply_tact_init(AgsApplyTact *apply_tact);
-void ags_apply_tact_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_apply_tact_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_apply_tact_dispose(GObject *gobject);
-void ags_apply_tact_finalize(GObject *gobject);
+static void ags_apply_tact_class_init(AgsApplyTactClass *apply_tact);
+static void ags_apply_tact_init(AgsApplyTact *apply_tact);
+static void ags_apply_tact_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_apply_tact_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_apply_tact_dispose(GObject *gobject);
+static void ags_apply_tact_finalize(GObject *gobject);
 
-void ags_apply_tact_launch(AgsTask *task);
+static void ags_apply_tact_launch(AgsTask *task);
 
-void ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall);
-void ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel);
-void ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio);
-void ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard);
-void ags_apply_tact_sequencer(AgsApplyTact *apply_tact, GObject *sequencer);
-void ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationContext *application_context);
+static void ags_apply_tact_recall(AgsApplyTact *apply_tact, AgsRecall *recall);
+static void ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel);
+static void ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio);
+static void ags_apply_tact_soundcard(AgsApplyTact *apply_tact, GObject *soundcard);
+static void ags_apply_tact_sequencer(AgsApplyTact *apply_tact, GObject *sequencer);
+static void ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationContext *application_context);
 
 /**
  * SECTION:ags_apply_tact

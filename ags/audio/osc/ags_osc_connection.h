@@ -108,6 +108,7 @@ struct _AgsOscConnectionClass
 };
 
 GType ags_osc_connection_get_type(void);
+GType ags_osc_connection_flags_get_type();
 
 gboolean ags_osc_connection_test_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags);
 void ags_osc_connection_set_flags(AgsOscConnection *osc_connection, AgsOscConnectionFlags flags);

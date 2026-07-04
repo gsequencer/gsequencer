@@ -34,31 +34,31 @@
 #include <stdlib.h>
 #include <ags/i18n.h>
 
-void ags_download_window_class_init(AgsDownloadWindowClass *download_window);
-void ags_download_window_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_download_window_init(AgsDownloadWindow *download_window);
-void ags_download_window_finalize(GObject *gobject);
+static void ags_download_window_class_init(AgsDownloadWindowClass *download_window);
+static void ags_download_window_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_download_window_init(AgsDownloadWindow *download_window);
+static void ags_download_window_finalize(GObject *gobject);
 
-gboolean ags_download_window_is_connected(AgsConnectable *connectable);
-void ags_download_window_connect(AgsConnectable *connectable);
-void ags_download_window_disconnect(AgsConnectable *connectable);
+static gboolean ags_download_window_is_connected(AgsConnectable *connectable);
+static void ags_download_window_connect(AgsConnectable *connectable);
+static void ags_download_window_disconnect(AgsConnectable *connectable);
 
-void ags_download_window_activate_button_callback(GtkButton *activate_button,
-						  AgsDownloadWindow *download_window);
+static void ags_download_window_activate_button_callback(GtkButton *activate_button,
+							 AgsDownloadWindow *download_window);
 
-gboolean ags_download_window_key_pressed_callback(GtkEventControllerKey *event_controller,
-						  guint keyval,
-						  guint keycode,
-						  GdkModifierType state,
-						  AgsDownloadWindow *download_window);
-void ags_download_window_key_released_callback(GtkEventControllerKey *event_controller,
-					       guint keyval,
-					       guint keycode,
-					       GdkModifierType state,
-					       AgsDownloadWindow *download_window);
-gboolean ags_download_window_modifiers_callback(GtkEventControllerKey *event_controller,
-						GdkModifierType keyval,
-						AgsDownloadWindow *download_window);
+static gboolean ags_download_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+							 guint keyval,
+							 guint keycode,
+							 GdkModifierType state,
+							 AgsDownloadWindow *download_window);
+static void ags_download_window_key_released_callback(GtkEventControllerKey *event_controller,
+						      guint keyval,
+						      guint keycode,
+						      GdkModifierType state,
+						      AgsDownloadWindow *download_window);
+static gboolean ags_download_window_modifiers_callback(GtkEventControllerKey *event_controller,
+						       GdkModifierType keyval,
+						       AgsDownloadWindow *download_window);
 
 /**
  * SECTION:ags_download_window

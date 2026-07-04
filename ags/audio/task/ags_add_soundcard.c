@@ -23,20 +23,20 @@
 
 #include <ags/i18n.h>
 
-void ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard);
-void ags_add_soundcard_init(AgsAddSoundcard *add_soundcard);
-void ags_add_soundcard_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_add_soundcard_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_add_soundcard_dispose(GObject *gobject);
-void ags_add_soundcard_finalize(GObject *gobject);
+static void ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard);
+static void ags_add_soundcard_init(AgsAddSoundcard *add_soundcard);
+static void ags_add_soundcard_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_add_soundcard_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_add_soundcard_dispose(GObject *gobject);
+static void ags_add_soundcard_finalize(GObject *gobject);
 
-void ags_add_soundcard_launch(AgsTask *task);
+static void ags_add_soundcard_launch(AgsTask *task);
 
 enum{
   PROP_0,

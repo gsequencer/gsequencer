@@ -37,38 +37,38 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_pattern_audio_processor_class_init(AgsFxPatternAudioProcessorClass *fx_pattern_audio_processor);
-void ags_fx_pattern_audio_processor_seekable_interface_init(AgsSeekableInterface *seekable);
-void ags_fx_pattern_audio_processor_countable_interface_init(AgsCountableInterface *countable);
-void ags_fx_pattern_audio_processor_tactable_interface_init(AgsTactableInterface *tactable);
-void ags_fx_pattern_audio_processor_init(AgsFxPatternAudioProcessor *fx_pattern_audio_processor);
-void ags_fx_pattern_audio_processor_dispose(GObject *gobject);
-void ags_fx_pattern_audio_processor_finalize(GObject *gobject);
+static void ags_fx_pattern_audio_processor_class_init(AgsFxPatternAudioProcessorClass *fx_pattern_audio_processor);
+static void ags_fx_pattern_audio_processor_seekable_interface_init(AgsSeekableInterface *seekable);
+static void ags_fx_pattern_audio_processor_countable_interface_init(AgsCountableInterface *countable);
+static void ags_fx_pattern_audio_processor_tactable_interface_init(AgsTactableInterface *tactable);
+static void ags_fx_pattern_audio_processor_init(AgsFxPatternAudioProcessor *fx_pattern_audio_processor);
+static void ags_fx_pattern_audio_processor_dispose(GObject *gobject);
+static void ags_fx_pattern_audio_processor_finalize(GObject *gobject);
 
-void ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
-					 gint64 offset,
-					 guint whence);
+static void ags_fx_pattern_audio_processor_seek(AgsSeekable *seekable,
+						gint64 offset,
+						guint whence);
 
-guint64 ags_fx_pattern_audio_processor_get_sequencer_counter(AgsCountable *countable);
+static guint64 ags_fx_pattern_audio_processor_get_sequencer_counter(AgsCountable *countable);
 
-gdouble ags_fx_pattern_audio_processor_get_bpm(AgsTactable *tactable);
-gdouble ags_fx_pattern_audio_processor_get_tact(AgsTactable *tactable);
-void ags_fx_pattern_audio_processor_change_sequencer_duration(AgsTactable *tactable, guint64 length);
-void ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
-void ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
+static gdouble ags_fx_pattern_audio_processor_get_bpm(AgsTactable *tactable);
+static gdouble ags_fx_pattern_audio_processor_get_tact(AgsTactable *tactable);
+static void ags_fx_pattern_audio_processor_change_sequencer_duration(AgsTactable *tactable, guint64 length);
+static void ags_fx_pattern_audio_processor_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
+static void ags_fx_pattern_audio_processor_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact);
 
-void ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall);
-void ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall);
-void ags_fx_pattern_audio_processor_done(AgsRecall *recall);
+static void ags_fx_pattern_audio_processor_run_init_pre(AgsRecall *recall);
+static void ags_fx_pattern_audio_processor_run_inter(AgsRecall *recall);
+static void ags_fx_pattern_audio_processor_done(AgsRecall *recall);
 
-void ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_pattern_audio_processor,
-						AgsNote *note,
-						guint velocity,
-						guint key_mode);
+static void ags_fx_pattern_audio_processor_real_key_on(AgsFxPatternAudioProcessor *fx_pattern_audio_processor,
+						       AgsNote *note,
+						       guint velocity,
+						       guint key_mode);
 
-void ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_audio_processor);
+static void ags_fx_pattern_audio_processor_real_play(AgsFxPatternAudioProcessor *fx_pattern_audio_processor);
 
-void ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *fx_pattern_audio_processor);
+static void ags_fx_pattern_audio_processor_real_counter_change(AgsFxPatternAudioProcessor *fx_pattern_audio_processor);
 
 /**
  * SECTION:ags_fx_pattern_audio_processor

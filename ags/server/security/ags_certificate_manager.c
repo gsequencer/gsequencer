@@ -21,9 +21,9 @@
 
 #include <ags/server/security/ags_auth_security_context.h>
 
-void ags_certificate_manager_class_init(AgsCertificateManagerClass *certificate_manager);
-void ags_certificate_manager_init (AgsCertificateManager *certificate_manager);
-void ags_certificate_manager_finalize(GObject *gobject);
+static void ags_certificate_manager_class_init(AgsCertificateManagerClass *certificate_manager);
+static void ags_certificate_manager_init (AgsCertificateManager *certificate_manager);
+static void ags_certificate_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_certificate_manager
@@ -37,7 +37,7 @@ void ags_certificate_manager_finalize(GObject *gobject);
 
 static gpointer ags_certificate_manager_parent_class = NULL;
 
-AgsCertificateManager *ags_certificate_manager = NULL;
+static AgsCertificateManager *ags_certificate_manager = NULL;
 
 GType
 ags_certificate_manager_get_type (void)

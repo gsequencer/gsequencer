@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_ladspa_audio_class_init(AgsFxLadspaAudioClass *fx_ladspa_audio);
-void ags_fx_ladspa_audio_init(AgsFxLadspaAudio *fx_ladspa_audio);
-void ags_fx_ladspa_audio_dispose(GObject *gobject);
-void ags_fx_ladspa_audio_finalize(GObject *gobject);
+static void ags_fx_ladspa_audio_class_init(AgsFxLadspaAudioClass *fx_ladspa_audio);
+static void ags_fx_ladspa_audio_init(AgsFxLadspaAudio *fx_ladspa_audio);
+static void ags_fx_ladspa_audio_dispose(GObject *gobject);
+static void ags_fx_ladspa_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_ladspa_audio
@@ -38,13 +38,13 @@ void ags_fx_ladspa_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_ladspa_audio_parent_class = NULL;
 
-const gchar *ags_fx_ladspa_audio_plugin_name = "ags-fx-ladspa";
+static const gchar *ags_fx_ladspa_audio_plugin_name = "ags-fx-ladspa";
 
-const gchar *ags_fx_ladspa_audio_specifier[] = {
+static const gchar *ags_fx_ladspa_audio_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_ladspa_audio_control_port[] = {
+static const gchar *ags_fx_ladspa_audio_control_port[] = {
   NULL,
 };
 

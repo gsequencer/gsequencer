@@ -21,20 +21,20 @@
 
 #include <ags/i18n.h>
 
-void ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels);
-void ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels);
-void ags_set_audio_channels_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_set_audio_channels_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_set_audio_channels_dispose(GObject *gobject);
-void ags_set_audio_channels_finalize(GObject *gobject);
+static void ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels);
+static void ags_set_audio_channels_init(AgsSetAudioChannels *set_audio_channels);
+static void ags_set_audio_channels_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_set_audio_channels_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_set_audio_channels_dispose(GObject *gobject);
+static void ags_set_audio_channels_finalize(GObject *gobject);
 
-void ags_set_audio_channels_launch(AgsTask *task);
+static void ags_set_audio_channels_launch(AgsTask *task);
 
 /**
  * SECTION:ags_set_audio_channels

@@ -23,19 +23,19 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_alsa_mixer_audio_class_init(AgsFxAlsa_MixerAudioClass *fx_alsa_mixer_audio);
-void ags_fx_alsa_mixer_audio_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_fx_alsa_mixer_audio_init(AgsFxAlsa_MixerAudio *fx_alsa_mixer_audio);
-void ags_fx_alsa_mixer_audio_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_fx_alsa_mixer_audio_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_fx_alsa_mixer_audio_dispose(GObject *gobject);
-void ags_fx_alsa_mixer_audio_finalize(GObject *gobject);
+static void ags_fx_alsa_mixer_audio_class_init(AgsFxAlsa_MixerAudioClass *fx_alsa_mixer_audio);
+static void ags_fx_alsa_mixer_audio_mutable_interface_init(AgsMutableInterface *mutable);
+static void ags_fx_alsa_mixer_audio_init(AgsFxAlsa_MixerAudio *fx_alsa_mixer_audio);
+static void ags_fx_alsa_mixer_audio_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_fx_alsa_mixer_audio_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_fx_alsa_mixer_audio_dispose(GObject *gobject);
+static void ags_fx_alsa_mixer_audio_finalize(GObject *gobject);
 
 static AgsPluginPort* ags_fx_alsa_mixer_audio_get_muted_plugin_port();
 
@@ -51,9 +51,9 @@ static AgsPluginPort* ags_fx_alsa_mixer_audio_get_muted_plugin_port();
 
 static gpointer ags_fx_alsa_mixer_audio_parent_class = NULL;
 
-const gchar *ags_fx_alsa_mixer_audio_plugin_name = "ags-fx-alsa-mixer";
+static const gchar *ags_fx_alsa_mixer_audio_plugin_name = "ags-fx-alsa-mixer";
 
-const gchar* ags_fx_alsa_mixer_audio_specifier[] = {
+static const gchar* ags_fx_alsa_mixer_audio_specifier[] = {
   "./master-volume[0]",
   "./master-muted[0]",
   "./pcm-volume[0]",
@@ -65,7 +65,7 @@ const gchar* ags_fx_alsa_mixer_audio_specifier[] = {
   NULL,
 };
 
-gchar* ags_fx_alsa_mixer_audio_control_port[] = NULL;
+static gchar* ags_fx_alsa_mixer_audio_control_port[] = NULL;
 
 enum{
   PROP_0,

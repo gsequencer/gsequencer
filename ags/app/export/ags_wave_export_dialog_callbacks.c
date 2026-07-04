@@ -23,7 +23,7 @@
 
 #include <ags/i18n.h>
 
-void ags_wave_export_dialog_file_open_response_callback(AgsFileDialog *file_dialog,
+static void ags_wave_export_dialog_file_open_response_callback(AgsFileDialog *file_dialog,
 							gint response,
 							AgsWaveExportDialog *wave_export_dialog);
 

@@ -30,100 +30,100 @@
 #include <stdlib.h>
 #include <math.h>
 
-void ags_dial_class_init(AgsDialClass *dial);
-void ags_dial_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
-void ags_dial_init(AgsDial *dial);
-void ags_dial_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_dial_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_dial_dispose(GObject *gobject);
-void ags_dial_finalize(GObject *gobject);
+static void ags_dial_class_init(AgsDialClass *dial);
+static void ags_dial_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
+static void ags_dial_init(AgsDial *dial);
+static void ags_dial_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_dial_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_dial_dispose(GObject *gobject);
+static void ags_dial_finalize(GObject *gobject);
 
-void ags_dial_realize(GtkWidget *widget);
-void ags_dial_unrealize(GtkWidget *widget);
+static void ags_dial_realize(GtkWidget *widget);
+static void ags_dial_unrealize(GtkWidget *widget);
 
-void ags_dial_measure(GtkWidget *widget,
-		      GtkOrientation orientation,
-		      int for_size,
-		      int *minimum,
-		      int *natural,
-		      int *minimum_baseline,
-		      int *natural_baseline);
-void ags_dial_size_allocate(GtkWidget *widget,
-			    int width,
-			    int height,
-			    int baseline);
+static void ags_dial_measure(GtkWidget *widget,
+			     GtkOrientation orientation,
+			     int for_size,
+			     int *minimum,
+			     int *natural,
+			     int *minimum_baseline,
+			     int *natural_baseline);
+static void ags_dial_size_allocate(GtkWidget *widget,
+				   int width,
+				   int height,
+				   int baseline);
 
-gboolean ags_dial_set_current_value(GtkAccessibleRange *accessible_range,
-				    gdouble current_value);
+static gboolean ags_dial_set_current_value(GtkAccessibleRange *accessible_range,
+					   gdouble current_value);
 
-void ags_dial_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					  AgsDial *dial);
+static void ags_dial_frame_clock_update_callback(GdkFrameClock *frame_clock,
+						 AgsDial *dial);
 
-void ags_dial_snapshot(GtkWidget *widget,
-		       GtkSnapshot *snapshot);
+static void ags_dial_snapshot(GtkWidget *widget,
+			      GtkSnapshot *snapshot);
 
-gboolean ags_dial_button_press_is_down_event(AgsDial *dial,
-					     gdouble x, gdouble y,
-					     gint padding_left, gint padding_top);
-gboolean ags_dial_button_press_is_up_event(AgsDial *dial,
-					   gdouble x, gdouble y,
-					   gint padding_left, gint padding_top);
-gboolean ags_dial_button_press_is_dial_event(AgsDial *dial,
-					     gdouble x, gdouble y,
-					     gint padding_left, gint padding_top,
-					     gint dial_left_position);
+static gboolean ags_dial_button_press_is_down_event(AgsDial *dial,
+						    gdouble x, gdouble y,
+						    gint padding_left, gint padding_top);
+static gboolean ags_dial_button_press_is_up_event(AgsDial *dial,
+						  gdouble x, gdouble y,
+						  gint padding_left, gint padding_top);
+static gboolean ags_dial_button_press_is_dial_event(AgsDial *dial,
+						    gdouble x, gdouble y,
+						    gint padding_left, gint padding_top,
+						    gint dial_left_position);
 
-void ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-					     gint n_press,
-					     gdouble x,
-					     gdouble y,
-					     AgsDial *dial);
-void ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
-					      gint n_press,
-					      gdouble x,
-					      gdouble y,
+static void ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+						    gint n_press,
+						    gdouble x,
+						    gdouble y,
+						    AgsDial *dial);
+static void ags_dial_gesture_click_released_callback(GtkGestureClick *event_controller,
+						     gint n_press,
+						     gdouble x,
+						     gdouble y,
+						     AgsDial *dial);
+
+static gboolean ags_dial_key_pressed_callback(GtkEventControllerKey *event_controller,
+					      guint keyval,
+					      guint keycode,
+					      GdkModifierType state,
 					      AgsDial *dial);
+static void ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
+					   guint keyval,
+					   guint keycode,
+					   GdkModifierType state,
+					   AgsDial *dial);
+static gboolean ags_dial_modifiers_callback(GtkEventControllerKey *event_controller,
+					    GdkModifierType keyval,
+					    AgsDial *dial);
 
-gboolean ags_dial_key_pressed_callback(GtkEventControllerKey *event_controller,
-				       guint keyval,
-				       guint keycode,
-				       GdkModifierType state,
-				       AgsDial *dial);
-void ags_dial_key_released_callback(GtkEventControllerKey *event_controller,
-				    guint keyval,
-				    guint keycode,
-				    GdkModifierType state,
-				    AgsDial *dial);
-gboolean ags_dial_modifiers_callback(GtkEventControllerKey *event_controller,
-				     GdkModifierType keyval,
+static void ags_dial_motion_notify_do_dial(AgsDial *dial,
+					   gdouble x,
+					   gdouble y);
+static void ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
+						    gdouble x,
+						    gdouble y);
+
+static void ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
+				     gdouble x,
+				     gdouble y,
 				     AgsDial *dial);
 
-void ags_dial_motion_notify_do_dial(AgsDial *dial,
-				    gdouble x,
-				    gdouble y);
-void ags_dial_motion_notify_do_seemless_dial(AgsDial *dial,
-					     gdouble x,
-					     gdouble y);
+static void ags_dial_draw(AgsDial *dial,
+			  cairo_t *cr,
+			  gboolean is_animation);
 
-void ags_dial_motion_callback(GtkEventControllerMotion *event_controller,
-			      gdouble x,
-			      gdouble y,
-			      AgsDial *dial);
-
-void ags_dial_draw(AgsDial *dial,
-		   cairo_t *cr,
-		   gboolean is_animation);
-
-void ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
-					  AgsDial *dial);
-void ags_dial_adjustment_value_changed_callback(GtkAdjustment *adjustment,
-						AgsDial *dial);
+static void ags_dial_adjustment_changed_callback(GtkAdjustment *adjustment,
+						 AgsDial *dial);
+static void ags_dial_adjustment_value_changed_callback(GtkAdjustment *adjustment,
+						       AgsDial *dial);
 
 /**
  * SECTION:ags_dial
@@ -978,7 +978,7 @@ ags_dial_gesture_click_pressed_callback(GtkGestureClick *event_controller,
   radius = (gdouble) dial->radius;
   outline_strength = (gdouble) dial->outline_strength;
 
-  width = 2 * (button_height + radius + outline_strength + 2) + (margin_left + margin_right);
+  width = 2 * (button_width + radius + outline_strength + 2) + (margin_left + margin_right);
   height = 2 * (radius + outline_strength + 1);
 
   padding_top = (widget_height - height + 2) / 2;
@@ -1575,12 +1575,12 @@ ags_dial_draw(AgsDial *dial,
     g_object_get(settings,
 		 "gtk-font-name", &font_name,
 		 NULL);
-
+    
     ags_dial_set_font_name(dial,
 			   font_name);
-  }else{
-    font_name = dial->font_name;
   }
+
+  font_name = dial->font_name;
 
   if(font_name == NULL){
     font_name = "sans";

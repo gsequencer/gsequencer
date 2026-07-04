@@ -30,38 +30,38 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_class_init(AgsMachineClass *machine);
-void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_init(AgsMachine *machine);
-void ags_machine_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec);
-void ags_machine_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec);
+static void ags_machine_class_init(AgsMachineClass *machine);
+static void ags_machine_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_init(AgsMachine *machine);
+static void ags_machine_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+static void ags_machine_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 static void ags_machine_finalize(GObject *gobject);
 
-gboolean ags_machine_is_connected(AgsConnectable *connectable);
-void ags_machine_connect(AgsConnectable *connectable);
-void ags_machine_disconnect(AgsConnectable *connectable);
+static gboolean ags_machine_is_connected(AgsConnectable *connectable);
+static void ags_machine_connect(AgsConnectable *connectable);
+static void ags_machine_disconnect(AgsConnectable *connectable);
 
-void ags_machine_real_resize_audio_channels(AgsMachine *machine,
-					    guint new_size, guint old_size);
-void ags_machine_real_resize_pads(AgsMachine *machine,
-				  GType channel_type,
-				  guint new_size, guint old_size);
-void ags_machine_real_map_recall(AgsMachine *machine);
-GList* ags_machine_real_find_port(AgsMachine *machine);
+static void ags_machine_real_resize_audio_channels(AgsMachine *machine,
+						   guint new_size, guint old_size);
+static void ags_machine_real_resize_pads(AgsMachine *machine,
+					 GType channel_type,
+					 guint new_size, guint old_size);
+static void ags_machine_real_map_recall(AgsMachine *machine);
+static GList* ags_machine_real_find_port(AgsMachine *machine);
 
-void ags_machine_real_apply_preset(AgsMachine *machine,
-				   GtkListStore *list_store);
-void ags_machine_real_refresh_port(AgsMachine *machine);
+static void ags_machine_real_apply_preset(AgsMachine *machine,
+					  GtkListStore *list_store);
+static void ags_machine_real_refresh_port(AgsMachine *machine);
 
-xmlNode* ags_machine_copy_pattern_to_notation(AgsMachine *machine,
-					      AgsChannel *start_current,
-					      guint input_pads);
+static xmlNode* ags_machine_copy_pattern_to_notation(AgsMachine *machine,
+						     AgsChannel *start_current,
+						     guint input_pads);
 
 
 

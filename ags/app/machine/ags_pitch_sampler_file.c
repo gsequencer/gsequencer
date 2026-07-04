@@ -27,13 +27,13 @@
 
 #include <ags/i18n.h>
 
-void ags_pitch_sampler_file_class_init(AgsPitchSamplerFileClass *pitch_sampler_file);
-void ags_pitch_sampler_file_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file);
+static void ags_pitch_sampler_file_class_init(AgsPitchSamplerFileClass *pitch_sampler_file);
+static void ags_pitch_sampler_file_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_pitch_sampler_file_init(AgsPitchSamplerFile *pitch_sampler_file);
 
-gboolean ags_pitch_sampler_file_is_connected(AgsConnectable *connectable);
-void ags_pitch_sampler_file_connect(AgsConnectable *connectable);
-void ags_pitch_sampler_file_disconnect(AgsConnectable *connectable);
+static gboolean ags_pitch_sampler_file_is_connected(AgsConnectable *connectable);
+static void ags_pitch_sampler_file_connect(AgsConnectable *connectable);
+static void ags_pitch_sampler_file_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_pitch_sampler_file

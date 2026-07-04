@@ -24,9 +24,9 @@
 
 #include <stdlib.h>
 
-void ags_log_class_init(AgsLogClass *log);
-void ags_log_init (AgsLog *log);
-void ags_log_finalize(GObject *gobject);
+static void ags_log_class_init(AgsLogClass *log);
+static void ags_log_init (AgsLog *log);
+static void ags_log_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_log
@@ -39,7 +39,7 @@ void ags_log_finalize(GObject *gobject);
  */
 
 static gpointer ags_log_parent_class = NULL;
-AgsLog *ags_log = NULL;
+static AgsLog *ags_log = NULL;
 
 GType
 ags_log_get_type(void)

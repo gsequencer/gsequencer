@@ -32,7 +32,7 @@
 
 /**
  * SECTION:ags_uuid
- * @short_description: boxed type of uuid
+ * @short_description: boxed type of UUID
  * @title: AgsUUID
  * @section_id:
  * @include: ags/lib/ags_uuid.h

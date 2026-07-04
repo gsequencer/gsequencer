@@ -24,37 +24,37 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_composite_editor.h>
 
-void ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer);
-void ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_spectrometer_init(AgsSpectrometer *spectrometer);
-void ags_spectrometer_finalize(GObject *gobject);
+static void ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer);
+static void ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_spectrometer_init(AgsSpectrometer *spectrometer);
+static void ags_spectrometer_finalize(GObject *gobject);
 
-void ags_spectrometer_map_recall(AgsMachine *machine);
+static void ags_spectrometer_map_recall(AgsMachine *machine);
 
-void ags_spectrometer_connect(AgsConnectable *connectable);
-void ags_spectrometer_disconnect(AgsConnectable *connectable);
+static void ags_spectrometer_connect(AgsConnectable *connectable);
+static void ags_spectrometer_disconnect(AgsConnectable *connectable);
 
-void ags_spectrometer_resize_audio_channels_callback(AgsMachine *machine,
-						     guint audio_channels, guint audio_channels_old,
-						     gpointer data);
-void ags_spectrometer_resize_pads_callback(AgsMachine *machine,
-					   GType channel_type,
-					   guint pads, guint pads_old,
-					   gpointer data);
+static void ags_spectrometer_resize_audio_channels_callback(AgsMachine *machine,
+							    guint audio_channels, guint audio_channels_old,
+							    gpointer data);
+static void ags_spectrometer_resize_pads_callback(AgsMachine *machine,
+						  GType channel_type,
+						  guint pads, guint pads_old,
+						  gpointer data);
 
-void ags_spectrometer_buffer_size_changed_callback(AgsMachine *machine,
-						   guint buffer_size, guint old_buffer_size,
+static void ags_spectrometer_buffer_size_changed_callback(AgsMachine *machine,
+							  guint buffer_size, guint old_buffer_size,
+							  gpointer data);
+
+static gdouble ags_spectrometer_x_small_scale_func(gdouble value,
 						   gpointer data);
+static gdouble ags_spectrometer_x_big_scale_func(gdouble value,
+						 gpointer data);
 
-gdouble ags_spectrometer_x_small_scale_func(gdouble value,
+static gchar* ags_spectrometer_x_label_func(gdouble value,
 					    gpointer data);
-gdouble ags_spectrometer_x_big_scale_func(gdouble value,
-					  gpointer data);
-
-gchar* ags_spectrometer_x_label_func(gdouble value,
-				     gpointer data);
-gchar* ags_spectrometer_y_label_func(gdouble value,
-				     gpointer data);
+static gchar* ags_spectrometer_y_label_func(gdouble value,
+					    gpointer data);
 
 /**
  * SECTION:ags_spectrometer

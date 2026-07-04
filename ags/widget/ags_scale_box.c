@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
-* Copyright (C) 2005-2026 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,17 +23,17 @@
 
 #include <ags/i18n.h>
 
-void ags_scale_box_class_init(AgsScaleBoxClass *scale_box);
-void ags_scale_box_init(AgsScaleBox *scale_box);
-void ags_scale_box_dispose(GObject *gobject);
-void ags_scale_box_finalize(GObject *gobject);
+static void ags_scale_box_class_init(AgsScaleBoxClass *scale_box);
+static void ags_scale_box_init(AgsScaleBox *scale_box);
+static void ags_scale_box_dispose(GObject *gobject);
+static void ags_scale_box_finalize(GObject *gobject);
 
-void ags_scale_box_notify_width_request_callback(GObject *gobject,
-						 GParamSpec *pspec,
-						 AgsScaleBox *scale_box);
-void ags_scale_box_notify_height_request_callback(GObject *gobject,
-						  GParamSpec *pspec,
-						  AgsScaleBox *scale_box);
+static void ags_scale_box_notify_width_request_callback(GObject *gobject,
+							GParamSpec *pspec,
+							AgsScaleBox *scale_box);
+static void ags_scale_box_notify_height_request_callback(GObject *gobject,
+							 GParamSpec *pspec,
+							 AgsScaleBox *scale_box);
 
 /**
  * SECTION:ags_scale_box

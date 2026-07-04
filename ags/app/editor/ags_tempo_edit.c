@@ -38,123 +38,123 @@
 
 #include <ags/i18n.h>
 
-void ags_tempo_edit_class_init(AgsTempoEditClass *tempo_edit);
-void ags_tempo_edit_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_tempo_edit_init(AgsTempoEdit *tempo_edit);
-void ags_tempo_edit_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_tempo_edit_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_tempo_edit_dispose(GObject *gobject);
-void ags_tempo_edit_finalize(GObject *gobject);
+static void ags_tempo_edit_class_init(AgsTempoEditClass *tempo_edit);
+static void ags_tempo_edit_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_tempo_edit_init(AgsTempoEdit *tempo_edit);
+static void ags_tempo_edit_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_tempo_edit_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_tempo_edit_dispose(GObject *gobject);
+static void ags_tempo_edit_finalize(GObject *gobject);
 
-gboolean ags_tempo_edit_is_connected(AgsConnectable *connectable);
-void ags_tempo_edit_connect(AgsConnectable *connectable);
-void ags_tempo_edit_disconnect(AgsConnectable *connectable);
+static gboolean ags_tempo_edit_is_connected(AgsConnectable *connectable);
+static void ags_tempo_edit_connect(AgsConnectable *connectable);
+static void ags_tempo_edit_disconnect(AgsConnectable *connectable);
 
-void ags_tempo_edit_realize(GtkWidget *widget);
-void ags_tempo_edit_unrealize(GtkWidget *widget);
+static void ags_tempo_edit_realize(GtkWidget *widget);
+static void ags_tempo_edit_unrealize(GtkWidget *widget);
 
-void ags_tempo_edit_measure(GtkWidget *widget,
-			    GtkOrientation orientation,
-			    int for_size,
-			    int *minimum,
-			    int *natural,
-			    int *minimum_baseline,
-			    int *natural_baseline);
-void ags_tempo_edit_size_allocate(GtkWidget *widget,
-				  int width,
-				  int height,
-				  int baseline);
+static void ags_tempo_edit_measure(GtkWidget *widget,
+				   GtkOrientation orientation,
+				   int for_size,
+				   int *minimum,
+				   int *natural,
+				   int *minimum_baseline,
+				   int *natural_baseline);
+static void ags_tempo_edit_size_allocate(GtkWidget *widget,
+					 int width,
+					 int height,
+					 int baseline);
 
-void ags_tempo_edit_show(GtkWidget *widget);
+static void ags_tempo_edit_show(GtkWidget *widget);
 
-void ags_tempo_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
-						AgsTempoEdit *tempo_edit);
+static void ags_tempo_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
+						       AgsTempoEdit *tempo_edit);
 
-void ags_tempo_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
-							      GtkWidget *toolbar,
-							      AgsTempoEdit *tempo_edit,
-							      gint n_press,
-							      gdouble x, gdouble y);
-void ags_tempo_edit_drawing_area_button_press_add_marker(GtkWidget *editor,
-							 GtkWidget *toolbar,
-							 AgsTempoEdit *tempo_edit,
-							 gint n_press,
-							 gdouble x, gdouble y);
-void ags_tempo_edit_drawing_area_button_press_select_marker(GtkWidget *editor,
-							    GtkWidget *toolbar,
-							    AgsTempoEdit *tempo_edit,
-							    gint n_press,
-							    gdouble x, gdouble y);
-
-void ags_tempo_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
+static void ags_tempo_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
+								     GtkWidget *toolbar,
+								     AgsTempoEdit *tempo_edit,
+								     gint n_press,
+								     gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_button_press_add_marker(GtkWidget *editor,
 								GtkWidget *toolbar,
 								AgsTempoEdit *tempo_edit,
-								gint n_press, gdouble x, gdouble y);
-void ags_tempo_edit_drawing_area_button_release_add_marker(GtkWidget *editor,
-							   GtkWidget *toolbar,
-							   AgsTempoEdit *tempo_edit,
-							   gint n_press,
-							   gdouble x, gdouble y);
-void ags_tempo_edit_drawing_area_button_release_delete_marker(GtkWidget *editor,
-							      GtkWidget *toolbar,
-							      AgsTempoEdit *tempo_edit,
+								gint n_press,
+								gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_button_press_select_marker(GtkWidget *editor,
+								   GtkWidget *toolbar,
+								   AgsTempoEdit *tempo_edit,
+								   gint n_press,
+								   gdouble x, gdouble y);
+
+static void ags_tempo_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
+								       GtkWidget *toolbar,
+								       AgsTempoEdit *tempo_edit,
+								       gint n_press, gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_button_release_add_marker(GtkWidget *editor,
+								  GtkWidget *toolbar,
+								  AgsTempoEdit *tempo_edit,
+								  gint n_press,
+								  gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_button_release_delete_marker(GtkWidget *editor,
+								     GtkWidget *toolbar,
+								     AgsTempoEdit *tempo_edit,
+								     gint n_press,
+								     gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_button_release_select_marker(GtkWidget *editor,
+								     GtkWidget *toolbar,
+								     AgsTempoEdit *tempo_edit,
+								     gint n_press,
+								     gdouble x, gdouble y);
+
+static gboolean ags_tempo_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 							      gint n_press,
-							      gdouble x, gdouble y);
-void ags_tempo_edit_drawing_area_button_release_select_marker(GtkWidget *editor,
-							      GtkWidget *toolbar,
-							      AgsTempoEdit *tempo_edit,
-							      gint n_press,
-							      gdouble x, gdouble y);
+							      gdouble x,
+							      gdouble y,
+							      AgsTempoEdit *tempo_edit);
+static gboolean ags_tempo_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
+							       gint n_press,
+							       gdouble x,
+							       gdouble y,
+							       AgsTempoEdit *tempo_edit);
 
-gboolean ags_tempo_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						       gint n_press,
-						       gdouble x,
-						       gdouble y,
-						       AgsTempoEdit *tempo_edit);
-gboolean ags_tempo_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
-							gint n_press,
-							gdouble x,
-							gdouble y,
-							AgsTempoEdit *tempo_edit);
-
-gboolean ags_tempo_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
-					     guint keyval,
-					     guint keycode,
-					     GdkModifierType state,
-					     AgsTempoEdit *tempo_edit);
-gboolean ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
-					      guint keyval,
-					      guint keycode,
-					      GdkModifierType state,
-					      AgsTempoEdit *tempo_edit);
-gboolean ags_tempo_edit_modifiers_callback(GtkEventControllerKey *event_controller,
-					   GdkModifierType keyval,
-					   AgsTempoEdit *tempo_edit);
+static gboolean ags_tempo_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
+						    guint keyval,
+						    guint keycode,
+						    GdkModifierType state,
+						    AgsTempoEdit *tempo_edit);
+static gboolean ags_tempo_edit_key_released_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsTempoEdit *tempo_edit);
+static gboolean ags_tempo_edit_modifiers_callback(GtkEventControllerKey *event_controller,
+						  GdkModifierType keyval,
+						  AgsTempoEdit *tempo_edit);
 
 
-void ags_tempo_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
-							       GtkWidget *toolbar,
-							       AgsTempoEdit *tempo_edit,
-							       gdouble x, gdouble y);
-void ags_tempo_edit_drawing_area_motion_notify_add_marker(GtkWidget *editor,
-							  GtkWidget *toolbar,
-							  AgsTempoEdit *tempo_edit,
-							  gdouble x, gdouble y);
-void ags_tempo_edit_drawing_area_motion_notify_select_marker(GtkWidget *editor,
-							     GtkWidget *toolbar,
-							     AgsTempoEdit *tempo_edit,
-							     gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
+								      GtkWidget *toolbar,
+								      AgsTempoEdit *tempo_edit,
+								      gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_motion_notify_add_marker(GtkWidget *editor,
+								 GtkWidget *toolbar,
+								 AgsTempoEdit *tempo_edit,
+								 gdouble x, gdouble y);
+static void ags_tempo_edit_drawing_area_motion_notify_select_marker(GtkWidget *editor,
+								    GtkWidget *toolbar,
+								    AgsTempoEdit *tempo_edit,
+								    gdouble x, gdouble y);
 
-gboolean ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
-					gdouble x,
-					gdouble y,
-					AgsTempoEdit *tempo_edit);
+static gboolean ags_tempo_edit_motion_callback(GtkEventControllerMotion *event_controller,
+					       gdouble x,
+					       gdouble y,
+					       AgsTempoEdit *tempo_edit);
 
 /**
  * SECTION:ags_tempo_edit

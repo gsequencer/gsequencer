@@ -25,8 +25,8 @@
 #include <string.h>
 #include <math.h>
 
-gpointer ags_buffer_util_copy(gpointer ptr);
-void ags_buffer_util_free(gpointer ptr);
+static gpointer ags_buffer_util_copy(gpointer ptr);
+static void ags_buffer_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_buffer_util

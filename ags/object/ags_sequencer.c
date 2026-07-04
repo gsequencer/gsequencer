@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-void ags_sequencer_class_init(AgsSequencerInterface *ginterface);
+static void ags_sequencer_class_init(AgsSequencerInterface *ginterface);
 
 /**
  * SECTION:ags_sequencer

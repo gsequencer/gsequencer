@@ -38,25 +38,25 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection);
-void ags_osc_connection_init(AgsOscConnection *osc_connection);
-void ags_osc_connection_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_osc_connection_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_osc_connection_dispose(GObject *gobject);
-void ags_osc_connection_finalize(GObject *gobject);
+static void ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection);
+static void ags_osc_connection_init(AgsOscConnection *osc_connection);
+static void ags_osc_connection_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_osc_connection_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_osc_connection_dispose(GObject *gobject);
+static void ags_osc_connection_finalize(GObject *gobject);
 
-guchar* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
+static guchar* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 						  guint *data_length);
-gint64 ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
-					      GObject *osc_response);
+static gint64 ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
+						     GObject *osc_response);
 
-void ags_osc_connection_real_close(AgsOscConnection *osc_connection);
+static void ags_osc_connection_real_close(AgsOscConnection *osc_connection);
 
 /**
  * SECTION:ags_osc_connection

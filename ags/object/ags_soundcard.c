@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-void ags_soundcard_class_init(AgsSoundcardInterface *ginterface);
+static void ags_soundcard_class_init(AgsSoundcardInterface *ginterface);
 
 /**
  * SECTION:ags_soundcard

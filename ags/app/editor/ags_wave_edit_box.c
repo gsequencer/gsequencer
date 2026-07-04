@@ -23,17 +23,17 @@
 
 #include <ags/i18n.h>
 
-void ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box);
-void ags_wave_edit_box_init(AgsWaveEditBox *wave_edit_box);
-void ags_wave_edit_box_dispose(GObject *gobject);
-void ags_wave_edit_box_finalize(GObject *gobject);
+static void ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box);
+static void ags_wave_edit_box_init(AgsWaveEditBox *wave_edit_box);
+static void ags_wave_edit_box_dispose(GObject *gobject);
+static void ags_wave_edit_box_finalize(GObject *gobject);
 
-void ags_wave_edit_box_notify_width_request_callback(GObject *gobject,
-						     GParamSpec *pspec,
-						     AgsWaveEditBox *wave_edit_box);
-void ags_wave_edit_box_notify_height_request_callback(GObject *gobject,
-						      GParamSpec *pspec,
-						      AgsWaveEditBox *wave_edit_box);
+static void ags_wave_edit_box_notify_width_request_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    AgsWaveEditBox *wave_edit_box);
+static void ags_wave_edit_box_notify_height_request_callback(GObject *gobject,
+							     GParamSpec *pspec,
+							     AgsWaveEditBox *wave_edit_box);
 
 /**
  * SECTION:ags_wave_edit_box

@@ -26,32 +26,32 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
-void ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_container_init(AgsRecallContainer *recall);
-void ags_recall_container_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_recall_container_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_recall_container_dispose(GObject *recall);
-void ags_recall_container_finalize(GObject *recall);
+static void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
+static void ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_container_init(AgsRecallContainer *recall);
+static void ags_recall_container_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_recall_container_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_recall_container_dispose(GObject *recall);
+static void ags_recall_container_finalize(GObject *recall);
 
-AgsUUID* ags_recall_container_get_uuid(AgsConnectable *connectable);
-gboolean ags_recall_container_has_resource(AgsConnectable *connectable);
-gboolean ags_recall_container_is_ready(AgsConnectable *connectable);
-void ags_recall_container_add_to_registry(AgsConnectable *connectable);
-void ags_recall_container_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_recall_container_list_resource(AgsConnectable *connectable);
-xmlNode* ags_recall_container_xml_compose(AgsConnectable *connectable);
-void ags_recall_container_xml_parse(AgsConnectable *connectable,
-				    xmlNode *node);
-gboolean ags_recall_container_is_connected(AgsConnectable *connectable);
-void ags_recall_container_connect(AgsConnectable *connectable);
-void ags_recall_container_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_recall_container_get_uuid(AgsConnectable *connectable);
+static gboolean ags_recall_container_has_resource(AgsConnectable *connectable);
+static gboolean ags_recall_container_is_ready(AgsConnectable *connectable);
+static void ags_recall_container_add_to_registry(AgsConnectable *connectable);
+static void ags_recall_container_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_recall_container_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_recall_container_xml_compose(AgsConnectable *connectable);
+static void ags_recall_container_xml_parse(AgsConnectable *connectable,
+					   xmlNode *node);
+static gboolean ags_recall_container_is_connected(AgsConnectable *connectable);
+static void ags_recall_container_connect(AgsConnectable *connectable);
+static void ags_recall_container_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_recall_container

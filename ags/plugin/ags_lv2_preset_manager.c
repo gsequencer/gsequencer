@@ -19,18 +19,18 @@
 
 #include <ags/plugin/ags_lv2_preset_manager.h>
 
-void ags_lv2_preset_manager_class_init(AgsLv2PresetManagerClass *lv2_preset_manager);
-void ags_lv2_preset_manager_init(AgsLv2PresetManager *lv2_preset_manager);
-void ags_lv2_preset_manager_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_lv2_preset_manager_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_lv2_preset_manager_dispose(GObject *gobject);
-void ags_lv2_preset_manager_finalize(GObject *gobject);
+static void ags_lv2_preset_manager_class_init(AgsLv2PresetManagerClass *lv2_preset_manager);
+static void ags_lv2_preset_manager_init(AgsLv2PresetManager *lv2_preset_manager);
+static void ags_lv2_preset_manager_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_lv2_preset_manager_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_lv2_preset_manager_dispose(GObject *gobject);
+static void ags_lv2_preset_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_preset_manager
@@ -48,7 +48,7 @@ enum{
 
 static gpointer ags_lv2_preset_manager_parent_class = NULL;
 
-AgsLv2PresetManager *ags_lv2_preset_manager = NULL;
+static AgsLv2PresetManager *ags_lv2_preset_manager = NULL;
 
 GType
 ags_lv2_preset_manager_get_type (void)

@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_modular_synth_recycling_class_init(AgsFxModularSynthRecyclingClass *fx_modular_synth_recycling);
-void ags_fx_modular_synth_recycling_init(AgsFxModularSynthRecycling *fx_modular_synth_recycling);
-void ags_fx_modular_synth_recycling_dispose(GObject *gobject);
-void ags_fx_modular_synth_recycling_finalize(GObject *gobject);
+static void ags_fx_modular_synth_recycling_class_init(AgsFxModularSynthRecyclingClass *fx_modular_synth_recycling);
+static void ags_fx_modular_synth_recycling_init(AgsFxModularSynthRecycling *fx_modular_synth_recycling);
+static void ags_fx_modular_synth_recycling_dispose(GObject *gobject);
+static void ags_fx_modular_synth_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_modular_synth_recycling
@@ -40,7 +40,7 @@ void ags_fx_modular_synth_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_modular_synth_recycling_parent_class = NULL;
 
-const gchar *ags_fx_modular_synth_recycling_plugin_name = "ags-fx-modular-synth";
+static const gchar *ags_fx_modular_synth_recycling_plugin_name = "ags-fx-modular-synth";
 
 GType
 ags_fx_modular_synth_recycling_get_type()

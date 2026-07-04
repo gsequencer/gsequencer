@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_lfo_audio_class_init(AgsFxLfoAudioClass *fx_lfo_audio);
-void ags_fx_lfo_audio_init(AgsFxLfoAudio *fx_lfo_audio);
-void ags_fx_lfo_audio_dispose(GObject *gobject);
-void ags_fx_lfo_audio_finalize(GObject *gobject);
+static void ags_fx_lfo_audio_class_init(AgsFxLfoAudioClass *fx_lfo_audio);
+static void ags_fx_lfo_audio_init(AgsFxLfoAudio *fx_lfo_audio);
+static void ags_fx_lfo_audio_dispose(GObject *gobject);
+static void ags_fx_lfo_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_lfo_audio
@@ -40,13 +40,13 @@ void ags_fx_lfo_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_lfo_audio_parent_class = NULL;
 
-const gchar *ags_fx_lfo_audio_plugin_name = "ags-fx-lfo";
+static const gchar *ags_fx_lfo_audio_plugin_name = "ags-fx-lfo";
 
-const gchar* ags_fx_lfo_audio_specifier[] = {
+static const gchar* ags_fx_lfo_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_lfo_audio_control_port[] = {
+static const gchar* ags_fx_lfo_audio_control_port[] = {
   NULL,
 };
 

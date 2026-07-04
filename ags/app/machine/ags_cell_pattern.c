@@ -26,20 +26,20 @@
 
 #include <gdk/gdkkeysyms.h>
 
-void ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern);
-void ags_cell_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_cell_pattern_init(AgsCellPattern *cell_pattern);
-void ags_cell_pattern_finalize(GObject *gobject);
+static void ags_cell_pattern_class_init(AgsCellPatternClass *cell_pattern);
+static void ags_cell_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_cell_pattern_init(AgsCellPattern *cell_pattern);
+static void ags_cell_pattern_finalize(GObject *gobject);
 
-gboolean ags_cell_pattern_is_connected(AgsConnectable *connectable);
-void ags_cell_pattern_connect(AgsConnectable *connectable);
-void ags_cell_pattern_disconnect(AgsConnectable *connectable);
+static gboolean ags_cell_pattern_is_connected(AgsConnectable *connectable);
+static void ags_cell_pattern_connect(AgsConnectable *connectable);
+static void ags_cell_pattern_disconnect(AgsConnectable *connectable);
 
-void ags_cell_pattern_draw_func(GtkDrawingArea *drawing_area,
-				cairo_t *cr,
-				int width,
-				int height,
-				AgsCellPattern *cell_pattern);
+static void ags_cell_pattern_draw_func(GtkDrawingArea *drawing_area,
+				       cairo_t *cr,
+				       int width,
+				       int height,
+				       AgsCellPattern *cell_pattern);
 
 /**
  * SECTION:ags_cell_pattern

@@ -28,35 +28,35 @@
 
 #include <ags/i18n.h>
 
-void ags_pulse_client_class_init(AgsPulseClientClass *pulse_client);
-void ags_pulse_client_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pulse_client_init(AgsPulseClient *pulse_client);
-void ags_pulse_client_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_pulse_client_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_pulse_client_dispose(GObject *gobject);
-void ags_pulse_client_finalize(GObject *gobject);
+static void ags_pulse_client_class_init(AgsPulseClientClass *pulse_client);
+static void ags_pulse_client_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_pulse_client_init(AgsPulseClient *pulse_client);
+static void ags_pulse_client_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_pulse_client_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_pulse_client_dispose(GObject *gobject);
+static void ags_pulse_client_finalize(GObject *gobject);
 
-AgsUUID* ags_pulse_client_get_uuid(AgsConnectable *connectable);
-gboolean ags_pulse_client_has_resource(AgsConnectable *connectable);
-gboolean ags_pulse_client_is_ready(AgsConnectable *connectable);
-void ags_pulse_client_add_to_registry(AgsConnectable *connectable);
-void ags_pulse_client_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_pulse_client_list_resource(AgsConnectable *connectable);
-xmlNode* ags_pulse_client_xml_compose(AgsConnectable *connectable);
-void ags_pulse_client_xml_parse(AgsConnectable *connectable,
-				xmlNode *node);
-gboolean ags_pulse_client_is_connected(AgsConnectable *connectable);
-void ags_pulse_client_connect(AgsConnectable *connectable);
-void ags_pulse_client_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_pulse_client_get_uuid(AgsConnectable *connectable);
+static gboolean ags_pulse_client_has_resource(AgsConnectable *connectable);
+static gboolean ags_pulse_client_is_ready(AgsConnectable *connectable);
+static void ags_pulse_client_add_to_registry(AgsConnectable *connectable);
+static void ags_pulse_client_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_pulse_client_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_pulse_client_xml_compose(AgsConnectable *connectable);
+static void ags_pulse_client_xml_parse(AgsConnectable *connectable,
+				       xmlNode *node);
+static gboolean ags_pulse_client_is_connected(AgsConnectable *connectable);
+static void ags_pulse_client_connect(AgsConnectable *connectable);
+static void ags_pulse_client_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_PULSE
-void ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client);
+static void ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client);
 #endif
 
 /**

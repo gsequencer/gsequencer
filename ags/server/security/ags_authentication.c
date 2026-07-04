@@ -19,7 +19,7 @@
 
 #include <ags/server/security/ags_authentication.h>
 
-void ags_authentication_base_init(AgsAuthenticationInterface *ginterface);
+static void ags_authentication_base_init(AgsAuthenticationInterface *ginterface);
 
 /**
  * SECTION:ags_authentication

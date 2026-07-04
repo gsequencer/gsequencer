@@ -34,20 +34,20 @@
 
 #include <ags/i18n.h>
 
-void ags_open_sf2_sample_class_init(AgsOpenSF2SampleClass *open_sf2_sample);
-void ags_open_sf2_sample_init(AgsOpenSF2Sample *open_sf2_sample);
-void ags_open_sf2_sample_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_open_sf2_sample_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_open_sf2_sample_dispose(GObject *gobject);
-void ags_open_sf2_sample_finalize(GObject *gobject);
+static void ags_open_sf2_sample_class_init(AgsOpenSF2SampleClass *open_sf2_sample);
+static void ags_open_sf2_sample_init(AgsOpenSF2Sample *open_sf2_sample);
+static void ags_open_sf2_sample_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_open_sf2_sample_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_open_sf2_sample_dispose(GObject *gobject);
+static void ags_open_sf2_sample_finalize(GObject *gobject);
 
-void ags_open_sf2_sample_launch(AgsTask *task);
+static void ags_open_sf2_sample_launch(AgsTask *task);
 
 /**
  * SECTION:ags_open_sf2_sample

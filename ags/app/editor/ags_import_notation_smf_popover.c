@@ -34,42 +34,42 @@
 
 #include <ags/i18n.h>
 
-void ags_import_notation_smf_popover_class_init(AgsImportNotationSMFPopoverClass *import_notation_smf_popover);
-void ags_import_notation_smf_popover_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_import_notation_smf_popover_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notation_smf_popover);
-void ags_import_notation_smf_popover_finalize(GObject *gobject);
+static void ags_import_notation_smf_popover_class_init(AgsImportNotationSMFPopoverClass *import_notation_smf_popover);
+static void ags_import_notation_smf_popover_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_import_notation_smf_popover_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notation_smf_popover);
+static void ags_import_notation_smf_popover_finalize(GObject *gobject);
 
-xmlNode* ags_import_notation_smf_popover_xml_compose(AgsConnectable *connectable);
-void ags_import_notation_smf_popover_xml_parse(AgsConnectable *connectable,
-					       xmlNode *node);
+static xmlNode* ags_import_notation_smf_popover_xml_compose(AgsConnectable *connectable);
+static void ags_import_notation_smf_popover_xml_parse(AgsConnectable *connectable,
+						      xmlNode *node);
 
-gboolean ags_import_notation_smf_popover_is_connected(AgsConnectable *connectable);
-void ags_import_notation_smf_popover_connect(AgsConnectable *connectable);
-void ags_import_notation_smf_popover_disconnect(AgsConnectable *connectable);
+static gboolean ags_import_notation_smf_popover_is_connected(AgsConnectable *connectable);
+static void ags_import_notation_smf_popover_connect(AgsConnectable *connectable);
+static void ags_import_notation_smf_popover_disconnect(AgsConnectable *connectable);
 
-void ags_import_notation_smf_popover_set_update(AgsApplicable *applicable, gboolean update);
-void ags_import_notation_smf_popover_apply(AgsApplicable *applicable);
-void ags_import_notation_smf_popover_reset(AgsApplicable *applicable);
+static void ags_import_notation_smf_popover_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_import_notation_smf_popover_apply(AgsApplicable *applicable);
+static void ags_import_notation_smf_popover_reset(AgsApplicable *applicable);
 
-void ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notation_smf_popover);
+static void ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notation_smf_popover);
 
-gboolean ags_import_notation_smf_popover_key_pressed_callback(GtkEventControllerKey *event_controller,
-							      guint keyval,
-							      guint keycode,
-							      GdkModifierType state,
-							      AgsImportNotationSMFPopover *import_notation_smf_popover);
-void ags_import_notation_smf_popover_key_released_callback(GtkEventControllerKey *event_controller,
-							   guint keyval,
-							   guint keycode,
-							   GdkModifierType state,
-							   AgsImportNotationSMFPopover *import_notation_smf_popover);
-gboolean ags_import_notation_smf_popover_modifiers_callback(GtkEventControllerKey *event_controller,
-							    GdkModifierType keyval,
-							    AgsImportNotationSMFPopover *import_notation_smf_popover);
+static gboolean ags_import_notation_smf_popover_key_pressed_callback(GtkEventControllerKey *event_controller,
+								     guint keyval,
+								     guint keycode,
+								     GdkModifierType state,
+								     AgsImportNotationSMFPopover *import_notation_smf_popover);
+static void ags_import_notation_smf_popover_key_released_callback(GtkEventControllerKey *event_controller,
+								  guint keyval,
+								  guint keycode,
+								  GdkModifierType state,
+								  AgsImportNotationSMFPopover *import_notation_smf_popover);
+static gboolean ags_import_notation_smf_popover_modifiers_callback(GtkEventControllerKey *event_controller,
+								   GdkModifierType keyval,
+								   AgsImportNotationSMFPopover *import_notation_smf_popover);
 
-void ags_import_notation_smf_popover_activate_button_callback(GtkButton *activate_button,
-							      AgsImportNotationSMFPopover *import_notation_smf_popover);
+static void ags_import_notation_smf_popover_activate_button_callback(GtkButton *activate_button,
+								     AgsImportNotationSMFPopover *import_notation_smf_popover);
 
 /**
  * SECTION:ags_import_notation_smf_popover

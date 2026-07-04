@@ -21,9 +21,9 @@
 
 #include <ags/server/security/ags_auth_security_context.h>
 
-void ags_password_store_manager_class_init(AgsPasswordStoreManagerClass *password_store_manager);
-void ags_password_store_manager_init (AgsPasswordStoreManager *password_store_manager);
-void ags_password_store_manager_finalize(GObject *gobject);
+static void ags_password_store_manager_class_init(AgsPasswordStoreManagerClass *password_store_manager);
+static void ags_password_store_manager_init (AgsPasswordStoreManager *password_store_manager);
+static void ags_password_store_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_password_store_manager
@@ -37,7 +37,7 @@ void ags_password_store_manager_finalize(GObject *gobject);
 
 static gpointer ags_password_store_manager_parent_class = NULL;
 
-AgsPasswordStoreManager *ags_password_store_manager = NULL;
+static AgsPasswordStoreManager *ags_password_store_manager = NULL;
 
 GType
 ags_password_store_manager_get_type (void)

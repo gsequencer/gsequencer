@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_sfz_synth_audio_processor_class_init(AgsFxSFZSynthAudioProcessorClass *fx_sfz_synth_audio_processor);
-void ags_fx_sfz_synth_audio_processor_init(AgsFxSFZSynthAudioProcessor *fx_sfz_synth_audio_processor);
-void ags_fx_sfz_synth_audio_processor_dispose(GObject *gobject);
-void ags_fx_sfz_synth_audio_processor_finalize(GObject *gobject);
+static void ags_fx_sfz_synth_audio_processor_class_init(AgsFxSFZSynthAudioProcessorClass *fx_sfz_synth_audio_processor);
+static void ags_fx_sfz_synth_audio_processor_init(AgsFxSFZSynthAudioProcessor *fx_sfz_synth_audio_processor);
+static void ags_fx_sfz_synth_audio_processor_dispose(GObject *gobject);
+static void ags_fx_sfz_synth_audio_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_sfz_synth_audio_processor

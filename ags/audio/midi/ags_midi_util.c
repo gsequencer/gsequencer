@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-guchar* ags_midi_util_to_smf_realloc(AgsMidiUtil *midi_util,
-				     guchar *smf_buffer, guint smf_buffer_length);
+static guchar* ags_midi_util_to_smf_realloc(AgsMidiUtil *midi_util,
+					    guchar *smf_buffer, guint smf_buffer_length);
 
 /**
  * SECTION:ags_midi_util

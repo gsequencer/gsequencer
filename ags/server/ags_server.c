@@ -43,38 +43,38 @@
 
 #include <ags/i18n.h>
 
-void ags_server_class_init(AgsServerClass *server);
-void ags_server_init(AgsServer *server);
-void ags_server_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_server_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_server_dispose(GObject *gobject);
-void ags_server_finalize(GObject *gobject);
+static void ags_server_class_init(AgsServerClass *server);
+static void ags_server_init(AgsServer *server);
+static void ags_server_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_server_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_server_dispose(GObject *gobject);
+static void ags_server_finalize(GObject *gobject);
 
-void ags_server_real_start(AgsServer *server);
-void ags_server_real_stop(AgsServer *server);
+static void ags_server_real_start(AgsServer *server);
+static void ags_server_real_stop(AgsServer *server);
 
-gboolean ags_server_real_listen(AgsServer *server);
+static gboolean ags_server_real_listen(AgsServer *server);
 
-gboolean ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
-					 SoupServerMessage *msg,
-					 const char *username,
-					 const char *password,
-					 AgsServer *server);
-char* ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
-					     SoupServerMessage *msg,
-					     const char *username,
-					     AgsServer *server);
-void ags_server_xmlrpc_callback(SoupServer *soup_server,
-				SoupServerMessage *msg,
-				const char *path,
-				GHashTable *query,
-				AgsServer *server);
+static gboolean ags_server_xmlrpc_auth_callback(SoupAuthDomain *domain,
+						SoupServerMessage *msg,
+						const char *username,
+						const char *password,
+						AgsServer *server);
+static char* ags_server_xmlrpc_digest_auth_callback(SoupAuthDomain *domain,
+						    SoupServerMessage *msg,
+						    const char *username,
+						    AgsServer *server);
+static void ags_server_xmlrpc_callback(SoupServer *soup_server,
+				       SoupServerMessage *msg,
+				       const char *path,
+				       GHashTable *query,
+				       AgsServer *server);
 
 /**
  * SECTION:ags_server

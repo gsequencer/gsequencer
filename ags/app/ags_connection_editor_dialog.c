@@ -24,25 +24,25 @@
 
 #include <ags/i18n.h>
 
-void ags_connection_editor_dialog_class_init(AgsConnectionEditorDialogClass *connection_editor_dialog);
-void ags_connection_editor_dialog_init(AgsConnectionEditorDialog *connection_editor_dialog);
+static void ags_connection_editor_dialog_class_init(AgsConnectionEditorDialogClass *connection_editor_dialog);
+static void ags_connection_editor_dialog_init(AgsConnectionEditorDialog *connection_editor_dialog);
 
-void ags_connection_editor_dialog_activate_button_callback(GtkButton *activate_button,
-							   AgsConnectionEditorDialog *connection_editor_dialog);
+static void ags_connection_editor_dialog_activate_button_callback(GtkButton *activate_button,
+								  AgsConnectionEditorDialog *connection_editor_dialog);
 
-gboolean ags_connection_editor_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
-							   guint keyval,
-							   guint keycode,
-							   GdkModifierType state,
-							   AgsConnectionEditorDialog *connection_editor_dialog);
-void ags_connection_editor_dialog_key_released_callback(GtkEventControllerKey *event_controller,
-							guint keyval,
-							guint keycode,
-							GdkModifierType state,
-							AgsConnectionEditorDialog *connection_editor_dialog);
-gboolean ags_connection_editor_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
-							 GdkModifierType keyval,
-							 AgsConnectionEditorDialog *connection_editor_dialog);
+static gboolean ags_connection_editor_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+								  guint keyval,
+								  guint keycode,
+								  GdkModifierType state,
+								  AgsConnectionEditorDialog *connection_editor_dialog);
+static void ags_connection_editor_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+							       guint keyval,
+							       guint keycode,
+							       GdkModifierType state,
+							       AgsConnectionEditorDialog *connection_editor_dialog);
+static gboolean ags_connection_editor_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+								GdkModifierType keyval,
+								AgsConnectionEditorDialog *connection_editor_dialog);
 
 /**
  * SECTION:ags_connection_editor_dialog

@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_analyse_audio_class_init(AgsFxAnalyseAudioClass *fx_analyse_audio);
-void ags_fx_analyse_audio_init(AgsFxAnalyseAudio *fx_analyse_audio);
-void ags_fx_analyse_audio_dispose(GObject *gobject);
-void ags_fx_analyse_audio_finalize(GObject *gobject);
+static void ags_fx_analyse_audio_class_init(AgsFxAnalyseAudioClass *fx_analyse_audio);
+static void ags_fx_analyse_audio_init(AgsFxAnalyseAudio *fx_analyse_audio);
+static void ags_fx_analyse_audio_dispose(GObject *gobject);
+static void ags_fx_analyse_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_analyse_audio
@@ -38,13 +38,13 @@ void ags_fx_analyse_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_analyse_audio_parent_class = NULL;
 
-const gchar *ags_fx_analyse_audio_plugin_name = "ags-fx-analyse";
+static const gchar *ags_fx_analyse_audio_plugin_name = "ags-fx-analyse";
 
-const gchar* ags_fx_analyse_audio_specifier[] = {
+static const gchar* ags_fx_analyse_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_analyse_audio_control_port[] = {
+static const gchar* ags_fx_analyse_audio_control_port[] = {
   NULL,
 };
 

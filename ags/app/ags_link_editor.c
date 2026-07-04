@@ -26,18 +26,18 @@
 #include <ags/app/ags_machine_editor.h>
 #include <ags/app/ags_machine_editor_line.h>
 
-void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
-void ags_link_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_link_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_link_editor_init(AgsLinkEditor *link_editor);
+static void ags_link_editor_class_init(AgsLinkEditorClass *link_editor);
+static void ags_link_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_link_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_link_editor_init(AgsLinkEditor *link_editor);
 
-gboolean ags_link_editor_is_connected(AgsConnectable *connectable);
-void ags_link_editor_connect(AgsConnectable *connectable);
-void ags_link_editor_disconnect(AgsConnectable *connectable);
+static gboolean ags_link_editor_is_connected(AgsConnectable *connectable);
+static void ags_link_editor_connect(AgsConnectable *connectable);
+static void ags_link_editor_disconnect(AgsConnectable *connectable);
 
-void ags_link_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_link_editor_apply(AgsApplicable *applicable);
-void ags_link_editor_reset(AgsApplicable *applicable);
+static void ags_link_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_link_editor_apply(AgsApplicable *applicable);
+static void ags_link_editor_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_link_editor

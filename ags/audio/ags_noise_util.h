@@ -186,6 +186,10 @@ guint ags_noise_util_get_samplerate(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_samplerate(AgsNoiseUtil *noise_util,
 				   guint samplerate);
 
+guint ags_noise_util_get_mode(AgsNoiseUtil *noise_util);
+void ags_noise_util_set_mode(AgsNoiseUtil *noise_util,
+			     guint mode);
+
 gdouble ags_noise_util_get_volume(AgsNoiseUtil *noise_util);
 void ags_noise_util_set_volume(AgsNoiseUtil *noise_util,
 			       gdouble volume);

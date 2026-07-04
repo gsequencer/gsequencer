@@ -100,6 +100,10 @@ guint ags_envelope_util_get_format(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_format(AgsEnvelopeUtil *envelope_util,
 				  guint format);
 
+guint ags_envelope_util_get_samplerate(AgsEnvelopeUtil *envelope_util);
+void ags_envelope_util_set_samplerate(AgsEnvelopeUtil *envelope_util,
+				      guint samplerate);
+
 gdouble ags_envelope_util_get_volume(AgsEnvelopeUtil *envelope_util);
 void ags_envelope_util_set_volume(AgsEnvelopeUtil *envelope_util,
 				  gdouble volume);

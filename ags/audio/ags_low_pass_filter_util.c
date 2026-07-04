@@ -44,9 +44,9 @@
 
 #include <math.h>
 
-void ags_invada_check_param_change(guint param, gdouble *control, gdouble *last, gdouble *converted, guint samplerate, gdouble (*ConvertFunction)(guint, gdouble, guint));
+static void ags_invada_check_param_change(guint param, gdouble *control, gdouble *last, gdouble *converted, guint samplerate, gdouble (*ConvertFunction)(guint, gdouble, guint));
 
-gdouble ags_invada_convert_param(guint param, gdouble value, guint samplerate);
+static gdouble ags_invada_convert_param(guint param, gdouble value, guint samplerate);
 
 #define AGS_INVADA_IFILTER_FREQ (0)
 #define AGS_INVADA_IFILTER_GAIN (1)

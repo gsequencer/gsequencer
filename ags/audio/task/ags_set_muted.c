@@ -27,24 +27,24 @@
 
 #include <ags/i18n.h>
 
-void ags_set_muted_class_init(AgsSetMutedClass *set_muted);
-void ags_set_muted_init(AgsSetMuted *set_muted);
-void ags_set_muted_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_set_muted_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_set_muted_dispose(GObject *gobject);
-void ags_set_muted_finalize(GObject *gobject);
+static void ags_set_muted_class_init(AgsSetMutedClass *set_muted);
+static void ags_set_muted_init(AgsSetMuted *set_muted);
+static void ags_set_muted_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_set_muted_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_set_muted_dispose(GObject *gobject);
+static void ags_set_muted_finalize(GObject *gobject);
 
-void ags_set_muted_launch(AgsTask *task);
+static void ags_set_muted_launch(AgsTask *task);
 
-void ags_set_muted_recall(AgsSetMuted *set_muted, AgsRecall *recall);
-void ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel);
-void ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio);
+static void ags_set_muted_recall(AgsSetMuted *set_muted, AgsRecall *recall);
+static void ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel);
+static void ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio);
 
 /**
  * SECTION:ags_set_muted

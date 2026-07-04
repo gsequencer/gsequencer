@@ -36,20 +36,20 @@
 
 #include <ags/i18n.h>
 
-void ags_open_sf2_instrument_class_init(AgsOpenSF2InstrumentClass *open_sf2_instrument);
-void ags_open_sf2_instrument_init(AgsOpenSF2Instrument *open_sf2_instrument);
-void ags_open_sf2_instrument_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_open_sf2_instrument_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_open_sf2_instrument_dispose(GObject *gobject);
-void ags_open_sf2_instrument_finalize(GObject *gobject);
+static void ags_open_sf2_instrument_class_init(AgsOpenSF2InstrumentClass *open_sf2_instrument);
+static void ags_open_sf2_instrument_init(AgsOpenSF2Instrument *open_sf2_instrument);
+static void ags_open_sf2_instrument_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_open_sf2_instrument_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_open_sf2_instrument_dispose(GObject *gobject);
+static void ags_open_sf2_instrument_finalize(GObject *gobject);
 
-void ags_open_sf2_instrument_launch(AgsTask *task);
+static void ags_open_sf2_instrument_launch(AgsTask *task);
 
 /**
  * SECTION:ags_open_sf2_instrument

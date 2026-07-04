@@ -27,27 +27,27 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
-void ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run);
-void ags_recall_audio_run_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_recall_audio_run_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_recall_audio_run_dispose(GObject *gobject);
-void ags_recall_audio_run_finalize(GObject *gobject);
+static void ags_recall_audio_run_class_init(AgsRecallAudioRunClass *recall_audio_run);
+static void ags_recall_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_audio_run_init(AgsRecallAudioRun *recall_audio_run);
+static void ags_recall_audio_run_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_recall_audio_run_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_recall_audio_run_dispose(GObject *gobject);
+static void ags_recall_audio_run_finalize(GObject *gobject);
 
-void ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
-							   GParamSpec *pspec,
-							   gpointer user_data);
+static void ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
+								  GParamSpec *pspec,
+								  gpointer user_data);
 
-AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id,
-					  guint *n_params, gchar **parameter_name, GValue *value);
+static AgsRecall* ags_recall_audio_run_duplicate(AgsRecall *recall,
+						 AgsRecallID *recall_id,
+						 guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_recall_audio_run

@@ -31,13 +31,13 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_vst3_channel_processor_class_init(AgsFxVst3ChannelProcessorClass *fx_vst3_channel_processor);
-void ags_fx_vst3_channel_processor_init(AgsFxVst3ChannelProcessor *fx_vst3_channel_processor);
-void ags_fx_vst3_channel_processor_dispose(GObject *gobject);
-void ags_fx_vst3_channel_processor_finalize(GObject *gobject);
+static void ags_fx_vst3_channel_processor_class_init(AgsFxVst3ChannelProcessorClass *fx_vst3_channel_processor);
+static void ags_fx_vst3_channel_processor_init(AgsFxVst3ChannelProcessor *fx_vst3_channel_processor);
+static void ags_fx_vst3_channel_processor_dispose(GObject *gobject);
+static void ags_fx_vst3_channel_processor_finalize(GObject *gobject);
 
-void ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall);
-void ags_fx_vst3_channel_processor_done(AgsRecall *recall);
+static void ags_fx_vst3_channel_processor_run_inter(AgsRecall *recall);
+static void ags_fx_vst3_channel_processor_done(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_vst3_channel_processor
@@ -51,7 +51,7 @@ void ags_fx_vst3_channel_processor_done(AgsRecall *recall);
 
 static gpointer ags_fx_vst3_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_vst3_channel_processor_plugin_name = "ags-fx-vst3";
+static const gchar *ags_fx_vst3_channel_processor_plugin_name = "ags-fx-vst3";
 
 GType
 ags_fx_vst3_channel_processor_get_type()

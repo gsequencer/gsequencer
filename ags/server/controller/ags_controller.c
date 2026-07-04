@@ -25,18 +25,18 @@
 
 #include <ags/i18n.h>
 
-void ags_controller_class_init(AgsControllerClass *controller);
-void ags_controller_init(AgsController *controller);
-void ags_controller_set_property(GObject *gobject,
+static void ags_controller_class_init(AgsControllerClass *controller);
+static void ags_controller_init(AgsController *controller);
+static void ags_controller_set_property(GObject *gobject,
 				 guint prop_id,
 				 const GValue *value,
 				 GParamSpec *param_spec);
-void ags_controller_get_property(GObject *gobject,
+static void ags_controller_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_controller_dispose(GObject *gobject);
-void ags_controller_finalize(GObject *gobject);
+static void ags_controller_dispose(GObject *gobject);
+static void ags_controller_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_controller
