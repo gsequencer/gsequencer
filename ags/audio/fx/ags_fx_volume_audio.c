@@ -53,14 +53,14 @@ static AgsPluginPort* ags_fx_volume_audio_get_muted_plugin_port();
 
 static gpointer ags_fx_volume_audio_parent_class = NULL;
 
-const gchar *ags_fx_volume_audio_plugin_name = "ags-fx-volume";
+static const gchar *ags_fx_volume_audio_plugin_name = "ags-fx-volume";
 
-const gchar* ags_fx_volume_audio_specifier[] = {
+static const gchar* ags_fx_volume_audio_specifier[] = {
   "./muted[0]",
   NULL,
 };
 
-const gchar* ags_fx_volume_audio_control_port[] = {
+static const gchar* ags_fx_volume_audio_control_port[] = {
   "1/1",
   NULL,
 };

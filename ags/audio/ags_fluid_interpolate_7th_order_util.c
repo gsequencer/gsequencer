@@ -41,11 +41,11 @@
 #include <ags/audio/ags_fluid_util.h>
 
 /* 7th order interpolation (7 coefficients centered on 3rd) */
-gboolean interp_coeff_7th_order_initialized = FALSE;
+static gboolean interp_coeff_7th_order_initialized = FALSE;
 
-gdouble interp_coeff_7th_order[AGS_FLUID_INTERP_MAX][AGS_FLUID_SINC_INTERP_ORDER];
+static gdouble interp_coeff_7th_order[AGS_FLUID_INTERP_MAX][AGS_FLUID_SINC_INTERP_ORDER];
 
-GMutex interp_coeff_7th_order_mutex;
+static GMutex interp_coeff_7th_order_mutex;
 
 /**
  * SECTION:ags_fluid_interpolate_7th_order_util

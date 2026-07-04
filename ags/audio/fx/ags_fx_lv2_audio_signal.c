@@ -68,7 +68,7 @@ static void ags_fx_lv2_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_n
 static gpointer ags_fx_lv2_audio_signal_recall_audio_signal_class = NULL;
 static gpointer ags_fx_lv2_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_lv2_audio_signal_plugin_name = "ags-fx-lv2";
+static const gchar *ags_fx_lv2_audio_signal_plugin_name = "ags-fx-lv2";
 
 GType
 ags_fx_lv2_audio_signal_get_type()

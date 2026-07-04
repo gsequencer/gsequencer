@@ -43,7 +43,7 @@ static void ags_fx_buffer_channel_processor_run_init_pre(AgsRecall *recall);
 
 static gpointer ags_fx_buffer_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_buffer_channel_processor_plugin_name = "ags-fx-buffer";
+static const gchar *ags_fx_buffer_channel_processor_plugin_name = "ags-fx-buffer";
 
 GType
 ags_fx_buffer_channel_processor_get_type()

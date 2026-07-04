@@ -38,7 +38,7 @@ static void ags_fx_eq10_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_eq10_audio_parent_class = NULL;
 
-const gchar *ags_fx_eq10_audio_plugin_name = "ags-fx-eq10";
+static const gchar *ags_fx_eq10_audio_plugin_name = "ags-fx-eq10";
 
 GType
 ags_fx_eq10_audio_get_type()

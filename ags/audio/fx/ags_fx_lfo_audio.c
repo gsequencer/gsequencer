@@ -40,13 +40,13 @@ static void ags_fx_lfo_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_lfo_audio_parent_class = NULL;
 
-const gchar *ags_fx_lfo_audio_plugin_name = "ags-fx-lfo";
+static const gchar *ags_fx_lfo_audio_plugin_name = "ags-fx-lfo";
 
-const gchar* ags_fx_lfo_audio_specifier[] = {
+static const gchar* ags_fx_lfo_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_lfo_audio_control_port[] = {
+static const gchar* ags_fx_lfo_audio_control_port[] = {
   NULL,
 };
 
