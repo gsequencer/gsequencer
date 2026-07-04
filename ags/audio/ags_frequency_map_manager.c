@@ -39,7 +39,7 @@ static void ags_frequency_map_manager_finalize(GObject *gobject);
 
 static gpointer ags_frequency_map_manager_parent_class = NULL;
 
-AgsFrequencyMapManager *ags_frequency_map_manager = NULL;
+static AgsFrequencyMapManager *ags_frequency_map_manager = NULL;
 
 static guint ags_frequency_map_manager_default_samplerate_count = 4;
 static guint ags_frequency_map_manager_default_samplerate[] = {

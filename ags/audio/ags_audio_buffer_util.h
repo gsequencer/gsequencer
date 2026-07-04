@@ -1058,6 +1058,10 @@ void ags_audio_buffer_util_fill_v8float_from_s64(AgsAudioBufferUtil *audio_buffe
 						 ags_v8float *destination, guint destination_stride,
 						 gint64 *source, guint source_stride,
 						 guint count);
+void ags_audio_buffer_util_fill_v8float_from_float(AgsAudioBufferUtil *audio_buffer_util,
+						   ags_v8float *destination, guint destination_stride,
+						   gfloat *source, guint source_stride,
+						   guint count);
 void ags_audio_buffer_util_fill_v8float_from_double(AgsAudioBufferUtil *audio_buffer_util,
 						    ags_v8float *destination, guint destination_stride,
 						    gdouble *source, guint source_stride,
@@ -1079,6 +1083,10 @@ void ags_audio_buffer_util_fetch_v8float_as_s64(AgsAudioBufferUtil *audio_buffer
 						gint64 *destination, guint destination_stride,
 						ags_v8float *source, guint source_stride,
 						guint count);
+void ags_audio_buffer_util_fetch_v8float_as_float(AgsAudioBufferUtil *audio_buffer_util,
+						  gfloat *destination, guint destination_stride,
+						  ags_v8float *source, guint source_stride,
+						  guint count);
 void ags_audio_buffer_util_fetch_v8float_as_double(AgsAudioBufferUtil *audio_buffer_util,
 						   gdouble *destination, guint destination_stride,
 						   ags_v8float *source, guint source_stride,

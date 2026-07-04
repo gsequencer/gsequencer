@@ -3854,6 +3854,7 @@ ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_au
 /**
  * ags_fx_audio_unit_audio_render_thread_iteration:
  * @fx_audio_unit_audio: the #AgsFxAudioUnitAudio
+ * @channel_data: the #AgsFxAudioUnitAudioChannelData-struct
  * @audio_signal: the #AgsAudioSignal
  * @pad: the pad
  * @audio_channel: the audio channel

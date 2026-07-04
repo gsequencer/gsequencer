@@ -89,11 +89,11 @@ static void ags_sndfile_seek(AgsSoundResource *sound_resource,
 			     gint64 frame_count, gint whence);
 static void ags_sndfile_close(AgsSoundResource *sound_resource);
 
-sf_count_t ags_sndfile_vio_get_filelen(void *user_data);
-sf_count_t ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data);
-sf_count_t ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
-sf_count_t ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
-sf_count_t ags_sndfile_vio_tell(void *user_data);
+static sf_count_t ags_sndfile_vio_get_filelen(void *user_data);
+static sf_count_t ags_sndfile_vio_seek(sf_count_t offset, int whence, void *user_data);
+static sf_count_t ags_sndfile_vio_read(void *ptr, sf_count_t count, void *user_data);
+static sf_count_t ags_sndfile_vio_write(const void *ptr, sf_count_t count, void *user_data);
+static sf_count_t ags_sndfile_vio_tell(void *user_data);
 
 /**
  * SECTION:ags_sndfile

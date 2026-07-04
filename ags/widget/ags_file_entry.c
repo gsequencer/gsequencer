@@ -65,6 +65,9 @@ static gboolean ags_file_entry_delete_surrounding_handler(GtkIMContext *context,
 							  int n_chars,
 							  AgsFileEntry *file_entry);
 
+static gboolean ags_file_entry_im_context_filter_keypress(AgsFileEntry *file_entry,
+							  GdkEvent *event);
+
 static gboolean ags_file_entry_gesture_click_pressed_callback(GtkGestureClick *event_controller,
 							      gint n_press,
 							      gdouble x,

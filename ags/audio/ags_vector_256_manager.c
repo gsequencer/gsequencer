@@ -36,7 +36,7 @@ static void ags_vector_256_manager_finalize(GObject *gobject);
 
 static gpointer ags_vector_256_manager_parent_class = NULL;
 
-AgsVector256Manager *ags_vector_256_manager = NULL;
+static AgsVector256Manager *ags_vector_256_manager = NULL;
 
 GType
 ags_vector_256_manager_get_type (void)

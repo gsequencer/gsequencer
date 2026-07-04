@@ -157,6 +157,9 @@ gboolean ags_program_is_marker_selected(AgsProgram *program, AgsMarker *marker);
 AgsMarker* ags_program_find_point(AgsProgram *program,
 				  guint x,
 				  gboolean use_selection_list);
+AgsMarker* ags_program_find_exact_point(AgsProgram *program,
+					guint x,
+					gboolean use_selection_list);
 GList* ags_program_find_region(AgsProgram *program,
 			       guint x0,
 			       guint x1,
