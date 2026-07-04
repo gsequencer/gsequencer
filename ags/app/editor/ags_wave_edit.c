@@ -34,114 +34,114 @@
 #include <cairo.h>
 #include <math.h>
 
-void ags_wave_edit_class_init(AgsWaveEditClass *wave_edit);
-void ags_wave_edit_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_wave_edit_init(AgsWaveEdit *wave_edit);
-void ags_wave_edit_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_wave_edit_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_wave_edit_dispose(GObject *gobject);
-void ags_wave_edit_finalize(GObject *gobject);
+static void ags_wave_edit_class_init(AgsWaveEditClass *wave_edit);
+static void ags_wave_edit_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_wave_edit_init(AgsWaveEdit *wave_edit);
+static void ags_wave_edit_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_wave_edit_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_wave_edit_dispose(GObject *gobject);
+static void ags_wave_edit_finalize(GObject *gobject);
 
-gboolean ags_wave_edit_is_connected(AgsConnectable *connectable);
-void ags_wave_edit_connect(AgsConnectable *connectable);
-void ags_wave_edit_disconnect(AgsConnectable *connectable);
+static gboolean ags_wave_edit_is_connected(AgsConnectable *connectable);
+static void ags_wave_edit_connect(AgsConnectable *connectable);
+static void ags_wave_edit_disconnect(AgsConnectable *connectable);
 
-void ags_wave_edit_realize(GtkWidget *widget);
-void ags_wave_edit_unrealize(GtkWidget *widget);
+static void ags_wave_edit_realize(GtkWidget *widget);
+static void ags_wave_edit_unrealize(GtkWidget *widget);
 
-void ags_wave_edit_measure(GtkWidget *widget,
-			   GtkOrientation orientation,
-			   int for_size,
-			   int *minimum,
-			   int *natural,
-			   int *minimum_baseline,
-			   int *natural_baseline);
-void ags_wave_edit_size_allocate(GtkWidget *widget,
-				 int width,
-				 int height,
-				 int baseline);
+static void ags_wave_edit_measure(GtkWidget *widget,
+				  GtkOrientation orientation,
+				  int for_size,
+				  int *minimum,
+				  int *natural,
+				  int *minimum_baseline,
+				  int *natural_baseline);
+static void ags_wave_edit_size_allocate(GtkWidget *widget,
+					int width,
+					int height,
+					int baseline);
 
-void ags_wave_edit_show(GtkWidget *widget);
+static void ags_wave_edit_show(GtkWidget *widget);
 
-void ags_wave_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					       AgsWaveEdit *wave_edit);
-
-void ags_wave_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
-							     GtkWidget *toolbar,
-							     AgsWaveEdit *wave_edit,
-							     AgsMachine *machine,
-							     gint n_press,
-							     gdouble x, gdouble y);
-void ags_wave_edit_drawing_area_button_press_select_buffer(GtkWidget *editor,
-							   GtkWidget *toolbar,
-							   AgsWaveEdit *wave_edit,
-							   AgsMachine *machine,
-							   gint n_press,
-							   gdouble x, gdouble y);
-
-void ags_wave_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
-							       GtkWidget *toolbar,
-							       AgsWaveEdit *wave_edit,
-							       AgsMachine *machine,
-							       gint n_press, gdouble x, gdouble y);
-void ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
-							     GtkWidget *toolbar,
-							     AgsWaveEdit *wave_edit,
-							     AgsMachine *machine,
-							     gint n_press,
-							     gdouble x, gdouble y);
-
-gboolean ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						      gint n_press,
-						      gdouble x,
-						      gdouble y,
+static void ags_wave_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
 						      AgsWaveEdit *wave_edit);
-gboolean ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
-						       gint n_press,
-						       gdouble x,
-						       gdouble y,
-						       AgsWaveEdit *wave_edit);
 
-gboolean ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
-					    guint keyval,
-					    guint keycode,
-					    GdkModifierType state,
-					    AgsWaveEdit *wave_edit);
-gboolean ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
-					     guint keyval,
-					     guint keycode,
-					     GdkModifierType state,
-					     AgsWaveEdit *wave_edit);
-gboolean ags_wave_edit_modifiers_callback(GtkEventControllerKey *event_controller,
-					  GdkModifierType keyval,
-					  AgsWaveEdit *wave_edit);
+static void ags_wave_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
+								    GtkWidget *toolbar,
+								    AgsWaveEdit *wave_edit,
+								    AgsMachine *machine,
+								    gint n_press,
+								    gdouble x, gdouble y);
+static void ags_wave_edit_drawing_area_button_press_select_buffer(GtkWidget *editor,
+								  GtkWidget *toolbar,
+								  AgsWaveEdit *wave_edit,
+								  AgsMachine *machine,
+								  gint n_press,
+								  gdouble x, gdouble y);
 
-void ags_wave_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
-							      GtkWidget *toolbar,
-							      AgsWaveEdit *wave_edit,
-							      AgsMachine *machine,
-							      gdouble x, gdouble y);
-void ags_wave_edit_drawing_area_motion_notify_select_buffer(GtkWidget *editor,
-							    GtkWidget *toolbar,
-							    AgsWaveEdit *wave_edit,
-							    AgsMachine *machine,
-							    gdouble x, gdouble y);
+static void ags_wave_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
+								      GtkWidget *toolbar,
+								      AgsWaveEdit *wave_edit,
+								      AgsMachine *machine,
+								      gint n_press, gdouble x, gdouble y);
+static void ags_wave_edit_drawing_area_button_release_select_buffer(GtkWidget *editor,
+								    GtkWidget *toolbar,
+								    AgsWaveEdit *wave_edit,
+								    AgsMachine *machine,
+								    gint n_press,
+								    gdouble x, gdouble y);
 
-gboolean ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
-				       gdouble x,
-				       gdouble y,
-				       AgsWaveEdit *wave_edit);
+static gboolean ags_wave_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							     gint n_press,
+							     gdouble x,
+							     gdouble y,
+							     AgsWaveEdit *wave_edit);
+static gboolean ags_wave_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
+							      gint n_press,
+							      gdouble x,
+							      gdouble y,
+							      AgsWaveEdit *wave_edit);
 
-void ags_wave_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
-					  gdouble x,
-					  gdouble y,
-					  AgsWaveEdit *wave_edit);
+static gboolean ags_wave_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
+						   guint keyval,
+						   guint keycode,
+						   GdkModifierType state,
+						   AgsWaveEdit *wave_edit);
+static gboolean ags_wave_edit_key_released_callback(GtkEventControllerKey *event_controller,
+						    guint keyval,
+						    guint keycode,
+						    GdkModifierType state,
+						    AgsWaveEdit *wave_edit);
+static gboolean ags_wave_edit_modifiers_callback(GtkEventControllerKey *event_controller,
+						 GdkModifierType keyval,
+						 AgsWaveEdit *wave_edit);
+
+static void ags_wave_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
+								     GtkWidget *toolbar,
+								     AgsWaveEdit *wave_edit,
+								     AgsMachine *machine,
+								     gdouble x, gdouble y);
+static void ags_wave_edit_drawing_area_motion_notify_select_buffer(GtkWidget *editor,
+								   GtkWidget *toolbar,
+								   AgsWaveEdit *wave_edit,
+								   AgsMachine *machine,
+								   gdouble x, gdouble y);
+
+static gboolean ags_wave_edit_motion_callback(GtkEventControllerMotion *event_controller,
+					      gdouble x,
+					      gdouble y,
+					      AgsWaveEdit *wave_edit);
+
+static void ags_wave_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+						 gdouble x,
+						 gdouble y,
+						 AgsWaveEdit *wave_edit);
 
 /**
  * SECTION:ags_wave_edit

@@ -31,24 +31,22 @@
 
 #include <ags/i18n.h>
 
-void ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_app);
-void ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app);
+static void ags_gsequencer_application_class_init(AgsGSequencerApplicationClass *gsequencer_app);
+static void ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app);
 
-void ags_gsequencer_application_activate(GApplication *gsequencer_app);
-void ags_gsequencer_application_startup(GApplication *gsequencer_app);
-int ags_gsequencer_application_command_line(GApplication *gsequencer_app,
-					    GApplicationCommandLine *command_line);
-gboolean ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
-						       gchar ***arguments,
-						       int *exit_status);
-void ags_gsequencer_application_open(GApplication *application,
-				     GFile **files,
-				     gint n_files,
-				     const gchar *hint);
+static void ags_gsequencer_application_activate(GApplication *gsequencer_app);
+static void ags_gsequencer_application_startup(GApplication *gsequencer_app);
+static int ags_gsequencer_application_command_line(GApplication *gsequencer_app,
+						   GApplicationCommandLine *command_line);
+static gboolean ags_gsequencer_application_local_command_line(GApplication *gsequencer_app,
+							      gchar ***arguments,
+							      int *exit_status);
+static void ags_gsequencer_application_open(GApplication *application,
+					    GFile **files,
+					    gint n_files,
+					    const gchar *hint);
 
 static gpointer ags_gsequencer_application_parent_class = NULL;
-
-extern AgsApplicationContext *ags_application_context;
 
 GType
 ags_gsequencer_application_get_type()

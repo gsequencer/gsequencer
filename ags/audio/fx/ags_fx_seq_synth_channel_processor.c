@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_seq_synth_channel_processor_class_init(AgsFxSeqSynthChannelProcessorClass *fx_seq_synth_channel_processor);
-void ags_fx_seq_synth_channel_processor_init(AgsFxSeqSynthChannelProcessor *fx_seq_synth_channel_processor);
-void ags_fx_seq_synth_channel_processor_dispose(GObject *gobject);
-void ags_fx_seq_synth_channel_processor_finalize(GObject *gobject);
+static void ags_fx_seq_synth_channel_processor_class_init(AgsFxSeqSynthChannelProcessorClass *fx_seq_synth_channel_processor);
+static void ags_fx_seq_synth_channel_processor_init(AgsFxSeqSynthChannelProcessor *fx_seq_synth_channel_processor);
+static void ags_fx_seq_synth_channel_processor_dispose(GObject *gobject);
+static void ags_fx_seq_synth_channel_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_seq_synth_channel_processor

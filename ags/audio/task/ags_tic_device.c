@@ -21,20 +21,20 @@
 
 #include <ags/i18n.h>
 
-void ags_tic_device_class_init(AgsTicDeviceClass *tic_device);
-void ags_tic_device_init(AgsTicDevice *tic_device);
-void ags_tic_device_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_tic_device_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_tic_device_dispose(GObject *gobject);
-void ags_tic_device_finalize(GObject *gobject);
+static void ags_tic_device_class_init(AgsTicDeviceClass *tic_device);
+static void ags_tic_device_init(AgsTicDevice *tic_device);
+static void ags_tic_device_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_tic_device_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_tic_device_dispose(GObject *gobject);
+static void ags_tic_device_finalize(GObject *gobject);
 
-void ags_tic_device_launch(AgsTask *task);
+static void ags_tic_device_launch(AgsTask *task);
 
 /**
  * SECTION:ags_tic_device

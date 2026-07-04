@@ -27,18 +27,18 @@
 #include <ags/app/machine/ags_synth.h>
 #include <ags/app/machine/ags_oscillator.h>
 
-void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
-void ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_synth_input_line_init(AgsSynthInputLine *synth_input_line);
+static void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
+static void ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_synth_input_line_init(AgsSynthInputLine *synth_input_line);
 
-void ags_synth_input_line_connect(AgsConnectable *connectable);
-void ags_synth_input_line_disconnect(AgsConnectable *connectable);
+static void ags_synth_input_line_connect(AgsConnectable *connectable);
+static void ags_synth_input_line_disconnect(AgsConnectable *connectable);
 
-void ags_synth_input_line_show(GtkWidget *line);
+static void ags_synth_input_line_show(GtkWidget *line);
 
-void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
-void ags_synth_input_line_map_recall(AgsLine *line,
-				     guint output_pad_start);
+static void ags_synth_input_line_set_channel(AgsLine *line, AgsChannel *channel);
+static void ags_synth_input_line_map_recall(AgsLine *line,
+					    guint output_pad_start);
 
 /**
  * SECTION:ags_synth_input_line

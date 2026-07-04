@@ -28,56 +28,56 @@
 
 #include <ags/i18n.h>
 
-void ags_midi_parser_class_init(AgsMidiParserClass *midi_parser);
-void ags_midi_parser_init(AgsMidiParser *midi_parser);
-void ags_midi_parser_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_midi_parser_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_midi_parser_finalize(GObject *gobject);
+static void ags_midi_parser_class_init(AgsMidiParserClass *midi_parser);
+static void ags_midi_parser_init(AgsMidiParser *midi_parser);
+static void ags_midi_parser_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_midi_parser_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_midi_parser_finalize(GObject *gobject);
 
-int ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser);
-void ags_midi_parser_real_on_error(AgsMidiParser *midi_parser,
-				   GError **error);
+static int ags_midi_parser_real_midi_getc(AgsMidiParser *midi_parser);
+static void ags_midi_parser_real_on_error(AgsMidiParser *midi_parser,
+					  GError **error);
 
-xmlDoc* ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser);
-xmlNode* ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser);
-xmlNode* ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser);
+static xmlDoc* ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser);
+static xmlNode* ags_midi_parser_real_parse_header(AgsMidiParser *midi_parser);
+static xmlNode* ags_midi_parser_real_parse_track(AgsMidiParser *midi_parser);
 
-xmlNode* ags_midi_parser_real_key_on(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_key_off(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_key_pressure(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_change_parameter(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_change_program(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_change_channel_pressure(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_not_defined(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_key_on(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_key_off(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_key_pressure(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_change_parameter(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_change_pitch_bend(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_change_program(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_change_channel_pressure(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_not_defined(AgsMidiParser *midi_parser, guint status);
 
-xmlNode* ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_system_common(AgsMidiParser *midi_parser, guint status);
 
-xmlNode* ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type);
-xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_meta_event(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_sequence_number(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_end_of_track(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_smtpe(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_tempo(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_time_signature(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_key_signature(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type);
 
-xmlNode* ags_midi_parser_real_meta_misc(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_meta_misc(AgsMidiParser *midi_parser, guint meta_type);
 
-xmlNode* ags_midi_parser_real_midi_channel_prefix(AgsMidiParser *midi_parser, guint meta_type);
+static xmlNode* ags_midi_parser_real_midi_channel_prefix(AgsMidiParser *midi_parser, guint meta_type);
 
-xmlNode* ags_midi_parser_real_quarter_frame(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_song_position(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_song_select(AgsMidiParser *midi_parser, guint status);
-xmlNode* ags_midi_parser_real_tune_request(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_quarter_frame(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_song_position(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_song_select(AgsMidiParser *midi_parser, guint status);
+static xmlNode* ags_midi_parser_real_tune_request(AgsMidiParser *midi_parser, guint status);
 
 /**
  * SECTION:ags_midi_parser

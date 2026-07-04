@@ -26,35 +26,35 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_parser_class_init(AgsOscParserClass *osc_parser);
-void ags_osc_parser_init(AgsOscParser *osc_parser);
-void ags_osc_parser_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_osc_parser_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_osc_parser_finalize(GObject *gobject);
+static void ags_osc_parser_class_init(AgsOscParserClass *osc_parser);
+static void ags_osc_parser_init(AgsOscParser *osc_parser);
+static void ags_osc_parser_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_osc_parser_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_osc_parser_finalize(GObject *gobject);
 
-int ags_osc_parser_real_osc_getc(AgsOscParser *osc_parser);
-void ags_osc_parser_real_on_error(AgsOscParser *osc_parser,
-				  GError **error);
+static int ags_osc_parser_real_osc_getc(AgsOscParser *osc_parser);
+static void ags_osc_parser_real_on_error(AgsOscParser *osc_parser,
+					 GError **error);
 
-xmlDoc* ags_osc_parser_real_parse_full(AgsOscParser *osc_parser);
-xmlNode* ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
-					 guchar *osc_buffer,
-					 guint buffer_length);
+static xmlDoc* ags_osc_parser_real_parse_full(AgsOscParser *osc_parser);
+static xmlNode* ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
+						guchar *osc_buffer,
+						guint buffer_length);
 
-xmlNode* ags_osc_parser_real_packet(AgsOscParser *osc_parser);
+static xmlNode* ags_osc_parser_real_packet(AgsOscParser *osc_parser);
 
-xmlNode* ags_osc_parser_real_bundle(AgsOscParser *osc_parser);
+static xmlNode* ags_osc_parser_real_bundle(AgsOscParser *osc_parser);
 
-xmlNode* ags_osc_parser_real_message(AgsOscParser *osc_parser);
+static xmlNode* ags_osc_parser_real_message(AgsOscParser *osc_parser);
 
-xmlNode* ags_osc_parser_real_value(AgsOscParser *osc_parser,
-				   guint v_type);
+static xmlNode* ags_osc_parser_real_value(AgsOscParser *osc_parser,
+					  guint v_type);
 
 /**
  * SECTION:ags_osc_parser

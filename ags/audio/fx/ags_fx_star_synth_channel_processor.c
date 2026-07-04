@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_star_synth_channel_processor_class_init(AgsFxStarSynthChannelProcessorClass *fx_star_synth_channel_processor);
-void ags_fx_star_synth_channel_processor_init(AgsFxStarSynthChannelProcessor *fx_star_synth_channel_processor);
-void ags_fx_star_synth_channel_processor_dispose(GObject *gobject);
-void ags_fx_star_synth_channel_processor_finalize(GObject *gobject);
+static void ags_fx_star_synth_channel_processor_class_init(AgsFxStarSynthChannelProcessorClass *fx_star_synth_channel_processor);
+static void ags_fx_star_synth_channel_processor_init(AgsFxStarSynthChannelProcessor *fx_star_synth_channel_processor);
+static void ags_fx_star_synth_channel_processor_dispose(GObject *gobject);
+static void ags_fx_star_synth_channel_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_star_synth_channel_processor

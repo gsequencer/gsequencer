@@ -27,33 +27,33 @@
 
 #include <ags/i18n.h>
 
-void ags_pcm_file_dialog_class_init(AgsPCMFileDialogClass *pcm_file_dialog);
-void ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog);
+static void ags_pcm_file_dialog_class_init(AgsPCMFileDialogClass *pcm_file_dialog);
+static void ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog);
 
-void ags_pcm_file_dialog_show(GtkWidget *widget);
+static void ags_pcm_file_dialog_show(GtkWidget *widget);
 
-void ags_pcm_file_dialog_close_request_callback(GtkWindow *window,
-						AgsPCMFileDialog *pcm_file_dialog);
+static void ags_pcm_file_dialog_close_request_callback(GtkWindow *window,
+						       AgsPCMFileDialog *pcm_file_dialog);
 
-void ags_pcm_file_dialog_activate_button_callback(GtkButton *activate_button,
-						  AgsPCMFileDialog *pcm_file_dialog);
+static void ags_pcm_file_dialog_activate_button_callback(GtkButton *activate_button,
+							 AgsPCMFileDialog *pcm_file_dialog);
 
-gboolean ags_pcm_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
-						  guint keyval,
-						  guint keycode,
-						  GdkModifierType state,
-						  AgsPCMFileDialog *pcm_file_dialog);
-void ags_pcm_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
-					       guint keyval,
-					       guint keycode,
-					       GdkModifierType state,
-					       AgsPCMFileDialog *pcm_file_dialog);
-gboolean ags_pcm_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
-						GdkModifierType keyval,
-						AgsPCMFileDialog *pcm_file_dialog);
+static gboolean ags_pcm_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+							 guint keyval,
+							 guint keycode,
+							 GdkModifierType state,
+							 AgsPCMFileDialog *pcm_file_dialog);
+static void ags_pcm_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+						      guint keyval,
+						      guint keycode,
+						      GdkModifierType state,
+						      AgsPCMFileDialog *pcm_file_dialog);
+static gboolean ags_pcm_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						       GdkModifierType keyval,
+						       AgsPCMFileDialog *pcm_file_dialog);
 
-void ags_pcm_file_dialog_real_response(AgsPCMFileDialog *pcm_file_dialog,
-				       gint response_id);
+static void ags_pcm_file_dialog_real_response(AgsPCMFileDialog *pcm_file_dialog,
+					      gint response_id);
 
 /**
  * SECTION:ags_pcm_file_dialog

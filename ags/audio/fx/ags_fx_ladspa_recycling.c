@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_ladspa_recycling_class_init(AgsFxLadspaRecyclingClass *fx_ladspa_recycling);
-void ags_fx_ladspa_recycling_init(AgsFxLadspaRecycling *fx_ladspa_recycling);
-void ags_fx_ladspa_recycling_dispose(GObject *gobject);
-void ags_fx_ladspa_recycling_finalize(GObject *gobject);
+static void ags_fx_ladspa_recycling_class_init(AgsFxLadspaRecyclingClass *fx_ladspa_recycling);
+static void ags_fx_ladspa_recycling_init(AgsFxLadspaRecycling *fx_ladspa_recycling);
+static void ags_fx_ladspa_recycling_dispose(GObject *gobject);
+static void ags_fx_ladspa_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_ladspa_recycling

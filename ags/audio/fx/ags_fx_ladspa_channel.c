@@ -30,21 +30,21 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_ladspa_channel_class_init(AgsFxLadspaChannelClass *fx_ladspa_channel);
-void ags_fx_ladspa_channel_init(AgsFxLadspaChannel *fx_ladspa_channel);
-void ags_fx_ladspa_channel_dispose(GObject *gobject);
-void ags_fx_ladspa_channel_finalize(GObject *gobject);
+static void ags_fx_ladspa_channel_class_init(AgsFxLadspaChannelClass *fx_ladspa_channel);
+static void ags_fx_ladspa_channel_init(AgsFxLadspaChannel *fx_ladspa_channel);
+static void ags_fx_ladspa_channel_dispose(GObject *gobject);
+static void ags_fx_ladspa_channel_finalize(GObject *gobject);
 
-void ags_fx_ladspa_channel_notify_filename_callback(GObject *gobject,
+static void ags_fx_ladspa_channel_notify_filename_callback(GObject *gobject,
 						    GParamSpec *pspec,
 						    gpointer user_data);
-void ags_fx_ladspa_channel_notify_effect_callback(GObject *gobject,
+static void ags_fx_ladspa_channel_notify_effect_callback(GObject *gobject,
 						  GParamSpec *pspec,
 						  gpointer user_data);
-void ags_fx_ladspa_channel_notify_buffer_size_callback(GObject *gobject,
+static void ags_fx_ladspa_channel_notify_buffer_size_callback(GObject *gobject,
 						       GParamSpec *pspec,
 						       gpointer user_data);
-void ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
+static void ags_fx_ladspa_channel_notify_samplerate_callback(GObject *gobject,
 						      GParamSpec *pspec,
 						      gpointer user_data);
 

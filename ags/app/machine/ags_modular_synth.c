@@ -33,33 +33,33 @@
 
 #include <ags/i18n.h>
 
-void ags_modular_synth_class_init(AgsModularSynthClass *modular_synth);
-void ags_modular_synth_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_modular_synth_init(AgsModularSynth *modular_synth);
-void ags_modular_synth_finalize(GObject *gobject);
+static void ags_modular_synth_class_init(AgsModularSynthClass *modular_synth);
+static void ags_modular_synth_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_modular_synth_init(AgsModularSynth *modular_synth);
+static void ags_modular_synth_finalize(GObject *gobject);
 
-void ags_modular_synth_connect(AgsConnectable *connectable);
-void ags_modular_synth_disconnect(AgsConnectable *connectable);
+static void ags_modular_synth_connect(AgsConnectable *connectable);
+static void ags_modular_synth_disconnect(AgsConnectable *connectable);
 
-void ags_modular_synth_show(GtkWidget *widget);
+static void ags_modular_synth_show(GtkWidget *widget);
 
-void ags_modular_synth_resize_audio_channels(AgsMachine *machine,
-					     guint audio_channels, guint audio_channels_old,
-					     gpointer data);
-void ags_modular_synth_resize_pads(AgsMachine *machine, GType channel_type,
-				   guint pads, guint pads_old,
-				   gpointer data);
+static void ags_modular_synth_resize_audio_channels(AgsMachine *machine,
+						    guint audio_channels, guint audio_channels_old,
+						    gpointer data);
+static void ags_modular_synth_resize_pads(AgsMachine *machine, GType channel_type,
+					  guint pads, guint pads_old,
+					  gpointer data);
 
-void ags_modular_synth_map_recall(AgsMachine *machine);
+static void ags_modular_synth_map_recall(AgsMachine *machine);
 
-void ags_modular_synth_input_map_recall(AgsModularSynth *modular_synth,
-					guint audio_channel_start,
-					guint input_pad_start);
-void ags_modular_synth_output_map_recall(AgsModularSynth *modular_synth,
-					 guint audio_channel_start,
-					 guint output_pad_start);
+static void ags_modular_synth_input_map_recall(AgsModularSynth *modular_synth,
+					       guint audio_channel_start,
+					       guint input_pad_start);
+static void ags_modular_synth_output_map_recall(AgsModularSynth *modular_synth,
+						guint audio_channel_start,
+						guint output_pad_start);
 
-void ags_modular_synth_refresh_port(AgsMachine *machine);
+static void ags_modular_synth_refresh_port(AgsMachine *machine);
 
 /**
  * SECTION:ags_modular_synth

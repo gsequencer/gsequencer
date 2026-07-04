@@ -39,91 +39,91 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-void ags_audio_unit_devin_class_init(AgsAudioUnitDevinClass *audio_unit_devin);
-void ags_audio_unit_devin_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_unit_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard);
-void ags_audio_unit_devin_init(AgsAudioUnitDevin *audio_unit_devin);
-void ags_audio_unit_devin_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_audio_unit_devin_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_audio_unit_devin_dispose(GObject *gobject);
-void ags_audio_unit_devin_finalize(GObject *gobject);
+static void ags_audio_unit_devin_class_init(AgsAudioUnitDevinClass *audio_unit_devin);
+static void ags_audio_unit_devin_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_unit_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard);
+static void ags_audio_unit_devin_init(AgsAudioUnitDevin *audio_unit_devin);
+static void ags_audio_unit_devin_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_audio_unit_devin_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_audio_unit_devin_dispose(GObject *gobject);
+static void ags_audio_unit_devin_finalize(GObject *gobject);
 
-AgsUUID* ags_audio_unit_devin_get_uuid(AgsConnectable *connectable);
-gboolean ags_audio_unit_devin_has_resource(AgsConnectable *connectable);
-gboolean ags_audio_unit_devin_is_ready(AgsConnectable *connectable);
-void ags_audio_unit_devin_add_to_registry(AgsConnectable *connectable);
-void ags_audio_unit_devin_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_audio_unit_devin_list_resource(AgsConnectable *connectable);
-xmlNode* ags_audio_unit_devin_xml_compose(AgsConnectable *connectable);
-void ags_audio_unit_devin_xml_parse(AgsConnectable *connectable,
-				    xmlNode *node);
-gboolean ags_audio_unit_devin_is_connected(AgsConnectable *connectable);
-void ags_audio_unit_devin_connect(AgsConnectable *connectable);
-void ags_audio_unit_devin_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_audio_unit_devin_get_uuid(AgsConnectable *connectable);
+static gboolean ags_audio_unit_devin_has_resource(AgsConnectable *connectable);
+static gboolean ags_audio_unit_devin_is_ready(AgsConnectable *connectable);
+static void ags_audio_unit_devin_add_to_registry(AgsConnectable *connectable);
+static void ags_audio_unit_devin_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_audio_unit_devin_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_audio_unit_devin_xml_compose(AgsConnectable *connectable);
+static void ags_audio_unit_devin_xml_parse(AgsConnectable *connectable,
+					   xmlNode *node);
+static gboolean ags_audio_unit_devin_is_connected(AgsConnectable *connectable);
+static void ags_audio_unit_devin_connect(AgsConnectable *connectable);
+static void ags_audio_unit_devin_disconnect(AgsConnectable *connectable);
 
-void ags_audio_unit_devin_set_device(AgsSoundcard *soundcard,
-				     gchar *device);
-gchar* ags_audio_unit_devin_get_device(AgsSoundcard *soundcard);
+static void ags_audio_unit_devin_set_device(AgsSoundcard *soundcard,
+					    gchar *device);
+static gchar* ags_audio_unit_devin_get_device(AgsSoundcard *soundcard);
 
-void ags_audio_unit_devin_set_presets(AgsSoundcard *soundcard,
-				      guint channels,
-				      guint rate,
-				      guint buffer_size,
-				      AgsSoundcardFormat format);
-void ags_audio_unit_devin_get_presets(AgsSoundcard *soundcard,
-				      guint *channels,
-				      guint *rate,
-				      guint *buffer_size,
-				      AgsSoundcardFormat *format);
+static void ags_audio_unit_devin_set_presets(AgsSoundcard *soundcard,
+					     guint channels,
+					     guint rate,
+					     guint buffer_size,
+					     AgsSoundcardFormat format);
+static void ags_audio_unit_devin_get_presets(AgsSoundcard *soundcard,
+					     guint *channels,
+					     guint *rate,
+					     guint *buffer_size,
+					     AgsSoundcardFormat *format);
 
-void ags_audio_unit_devin_list_cards(AgsSoundcard *soundcard,
-				     GList **card_id, GList **card_name);
-void ags_audio_unit_devin_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
-				   guint *channels_min, guint *channels_max,
-				   guint *rate_min, guint *rate_max,
-				   guint *buffer_size_min, guint *buffer_size_max,
-				   GError **error);
-guint ags_audio_unit_devin_get_capability(AgsSoundcard *soundcard);
+static void ags_audio_unit_devin_list_cards(AgsSoundcard *soundcard,
+					    GList **card_id, GList **card_name);
+static void ags_audio_unit_devin_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
+					  guint *channels_min, guint *channels_max,
+					  guint *rate_min, guint *rate_max,
+					  guint *buffer_size_min, guint *buffer_size_max,
+					  GError **error);
+static guint ags_audio_unit_devin_get_capability(AgsSoundcard *soundcard);
 
-void ags_audio_unit_devin_set_bpm(AgsSoundcard *soundcard,
-				  gdouble bpm);
-gdouble ags_audio_unit_devin_get_bpm(AgsSoundcard *soundcard);
+static void ags_audio_unit_devin_set_bpm(AgsSoundcard *soundcard,
+					 gdouble bpm);
+static gdouble ags_audio_unit_devin_get_bpm(AgsSoundcard *soundcard);
 
-void ags_audio_unit_devin_set_start_note_offset(AgsSoundcard *soundcard,
-						guint64 start_note_offset);
-guint64 ags_audio_unit_devin_get_start_note_offset(AgsSoundcard *soundcard);
+static void ags_audio_unit_devin_set_start_note_offset(AgsSoundcard *soundcard,
+						       guint64 start_note_offset);
+static guint64 ags_audio_unit_devin_get_start_note_offset(AgsSoundcard *soundcard);
 
-GObject* ags_audio_unit_devin_get_frame_clock(AgsSoundcard *soundcard);
+static GObject* ags_audio_unit_devin_get_frame_clock(AgsSoundcard *soundcard);
 
-gboolean ags_audio_unit_devin_is_starting(AgsSoundcard *soundcard);
-gboolean ags_audio_unit_devin_is_recording(AgsSoundcard *soundcard);
+static gboolean ags_audio_unit_devin_is_starting(AgsSoundcard *soundcard);
+static gboolean ags_audio_unit_devin_is_recording(AgsSoundcard *soundcard);
 
-gchar* ags_audio_unit_devin_get_uptime(AgsSoundcard *soundcard);
+static gchar* ags_audio_unit_devin_get_uptime(AgsSoundcard *soundcard);
 
-void ags_audio_unit_devin_port_init(AgsSoundcard *soundcard,
-				    GError **error);
-void ags_audio_unit_devin_port_record(AgsSoundcard *soundcard,
-				      GError **error);
-void ags_audio_unit_devin_port_free(AgsSoundcard *soundcard);
+static void ags_audio_unit_devin_port_init(AgsSoundcard *soundcard,
+					   GError **error);
+static void ags_audio_unit_devin_port_record(AgsSoundcard *soundcard,
+					     GError **error);
+static void ags_audio_unit_devin_port_free(AgsSoundcard *soundcard);
 
-void ags_audio_unit_devin_tic(AgsSoundcard *soundcard);
-void ags_audio_unit_devin_offset_changed(AgsSoundcard *soundcard,
-					 guint64 note_offset);
+static void ags_audio_unit_devin_tic(AgsSoundcard *soundcard);
+static void ags_audio_unit_devin_offset_changed(AgsSoundcard *soundcard,
+						guint64 note_offset);
 
-void* ags_audio_unit_devin_get_buffer(AgsSoundcard *soundcard);
-void* ags_audio_unit_devin_get_next_buffer(AgsSoundcard *soundcard);
-void* ags_audio_unit_devin_get_prev_buffer(AgsSoundcard *soundcard);
+static void* ags_audio_unit_devin_get_buffer(AgsSoundcard *soundcard);
+static void* ags_audio_unit_devin_get_next_buffer(AgsSoundcard *soundcard);
+static void* ags_audio_unit_devin_get_prev_buffer(AgsSoundcard *soundcard);
 
-void ags_audio_unit_devin_lock_buffer(AgsSoundcard *soundcard,
-				      void *buffer);
-void ags_audio_unit_devin_unlock_buffer(AgsSoundcard *soundcard,
-					void *buffer);
+static void ags_audio_unit_devin_lock_buffer(AgsSoundcard *soundcard,
+					     void *buffer);
+static void ags_audio_unit_devin_unlock_buffer(AgsSoundcard *soundcard,
+					       void *buffer);
 
 /**
  * SECTION:ags_audio_unit_devin

@@ -51,79 +51,79 @@
 
 #include <ags/i18n.h>
 
-void ags_ui_osc_renew_controller_class_init(AgsUiOscRenewControllerClass *ui_osc_renew_controller);
-void ags_ui_osc_renew_controller_osc_plugin_controller_interface_init(AgsOscPluginControllerInterface *osc_plugin_controller);
-void ags_ui_osc_renew_controller_init(AgsUiOscRenewController *ui_osc_renew_controller);
-void ags_ui_osc_renew_controller_set_property(GObject *gobject,
-					      guint prop_id,
-					      const GValue *value,
-					      GParamSpec *param_spec);
-void ags_ui_osc_renew_controller_get_property(GObject *gobject,
-					      guint prop_id,
-					      GValue *value,
-					      GParamSpec *param_spec);
-void ags_ui_osc_renew_controller_dispose(GObject *gobject);
-void ags_ui_osc_renew_controller_finalize(GObject *gobject);
+static void ags_ui_osc_renew_controller_class_init(AgsUiOscRenewControllerClass *ui_osc_renew_controller);
+static void ags_ui_osc_renew_controller_osc_plugin_controller_interface_init(AgsOscPluginControllerInterface *osc_plugin_controller);
+static void ags_ui_osc_renew_controller_init(AgsUiOscRenewController *ui_osc_renew_controller);
+static void ags_ui_osc_renew_controller_set_property(GObject *gobject,
+						     guint prop_id,
+						     const GValue *value,
+						     GParamSpec *param_spec);
+static void ags_ui_osc_renew_controller_get_property(GObject *gobject,
+						     guint prop_id,
+						     GValue *value,
+						     GParamSpec *param_spec);
+static void ags_ui_osc_renew_controller_dispose(GObject *gobject);
+static void ags_ui_osc_renew_controller_finalize(GObject *gobject);
 
-gpointer ags_ui_osc_renew_controller_do_request(AgsOscPluginController *osc_plugin_controller,
-						AgsOscConnection *osc_connection,
-						unsigned char *message, guint message_size);
+static gpointer ags_ui_osc_renew_controller_do_request(AgsOscPluginController *osc_plugin_controller,
+						       AgsOscConnection *osc_connection,
+						       unsigned char *message, guint message_size);
 
-gpointer ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_renew_controller,
-						      AgsOscConnection *osc_connection,
-						      AgsMachine *machine,
-						      unsigned char *message, guint message_size,
-						      gchar *type_tag,
-						      gchar *path, guint path_offset);
-gpointer ags_ui_osc_renew_controller_set_data_effect_bridge(AgsUiOscRenewController *ui_osc_renew_controller,
-							    AgsOscConnection *osc_connection,
-							    AgsEffectBridge *effect_bridge,
-							    unsigned char *message, guint message_size,
-							    gchar *type_tag,
-							    gchar *path, guint path_offset);
+static gpointer ags_ui_osc_renew_controller_set_data_machine(AgsUiOscRenewController *ui_osc_renew_controller,
+							     AgsOscConnection *osc_connection,
+							     AgsMachine *machine,
+							     unsigned char *message, guint message_size,
+							     gchar *type_tag,
+							     gchar *path, guint path_offset);
+static gpointer ags_ui_osc_renew_controller_set_data_effect_bridge(AgsUiOscRenewController *ui_osc_renew_controller,
+								   AgsOscConnection *osc_connection,
+								   AgsEffectBridge *effect_bridge,
+								   unsigned char *message, guint message_size,
+								   gchar *type_tag,
+								   gchar *path, guint path_offset);
 
-gpointer ags_ui_osc_renew_controller_set_data_pad(AgsUiOscRenewController *ui_osc_renew_controller,
-						  AgsOscConnection *osc_connection,
-						  AgsPad *pad,
-						  unsigned char *message, guint message_size,
-						  gchar *type_tag,
-						  gchar *path, guint path_offset);
-gpointer ags_ui_osc_renew_controller_set_data_line(AgsUiOscRenewController *ui_osc_renew_controller,
-						   AgsOscConnection *osc_connection,
-						   AgsLine *line,
-						   unsigned char *message, guint message_size,
-						   gchar *type_tag,
-						   gchar *path, guint path_offset);
-
-gpointer ags_ui_osc_renew_controller_set_data_effect_pad(AgsUiOscRenewController *ui_osc_renew_controller,
+static gpointer ags_ui_osc_renew_controller_set_data_pad(AgsUiOscRenewController *ui_osc_renew_controller,
 							 AgsOscConnection *osc_connection,
-							 AgsEffectPad *effect_pad,
+							 AgsPad *pad,
 							 unsigned char *message, guint message_size,
 							 gchar *type_tag,
 							 gchar *path, guint path_offset);
-gpointer ags_ui_osc_renew_controller_set_data_effect_line(AgsUiOscRenewController *ui_osc_renew_controller,
+static gpointer ags_ui_osc_renew_controller_set_data_line(AgsUiOscRenewController *ui_osc_renew_controller,
 							  AgsOscConnection *osc_connection,
-							  AgsEffectLine *effect_line,
+							  AgsLine *line,
 							  unsigned char *message, guint message_size,
 							  gchar *type_tag,
 							  gchar *path, guint path_offset);
 
-gpointer ags_ui_osc_renew_controller_set_data_bulk_member(AgsUiOscRenewController *ui_osc_renew_controller,
-							  AgsOscConnection *osc_connection,
-							  AgsBulkMember *bulk_member,
-							  unsigned char *message, guint message_size,
-							  gchar *type_tag,
-							  gchar *path, guint path_offset);
-gpointer ags_ui_osc_renew_controller_set_data_line_member(AgsUiOscRenewController *ui_osc_renew_controller,
-							  AgsOscConnection *osc_connection,
-							  AgsLineMember *line_member,
-							  unsigned char *message, guint message_size,
-							  gchar *type_tag,
-							  gchar *path, guint path_offset);
+static gpointer ags_ui_osc_renew_controller_set_data_effect_pad(AgsUiOscRenewController *ui_osc_renew_controller,
+								AgsOscConnection *osc_connection,
+								AgsEffectPad *effect_pad,
+								unsigned char *message, guint message_size,
+								gchar *type_tag,
+								gchar *path, guint path_offset);
+static gpointer ags_ui_osc_renew_controller_set_data_effect_line(AgsUiOscRenewController *ui_osc_renew_controller,
+								 AgsOscConnection *osc_connection,
+								 AgsEffectLine *effect_line,
+								 unsigned char *message, guint message_size,
+								 gchar *type_tag,
+								 gchar *path, guint path_offset);
 
-gpointer ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_controller,
-						   AgsOscConnection *osc_connection,
-						   unsigned char *message, guint message_size);
+static gpointer ags_ui_osc_renew_controller_set_data_bulk_member(AgsUiOscRenewController *ui_osc_renew_controller,
+								 AgsOscConnection *osc_connection,
+								 AgsBulkMember *bulk_member,
+								 unsigned char *message, guint message_size,
+								 gchar *type_tag,
+								 gchar *path, guint path_offset);
+static gpointer ags_ui_osc_renew_controller_set_data_line_member(AgsUiOscRenewController *ui_osc_renew_controller,
+								 AgsOscConnection *osc_connection,
+								 AgsLineMember *line_member,
+								 unsigned char *message, guint message_size,
+								 gchar *type_tag,
+								 gchar *path, guint path_offset);
+
+static gpointer ags_ui_osc_renew_controller_real_set_data(AgsUiOscRenewController *ui_osc_renew_controller,
+							  AgsOscConnection *osc_connection,
+							  unsigned char *message, guint message_size);
 
 /**
  * SECTION:ags_ui_osc_renew_controller

@@ -19,9 +19,9 @@
 
 #include <ags/widget/ags_scrolled_scale_box.h>
 
-void ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box);
-void ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box);
-void ags_scrolled_scale_box_finalize(GObject *gobject);
+static void ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box);
+static void ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box);
+static void ags_scrolled_scale_box_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_scrolled_scale_box

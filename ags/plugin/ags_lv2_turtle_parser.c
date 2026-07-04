@@ -31,70 +31,70 @@
 
 #include <ags/i18n.h>
 
-void ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser);
-void ags_lv2_turtle_parser_init (AgsLv2TurtleParser *lv2_turtle_parser);
-void ags_lv2_turtle_parser_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_lv2_turtle_parser_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_lv2_turtle_parser_dispose(GObject *gobject);
-void ags_lv2_turtle_parser_finalize(GObject *gobject);
+static void ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser);
+static void ags_lv2_turtle_parser_init (AgsLv2TurtleParser *lv2_turtle_parser);
+static void ags_lv2_turtle_parser_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_lv2_turtle_parser_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_lv2_turtle_parser_dispose(GObject *gobject);
+static void ags_lv2_turtle_parser_finalize(GObject *gobject);
 
-void ags_lv2_turtle_parser_parse_names_statement(AgsLv2TurtleParser *lv2_turtle_parser,
-						 AgsTurtle *current_turtle,
-						 xmlNode *node,
-						 AgsTurtle **turtle, guint n_turtle,
-						 gboolean see_also);
-void ags_lv2_turtle_parser_parse_names_triple(AgsLv2TurtleParser *lv2_turtle_parser,
-					      AgsTurtle *current_turtle,
-					      xmlNode *node,
-					      AgsTurtle **turtle, guint n_turtle,
-					      gboolean see_also);
-void ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_turtle_parser,
-							     AgsTurtle *current_turtle,
-							     gchar *subject_iriref,
-							     xmlNode *node,
-							     AgsTurtle **turtle, guint n_turtle);
-void ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(AgsLv2TurtleParser *lv2_turtle_parser,
-								      AgsTurtle *current_turtle,
-								      gchar *subject_iriref,
-								      xmlNode *node,
-								      AgsTurtle **turtle, guint n_turtle);
-void ags_lv2_turtle_parser_parse_names_blank_node_property_list(AgsLv2TurtleParser *lv2_turtle_parser,
-								AgsTurtle *current_turtle,
-								gchar *subject_iriref,
-								xmlNode *node,
-								AgsTurtle **turtle, guint n_turtle);
+static void ags_lv2_turtle_parser_parse_names_statement(AgsLv2TurtleParser *lv2_turtle_parser,
+							AgsTurtle *current_turtle,
+							xmlNode *node,
+							AgsTurtle **turtle, guint n_turtle,
+							gboolean see_also);
+static void ags_lv2_turtle_parser_parse_names_triple(AgsLv2TurtleParser *lv2_turtle_parser,
+						     AgsTurtle *current_turtle,
+						     xmlNode *node,
+						     AgsTurtle **turtle, guint n_turtle,
+						     gboolean see_also);
+static void ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsLv2TurtleParser *lv2_turtle_parser,
+								    AgsTurtle *current_turtle,
+								    gchar *subject_iriref,
+								    xmlNode *node,
+								    AgsTurtle **turtle, guint n_turtle);
+static void ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(AgsLv2TurtleParser *lv2_turtle_parser,
+									     AgsTurtle *current_turtle,
+									     gchar *subject_iriref,
+									     xmlNode *node,
+									     AgsTurtle **turtle, guint n_turtle);
+static void ags_lv2_turtle_parser_parse_names_blank_node_property_list(AgsLv2TurtleParser *lv2_turtle_parser,
+								       AgsTurtle *current_turtle,
+								       gchar *subject_iriref,
+								       xmlNode *node,
+								       AgsTurtle **turtle, guint n_turtle);
 
-void ags_lv2_turtle_parser_parse_statement(AgsLv2TurtleParser *lv2_turtle_parser,
-					   AgsTurtle *current_turtle,
-					   xmlNode *node,
-					   AgsTurtle **turtle, guint n_turtle,
-					   gboolean see_also);
-void ags_lv2_turtle_parser_parse_triple(AgsLv2TurtleParser *lv2_turtle_parser,
-					AgsTurtle *current_turtle,
-					xmlNode *node,
-					AgsTurtle **turtle, guint n_turtle,
-					gboolean see_also);
-void ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle_parser,
-						       AgsTurtle *current_turtle,
-						       gchar *subject_iriref,
-						       xmlNode *node,
-						       AgsTurtle **turtle, guint n_turtle);
-void ags_lv2_turtle_parser_parse_predicate_object_list_see_also(AgsLv2TurtleParser *lv2_turtle_parser,
-								AgsTurtle *current_turtle,
-								gchar *subject_iriref,
-								xmlNode *node,
-								AgsTurtle **turtle, guint n_turtle);
-void ags_lv2_turtle_parser_parse_blank_node_property_list(AgsLv2TurtleParser *lv2_turtle_parser,
-							  AgsTurtle *current_turtle,
-							  gchar *subject_iriref,
-							  xmlNode *node,
-							  AgsTurtle **turtle, guint n_turtle);
+static void ags_lv2_turtle_parser_parse_statement(AgsLv2TurtleParser *lv2_turtle_parser,
+						  AgsTurtle *current_turtle,
+						  xmlNode *node,
+						  AgsTurtle **turtle, guint n_turtle,
+						  gboolean see_also);
+static void ags_lv2_turtle_parser_parse_triple(AgsLv2TurtleParser *lv2_turtle_parser,
+					       AgsTurtle *current_turtle,
+					       xmlNode *node,
+					       AgsTurtle **turtle, guint n_turtle,
+					       gboolean see_also);
+static void ags_lv2_turtle_parser_parse_predicate_object_list(AgsLv2TurtleParser *lv2_turtle_parser,
+							      AgsTurtle *current_turtle,
+							      gchar *subject_iriref,
+							      xmlNode *node,
+							      AgsTurtle **turtle, guint n_turtle);
+static void ags_lv2_turtle_parser_parse_predicate_object_list_see_also(AgsLv2TurtleParser *lv2_turtle_parser,
+								       AgsTurtle *current_turtle,
+								       gchar *subject_iriref,
+								       xmlNode *node,
+								       AgsTurtle **turtle, guint n_turtle);
+static void ags_lv2_turtle_parser_parse_blank_node_property_list(AgsLv2TurtleParser *lv2_turtle_parser,
+								 AgsTurtle *current_turtle,
+								 gchar *subject_iriref,
+								 xmlNode *node,
+								 AgsTurtle **turtle, guint n_turtle);
 
 /**
  * SECTION:ags_lv2_turtle_parser

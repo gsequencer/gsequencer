@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_vst3_recycling_class_init(AgsFxVst3RecyclingClass *fx_vst3_recycling);
-void ags_fx_vst3_recycling_init(AgsFxVst3Recycling *fx_vst3_recycling);
-void ags_fx_vst3_recycling_dispose(GObject *gobject);
-void ags_fx_vst3_recycling_finalize(GObject *gobject);
+static void ags_fx_vst3_recycling_class_init(AgsFxVst3RecyclingClass *fx_vst3_recycling);
+static void ags_fx_vst3_recycling_init(AgsFxVst3Recycling *fx_vst3_recycling);
+static void ags_fx_vst3_recycling_dispose(GObject *gobject);
+static void ags_fx_vst3_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_vst3_recycling

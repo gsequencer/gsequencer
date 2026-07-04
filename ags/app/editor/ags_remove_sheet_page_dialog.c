@@ -28,18 +28,18 @@
 
 #include <ags/i18n.h>
 
-void ags_remove_sheet_page_dialog_class_init(AgsRemoveSheetPageDialogClass *remove_sheet_page_dialog);
-void ags_remove_sheet_page_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_remove_sheet_page_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_remove_sheet_page_dialog_init(AgsRemoveSheetPageDialog *remove_sheet_page_dialog);
-void ags_remove_sheet_page_dialog_finalize(GObject *gobject);
+static void ags_remove_sheet_page_dialog_class_init(AgsRemoveSheetPageDialogClass *remove_sheet_page_dialog);
+static void ags_remove_sheet_page_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_remove_sheet_page_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_remove_sheet_page_dialog_init(AgsRemoveSheetPageDialog *remove_sheet_page_dialog);
+static void ags_remove_sheet_page_dialog_finalize(GObject *gobject);
 
-void ags_remove_sheet_page_dialog_connect(AgsConnectable *connectable);
-void ags_remove_sheet_page_dialog_disconnect(AgsConnectable *connectable);
+static void ags_remove_sheet_page_dialog_connect(AgsConnectable *connectable);
+static void ags_remove_sheet_page_dialog_disconnect(AgsConnectable *connectable);
 
-void ags_remove_sheet_page_dialog_set_update(AgsApplicable *applicable, gboolean update);
-void ags_remove_sheet_page_dialog_apply(AgsApplicable *applicable);
-void ags_remove_sheet_page_dialog_reset(AgsApplicable *applicable);
+static void ags_remove_sheet_page_dialog_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_remove_sheet_page_dialog_apply(AgsApplicable *applicable);
+static void ags_remove_sheet_page_dialog_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_remove_sheet_page_dialog

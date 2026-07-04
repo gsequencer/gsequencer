@@ -24,8 +24,8 @@
 #include <strings.h>
 #include <math.h>
 
-gpointer ags_string_util_copy(gpointer ptr);
-void ags_string_util_free(gpointer ptr);
+static gpointer ags_string_util_copy(gpointer ptr);
+static void ags_string_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_string_util

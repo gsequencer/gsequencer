@@ -31,20 +31,20 @@
 
 #include <ags/i18n.h>
 
-void ags_write_vst3_port_class_init(AgsWriteVst3PortClass *write_vst3_port);
-void ags_write_vst3_port_init(AgsWriteVst3Port *write_vst3_port);
-void ags_write_vst3_port_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_write_vst3_port_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_write_vst3_port_dispose(GObject *gobject);
-void ags_write_vst3_port_finalize(GObject *gobject);
+static void ags_write_vst3_port_class_init(AgsWriteVst3PortClass *write_vst3_port);
+static void ags_write_vst3_port_init(AgsWriteVst3Port *write_vst3_port);
+static void ags_write_vst3_port_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_write_vst3_port_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_write_vst3_port_dispose(GObject *gobject);
+static void ags_write_vst3_port_finalize(GObject *gobject);
 
-void ags_write_vst3_port_launch(AgsTask *task);
+static void ags_write_vst3_port_launch(AgsTask *task);
 
 /**
  * SECTION:ags_write_vst3_port

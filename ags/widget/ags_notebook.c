@@ -21,22 +21,22 @@
 
 #include <stdlib.h>
 
-void ags_notebook_class_init(AgsNotebookClass *notebook);
-void ags_notebook_init(AgsNotebook *notebook);
-void ags_notebook_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_notebook_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_notebook_finalize(GObject *gobject);
+static void ags_notebook_class_init(AgsNotebookClass *notebook);
+static void ags_notebook_init(AgsNotebook *notebook);
+static void ags_notebook_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+static void ags_notebook_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+static void ags_notebook_finalize(GObject *gobject);
 
-void ags_notebook_scroll_prev_callback(GtkWidget *button,
-				       AgsNotebook *notebook);
-void ags_notebook_scroll_next_callback(GtkWidget *button,
-				       AgsNotebook *notebook);
+static void ags_notebook_scroll_prev_callback(GtkWidget *button,
+					      AgsNotebook *notebook);
+static void ags_notebook_scroll_next_callback(GtkWidget *button,
+					      AgsNotebook *notebook);
 
 /**
  * SECTION:ags_notebook

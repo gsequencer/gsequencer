@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_buffer_audio_class_init(AgsFxBufferAudioClass *fx_buffer_audio);
-void ags_fx_buffer_audio_init(AgsFxBufferAudio *fx_buffer_audio);
-void ags_fx_buffer_audio_dispose(GObject *gobject);
-void ags_fx_buffer_audio_finalize(GObject *gobject);
+static void ags_fx_buffer_audio_class_init(AgsFxBufferAudioClass *fx_buffer_audio);
+static void ags_fx_buffer_audio_init(AgsFxBufferAudio *fx_buffer_audio);
+static void ags_fx_buffer_audio_dispose(GObject *gobject);
+static void ags_fx_buffer_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_buffer_audio

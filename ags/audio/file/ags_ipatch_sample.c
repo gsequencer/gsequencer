@@ -27,58 +27,58 @@
 
 #include <ags/i18n.h>
 
-void ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample);
-void ags_ipatch_sample_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ipatch_sample_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
-void ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample);
-void ags_ipatch_sample_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_ipatch_sample_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_ipatch_sample_dispose(GObject *gobject);
-void ags_ipatch_sample_finalize(GObject *gobject);
+static void ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample);
+static void ags_ipatch_sample_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ipatch_sample_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
+static void ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample);
+static void ags_ipatch_sample_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_ipatch_sample_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_ipatch_sample_dispose(GObject *gobject);
+static void ags_ipatch_sample_finalize(GObject *gobject);
 
-AgsUUID* ags_ipatch_sample_get_uuid(AgsConnectable *connectable);
-gboolean ags_ipatch_sample_has_resource(AgsConnectable *connectable);
-gboolean ags_ipatch_sample_is_ready(AgsConnectable *connectable);
-void ags_ipatch_sample_add_to_registry(AgsConnectable *connectable);
-void ags_ipatch_sample_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_ipatch_sample_list_resource(AgsConnectable *connectable);
-xmlNode* ags_ipatch_sample_xml_compose(AgsConnectable *connectable);
-void ags_ipatch_sample_xml_parse(AgsConnectable *connectable,
-				   xmlNode *node);
-gboolean ags_ipatch_sample_is_connected(AgsConnectable *connectable);
-void ags_ipatch_sample_connect(AgsConnectable *connectable);
-void ags_ipatch_sample_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_ipatch_sample_get_uuid(AgsConnectable *connectable);
+static gboolean ags_ipatch_sample_has_resource(AgsConnectable *connectable);
+static gboolean ags_ipatch_sample_is_ready(AgsConnectable *connectable);
+static void ags_ipatch_sample_add_to_registry(AgsConnectable *connectable);
+static void ags_ipatch_sample_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_ipatch_sample_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_ipatch_sample_xml_compose(AgsConnectable *connectable);
+static void ags_ipatch_sample_xml_parse(AgsConnectable *connectable,
+					xmlNode *node);
+static gboolean ags_ipatch_sample_is_connected(AgsConnectable *connectable);
+static void ags_ipatch_sample_connect(AgsConnectable *connectable);
+static void ags_ipatch_sample_disconnect(AgsConnectable *connectable);
 
-void ags_ipatch_sample_info(AgsSoundResource *sound_resource,
-			    guint *frame_count,
-			    guint *loop_start, guint *loop_end);
-void ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
-				   guint channels,
-				   guint samplerate,
-				   guint buffer_size,
-				   AgsSoundcardFormat format);
-void ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
-				   guint *channels,
-				   guint *samplerate,
-				   guint *buffer_size,
-				   AgsSoundcardFormat *format);
-guint ags_ipatch_sample_read(AgsSoundResource *sound_resource,
-			     void *dbuffer, guint daudio_channels,
-			     guint audio_channel,
-			     guint frame_count, AgsSoundcardFormat format);
-void ags_ipatch_sample_write(AgsSoundResource *sound_resource,
-			     void *sbuffer, guint saudio_channels,
-			     guint audio_channel,
-			     guint frame_count, AgsSoundcardFormat format);
-void ags_ipatch_sample_flush(AgsSoundResource *sound_resource);
-void ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
-			    gint64 frame_count, gint whence);
+static void ags_ipatch_sample_info(AgsSoundResource *sound_resource,
+				   guint *frame_count,
+				   guint *loop_start, guint *loop_end);
+static void ags_ipatch_sample_set_presets(AgsSoundResource *sound_resource,
+					  guint channels,
+					  guint samplerate,
+					  guint buffer_size,
+					  AgsSoundcardFormat format);
+static void ags_ipatch_sample_get_presets(AgsSoundResource *sound_resource,
+					  guint *channels,
+					  guint *samplerate,
+					  guint *buffer_size,
+					  AgsSoundcardFormat *format);
+static guint ags_ipatch_sample_read(AgsSoundResource *sound_resource,
+				    void *dbuffer, guint daudio_channels,
+				    guint audio_channel,
+				    guint frame_count, AgsSoundcardFormat format);
+static void ags_ipatch_sample_write(AgsSoundResource *sound_resource,
+				    void *sbuffer, guint saudio_channels,
+				    guint audio_channel,
+				    guint frame_count, AgsSoundcardFormat format);
+static void ags_ipatch_sample_flush(AgsSoundResource *sound_resource);
+static void ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
+				   gint64 frame_count, gint whence);
 
 /**
  * SECTION:ags_ipatch_sample

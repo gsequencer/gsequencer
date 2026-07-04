@@ -26,24 +26,24 @@
 
 #include <string.h>
 
-void ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
-					 guchar *buffer,
-					 gint group,
-					 gint channel,
-					 gint status_bank,
-					 gint status,
-					 gchar *text,
-					 gchar **extension_name, GValue *extension_value,
-					 guint extension_count);
-guint ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
-					  guchar *buffer,
-					  gint *group,
-					  gint *channel,
-					  gint *status_bank,
-					  gint *status,
-					  gchar **text,
-					  gchar ***extension_name, GValue **extension_value,
-					  guint *extension_count);
+static void ags_midi_ump_util_put_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+						guchar *buffer,
+						gint group,
+						gint channel,
+						gint status_bank,
+						gint status,
+						gchar *text,
+						gchar **extension_name, GValue *extension_value,
+						guint extension_count);
+static guint ags_midi_ump_util_get_flex_set_text(AgsMidiUmpUtil *midi_ump_util,
+						 guchar *buffer,
+						 gint *group,
+						 gint *channel,
+						 gint *status_bank,
+						 gint *status,
+						 gchar **text,
+						 gchar ***extension_name, GValue **extension_value,
+						 guint *extension_count);
 
 /**
  * SECTION:ags_midi_ump_util

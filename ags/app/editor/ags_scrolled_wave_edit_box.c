@@ -26,14 +26,14 @@
 #include <ags/app/editor/ags_composite_edit.h>
 #include <ags/app/editor/ags_wave_edit.h>
 
-void ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave_edit_box);
-void ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box);
-void ags_scrolled_wave_edit_box_finalize(GObject *gobject);
+static void ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave_edit_box);
+static void ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box);
+static void ags_scrolled_wave_edit_box_finalize(GObject *gobject);
 
-void ags_scrolled_wave_edit_box_hadjustment_callback(GtkAdjustment *adjustment,
-						     AgsScrolledWaveEditBox *scrolled_wave_edit_box);
-void ags_scrolled_wave_edit_box_vadjustment_callback(GtkAdjustment *adjustment,
-						     AgsScrolledWaveEditBox *scrolled_wave_edit_box);
+static void ags_scrolled_wave_edit_box_hadjustment_callback(GtkAdjustment *adjustment,
+							    AgsScrolledWaveEditBox *scrolled_wave_edit_box);
+static void ags_scrolled_wave_edit_box_vadjustment_callback(GtkAdjustment *adjustment,
+							    AgsScrolledWaveEditBox *scrolled_wave_edit_box);
 
 /**
  * SECTION:ags_scrolled_wave_edit_box

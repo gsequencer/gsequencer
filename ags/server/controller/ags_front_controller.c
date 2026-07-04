@@ -35,11 +35,11 @@
 
 #include <string.h>
 
-void ags_front_controller_class_init(AgsFrontControllerClass *front_controller);
-void ags_front_controller_init(AgsFrontController *front_controller);
-void ags_front_controller_finalize(GObject *gobject);
+static void ags_front_controller_class_init(AgsFrontControllerClass *front_controller);
+static void ags_front_controller_init(AgsFrontController *front_controller);
+static void ags_front_controller_finalize(GObject *gobject);
 
-gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
+static gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
 					      SoupServerMessage *msg,
 					      GHashTable *query,
 					      GObject *security_context,

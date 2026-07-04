@@ -39,20 +39,20 @@
 
 #include <ags/i18n.h>
 
-void ags_open_sfz_file_class_init(AgsOpenSFZFileClass *open_sfz_file);
-void ags_open_sfz_file_init(AgsOpenSFZFile *open_sfz_file);
-void ags_open_sfz_file_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_open_sfz_file_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_open_sfz_file_dispose(GObject *gobject);
-void ags_open_sfz_file_finalize(GObject *gobject);
+static void ags_open_sfz_file_class_init(AgsOpenSFZFileClass *open_sfz_file);
+static void ags_open_sfz_file_init(AgsOpenSFZFile *open_sfz_file);
+static void ags_open_sfz_file_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_open_sfz_file_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_open_sfz_file_dispose(GObject *gobject);
+static void ags_open_sfz_file_finalize(GObject *gobject);
 
-void ags_open_sfz_file_launch(AgsTask *task);
+static void ags_open_sfz_file_launch(AgsTask *task);
 
 
 /**

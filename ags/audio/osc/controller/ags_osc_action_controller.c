@@ -36,22 +36,22 @@
 
 #include <stdlib.h>
 
-void ags_osc_action_controller_class_init(AgsOscActionControllerClass *osc_action_controller);
-void ags_osc_action_controller_init(AgsOscActionController *osc_action_controller);
-void ags_osc_action_controller_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec);
-void ags_osc_action_controller_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec);
-void ags_osc_action_controller_dispose(GObject *gobject);
-void ags_osc_action_controller_finalize(GObject *gobject);
+static void ags_osc_action_controller_class_init(AgsOscActionControllerClass *osc_action_controller);
+static void ags_osc_action_controller_init(AgsOscActionController *osc_action_controller);
+static void ags_osc_action_controller_set_property(GObject *gobject,
+						   guint prop_id,
+						   const GValue *value,
+						   GParamSpec *param_spec);
+static void ags_osc_action_controller_get_property(GObject *gobject,
+						   guint prop_id,
+						   GValue *value,
+						   GParamSpec *param_spec);
+static void ags_osc_action_controller_dispose(GObject *gobject);
+static void ags_osc_action_controller_finalize(GObject *gobject);
 
-gpointer ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_controller,
-						   AgsOscConnection *osc_connection,
-						   guchar *message, guint message_size);
+static gpointer ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_controller,
+							  AgsOscConnection *osc_connection,
+							  guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_action_controller

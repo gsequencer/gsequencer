@@ -33,18 +33,18 @@
 
 #include <ags/i18n.h>
 
-void ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain);
-void ags_playback_domain_init(AgsPlaybackDomain *playback_domain);
-void ags_playback_domain_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_playback_domain_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_playback_domain_dispose(GObject *gobject);
-void ags_playback_domain_finalize(GObject *gobject);
+static void ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain);
+static void ags_playback_domain_init(AgsPlaybackDomain *playback_domain);
+static void ags_playback_domain_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_playback_domain_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_playback_domain_dispose(GObject *gobject);
+static void ags_playback_domain_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_playback_domain

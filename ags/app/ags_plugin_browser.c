@@ -30,38 +30,38 @@
 
 #include <ags/i18n.h>
 
-void ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser);
-void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
-void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_plugin_browser_class_init(AgsPluginBrowserClass *plugin_browser);
+static void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
+static void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable);
 
-gboolean ags_plugin_browser_is_connected(AgsConnectable *connectable);
-void ags_plugin_browser_connect(AgsConnectable *connectable);
-void ags_plugin_browser_disconnect(AgsConnectable *connectable);
+static gboolean ags_plugin_browser_is_connected(AgsConnectable *connectable);
+static void ags_plugin_browser_connect(AgsConnectable *connectable);
+static void ags_plugin_browser_disconnect(AgsConnectable *connectable);
 
-void ags_plugin_browser_set_update(AgsApplicable *applicable, gboolean update);
-void ags_plugin_browser_apply(AgsApplicable *applicable);
-void ags_plugin_browser_reset(AgsApplicable *applicable);
+static void ags_plugin_browser_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_plugin_browser_apply(AgsApplicable *applicable);
+static void ags_plugin_browser_reset(AgsApplicable *applicable);
 
-void ags_plugin_browser_activate_button_callback(GtkButton *activate_button,
-						 AgsPluginBrowser *plugin_browser);
+static void ags_plugin_browser_activate_button_callback(GtkButton *activate_button,
+							AgsPluginBrowser *plugin_browser);
 
-gboolean ags_plugin_browser_key_pressed_callback(GtkEventControllerKey *event_controller,
-						 guint keyval,
-						 guint keycode,
-						 GdkModifierType state,
-						 AgsPluginBrowser *plugin_browser);
-void ags_plugin_browser_key_released_callback(GtkEventControllerKey *event_controller,
-					      guint keyval,
-					      guint keycode,
-					      GdkModifierType state,
-					      AgsPluginBrowser *plugin_browser);
-gboolean ags_plugin_browser_modifiers_callback(GtkEventControllerKey *event_controller,
-					       GdkModifierType keyval,
-					       AgsPluginBrowser *plugin_browser);
+static gboolean ags_plugin_browser_key_pressed_callback(GtkEventControllerKey *event_controller,
+							guint keyval,
+							guint keycode,
+							GdkModifierType state,
+							AgsPluginBrowser *plugin_browser);
+static void ags_plugin_browser_key_released_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsPluginBrowser *plugin_browser);
+static gboolean ags_plugin_browser_modifiers_callback(GtkEventControllerKey *event_controller,
+						      GdkModifierType keyval,
+						      AgsPluginBrowser *plugin_browser);
 
-void ags_plugin_browser_real_response(AgsPluginBrowser *plugin_browser,
-				      gint response_id);
+static void ags_plugin_browser_real_response(AgsPluginBrowser *plugin_browser,
+					     gint response_id);
 
 /**
  * SECTION:ags_plugin_browser

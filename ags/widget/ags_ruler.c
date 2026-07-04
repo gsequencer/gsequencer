@@ -27,31 +27,31 @@
 
 #include <math.h>
 
-void ags_ruler_class_init(AgsRulerClass *ruler);
-void ags_ruler_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_ruler_init(AgsRuler *ruler);
-void ags_ruler_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_ruler_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
-void ags_ruler_show(GtkWidget *widget);
+static void ags_ruler_class_init(AgsRulerClass *ruler);
+static void ags_ruler_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_ruler_init(AgsRuler *ruler);
+static void ags_ruler_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+static void ags_ruler_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+static void ags_ruler_show(GtkWidget *widget);
 
-void ags_ruler_realize(GtkWidget *widget);
-void ags_ruler_unrealize(GtkWidget *widget);
+static void ags_ruler_realize(GtkWidget *widget);
+static void ags_ruler_unrealize(GtkWidget *widget);
 
-void ags_ruler_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					   AgsRuler *ruler);
+static void ags_ruler_frame_clock_update_callback(GdkFrameClock *frame_clock,
+						  AgsRuler *ruler);
 
-void ags_ruler_snapshot(GtkWidget *widget,
-			GtkSnapshot *snapshot);
+static void ags_ruler_snapshot(GtkWidget *widget,
+			       GtkSnapshot *snapshot);
 
-void ags_ruler_draw(AgsRuler *ruler,
-		    cairo_t *cr,
-		    gboolean is_animation);
+static void ags_ruler_draw(AgsRuler *ruler,
+			   cairo_t *cr,
+			   gboolean is_animation);
 
 /**
  * SECTION:ags_ruler

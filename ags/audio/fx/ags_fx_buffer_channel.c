@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_buffer_channel_class_init(AgsFxBufferChannelClass *fx_buffer_channel);
-void ags_fx_buffer_channel_init(AgsFxBufferChannel *fx_buffer_channel);
-void ags_fx_buffer_channel_dispose(GObject *gobject);
-void ags_fx_buffer_channel_finalize(GObject *gobject);
+static void ags_fx_buffer_channel_class_init(AgsFxBufferChannelClass *fx_buffer_channel);
+static void ags_fx_buffer_channel_init(AgsFxBufferChannel *fx_buffer_channel);
+static void ags_fx_buffer_channel_dispose(GObject *gobject);
+static void ags_fx_buffer_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_buffer_channel

@@ -33,31 +33,31 @@
 
 #include <ags/i18n.h>
 
-void ags_fm_syncsynth_class_init(AgsFMSyncsynthClass *fm_syncsynth);
-void ags_fm_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth);
-void ags_fm_syncsynth_finalize(GObject *gobject);
+static void ags_fm_syncsynth_class_init(AgsFMSyncsynthClass *fm_syncsynth);
+static void ags_fm_syncsynth_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_fm_syncsynth_init(AgsFMSyncsynth *fm_syncsynth);
+static void ags_fm_syncsynth_finalize(GObject *gobject);
 
-void ags_fm_syncsynth_connect(AgsConnectable *connectable);
-void ags_fm_syncsynth_disconnect(AgsConnectable *connectable);
+static void ags_fm_syncsynth_connect(AgsConnectable *connectable);
+static void ags_fm_syncsynth_disconnect(AgsConnectable *connectable);
 
-void ags_fm_syncsynth_show(GtkWidget *widget);
+static void ags_fm_syncsynth_show(GtkWidget *widget);
 
-void ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
-					    guint audio_channels, guint audio_channels_old,
-					    gpointer data);
-void ags_fm_syncsynth_resize_pads(AgsMachine *machine, GType channel_type,
-				  guint pads, guint pads_old,
-				  gpointer data);
+static void ags_fm_syncsynth_resize_audio_channels(AgsMachine *machine,
+						   guint audio_channels, guint audio_channels_old,
+						   gpointer data);
+static void ags_fm_syncsynth_resize_pads(AgsMachine *machine, GType channel_type,
+					 guint pads, guint pads_old,
+					 gpointer data);
 
-void ags_fm_syncsynth_map_recall(AgsMachine *machine);
+static void ags_fm_syncsynth_map_recall(AgsMachine *machine);
 
-void ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
-				       guint audio_channel_start,
-				       guint input_pad_start);
-void ags_fm_syncsynth_output_map_recall(AgsFMSyncsynth *fm_syncsynth,
-					guint audio_channel_start,
-					guint output_pad_start);
+static void ags_fm_syncsynth_input_map_recall(AgsFMSyncsynth *fm_syncsynth,
+					      guint audio_channel_start,
+					      guint input_pad_start);
+static void ags_fm_syncsynth_output_map_recall(AgsFMSyncsynth *fm_syncsynth,
+					       guint audio_channel_start,
+					       guint output_pad_start);
 
 /**
  * SECTION:ags_fm_syncsynth

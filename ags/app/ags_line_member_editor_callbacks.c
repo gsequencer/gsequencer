@@ -44,8 +44,8 @@
 
 #include <ladspa.h>
 
-void ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
-								 gchar *filename, gchar *effect);
+static void ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
+									gchar *filename, gchar *effect);
   
 void
 ags_line_member_editor_add_callback(GtkWidget *button,

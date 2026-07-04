@@ -30,25 +30,25 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_modular_synth_audio_signal_class_init(AgsFxModularSynthAudioSignalClass *fx_modular_synth_audio_signal);
-void ags_fx_modular_synth_audio_signal_init(AgsFxModularSynthAudioSignal *fx_modular_synth_audio_signal);
-void ags_fx_modular_synth_audio_signal_dispose(GObject *gobject);
-void ags_fx_modular_synth_audio_signal_finalize(GObject *gobject);
+static void ags_fx_modular_synth_audio_signal_class_init(AgsFxModularSynthAudioSignalClass *fx_modular_synth_audio_signal);
+static void ags_fx_modular_synth_audio_signal_init(AgsFxModularSynthAudioSignal *fx_modular_synth_audio_signal);
+static void ags_fx_modular_synth_audio_signal_dispose(GObject *gobject);
+static void ags_fx_modular_synth_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
-						   AgsAudioSignal *source,
-						   AgsNote *note,
-						   gboolean pattern_mode,
-						   guint x0, guint x1,
-						   guint y,
-						   gdouble delay_counter, guint64 offset_counter,
-						   guint frame_count,
-						   gdouble delay, guint buffer_size);
-void ags_fx_modular_synth_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
-						     AgsAudioSignal *source,
-						     AgsNote *note,
-						     guint x0, guint x1,
-						     guint y);
+static void ags_fx_modular_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+							  AgsAudioSignal *source,
+							  AgsNote *note,
+							  gboolean pattern_mode,
+							  guint x0, guint x1,
+							  guint y,
+							  gdouble delay_counter, guint64 offset_counter,
+							  guint frame_count,
+							  gdouble delay, guint buffer_size);
+static void ags_fx_modular_synth_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+							    AgsAudioSignal *source,
+							    AgsNote *note,
+							    guint x0, guint x1,
+							    guint y);
 
 /**
  * SECTION:ags_fx_modular_synth_audio_signal

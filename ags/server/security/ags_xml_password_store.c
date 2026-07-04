@@ -43,34 +43,34 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-void ags_xml_password_store_class_init(AgsXmlPasswordStoreClass *xml_password_store);
-void ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *password_store);
-void ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store);
-void ags_xml_password_store_finalize(GObject *gobject);
+static void ags_xml_password_store_class_init(AgsXmlPasswordStoreClass *xml_password_store);
+static void ags_xml_password_store_password_store_interface_init(AgsPasswordStoreInterface *password_store);
+static void ags_xml_password_store_init(AgsXmlPasswordStore *xml_password_store);
+static void ags_xml_password_store_finalize(GObject *gobject);
 
-gchar* ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
+static gchar* ags_xml_password_store_get_login_name(AgsPasswordStore *password_store,
 					     GObject *security_context,
 					     gchar *user_uuid,
 					     gchar *security_token,
 					     GError **error);
-void ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
+static void ags_xml_password_store_set_login_name(AgsPasswordStore *password_store,
 					   GObject *security_context,
 					   gchar *user_uuid,
 					   gchar *security_token,
 					   gchar *login_name,
 					   GError **error);
-gchar* ags_xml_password_store_get_password(AgsPasswordStore *password_store,
+static gchar* ags_xml_password_store_get_password(AgsPasswordStore *password_store,
 					   GObject *security_context,
 					   gchar *user,
 					   gchar *security_token,
 					   GError **error);
-void ags_xml_password_store_set_password(AgsPasswordStore *password_store,
+static void ags_xml_password_store_set_password(AgsPasswordStore *password_store,
 					 GObject *security_context,
 					 gchar *user,
 					 gchar *security_token,
 					 gchar *password,
 					 GError **error);
-char* ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
+static char* ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 					      gchar *password,
 					      gchar *salt,
 					      GError **error);

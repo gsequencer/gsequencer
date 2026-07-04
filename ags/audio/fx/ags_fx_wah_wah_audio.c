@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_wah_wah_audio_class_init(AgsFxWahWahAudioClass *fx_wah_wah_audio);
-void ags_fx_wah_wah_audio_init(AgsFxWahWahAudio *fx_wah_wah_audio);
-void ags_fx_wah_wah_audio_dispose(GObject *gobject);
-void ags_fx_wah_wah_audio_finalize(GObject *gobject);
+static void ags_fx_wah_wah_audio_class_init(AgsFxWahWahAudioClass *fx_wah_wah_audio);
+static void ags_fx_wah_wah_audio_init(AgsFxWahWahAudio *fx_wah_wah_audio);
+static void ags_fx_wah_wah_audio_dispose(GObject *gobject);
+static void ags_fx_wah_wah_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_wah_wah_audio

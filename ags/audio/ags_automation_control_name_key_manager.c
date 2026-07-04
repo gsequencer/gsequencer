@@ -26,17 +26,17 @@
 
 #include <ags/i18n.h>
 
-void ags_automation_control_name_key_manager_class_init(AgsAutomationControlNameKeyManagerClass *automation_control_name_key_manager);
-void ags_automation_control_name_key_manager_init(AgsAutomationControlNameKeyManager *automation_control_name_key_manager);
-void ags_automation_control_name_key_manager_set_property(GObject *gobject,
-							  guint prop_id,
-							  const GValue *value,
-							  GParamSpec *param_spec);
-void ags_automation_control_name_key_manager_get_property(GObject *gobject,
-							  guint prop_id,
-							  GValue *value,
-							  GParamSpec *param_spec);
-void ags_automation_control_name_key_manager_finalize(GObject *gobject);
+static void ags_automation_control_name_key_manager_class_init(AgsAutomationControlNameKeyManagerClass *automation_control_name_key_manager);
+static void ags_automation_control_name_key_manager_init(AgsAutomationControlNameKeyManager *automation_control_name_key_manager);
+static void ags_automation_control_name_key_manager_set_property(GObject *gobject,
+								 guint prop_id,
+								 const GValue *value,
+								 GParamSpec *param_spec);
+static void ags_automation_control_name_key_manager_get_property(GObject *gobject,
+								 guint prop_id,
+								 GValue *value,
+								 GParamSpec *param_spec);
+static void ags_automation_control_name_key_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_automation_control_name_key_manager
@@ -55,7 +55,7 @@ enum{
 
 static gpointer ags_automation_control_name_key_manager_parent_class = NULL;
 
-AgsAutomationControlNameKeyManager *ags_automation_control_name_key_manager = NULL;
+static AgsAutomationControlNameKeyManager *ags_automation_control_name_key_manager = NULL;
 
 GType
 ags_automation_control_name_key_manager_get_type()

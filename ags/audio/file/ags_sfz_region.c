@@ -26,32 +26,32 @@
 
 #include <ags/i18n.h>
 
-void ags_sfz_region_class_init(AgsSFZRegionClass *sfz_region);
-void ags_sfz_region_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_sfz_region_init(AgsSFZRegion *sfz_region);
-void ags_sfz_region_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_sfz_region_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_sfz_region_dispose(GObject *gobject);
-void ags_sfz_region_finalize(GObject *gobject);
+static void ags_sfz_region_class_init(AgsSFZRegionClass *sfz_region);
+static void ags_sfz_region_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_sfz_region_init(AgsSFZRegion *sfz_region);
+static void ags_sfz_region_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_sfz_region_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_sfz_region_dispose(GObject *gobject);
+static void ags_sfz_region_finalize(GObject *gobject);
 
-AgsUUID* ags_sfz_region_get_uuid(AgsConnectable *connectable);
-gboolean ags_sfz_region_has_resource(AgsConnectable *connectable);
-gboolean ags_sfz_region_is_ready(AgsConnectable *connectable);
-void ags_sfz_region_add_to_registry(AgsConnectable *connectable);
-void ags_sfz_region_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_sfz_region_list_resource(AgsConnectable *connectable);
-xmlNode* ags_sfz_region_xml_compose(AgsConnectable *connectable);
-void ags_sfz_region_xml_parse(AgsConnectable *connectable,
-			      xmlNode *node);
-gboolean ags_sfz_region_is_connected(AgsConnectable *connectable);
-void ags_sfz_region_connect(AgsConnectable *connectable);
-void ags_sfz_region_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_sfz_region_get_uuid(AgsConnectable *connectable);
+static gboolean ags_sfz_region_has_resource(AgsConnectable *connectable);
+static gboolean ags_sfz_region_is_ready(AgsConnectable *connectable);
+static void ags_sfz_region_add_to_registry(AgsConnectable *connectable);
+static void ags_sfz_region_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_sfz_region_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_sfz_region_xml_compose(AgsConnectable *connectable);
+static void ags_sfz_region_xml_parse(AgsConnectable *connectable,
+				     xmlNode *node);
+static gboolean ags_sfz_region_is_connected(AgsConnectable *connectable);
+static void ags_sfz_region_connect(AgsConnectable *connectable);
+static void ags_sfz_region_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_sfz_region

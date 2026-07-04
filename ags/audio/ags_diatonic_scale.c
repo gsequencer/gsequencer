@@ -21,8 +21,8 @@
 
 #include <string.h>
 
-gpointer ags_diatonic_scale_copy(gpointer ptr);
-void ags_diatonic_scale_free(gpointer ptr);
+static gpointer ags_diatonic_scale_copy(gpointer ptr);
+static void ags_diatonic_scale_free(gpointer ptr);
 
 /**
  * SECTION:ags_diatonic_scale

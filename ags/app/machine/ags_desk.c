@@ -26,29 +26,29 @@
 
 #include <ags/i18n.h>
 
-void ags_desk_class_init(AgsDeskClass *desk);
-void ags_desk_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_desk_init(AgsDesk *desk);
-void ags_desk_finalize(GObject *gobject);
+static void ags_desk_class_init(AgsDeskClass *desk);
+static void ags_desk_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_desk_init(AgsDesk *desk);
+static void ags_desk_finalize(GObject *gobject);
 
-void ags_desk_map_recall(AgsMachine *machine);
+static void ags_desk_map_recall(AgsMachine *machine);
 
-void ags_desk_resize_audio_channels(AgsMachine *machine,
-				    guint audio_channels, guint audio_channels_old,
-				    gpointer data);
-void ags_desk_resize_pads(AgsMachine *machine, GType channel_type,
-			  guint pads, guint pads_old,
-			  gpointer data);
+static void ags_desk_resize_audio_channels(AgsMachine *machine,
+					   guint audio_channels, guint audio_channels_old,
+					   gpointer data);
+static void ags_desk_resize_pads(AgsMachine *machine, GType channel_type,
+				 guint pads, guint pads_old,
+				 gpointer data);
 
-void ags_desk_output_map_recall(AgsDesk *desk,
-				guint audio_channel_start,
-				guint output_pad_start);
-void ags_desk_input_map_recall(AgsDesk *desk,
-			       guint audio_channel_start,
-			       guint input_pad_start);
+static void ags_desk_output_map_recall(AgsDesk *desk,
+				       guint audio_channel_start,
+				       guint output_pad_start);
+static void ags_desk_input_map_recall(AgsDesk *desk,
+				      guint audio_channel_start,
+				      guint input_pad_start);
 
-void ags_desk_connect(AgsConnectable *connectable);
-void ags_desk_disconnect(AgsConnectable *connectable);
+static void ags_desk_connect(AgsConnectable *connectable);
+static void ags_desk_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_desk

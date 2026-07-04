@@ -24,30 +24,30 @@
 
 #include <ags/i18n.h>
 
-void ags_effect_pad_class_init(AgsEffectPadClass *effect_pad);
-void ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_pad_init(AgsEffectPad *effect_pad);
-void ags_effect_pad_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_effect_pad_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
+static void ags_effect_pad_class_init(AgsEffectPadClass *effect_pad);
+static void ags_effect_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_effect_pad_init(AgsEffectPad *effect_pad);
+static void ags_effect_pad_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_effect_pad_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
 
-gboolean ags_effect_pad_is_connected(AgsConnectable *connectable);
-void ags_effect_pad_connect(AgsConnectable *connectable);
-void ags_effect_pad_disconnect(AgsConnectable *connectable);
+static gboolean ags_effect_pad_is_connected(AgsConnectable *connectable);
+static void ags_effect_pad_connect(AgsConnectable *connectable);
+static void ags_effect_pad_disconnect(AgsConnectable *connectable);
 
-void ags_effect_pad_real_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel);
+static void ags_effect_pad_real_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel);
 
-void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
-				      guint audio_channels, guint audio_channels_old);
-void ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad);
-GList* ags_effect_pad_real_find_port(AgsEffectPad *effect_pad);
+static void ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType line_type,
+					     guint audio_channels, guint audio_channels_old);
+static void ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad);
+static GList* ags_effect_pad_real_find_port(AgsEffectPad *effect_pad);
 
-void ags_effect_pad_real_refresh_port(AgsEffectPad *effect_pad);
+static void ags_effect_pad_real_refresh_port(AgsEffectPad *effect_pad);
 
 /**
  * SECTION:ags_effect_pad
