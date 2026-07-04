@@ -84,6 +84,8 @@ static GObject* ags_gstreamer_server_register_sequencer(AgsSoundServer *sound_se
 static void ags_gstreamer_server_unregister_sequencer(AgsSoundServer *sound_server,
 						      GObject *sequencer);
 
+static GObject* ags_gstreamer_server_register_default_soundcard(AgsGstreamerServer *gstreamer_server);
+
 /**
  * SECTION:ags_gstreamer_server
  * @short_description: gstreamer instance

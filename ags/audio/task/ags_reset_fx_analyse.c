@@ -43,7 +43,7 @@ static void ags_reset_fx_analyse_launch(AgsTask *task);
 
 static gpointer ags_reset_fx_analyse_parent_class = NULL;
 
-AgsResetFxAnalyse *ags_reset_fx_analyse = NULL;
+static AgsResetFxAnalyse *ags_reset_fx_analyse = NULL;
 
 GType
 ags_reset_fx_analyse_get_type()

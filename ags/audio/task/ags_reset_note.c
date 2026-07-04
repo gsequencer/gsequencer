@@ -44,7 +44,7 @@ static void ags_reset_note_launch(AgsTask *task);
 
 static gpointer ags_reset_note_parent_class = NULL;
 
-AgsResetNote *ags_reset_note = NULL;
+static AgsResetNote *ags_reset_note = NULL;
 
 GType
 ags_reset_note_get_type()

@@ -35,6 +35,10 @@
 #include <math.h>
 #include <complex.h>
 
+static GType ags_modular_synth_util_get_pitch_type(AgsModularSynthUtil *modular_synth_util);
+static void ags_modular_synth_util_set_pitch_type(AgsModularSynthUtil *modular_synth_util,
+						  GType pitch_type);
+
 static gboolean ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_synth_util,
 								gint64 *sends,
 								AgsModularSynthSends modular_synth_sends);

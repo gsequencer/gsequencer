@@ -223,11 +223,11 @@ ags_file_util_get_file_version(AgsFileUtil *file_util)
 }
 
 /**
- * ags_file_util_get_file_version:
+ * ags_file_util_set_file_version:
  * @file_util: the #AgsFileUtil-struct
  * @file_version: the file version
  * 
- * set file version of @file_util.
+ * Set file version of @file_util.
  *
  * Since: 6.3.0
  */

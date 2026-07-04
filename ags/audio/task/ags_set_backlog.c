@@ -54,7 +54,7 @@ static void ags_set_backlog_audio_signal(AgsSetBacklog *set_backlog, AgsAudioSig
  */
 
 static gpointer ags_set_backlog_parent_class = NULL;
-AgsSetBacklog *ags_set_backlog = NULL;
+static AgsSetBacklog *ags_set_backlog = NULL;
 
 enum{
   PROP_0,

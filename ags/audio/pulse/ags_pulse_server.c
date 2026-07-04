@@ -87,6 +87,8 @@ static GObject* ags_pulse_server_register_sequencer(AgsSoundServer *sound_server
 static void ags_pulse_server_unregister_sequencer(AgsSoundServer *sound_server,
 						  GObject *sequencer);
 
+static GObject* ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server);
+
 static void* ags_pulse_server_do_poll_loop(void *ptr);
 
 /**

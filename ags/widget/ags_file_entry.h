@@ -119,6 +119,8 @@ gchar* ags_file_entry_get_filename(AgsFileEntry *file_entry);
 void ags_file_entry_set_filename(AgsFileEntry *file_entry,
 				 gchar *filename);
 
+void ags_file_entry_activate(AgsFileEntry *file_entry);
+
 /* instantiate */
 AgsFileEntry* ags_file_entry_new();
 

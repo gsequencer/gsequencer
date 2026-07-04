@@ -36,7 +36,7 @@ static void ags_vdsp_256_manager_finalize(GObject *gobject);
 
 static gpointer ags_vdsp_256_manager_parent_class = NULL;
 
-AgsVDSP256Manager *ags_vdsp_256_manager = NULL;
+static AgsVDSP256Manager *ags_vdsp_256_manager = NULL;
 
 GType
 ags_vdsp_256_manager_get_type (void)

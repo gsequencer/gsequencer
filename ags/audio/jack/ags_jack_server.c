@@ -88,6 +88,8 @@ static GObject* ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
 static void ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 						 GObject *sequencer);
 
+static GObject* ags_jack_server_register_default_soundcard(AgsJackServer *jack_server);
+
 /**
  * SECTION:ags_jack_server
  * @short_description: JACK instance

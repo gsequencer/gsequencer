@@ -79,7 +79,7 @@ enum{
 
 static gpointer ags_synth_generator_parent_class = NULL;
 
-const gchar *ags_synth_generator_plugin_name = "ags-synth-generator";
+static const gchar *ags_synth_generator_plugin_name = "ags-synth-generator";
 
 GType
 ags_synth_generator_get_type()
