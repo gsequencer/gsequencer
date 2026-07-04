@@ -23,18 +23,18 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_counter_class_init(AgsMachineCounterClass *machine_counter);
-void ags_machine_counter_init(AgsMachineCounter *machine_counter);
-void ags_machine_counter_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_machine_counter_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_machine_counter_dispose(GObject *gobject);
-void ags_machine_counter_finalize(GObject *gobject);
+static void ags_machine_counter_class_init(AgsMachineCounterClass *machine_counter);
+static void ags_machine_counter_init(AgsMachineCounter *machine_counter);
+static void ags_machine_counter_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_machine_counter_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_machine_counter_dispose(GObject *gobject);
+static void ags_machine_counter_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_machine_counter

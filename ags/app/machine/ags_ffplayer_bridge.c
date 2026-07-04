@@ -26,12 +26,12 @@
 #include <ags/app/machine/ags_ffplayer_input_pad.h>
 #include <ags/app/machine/ags_ffplayer_input_line.h>
 
-void ags_ffplayer_bridge_class_init(AgsFFPlayerBridgeClass *ffplayer_bridge);
-void ags_ffplayer_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge);
+static void ags_ffplayer_bridge_class_init(AgsFFPlayerBridgeClass *ffplayer_bridge);
+static void ags_ffplayer_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ffplayer_bridge_init(AgsFFPlayerBridge *ffplayer_bridge);
 
-void ags_ffplayer_bridge_connect(AgsConnectable *connectable);
-void ags_ffplayer_bridge_disconnect(AgsConnectable *connectable);
+static void ags_ffplayer_bridge_connect(AgsConnectable *connectable);
+static void ags_ffplayer_bridge_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_ffplayer_bridge

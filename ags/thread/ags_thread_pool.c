@@ -29,21 +29,21 @@
 
 #include <ags/i18n.h>
 
-void ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool);
-void ags_thread_pool_init(AgsThreadPool *thread_pool);
-void ags_thread_pool_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_thread_pool_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_thread_pool_finalize(GObject *gobject);
+static void ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool);
+static void ags_thread_pool_init(AgsThreadPool *thread_pool);
+static void ags_thread_pool_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_thread_pool_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_thread_pool_finalize(GObject *gobject);
 
-void* ags_thread_pool_creation_thread(void *ptr);
+static void* ags_thread_pool_creation_thread(void *ptr);
 
-void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
+static void ags_thread_pool_real_start(AgsThreadPool *thread_pool);
 
 /**
  * SECTION:ags_thread_pool

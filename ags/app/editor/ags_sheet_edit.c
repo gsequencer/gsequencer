@@ -33,15 +33,15 @@
 
 #include <math.h>
 
-void ags_sheet_edit_class_init(AgsSheetEditClass *sheet_edit);
-void ags_sheet_edit_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_sheet_edit_init(AgsSheetEdit *sheet_edit);
-void ags_sheet_edit_finalize(GObject *gobject);
+static void ags_sheet_edit_class_init(AgsSheetEditClass *sheet_edit);
+static void ags_sheet_edit_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_sheet_edit_init(AgsSheetEdit *sheet_edit);
+static void ags_sheet_edit_finalize(GObject *gobject);
 
-void ags_sheet_edit_connect(AgsConnectable *connectable);
-void ags_sheet_edit_disconnect(AgsConnectable *connectable);
+static void ags_sheet_edit_connect(AgsConnectable *connectable);
+static void ags_sheet_edit_disconnect(AgsConnectable *connectable);
 
-gboolean ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget);
+static gboolean ags_sheet_edit_auto_scroll_timeout(GtkWidget *widget);
 
 /**
  * SECTION:ags_sheet_edit

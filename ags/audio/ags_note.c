@@ -27,17 +27,17 @@
 
 #include <ags/i18n.h>
 
-void ags_note_class_init(AgsNoteClass *note);
-void ags_note_init(AgsNote *note);
-void ags_note_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_note_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_note_finalize(GObject *gobject);
+static void ags_note_class_init(AgsNoteClass *note);
+static void ags_note_init(AgsNote *note);
+static void ags_note_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_note_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_note_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_note

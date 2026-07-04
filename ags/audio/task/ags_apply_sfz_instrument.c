@@ -28,20 +28,20 @@
 
 #include <ags/i18n.h>
 
-void ags_apply_sfz_instrument_class_init(AgsApplySFZInstrumentClass *apply_sfz_instrument);
-void ags_apply_sfz_instrument_init(AgsApplySFZInstrument *apply_sfz_instrument);
-void ags_apply_sfz_instrument_set_property(GObject *gobject,
-					   guint prop_id,
-					   const GValue *value,
-					   GParamSpec *param_spec);
-void ags_apply_sfz_instrument_get_property(GObject *gobject,
-					   guint prop_id,
-					   GValue *value,
-					   GParamSpec *param_spec);
-void ags_apply_sfz_instrument_dispose(GObject *gobject);
-void ags_apply_sfz_instrument_finalize(GObject *gobject);
+static void ags_apply_sfz_instrument_class_init(AgsApplySFZInstrumentClass *apply_sfz_instrument);
+static void ags_apply_sfz_instrument_init(AgsApplySFZInstrument *apply_sfz_instrument);
+static void ags_apply_sfz_instrument_set_property(GObject *gobject,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *param_spec);
+static void ags_apply_sfz_instrument_get_property(GObject *gobject,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *param_spec);
+static void ags_apply_sfz_instrument_dispose(GObject *gobject);
+static void ags_apply_sfz_instrument_finalize(GObject *gobject);
 
-void ags_apply_sfz_instrument_launch(AgsTask *task);
+static void ags_apply_sfz_instrument_launch(AgsTask *task);
 
 /**
  * SECTION:ags_apply_sfz_instrument

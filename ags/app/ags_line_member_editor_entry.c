@@ -19,8 +19,8 @@
 
 #include <ags/app/ags_line_member_editor_entry.h>
 
-void ags_line_member_editor_entry_class_init(AgsLineMemberEditorEntryClass *line_member_editor_entry);
-void ags_line_member_editor_entry_init(AgsLineMemberEditorEntry *line_member_editor_entry);
+static void ags_line_member_editor_entry_class_init(AgsLineMemberEditorEntryClass *line_member_editor_entry);
+static void ags_line_member_editor_entry_init(AgsLineMemberEditorEntry *line_member_editor_entry);
 
 /**
  * SECTION:ags_line_member_editor_entry

@@ -21,25 +21,25 @@
 
 #include <ags/i18n.h>
 
-void ags_input_dialog_class_init(AgsInputDialogClass *input_dialog);
-void ags_input_dialog_init(AgsInputDialog *input_dialog);
+static void ags_input_dialog_class_init(AgsInputDialogClass *input_dialog);
+static void ags_input_dialog_init(AgsInputDialog *input_dialog);
 
-void ags_input_dialog_clicked_callback(GtkButton *button,
-				       AgsInputDialog *input_dialog);
+static void ags_input_dialog_clicked_callback(GtkButton *button,
+					      AgsInputDialog *input_dialog);
 
-gboolean ags_input_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
-					       guint keyval,
-					       guint keycode,
-					       GdkModifierType state,
-					       AgsInputDialog *input_dialog);
-void ags_input_dialog_key_released_callback(GtkEventControllerKey *event_controller,
-					    guint keyval,
-					    guint keycode,
-					    GdkModifierType state,
-					    AgsInputDialog *input_dialog);
-gboolean ags_input_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
-					     GdkModifierType keyval,
-					     AgsInputDialog *input_dialog);
+static gboolean ags_input_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						      guint keyval,
+						      guint keycode,
+						      GdkModifierType state,
+						      AgsInputDialog *input_dialog);
+static void ags_input_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+						   guint keyval,
+						   guint keycode,
+						   GdkModifierType state,
+						   AgsInputDialog *input_dialog);
+static gboolean ags_input_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						    GdkModifierType keyval,
+						    AgsInputDialog *input_dialog);
 
 /**
  * SECTION:ags_input_dialog

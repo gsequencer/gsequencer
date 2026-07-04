@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,20 +27,20 @@
 
 #include <ags/i18n.h>
 
-void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
-void ags_animation_window_init(AgsAnimationWindow *animation_window);
-void ags_animation_window_finalize(GObject *gobject);
+static void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
+static void ags_animation_window_init(AgsAnimationWindow *animation_window);
+static void ags_animation_window_finalize(GObject *gobject);
 
-gboolean ags_animation_window_tick_callback(GtkWidget *widget,
-					    GdkFrameClock *frame_clock,
-					    gpointer user_data);
+static gboolean ags_animation_window_tick_callback(GtkWidget *widget,
+						   GdkFrameClock *frame_clock,
+						   gpointer user_data);
 
-void ags_animation_window_snapshot(GtkWidget *widget,
-				   GtkSnapshot *snapshot);
+static void ags_animation_window_snapshot(GtkWidget *widget,
+					  GtkSnapshot *snapshot);
 
-void ags_animation_window_draw(GtkWidget *widget,
-			       cairo_t *cr,
-			       gboolean is_animation);
+static void ags_animation_window_draw(GtkWidget *widget,
+				      cairo_t *cr,
+				      gboolean is_animation);
 
 static gpointer ags_animation_window_parent_class = NULL;
 

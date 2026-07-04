@@ -23,21 +23,21 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_volume_audio_class_init(AgsFxVolumeAudioClass *fx_volume_audio);
-void ags_fx_volume_audio_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_fx_volume_audio_init(AgsFxVolumeAudio *fx_volume_audio);
-void ags_fx_volume_audio_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_fx_volume_audio_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_fx_volume_audio_dispose(GObject *gobject);
-void ags_fx_volume_audio_finalize(GObject *gobject);
+static void ags_fx_volume_audio_class_init(AgsFxVolumeAudioClass *fx_volume_audio);
+static void ags_fx_volume_audio_mutable_interface_init(AgsMutableInterface *mutable);
+static void ags_fx_volume_audio_init(AgsFxVolumeAudio *fx_volume_audio);
+static void ags_fx_volume_audio_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_fx_volume_audio_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_fx_volume_audio_dispose(GObject *gobject);
+static void ags_fx_volume_audio_finalize(GObject *gobject);
 
-void ags_fx_volume_audio_set_muted(AgsMutable *mutable, gboolean muted);
+static void ags_fx_volume_audio_set_muted(AgsMutable *mutable, gboolean muted);
 
 static AgsPluginPort* ags_fx_volume_audio_get_muted_plugin_port();
 

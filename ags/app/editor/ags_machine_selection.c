@@ -56,12 +56,12 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
-void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_selection_init(AgsMachineSelection *machine_selection);
-void ags_machine_selection_connect(AgsConnectable *connectable);
-void ags_machine_selection_disconnect(AgsConnectable *connectable);
-void ags_machine_selection_finalize(GObject *gobject);
+static void ags_machine_selection_class_init(AgsMachineSelectionClass *machine_selection);
+static void ags_machine_selection_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_selection_init(AgsMachineSelection *machine_selection);
+static void ags_machine_selection_connect(AgsConnectable *connectable);
+static void ags_machine_selection_disconnect(AgsConnectable *connectable);
+static void ags_machine_selection_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_machine_selection

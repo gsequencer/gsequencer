@@ -31,146 +31,146 @@
 
 #include <math.h>
 
-void ags_notation_edit_class_init(AgsNotationEditClass *notation_edit);
-void ags_notation_edit_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_notation_edit_init(AgsNotationEdit *notation_edit);
-void ags_notation_edit_dispose(GObject *gobject);
-void ags_notation_edit_finalize(GObject *gobject);
+static void ags_notation_edit_class_init(AgsNotationEditClass *notation_edit);
+static void ags_notation_edit_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_notation_edit_init(AgsNotationEdit *notation_edit);
+static void ags_notation_edit_dispose(GObject *gobject);
+static void ags_notation_edit_finalize(GObject *gobject);
 
-gboolean ags_notation_edit_is_connected(AgsConnectable *connectable);
-void ags_notation_edit_connect(AgsConnectable *connectable);
-void ags_notation_edit_disconnect(AgsConnectable *connectable);
+static gboolean ags_notation_edit_is_connected(AgsConnectable *connectable);
+static void ags_notation_edit_connect(AgsConnectable *connectable);
+static void ags_notation_edit_disconnect(AgsConnectable *connectable);
 
-void ags_notation_edit_realize(GtkWidget *widget);
-void ags_notation_edit_unrealize(GtkWidget *widget);
+static void ags_notation_edit_realize(GtkWidget *widget);
+static void ags_notation_edit_unrealize(GtkWidget *widget);
 
-void ags_notation_edit_measure(GtkWidget *widget,
-			       GtkOrientation orientation,
-			       int for_size,
-			       int *minimum,
-			       int *natural,
-			       int *minimum_baseline,
-			       int *natural_baseline);
-void ags_notation_edit_size_allocate(GtkWidget *widget,
-				     int width,
-				     int height,
-				     int baseline);
+static void ags_notation_edit_measure(GtkWidget *widget,
+				      GtkOrientation orientation,
+				      int for_size,
+				      int *minimum,
+				      int *natural,
+				      int *minimum_baseline,
+				      int *natural_baseline);
+static void ags_notation_edit_size_allocate(GtkWidget *widget,
+					    int width,
+					    int height,
+					    int baseline);
 
-void ags_notation_edit_show(GtkWidget *widget);
+static void ags_notation_edit_show(GtkWidget *widget);
 
-void ags_notation_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
-						   AgsNotationEdit *notation_edit);
+static void ags_notation_edit_frame_clock_update_callback(GdkFrameClock *frame_clock,
+							  AgsNotationEdit *notation_edit);
 
-void ags_notation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
+static void ags_notation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
+									GtkWidget *toolbar,
+									AgsNotationEdit *notation_edit,
+									AgsMachine *machine,
+									gint n_press,
+									gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_button_press_add_note(GtkWidget *editor,
 								 GtkWidget *toolbar,
 								 AgsNotationEdit *notation_edit,
 								 AgsMachine *machine,
 								 gint n_press,
 								 gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_button_press_add_note(GtkWidget *editor,
-							  GtkWidget *toolbar,
-							  AgsNotationEdit *notation_edit,
-							  AgsMachine *machine,
-							  gint n_press,
-							  gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_button_press_resize_note(GtkWidget *editor,
-							     GtkWidget *toolbar,
-							     AgsNotationEdit *notation_edit,
-							     AgsMachine *machine,
-							     gint n_press,
-							     gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_button_press_select_note(GtkWidget *editor,
-							     GtkWidget *toolbar,
-							     AgsNotationEdit *notation_edit,
-							     AgsMachine *machine,
-							     gint n_press,
-							     gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_button_press_resize_note(GtkWidget *editor,
+								    GtkWidget *toolbar,
+								    AgsNotationEdit *notation_edit,
+								    AgsMachine *machine,
+								    gint n_press,
+								    gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_button_press_select_note(GtkWidget *editor,
+								    GtkWidget *toolbar,
+								    AgsNotationEdit *notation_edit,
+								    AgsMachine *machine,
+								    gint n_press,
+								    gdouble x, gdouble y);
 
-void ags_notation_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
+static void ags_notation_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
+									  GtkWidget *toolbar,
+									  AgsNotationEdit *notation_edit,
+									  AgsMachine *machine,
+									  gint n_press, gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_button_release_add_note(GtkWidget *editor,
 								   GtkWidget *toolbar,
 								   AgsNotationEdit *notation_edit,
 								   AgsMachine *machine,
-								   gint n_press, gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_button_release_add_note(GtkWidget *editor,
-							    GtkWidget *toolbar,
-							    AgsNotationEdit *notation_edit,
-							    AgsMachine *machine,
-							    gint n_press,
-							    gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_button_release_resize_note(GtkWidget *editor,
-							       GtkWidget *toolbar,
-							       AgsNotationEdit *notation_edit,
-							       AgsMachine *machine,
-							       gint n_press,
-							       gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_button_release_delete_note(GtkWidget *editor,
-							       GtkWidget *toolbar,
-							       AgsNotationEdit *notation_edit,
-							       AgsMachine *machine,
-							       gint n_press,
-							       gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_button_release_select_note(GtkWidget *editor,
-							       GtkWidget *toolbar,
-							       AgsNotationEdit *notation_edit,
-							       AgsMachine *machine,
-							       gint n_press,
-							       gdouble x, gdouble y);
+								   gint n_press,
+								   gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_button_release_resize_note(GtkWidget *editor,
+								      GtkWidget *toolbar,
+								      AgsNotationEdit *notation_edit,
+								      AgsMachine *machine,
+								      gint n_press,
+								      gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_button_release_delete_note(GtkWidget *editor,
+								      GtkWidget *toolbar,
+								      AgsNotationEdit *notation_edit,
+								      AgsMachine *machine,
+								      gint n_press,
+								      gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_button_release_select_note(GtkWidget *editor,
+								      GtkWidget *toolbar,
+								      AgsNotationEdit *notation_edit,
+								      AgsMachine *machine,
+								      gint n_press,
+								      gdouble x, gdouble y);
 
-gboolean ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-							  gint n_press,
-							  gdouble x,
-							  gdouble y,
-							  AgsNotationEdit *notation_edit);
-gboolean ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
-							   gint n_press,
-							   gdouble x,
-							   gdouble y,
-							   AgsNotationEdit *notation_edit);
+static gboolean ags_notation_edit_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+								 gint n_press,
+								 gdouble x,
+								 gdouble y,
+								 AgsNotationEdit *notation_edit);
+static gboolean ags_notation_edit_gesture_click_released_callback(GtkGestureClick *event_controller,
+								  gint n_press,
+								  gdouble x,
+								  gdouble y,
+								  AgsNotationEdit *notation_edit);
 
-gboolean ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
-						guint keyval,
-						guint keycode,
-						GdkModifierType state,
-						AgsNotationEdit *notation_edit);
-gboolean ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
-						 guint keyval,
-						 guint keycode,
-						 GdkModifierType state,
-						 AgsNotationEdit *notation_edit);
-gboolean ags_notation_edit_modifiers_callback(GtkEventControllerKey *event_controller,
-					      GdkModifierType keyval,
-					      AgsNotationEdit *notation_edit);
+static gboolean ags_notation_edit_key_pressed_callback(GtkEventControllerKey *event_controller,
+						       guint keyval,
+						       guint keycode,
+						       GdkModifierType state,
+						       AgsNotationEdit *notation_edit);
+static gboolean ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
+							guint keyval,
+							guint keycode,
+							GdkModifierType state,
+							AgsNotationEdit *notation_edit);
+static gboolean ags_notation_edit_modifiers_callback(GtkEventControllerKey *event_controller,
+						     GdkModifierType keyval,
+						     AgsNotationEdit *notation_edit);
 
-void ags_notation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
+static void ags_notation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
+									 GtkWidget *toolbar,
+									 AgsNotationEdit *notation_edit,
+									 AgsMachine *machine,
+									 gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_motion_notify_add_note(GtkWidget *editor,
 								  GtkWidget *toolbar,
 								  AgsNotationEdit *notation_edit,
 								  AgsMachine *machine,
 								  gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_motion_notify_add_note(GtkWidget *editor,
-							   GtkWidget *toolbar,
-							   AgsNotationEdit *notation_edit,
-							   AgsMachine *machine,
-							   gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_motion_notify_resize_note(GtkWidget *editor,
-							      GtkWidget *toolbar,
-							      AgsNotationEdit *notation_edit,
-							      AgsMachine *machine,
-							      gdouble x, gdouble y);
-void ags_notation_edit_drawing_area_motion_notify_select_note(GtkWidget *editor,
-							      GtkWidget *toolbar,
-							      AgsNotationEdit *notation_edit,
-							      AgsMachine *machine,
-							      gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_motion_notify_resize_note(GtkWidget *editor,
+								     GtkWidget *toolbar,
+								     AgsNotationEdit *notation_edit,
+								     AgsMachine *machine,
+								     gdouble x, gdouble y);
+static void ags_notation_edit_drawing_area_motion_notify_select_note(GtkWidget *editor,
+								     GtkWidget *toolbar,
+								     AgsNotationEdit *notation_edit,
+								     AgsMachine *machine,
+								     gdouble x, gdouble y);
 
-gboolean ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
-					   gdouble x,
-					   gdouble y,
-					   AgsNotationEdit *notation_edit);
+static gboolean ags_notation_edit_motion_callback(GtkEventControllerMotion *event_controller,
+						  gdouble x,
+						  gdouble y,
+						  AgsNotationEdit *notation_edit);
 
-void ags_notation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
-					      gdouble x,
-					      gdouble y,
-					      AgsNotationEdit *notation_edit);
+static void ags_notation_edit_gesture_swipe_callback(GtkGestureSwipe *event_controller,
+						     gdouble x,
+						     gdouble y,
+						     AgsNotationEdit *notation_edit);
 
 /**
  * SECTION:ags_notation_edit

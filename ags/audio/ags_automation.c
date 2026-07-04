@@ -35,34 +35,34 @@
 
 #include <ags/i18n.h>
 
-void ags_automation_class_init(AgsAutomationClass *automation);
-void ags_automation_init(AgsAutomation *automation);
-void ags_automation_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_automation_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_automation_dispose(GObject *gobject);
-void ags_automation_finalize(GObject *gobject);
+static void ags_automation_class_init(AgsAutomationClass *automation);
+static void ags_automation_init(AgsAutomation *automation);
+static void ags_automation_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_automation_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_automation_dispose(GObject *gobject);
+static void ags_automation_finalize(GObject *gobject);
   
-void ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
-							xmlNode *root_node, char *version,
-							char *x_boundary, char *y_boundary,
-							gboolean from_x_offset, guint x_offset,
-							gboolean from_y_offset, guint y_offset,
-							gboolean match_line, gboolean no_duplicates,
-							guint current_line,  
-							gboolean match_timestamp);
+static void ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
+							       xmlNode *root_node, char *version,
+							       char *x_boundary, char *y_boundary,
+							       gboolean from_x_offset, guint x_offset,
+							       gboolean from_y_offset, guint y_offset,
+							       gboolean match_line, gboolean no_duplicates,
+							       guint current_line,  
+							       gboolean match_timestamp);
 
-void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
-						       xmlNode *root_node, char *version,
-						       char *x_boundary, char *y_boundary,
-						       gboolean from_x_offset, guint x_offset,
-						       gboolean from_y_offset, guint y_offset,
-						       gboolean match_line, gboolean no_duplicates);
+static void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
+							      xmlNode *root_node, char *version,
+							      char *x_boundary, char *y_boundary,
+							      gboolean from_x_offset, guint x_offset,
+							      gboolean from_y_offset, guint y_offset,
+							      gboolean match_line, gboolean no_duplicates);
 
 /**
  * SECTION:ags_automation

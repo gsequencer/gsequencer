@@ -25,12 +25,12 @@
 
 #include <ags/i18n.h>
 
-void ags_reset_note_class_init(AgsResetNoteClass *reset_note);
-void ags_reset_note_init(AgsResetNote *reset_note);
-void ags_reset_note_dispose(GObject *gobject);
-void ags_reset_note_finalize(GObject *gobject);
+static void ags_reset_note_class_init(AgsResetNoteClass *reset_note);
+static void ags_reset_note_init(AgsResetNote *reset_note);
+static void ags_reset_note_dispose(GObject *gobject);
+static void ags_reset_note_finalize(GObject *gobject);
 
-void ags_reset_note_launch(AgsTask *task);
+static void ags_reset_note_launch(AgsTask *task);
 
 /**
  * SECTION:ags_reset_note

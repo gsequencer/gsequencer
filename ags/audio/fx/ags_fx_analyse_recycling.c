@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_analyse_recycling_class_init(AgsFxAnalyseRecyclingClass *fx_analyse_recycling);
-void ags_fx_analyse_recycling_init(AgsFxAnalyseRecycling *fx_analyse_recycling);
-void ags_fx_analyse_recycling_dispose(GObject *gobject);
-void ags_fx_analyse_recycling_finalize(GObject *gobject);
+static void ags_fx_analyse_recycling_class_init(AgsFxAnalyseRecyclingClass *fx_analyse_recycling);
+static void ags_fx_analyse_recycling_init(AgsFxAnalyseRecycling *fx_analyse_recycling);
+static void ags_fx_analyse_recycling_dispose(GObject *gobject);
+static void ags_fx_analyse_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_analyse_recycling

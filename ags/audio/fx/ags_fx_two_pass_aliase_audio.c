@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_two_pass_aliase_audio_class_init(AgsFxTwoPassAliaseAudioClass *fx_two_pass_aliase_audio);
-void ags_fx_two_pass_aliase_audio_init(AgsFxTwoPassAliaseAudio *fx_two_pass_aliase_audio);
-void ags_fx_two_pass_aliase_audio_dispose(GObject *gobject);
-void ags_fx_two_pass_aliase_audio_finalize(GObject *gobject);
+static void ags_fx_two_pass_aliase_audio_class_init(AgsFxTwoPassAliaseAudioClass *fx_two_pass_aliase_audio);
+static void ags_fx_two_pass_aliase_audio_init(AgsFxTwoPassAliaseAudio *fx_two_pass_aliase_audio);
+static void ags_fx_two_pass_aliase_audio_dispose(GObject *gobject);
+static void ags_fx_two_pass_aliase_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_two_pass_aliase_audio

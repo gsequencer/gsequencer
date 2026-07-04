@@ -22,22 +22,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager);
-void ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager);
-void ags_lv2_option_manager_finalize(GObject *gobject);
+static void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager);
+static void ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager);
+static void ags_lv2_option_manager_finalize(GObject *gobject);
 
-void ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
-					    gpointer instance,
-					    gpointer options,
-					    gpointer retval);
-void ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
-					    gpointer instance,
-					    gpointer options,
-					    gpointer retval);
+static void ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
+						   gpointer instance,
+						   gpointer options,
+						   gpointer retval);
+static void ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
+						   gpointer instance,
+						   gpointer options,
+						   gpointer retval);
 
-void ags_lv2_option_manager_destroy_data(gpointer data);
-gboolean ags_lv2_option_ressource_equal(gpointer a, gpointer b);
-gboolean ags_lv2_option_ressource_finder(gpointer key, gpointer value, gpointer user_data);
+static void ags_lv2_option_manager_destroy_data(gpointer data);
+static gboolean ags_lv2_option_ressource_equal(gpointer a, gpointer b);
+static gboolean ags_lv2_option_ressource_finder(gpointer key, gpointer value, gpointer user_data);
 
 /**
  * SECTION:ags_lv2_option_manager
@@ -59,7 +59,7 @@ enum{
 static gpointer ags_lv2_option_manager_parent_class = NULL;
 static guint lv2_option_manager_signals[LAST_SIGNAL];
 
-AgsLv2OptionManager *ags_lv2_option_manager = NULL;
+static AgsLv2OptionManager *ags_lv2_option_manager = NULL;
 
 GType
 ags_lv2_option_manager_get_type()

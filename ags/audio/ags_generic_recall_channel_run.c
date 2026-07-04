@@ -28,25 +28,25 @@
 
 #include <ags/i18n.h>
 
-void ags_generic_recall_channel_run_class_init(AgsGenericRecallChannelRunClass *generic_recall_channel_run);
-void ags_generic_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_generic_recall_channel_run_init(AgsGenericRecallChannelRun *generic_recall_channel_run);
-void ags_generic_recall_channel_run_set_property(GObject *gobject,
-						 guint prop_id,
-						 const GValue *value,
-						 GParamSpec *param_spec);
-void ags_generic_recall_channel_run_get_property(GObject *gobject,
-						 guint prop_id,
-						 GValue *value,
-						 GParamSpec *param_spec);
-void ags_generic_recall_channel_run_finalize(GObject *gobject);
+static void ags_generic_recall_channel_run_class_init(AgsGenericRecallChannelRunClass *generic_recall_channel_run);
+static void ags_generic_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_generic_recall_channel_run_init(AgsGenericRecallChannelRun *generic_recall_channel_run);
+static void ags_generic_recall_channel_run_set_property(GObject *gobject,
+							guint prop_id,
+							const GValue *value,
+							GParamSpec *param_spec);
+static void ags_generic_recall_channel_run_get_property(GObject *gobject,
+							guint prop_id,
+							GValue *value,
+							GParamSpec *param_spec);
+static void ags_generic_recall_channel_run_finalize(GObject *gobject);
 
-void ags_generic_recall_channel_run_connect(AgsConnectable *connectable);
-void ags_generic_recall_channel_run_disconnect(AgsConnectable *connectable);
+static void ags_generic_recall_channel_run_connect(AgsConnectable *connectable);
+static void ags_generic_recall_channel_run_disconnect(AgsConnectable *connectable);
 
-AgsRecall* ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
-						    AgsRecallID *recall_id,
-						    guint *n_params, gchar **parameter_name, GValue *value);
+static AgsRecall* ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
+							   AgsRecallID *recall_id,
+							   guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_generic_recall_channel_run

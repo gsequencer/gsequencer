@@ -21,17 +21,17 @@
 
 #include <stdlib.h>
 
-void ags_led_array_class_init(AgsLedArrayClass *led_array);
-void ags_led_array_init(AgsLedArray *led_array);
-void ags_led_array_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_led_array_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_led_array_finalize(GObject *gobject);
+static void ags_led_array_class_init(AgsLedArrayClass *led_array);
+static void ags_led_array_init(AgsLedArray *led_array);
+static void ags_led_array_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_led_array_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_led_array_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_led_array

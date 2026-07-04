@@ -35,28 +35,28 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_server_class_init(AgsOscServerClass *osc_server);
-void ags_osc_server_init(AgsOscServer *osc_server);
-void ags_osc_server_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_osc_server_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_osc_server_dispose(GObject *gobject);
-void ags_osc_server_finalize(GObject *gobject);
+static void ags_osc_server_class_init(AgsOscServerClass *osc_server);
+static void ags_osc_server_init(AgsOscServer *osc_server);
+static void ags_osc_server_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_osc_server_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_osc_server_dispose(GObject *gobject);
+static void ags_osc_server_finalize(GObject *gobject);
 
-void ags_osc_server_real_start(AgsOscServer *osc_server);
-void ags_osc_server_real_stop(AgsOscServer *osc_server);
+static void ags_osc_server_real_start(AgsOscServer *osc_server);
+static void ags_osc_server_real_stop(AgsOscServer *osc_server);
 
-gboolean ags_osc_server_real_listen(AgsOscServer *osc_server);
+static gboolean ags_osc_server_real_listen(AgsOscServer *osc_server);
 
-void ags_osc_server_real_dispatch(AgsOscServer *osc_server);
+static void ags_osc_server_real_dispatch(AgsOscServer *osc_server);
 
-void* ags_osc_server_listen_thread(void *ptr);
-void* ags_osc_server_dispatch_thread(void *ptr);
+static void* ags_osc_server_listen_thread(void *ptr);
+static void* ags_osc_server_dispatch_thread(void *ptr);
 
 /**
  * SECTION:ags_osc_server

@@ -25,44 +25,44 @@
 
 #include <ags/i18n.h>
 
-void ags_file_dialog_class_init(AgsFileDialogClass *file_dialog);
-void ags_file_dialog_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_file_dialog_init(AgsFileDialog *file_dialog);
-void ags_file_dialog_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_dialog_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_dialog_dispose(GObject *gobject);
-void ags_file_dialog_finalize(GObject *gobject);
+static void ags_file_dialog_class_init(AgsFileDialogClass *file_dialog);
+static void ags_file_dialog_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_file_dialog_init(AgsFileDialog *file_dialog);
+static void ags_file_dialog_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_dialog_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_dialog_dispose(GObject *gobject);
+static void ags_file_dialog_finalize(GObject *gobject);
 
-void ags_file_dialog_show(GtkWidget *widget);
+static void ags_file_dialog_show(GtkWidget *widget);
 
-void ags_file_dialog_close_request_callback(GtkWindow *window,
-					    AgsFileDialog *file_dialog);
+static void ags_file_dialog_close_request_callback(GtkWindow *window,
+						   AgsFileDialog *file_dialog);
 
-void ags_file_dialog_activate_button_callback(GtkButton *activate_button,
-					      AgsFileDialog *file_dialog);
+static void ags_file_dialog_activate_button_callback(GtkButton *activate_button,
+						     AgsFileDialog *file_dialog);
 
-gboolean ags_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
-					      guint keyval,
-					      guint keycode,
-					      GdkModifierType state,
-					      AgsFileDialog *file_dialog);
-void ags_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
-					   guint keyval,
-					   guint keycode,
-					   GdkModifierType state,
-					   AgsFileDialog *file_dialog);
-gboolean ags_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
-					    GdkModifierType keyval,
-					    AgsFileDialog *file_dialog);
+static gboolean ags_file_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsFileDialog *file_dialog);
+static void ags_file_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsFileDialog *file_dialog);
+static gboolean ags_file_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						   GdkModifierType keyval,
+						   AgsFileDialog *file_dialog);
 
-void ags_file_dialog_real_response(AgsFileDialog *file_dialog,
-				   gint response_id);
+static void ags_file_dialog_real_response(AgsFileDialog *file_dialog,
+					  gint response_id);
 
 /**
  * SECTION:ags_file_dialog

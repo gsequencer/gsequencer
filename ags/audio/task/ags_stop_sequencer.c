@@ -26,20 +26,20 @@
 
 #include <ags/i18n.h>
 
-void ags_stop_sequencer_class_init(AgsStopSequencerClass *stop_sequencer);
-void ags_stop_sequencer_init(AgsStopSequencer *stop_sequencer);
-void ags_stop_sequencer_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_stop_sequencer_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_stop_sequencer_dispose(GObject *gobject);
-void ags_stop_sequencer_finalize(GObject *gobject);
+static void ags_stop_sequencer_class_init(AgsStopSequencerClass *stop_sequencer);
+static void ags_stop_sequencer_init(AgsStopSequencer *stop_sequencer);
+static void ags_stop_sequencer_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_stop_sequencer_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_stop_sequencer_dispose(GObject *gobject);
+static void ags_stop_sequencer_finalize(GObject *gobject);
 
-void ags_stop_sequencer_launch(AgsTask *task);
+static void ags_stop_sequencer_launch(AgsTask *task);
 
 /**
  * SECTION:ags_stop_sequencer

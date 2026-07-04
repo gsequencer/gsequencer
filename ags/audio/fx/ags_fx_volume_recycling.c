@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_volume_recycling_class_init(AgsFxVolumeRecyclingClass *fx_volume_recycling);
-void ags_fx_volume_recycling_init(AgsFxVolumeRecycling *fx_volume_recycling);
-void ags_fx_volume_recycling_dispose(GObject *gobject);
-void ags_fx_volume_recycling_finalize(GObject *gobject);
+static void ags_fx_volume_recycling_class_init(AgsFxVolumeRecyclingClass *fx_volume_recycling);
+static void ags_fx_volume_recycling_init(AgsFxVolumeRecycling *fx_volume_recycling);
+static void ags_fx_volume_recycling_dispose(GObject *gobject);
+static void ags_fx_volume_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_volume_recycling

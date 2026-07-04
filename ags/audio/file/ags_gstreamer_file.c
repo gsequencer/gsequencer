@@ -34,73 +34,73 @@
 
 #include <ags/i18n.h>
 
-void ags_gstreamer_file_class_init(AgsGstreamerFileClass *gstreamer_file);
-void ags_gstreamer_file_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_gstreamer_file_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
-void ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file);
-void ags_gstreamer_file_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_gstreamer_file_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_gstreamer_file_dispose(GObject *gobject);
-void ags_gstreamer_file_finalize(GObject *gobject);
+static void ags_gstreamer_file_class_init(AgsGstreamerFileClass *gstreamer_file);
+static void ags_gstreamer_file_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_gstreamer_file_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
+static void ags_gstreamer_file_init(AgsGstreamerFile *gstreamer_file);
+static void ags_gstreamer_file_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_gstreamer_file_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_gstreamer_file_dispose(GObject *gobject);
+static void ags_gstreamer_file_finalize(GObject *gobject);
 
-AgsUUID* ags_gstreamer_file_get_uuid(AgsConnectable *connectable);
-gboolean ags_gstreamer_file_has_resource(AgsConnectable *connectable);
-gboolean ags_gstreamer_file_is_ready(AgsConnectable *connectable);
-void ags_gstreamer_file_add_to_registry(AgsConnectable *connectable);
-void ags_gstreamer_file_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_gstreamer_file_list_resource(AgsConnectable *connectable);
-xmlNode* ags_gstreamer_file_xml_compose(AgsConnectable *connectable);
-void ags_gstreamer_file_xml_parse(AgsConnectable *connectable,
-				  xmlNode *node);
-gboolean ags_gstreamer_file_is_connected(AgsConnectable *connectable);
-void ags_gstreamer_file_connect(AgsConnectable *connectable);
-void ags_gstreamer_file_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_gstreamer_file_get_uuid(AgsConnectable *connectable);
+static gboolean ags_gstreamer_file_has_resource(AgsConnectable *connectable);
+static gboolean ags_gstreamer_file_is_ready(AgsConnectable *connectable);
+static void ags_gstreamer_file_add_to_registry(AgsConnectable *connectable);
+static void ags_gstreamer_file_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_gstreamer_file_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_gstreamer_file_xml_compose(AgsConnectable *connectable);
+static void ags_gstreamer_file_xml_parse(AgsConnectable *connectable,
+					 xmlNode *node);
+static gboolean ags_gstreamer_file_is_connected(AgsConnectable *connectable);
+static void ags_gstreamer_file_connect(AgsConnectable *connectable);
+static void ags_gstreamer_file_disconnect(AgsConnectable *connectable);
 
-gboolean ags_gstreamer_file_open(AgsSoundResource *sound_resource,
-				 gchar *filename);
-gboolean ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
-				    gchar *filename,
-				    guint audio_channels, guint samplerate,
-				    gboolean create);
-void ags_gstreamer_file_info(AgsSoundResource *sound_resource,
-			     guint *frame_count,
-			     guint *loop_start, guint *loop_end);
-void ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
-				    guint channels,
-				    guint samplerate,
-				    guint buffer_size,
-				    AgsSoundcardFormat format);
-void ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
-				    guint *channels,
-				    guint *samplerate,
-				    guint *buffer_size,
-				    AgsSoundcardFormat *format);
-guint ags_gstreamer_file_read(AgsSoundResource *sound_resource,
-			      void *dbuffer, guint daudio_channels,
-			      guint audio_channel,
-			      guint frame_count, AgsSoundcardFormat format);
-void ags_gstreamer_file_write(AgsSoundResource *sound_resource,
-			      void *sbuffer, guint saudio_channels,
-			      guint audio_channel,
-			      guint frame_count, AgsSoundcardFormat format);
-void ags_gstreamer_file_flush(AgsSoundResource *sound_resource);
-void ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
-			     gint64 frame_count, gint whence);
-void ags_gstreamer_file_close(AgsSoundResource *sound_resource);
+static gboolean ags_gstreamer_file_open(AgsSoundResource *sound_resource,
+					gchar *filename);
+static gboolean ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
+					   gchar *filename,
+					   guint audio_channels, guint samplerate,
+					   gboolean create);
+static void ags_gstreamer_file_info(AgsSoundResource *sound_resource,
+				    guint *frame_count,
+				    guint *loop_start, guint *loop_end);
+static void ags_gstreamer_file_set_presets(AgsSoundResource *sound_resource,
+					   guint channels,
+					   guint samplerate,
+					   guint buffer_size,
+					   AgsSoundcardFormat format);
+static void ags_gstreamer_file_get_presets(AgsSoundResource *sound_resource,
+					   guint *channels,
+					   guint *samplerate,
+					   guint *buffer_size,
+					   AgsSoundcardFormat *format);
+static guint ags_gstreamer_file_read(AgsSoundResource *sound_resource,
+				     void *dbuffer, guint daudio_channels,
+				     guint audio_channel,
+				     guint frame_count, AgsSoundcardFormat format);
+static void ags_gstreamer_file_write(AgsSoundResource *sound_resource,
+				     void *sbuffer, guint saudio_channels,
+				     guint audio_channel,
+				     guint frame_count, AgsSoundcardFormat format);
+static void ags_gstreamer_file_flush(AgsSoundResource *sound_resource);
+static void ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
+				    gint64 frame_count, gint whence);
+static void ags_gstreamer_file_close(AgsSoundResource *sound_resource);
 
-gboolean ags_gstreamer_file_seek_data(GstElement *source, guint64 position, AgsGstreamerFile *gstreamer_file);
-void* ags_gstreamer_file_rw_thread_run(void *ptr);
+static gboolean ags_gstreamer_file_seek_data(GstElement *source, guint64 position, AgsGstreamerFile *gstreamer_file);
+static void* ags_gstreamer_file_rw_thread_run(void *ptr);
 
-void ags_gstreamer_file_start_feed(GstElement *source, guint size, AgsGstreamerFile *gstreamer_file);
-void ags_gstreamer_file_stop_feed(GstElement *source, AgsGstreamerFile *gstreamer_file);
+static void ags_gstreamer_file_start_feed(GstElement *source, guint size, AgsGstreamerFile *gstreamer_file);
+static void ags_gstreamer_file_stop_feed(GstElement *source, AgsGstreamerFile *gstreamer_file);
 
-void ags_gstreamer_file_error_callback(GstBus *bus, GstMessage *msg, AgsGstreamerFile *gstreamer_file);
+static void ags_gstreamer_file_error_callback(GstBus *bus, GstMessage *msg, AgsGstreamerFile *gstreamer_file);
 
 /**
  * SECTION:ags_gstreamer_file

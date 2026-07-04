@@ -44,27 +44,27 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_xmlrpc_server_class_init(AgsOscXmlrpcServerClass *osc_xmlrpc_server);
-void ags_osc_xmlrpc_server_init(AgsOscXmlrpcServer *osc_xmlrpc_server);
-void ags_osc_xmlrpc_server_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_osc_xmlrpc_server_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_osc_xmlrpc_server_dispose(GObject *gobject);
-void ags_osc_xmlrpc_server_finalize(GObject *gobject);
+static void ags_osc_xmlrpc_server_class_init(AgsOscXmlrpcServerClass *osc_xmlrpc_server);
+static void ags_osc_xmlrpc_server_init(AgsOscXmlrpcServer *osc_xmlrpc_server);
+static void ags_osc_xmlrpc_server_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_osc_xmlrpc_server_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_osc_xmlrpc_server_dispose(GObject *gobject);
+static void ags_osc_xmlrpc_server_finalize(GObject *gobject);
 
-void ags_osc_xmlrpc_server_start(AgsOscServer *osc_server);
-void ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server);
+static void ags_osc_xmlrpc_server_start(AgsOscServer *osc_server);
+static void ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server);
 
-void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
-					      SoupServerMessage *server_msg,
-					      const char *path,
-					      SoupWebsocketConnection *connection,
-					      AgsOscXmlrpcServer *osc_xmlrpc_server);
+static void ags_osc_xmlrpc_server_websocket_callback(SoupServer *server,
+						     SoupServerMessage *server_msg,
+						     const char *path,
+						     SoupWebsocketConnection *connection,
+						     AgsOscXmlrpcServer *osc_xmlrpc_server);
 
 /**
  * SECTION:ags_osc_xmlrpc_server

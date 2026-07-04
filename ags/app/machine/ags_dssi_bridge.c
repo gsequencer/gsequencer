@@ -43,30 +43,30 @@
 
 #include <ags/i18n.h>
 
-void ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge);
-void ags_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge);
-void ags_dssi_bridge_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_dssi_bridge_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_dssi_bridge_finalize(GObject *gobject);
+static void ags_dssi_bridge_class_init(AgsDssiBridgeClass *dssi_bridge);
+static void ags_dssi_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge);
+static void ags_dssi_bridge_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_dssi_bridge_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_dssi_bridge_finalize(GObject *gobject);
 
-void ags_dssi_bridge_connect(AgsConnectable *connectable);
-void ags_dssi_bridge_disconnect(AgsConnectable *connectable);
+static void ags_dssi_bridge_connect(AgsConnectable *connectable);
+static void ags_dssi_bridge_disconnect(AgsConnectable *connectable);
 
-void ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
-					   guint audio_channels, guint audio_channels_old,
-					   gpointer data);
-void ags_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
-				 guint pads, guint pads_old,
-				 gpointer data);
+static void ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
+						  guint audio_channels, guint audio_channels_old,
+						  gpointer data);
+static void ags_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
+					guint pads, guint pads_old,
+					gpointer data);
 
-void ags_dssi_bridge_map_recall(AgsMachine *machine);
+static void ags_dssi_bridge_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_dssi_bridge

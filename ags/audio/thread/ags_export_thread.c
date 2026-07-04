@@ -35,25 +35,25 @@
 
 #include <ags/i18n.h>
 
-void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
-void ags_export_thread_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_export_thread_init(AgsExportThread *export_thread);
-void ags_export_thread_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_export_thread_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_export_thread_connect(AgsConnectable *connectable);
-void ags_export_thread_disconnect(AgsConnectable *connectable);
-void ags_export_thread_dispose(GObject *gobject);
-void ags_export_thread_finalize(GObject *gobject);
+static void ags_export_thread_class_init(AgsExportThreadClass *export_thread);
+static void ags_export_thread_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_export_thread_init(AgsExportThread *export_thread);
+static void ags_export_thread_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_export_thread_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_export_thread_connect(AgsConnectable *connectable);
+static void ags_export_thread_disconnect(AgsConnectable *connectable);
+static void ags_export_thread_dispose(GObject *gobject);
+static void ags_export_thread_finalize(GObject *gobject);
 
-void ags_export_thread_start(AgsThread *thread);
-void ags_export_thread_run(AgsThread *thread);
-void ags_export_thread_stop(AgsThread *thread);
+static void ags_export_thread_start(AgsThread *thread);
+static void ags_export_thread_run(AgsThread *thread);
+static void ags_export_thread_stop(AgsThread *thread);
 
 /**
  * SECTION:ags_export_thread

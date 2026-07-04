@@ -36,10 +36,10 @@
 
 #include <ags/config.h>
 
-void ags_audio_unit_manager_class_init(AgsAudioUnitManagerClass *audio_unit_manager);
-void ags_audio_unit_manager_init (AgsAudioUnitManager *audio_unit_manager);
-void ags_audio_unit_manager_dispose(GObject *gobject);
-void ags_audio_unit_manager_finalize(GObject *gobject);
+static void ags_audio_unit_manager_class_init(AgsAudioUnitManagerClass *audio_unit_manager);
+static void ags_audio_unit_manager_init (AgsAudioUnitManager *audio_unit_manager);
+static void ags_audio_unit_manager_dispose(GObject *gobject);
+static void ags_audio_unit_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_audio_unit_manager
@@ -53,8 +53,8 @@ void ags_audio_unit_manager_finalize(GObject *gobject);
 
 static gpointer ags_audio_unit_manager_parent_class = NULL;
 
-AgsAudioUnitManager *ags_audio_unit_manager = NULL;
-gchar **ags_audio_unit_default_path = NULL;
+static AgsAudioUnitManager *ags_audio_unit_manager = NULL;
+static gchar **ags_audio_unit_default_path = NULL;
 
 GType
 ags_audio_unit_manager_get_type (void)

@@ -27,8 +27,8 @@
 
 #include <math.h>
 
-void ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
-							  gchar *filename, gchar *effect);
+static void ags_effect_bulk_plugin_browser_response_create_entry(AgsEffectBulk *effect_bulk,
+								 gchar *filename, gchar *effect);
 
 void
 ags_effect_bulk_update_ui_callback(GObject *ui_provider,

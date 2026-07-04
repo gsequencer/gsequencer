@@ -25,18 +25,18 @@
 
 #include <errno.h>
 
-void ags_midi_class_init(AgsMidiClass *midi);
-void ags_midi_init(AgsMidi *midi);
-void ags_midi_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_midi_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_midi_dispose(GObject *gobject);
-void ags_midi_finalize(GObject *gobject);
+static void ags_midi_class_init(AgsMidiClass *midi);
+static void ags_midi_init(AgsMidi *midi);
+static void ags_midi_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_midi_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_midi_dispose(GObject *gobject);
+static void ags_midi_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_midi

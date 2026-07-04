@@ -32,32 +32,32 @@
 
 #define AGS_CORE_AUDIO_PORT_USE_HW (1)
 
-void ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client);
-void ags_core_audio_client_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_core_audio_client_init(AgsCoreAudioClient *core_audio_client);
-void ags_core_audio_client_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_core_audio_client_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_core_audio_client_dispose(GObject *gobject);
-void ags_core_audio_client_finalize(GObject *gobject);
+static void ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client);
+static void ags_core_audio_client_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_core_audio_client_init(AgsCoreAudioClient *core_audio_client);
+static void ags_core_audio_client_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_core_audio_client_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_core_audio_client_dispose(GObject *gobject);
+static void ags_core_audio_client_finalize(GObject *gobject);
 
-AgsUUID* ags_core_audio_client_get_uuid(AgsConnectable *connectable);
-gboolean ags_core_audio_client_has_resource(AgsConnectable *connectable);
-gboolean ags_core_audio_client_is_ready(AgsConnectable *connectable);
-void ags_core_audio_client_add_to_registry(AgsConnectable *connectable);
-void ags_core_audio_client_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_core_audio_client_list_resource(AgsConnectable *connectable);
-xmlNode* ags_core_audio_client_xml_compose(AgsConnectable *connectable);
-void ags_core_audio_client_xml_parse(AgsConnectable *connectable,
-				     xmlNode *node);
-gboolean ags_core_audio_client_is_connected(AgsConnectable *connectable);
-void ags_core_audio_client_connect(AgsConnectable *connectable);
-void ags_core_audio_client_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_core_audio_client_get_uuid(AgsConnectable *connectable);
+static gboolean ags_core_audio_client_has_resource(AgsConnectable *connectable);
+static gboolean ags_core_audio_client_is_ready(AgsConnectable *connectable);
+static void ags_core_audio_client_add_to_registry(AgsConnectable *connectable);
+static void ags_core_audio_client_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_core_audio_client_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_core_audio_client_xml_compose(AgsConnectable *connectable);
+static void ags_core_audio_client_xml_parse(AgsConnectable *connectable,
+					    xmlNode *node);
+static gboolean ags_core_audio_client_is_connected(AgsConnectable *connectable);
+static void ags_core_audio_client_connect(AgsConnectable *connectable);
+static void ags_core_audio_client_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_core_audio_client

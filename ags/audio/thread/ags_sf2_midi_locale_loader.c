@@ -34,20 +34,20 @@
 
 #include <ags/i18n.h>
 
-void ags_sf2_midi_locale_loader_class_init(AgsSF2MidiLocaleLoaderClass *sf2_midi_locale_loader);
-void ags_sf2_midi_locale_loader_init(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader);
-void ags_sf2_midi_locale_loader_set_property(GObject *gobject,
-					     guint prop_id,
-					     const GValue *value,
-					     GParamSpec *param_spec);
-void ags_sf2_midi_locale_loader_get_property(GObject *gobject,
-					     guint prop_id,
-					     GValue *value,
-					     GParamSpec *param_spec);
-void ags_sf2_midi_locale_loader_dispose(GObject *gobject);
-void ags_sf2_midi_locale_loader_finalize(GObject *gobject);
+static void ags_sf2_midi_locale_loader_class_init(AgsSF2MidiLocaleLoaderClass *sf2_midi_locale_loader);
+static void ags_sf2_midi_locale_loader_init(AgsSF2MidiLocaleLoader *sf2_midi_locale_loader);
+static void ags_sf2_midi_locale_loader_set_property(GObject *gobject,
+						    guint prop_id,
+						    const GValue *value,
+						    GParamSpec *param_spec);
+static void ags_sf2_midi_locale_loader_get_property(GObject *gobject,
+						    guint prop_id,
+						    GValue *value,
+						    GParamSpec *param_spec);
+static void ags_sf2_midi_locale_loader_dispose(GObject *gobject);
+static void ags_sf2_midi_locale_loader_finalize(GObject *gobject);
 
-void* ags_sf2_midi_locale_loader_run(void *ptr);
+static void* ags_sf2_midi_locale_loader_run(void *ptr);
 
 /**
  * SECTION:ags_sf2_midi_locale_loader

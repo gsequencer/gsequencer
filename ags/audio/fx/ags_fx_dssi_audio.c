@@ -30,46 +30,46 @@
 
 #include <ags/audio/fx/ags_fx_dssi_channel.h>
 
-void ags_fx_dssi_audio_class_init(AgsFxDssiAudioClass *fx_dssi_audio);
-void ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio);
-void ags_fx_dssi_audio_dispose(GObject *gobject);
-void ags_fx_dssi_audio_finalize(GObject *gobject);
+static void ags_fx_dssi_audio_class_init(AgsFxDssiAudioClass *fx_dssi_audio);
+static void ags_fx_dssi_audio_init(AgsFxDssiAudio *fx_dssi_audio);
+static void ags_fx_dssi_audio_dispose(GObject *gobject);
+static void ags_fx_dssi_audio_finalize(GObject *gobject);
 
-void ags_fx_dssi_audio_notify_filename_callback(GObject *gobject,
-						GParamSpec *pspec,
-						gpointer user_data);
-void ags_fx_dssi_audio_notify_effect_callback(GObject *gobject,
-					      GParamSpec *pspec,
-					      gpointer user_data);
-void ags_fx_dssi_audio_notify_audio_callback(GObject *gobject,
-					     GParamSpec *pspec,
-					     gpointer user_data);
-void ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
-						   GParamSpec *pspec,
-						   gpointer user_data);
-void ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
-						  GParamSpec *pspec,
-						  gpointer user_data);
+static void ags_fx_dssi_audio_notify_filename_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data);
+static void ags_fx_dssi_audio_notify_effect_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     gpointer user_data);
+static void ags_fx_dssi_audio_notify_audio_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    gpointer user_data);
+static void ags_fx_dssi_audio_notify_buffer_size_callback(GObject *gobject,
+							  GParamSpec *pspec,
+							  gpointer user_data);
+static void ags_fx_dssi_audio_notify_samplerate_callback(GObject *gobject,
+							 GParamSpec *pspec,
+							 gpointer user_data);
 
-void ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
-						   guint audio_channels, guint audio_channels_old,
-						   AgsFxDssiAudio *fx_dssi_audio);
-void ags_fx_dssi_audio_set_pads_callback(AgsAudio *audio,
-					 GType channel_type,
-					 guint pads, guint pads_old,
-					 AgsFxDssiAudio *fx_dssi_audio);
+static void ags_fx_dssi_audio_set_audio_channels_callback(AgsAudio *audio,
+							  guint audio_channels, guint audio_channels_old,
+							  AgsFxDssiAudio *fx_dssi_audio);
+static void ags_fx_dssi_audio_set_pads_callback(AgsAudio *audio,
+						GType channel_type,
+						guint pads, guint pads_old,
+						AgsFxDssiAudio *fx_dssi_audio);
 
-void ags_fx_dssi_audio_input_data_load_plugin(AgsFxDssiAudio *fx_dssi_audio,
-					      AgsFxDssiAudioInputData *input_data);
-void ags_fx_dssi_audio_channel_data_load_plugin(AgsFxDssiAudio *fx_dssi_audio,
-						AgsFxDssiAudioChannelData *channel_data);
-void ags_fx_dssi_audio_scope_data_load_plugin(AgsFxDssiAudio *fx_dssi_audio,
-					      AgsFxDssiAudioScopeData *scope_data);
+static void ags_fx_dssi_audio_input_data_load_plugin(AgsFxDssiAudio *fx_dssi_audio,
+						     AgsFxDssiAudioInputData *input_data);
+static void ags_fx_dssi_audio_channel_data_load_plugin(AgsFxDssiAudio *fx_dssi_audio,
+						       AgsFxDssiAudioChannelData *channel_data);
+static void ags_fx_dssi_audio_scope_data_load_plugin(AgsFxDssiAudio *fx_dssi_audio,
+						     AgsFxDssiAudioScopeData *scope_data);
 
-void ags_fx_dssi_audio_channel_data_load_port(AgsFxDssiAudio *fx_dssi_audio,
-					      AgsFxDssiAudioChannelData *channel_data);
-void ags_fx_dssi_audio_scope_data_load_port(AgsFxDssiAudio *fx_dssi_audio,
-					    AgsFxDssiAudioScopeData *scope_data);
+static void ags_fx_dssi_audio_channel_data_load_port(AgsFxDssiAudio *fx_dssi_audio,
+						     AgsFxDssiAudioChannelData *channel_data);
+static void ags_fx_dssi_audio_scope_data_load_port(AgsFxDssiAudio *fx_dssi_audio,
+						   AgsFxDssiAudioScopeData *scope_data);
 
 /**
  * SECTION:ags_fx_dssi_audio

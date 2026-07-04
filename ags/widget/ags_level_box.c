@@ -23,17 +23,17 @@
 
 #include <ags/i18n.h>
 
-void ags_level_box_class_init(AgsLevelBoxClass *level_box);
-void ags_level_box_init(AgsLevelBox *level_box);
-void ags_level_box_dispose(GObject *gobject);
-void ags_level_box_finalize(GObject *gobject);
+static void ags_level_box_class_init(AgsLevelBoxClass *level_box);
+static void ags_level_box_init(AgsLevelBox *level_box);
+static void ags_level_box_dispose(GObject *gobject);
+static void ags_level_box_finalize(GObject *gobject);
 
-void ags_level_box_notify_width_request_callback(GObject *gobject,
-						 GParamSpec *pspec,
-						 AgsLevelBox *level_box);
-void ags_level_box_notify_height_request_callback(GObject *gobject,
-						  GParamSpec *pspec,
-						  AgsLevelBox *level_box);
+static void ags_level_box_notify_width_request_callback(GObject *gobject,
+							GParamSpec *pspec,
+							AgsLevelBox *level_box);
+static void ags_level_box_notify_height_request_callback(GObject *gobject,
+							 GParamSpec *pspec,
+							 AgsLevelBox *level_box);
 
 /**
  * SECTION:ags_level_box

@@ -48,99 +48,99 @@
  * into XML.
  */
 
-void ags_turtle_class_init(AgsTurtleClass *turtle);
-void ags_turtle_init (AgsTurtle *turtle);
-void ags_turtle_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_turtle_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_turtle_finalize(GObject *gobject);
+static void ags_turtle_class_init(AgsTurtleClass *turtle);
+static void ags_turtle_init (AgsTurtle *turtle);
+static void ags_turtle_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_turtle_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_turtle_finalize(GObject *gobject);
 
-gchar* ags_turtle_load_skip_comments_and_blanks(AgsTurtle *turtle,
-						gchar *buffer, gsize buffer_length,
-						gchar **iter);
-xmlNode* ags_turtle_load_read_iriref(AgsTurtle *turtle,
-				     gchar *buffer, gsize buffer_length,
-				     gchar **iter);
-xmlNode* ags_turtle_load_read_anon(AgsTurtle *turtle,
-				   gchar *buffer, gsize buffer_length,
-				   gchar **iter);
-xmlNode* ags_turtle_load_read_pname_ns(AgsTurtle *turtle,
-				       gchar *buffer, gsize buffer_length,
-				       gchar **iter);
-xmlNode* ags_turtle_load_read_pname_ln(AgsTurtle *turtle,
-				       gchar *buffer, gsize buffer_length,
-				       gchar **iter);
-xmlNode* ags_turtle_load_read_numeric(AgsTurtle *turtle,
-				      gchar *buffer, gsize buffer_length,
-				      gchar **iter);
-xmlNode* ags_turtle_load_read_string(AgsTurtle *turtle,
-				     gchar *buffer, gsize buffer_length,
-				     gchar **iter);
-xmlNode* ags_turtle_load_read_langtag(AgsTurtle *turtle,
-				      gchar *buffer, gsize buffer_length,
-				      gchar **iter);
-xmlNode* ags_turtle_load_read_literal(AgsTurtle *turtle,
-				      gchar *buffer, gsize buffer_length,
-				      gchar **iter);
-xmlNode* ags_turtle_load_read_iri(AgsTurtle *turtle,
-				  gchar *buffer, gsize buffer_length,
-				  gchar **iter);
-xmlNode* ags_turtle_load_read_prefix_id(AgsTurtle *turtle,
-					gchar *buffer, gsize buffer_length,
-					gchar **iter);
-xmlNode* ags_turtle_load_read_base(AgsTurtle *turtle,
-				   gchar *buffer, gsize buffer_length,
-				   gchar **iter);
-xmlNode* ags_turtle_load_read_sparql_prefix(AgsTurtle *turtle,
-					    gchar *buffer, gsize buffer_length,
-					    gchar **iter);
-xmlNode* ags_turtle_load_read_sparql_base(AgsTurtle *turtle,
-					  gchar *buffer, gsize buffer_length,
-					  gchar **iter);
-xmlNode* ags_turtle_load_read_prefixed_name(AgsTurtle *turtle,
-					    gchar *buffer, gsize buffer_length,
-					    gchar **iter);
-xmlNode* ags_turtle_load_read_blank_node(AgsTurtle *turtle,
-					 gchar *buffer, gsize buffer_length,
-					 gchar **iter);
-xmlNode* ags_turtle_load_read_statement(AgsTurtle *turtle,
-					gchar *buffer, gsize buffer_length,
-					gchar **iter);
-xmlNode* ags_turtle_load_read_verb(AgsTurtle *turtle,
-				   gchar *buffer, gsize buffer_length,
-				   gchar **iter);
-xmlNode* ags_turtle_load_read_predicate(AgsTurtle *turtle,
-					gchar *buffer, gsize buffer_length,
-					gchar **iter);
-xmlNode* ags_turtle_load_read_object(AgsTurtle *turtle,
-				     gchar *buffer, gsize buffer_length,
-				     gchar **iter);
-xmlNode* ags_turtle_load_read_directive(AgsTurtle *turtle,
-					gchar *buffer, gsize buffer_length,
-					gchar **iter);
-xmlNode* ags_turtle_load_read_triple(AgsTurtle *turtle,
-				     gchar *buffer, gsize buffer_length,
-				     gchar **iter);
-xmlNode* ags_turtle_load_read_subject(AgsTurtle *turtle,
-				      gchar *buffer, gsize buffer_length,
-				      gchar **iter);
-xmlNode* ags_turtle_load_read_object_list(AgsTurtle *turtle,
-					  gchar *buffer, gsize buffer_length,
-					  gchar **iter);
-xmlNode* ags_turtle_load_read_collection(AgsTurtle *turtle,
-					 gchar *buffer, gsize buffer_length,
-					 gchar **iter);
-xmlNode* ags_turtle_load_read_blank_node_property_list(AgsTurtle *turtle,
+static gchar* ags_turtle_load_skip_comments_and_blanks(AgsTurtle *turtle,
 						       gchar *buffer, gsize buffer_length,
 						       gchar **iter);
-xmlNode* ags_turtle_load_read_predicate_object_list(AgsTurtle *turtle,
-						    gchar *buffer, gsize buffer_length,
-						    gchar **iter);
+static xmlNode* ags_turtle_load_read_iriref(AgsTurtle *turtle,
+					    gchar *buffer, gsize buffer_length,
+					    gchar **iter);
+static xmlNode* ags_turtle_load_read_anon(AgsTurtle *turtle,
+					  gchar *buffer, gsize buffer_length,
+					  gchar **iter);
+static xmlNode* ags_turtle_load_read_pname_ns(AgsTurtle *turtle,
+					      gchar *buffer, gsize buffer_length,
+					      gchar **iter);
+static xmlNode* ags_turtle_load_read_pname_ln(AgsTurtle *turtle,
+					      gchar *buffer, gsize buffer_length,
+					      gchar **iter);
+static xmlNode* ags_turtle_load_read_numeric(AgsTurtle *turtle,
+					     gchar *buffer, gsize buffer_length,
+					     gchar **iter);
+static xmlNode* ags_turtle_load_read_string(AgsTurtle *turtle,
+					    gchar *buffer, gsize buffer_length,
+					    gchar **iter);
+static xmlNode* ags_turtle_load_read_langtag(AgsTurtle *turtle,
+					     gchar *buffer, gsize buffer_length,
+					     gchar **iter);
+static xmlNode* ags_turtle_load_read_literal(AgsTurtle *turtle,
+					     gchar *buffer, gsize buffer_length,
+					     gchar **iter);
+static xmlNode* ags_turtle_load_read_iri(AgsTurtle *turtle,
+					 gchar *buffer, gsize buffer_length,
+					 gchar **iter);
+static xmlNode* ags_turtle_load_read_prefix_id(AgsTurtle *turtle,
+					       gchar *buffer, gsize buffer_length,
+					       gchar **iter);
+static xmlNode* ags_turtle_load_read_base(AgsTurtle *turtle,
+					  gchar *buffer, gsize buffer_length,
+					  gchar **iter);
+static xmlNode* ags_turtle_load_read_sparql_prefix(AgsTurtle *turtle,
+						   gchar *buffer, gsize buffer_length,
+						   gchar **iter);
+static xmlNode* ags_turtle_load_read_sparql_base(AgsTurtle *turtle,
+						 gchar *buffer, gsize buffer_length,
+						 gchar **iter);
+static xmlNode* ags_turtle_load_read_prefixed_name(AgsTurtle *turtle,
+						   gchar *buffer, gsize buffer_length,
+						   gchar **iter);
+static xmlNode* ags_turtle_load_read_blank_node(AgsTurtle *turtle,
+						gchar *buffer, gsize buffer_length,
+						gchar **iter);
+static xmlNode* ags_turtle_load_read_statement(AgsTurtle *turtle,
+					       gchar *buffer, gsize buffer_length,
+					       gchar **iter);
+static xmlNode* ags_turtle_load_read_verb(AgsTurtle *turtle,
+					  gchar *buffer, gsize buffer_length,
+					  gchar **iter);
+static xmlNode* ags_turtle_load_read_predicate(AgsTurtle *turtle,
+					       gchar *buffer, gsize buffer_length,
+					       gchar **iter);
+static xmlNode* ags_turtle_load_read_object(AgsTurtle *turtle,
+					    gchar *buffer, gsize buffer_length,
+					    gchar **iter);
+static xmlNode* ags_turtle_load_read_directive(AgsTurtle *turtle,
+					       gchar *buffer, gsize buffer_length,
+					       gchar **iter);
+static xmlNode* ags_turtle_load_read_triple(AgsTurtle *turtle,
+					    gchar *buffer, gsize buffer_length,
+					    gchar **iter);
+static xmlNode* ags_turtle_load_read_subject(AgsTurtle *turtle,
+					     gchar *buffer, gsize buffer_length,
+					     gchar **iter);
+static xmlNode* ags_turtle_load_read_object_list(AgsTurtle *turtle,
+						 gchar *buffer, gsize buffer_length,
+						 gchar **iter);
+static xmlNode* ags_turtle_load_read_collection(AgsTurtle *turtle,
+						gchar *buffer, gsize buffer_length,
+						gchar **iter);
+static xmlNode* ags_turtle_load_read_blank_node_property_list(AgsTurtle *turtle,
+							      gchar *buffer, gsize buffer_length,
+							      gchar **iter);
+static xmlNode* ags_turtle_load_read_predicate_object_list(AgsTurtle *turtle,
+							   gchar *buffer, gsize buffer_length,
+							   gchar **iter);
 
 enum{
   PROP_0,

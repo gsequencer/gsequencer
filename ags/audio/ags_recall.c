@@ -50,70 +50,70 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_class_init(AgsRecallClass *recall_class);
-void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_init(AgsRecall *recall);
-void ags_recall_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_recall_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_recall_dispose(GObject *gobject);
-void ags_recall_finalize(GObject *gobject);
+static void ags_recall_class_init(AgsRecallClass *recall_class);
+static void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_init(AgsRecall *recall);
+static void ags_recall_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_recall_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_recall_dispose(GObject *gobject);
+static void ags_recall_finalize(GObject *gobject);
 
-AgsUUID* ags_recall_get_uuid(AgsConnectable *connectable);
-gboolean ags_recall_has_resource(AgsConnectable *connectable);
-gboolean ags_recall_is_ready(AgsConnectable *connectable);
-void ags_recall_add_to_registry(AgsConnectable *connectable);
-void ags_recall_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_recall_list_resource(AgsConnectable *connectable);
-xmlNode* ags_recall_xml_compose(AgsConnectable *connectable);
-void ags_recall_xml_parse(AgsConnectable *connectable,
-			  xmlNode *node);
-gboolean ags_recall_is_connected(AgsConnectable *connectable);
-void ags_recall_connect(AgsConnectable *connectable);
-void ags_recall_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_recall_get_uuid(AgsConnectable *connectable);
+static gboolean ags_recall_has_resource(AgsConnectable *connectable);
+static gboolean ags_recall_is_ready(AgsConnectable *connectable);
+static void ags_recall_add_to_registry(AgsConnectable *connectable);
+static void ags_recall_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_recall_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_recall_xml_compose(AgsConnectable *connectable);
+static void ags_recall_xml_parse(AgsConnectable *connectable,
+				 xmlNode *node);
+static gboolean ags_recall_is_connected(AgsConnectable *connectable);
+static void ags_recall_connect(AgsConnectable *connectable);
+static void ags_recall_disconnect(AgsConnectable *connectable);
 
-void ags_recall_real_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard);
+static void ags_recall_real_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard);
 
-void ags_recall_real_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard);
+static void ags_recall_real_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard);
 
-void ags_recall_real_resolve_dependency(AgsRecall *recall);
-void ags_recall_real_check_rt_data(AgsRecall *recall);
+static void ags_recall_real_resolve_dependency(AgsRecall *recall);
+static void ags_recall_real_check_rt_data(AgsRecall *recall);
 
-void ags_recall_real_run_init_pre(AgsRecall *recall);
-void ags_recall_real_run_init_inter(AgsRecall *recall);
-void ags_recall_real_run_init_post(AgsRecall *recall);
+static void ags_recall_real_run_init_pre(AgsRecall *recall);
+static void ags_recall_real_run_init_inter(AgsRecall *recall);
+static void ags_recall_real_run_init_post(AgsRecall *recall);
 
-void ags_recall_real_feed_input_queue(AgsRecall *recall);
-void ags_recall_real_automate(AgsRecall *recall);
+static void ags_recall_real_feed_input_queue(AgsRecall *recall);
+static void ags_recall_real_automate(AgsRecall *recall);
 
-void ags_recall_real_run_pre(AgsRecall *recall);
-void ags_recall_real_run_inter(AgsRecall *recall);
-void ags_recall_real_run_post(AgsRecall *recall);
+static void ags_recall_real_run_pre(AgsRecall *recall);
+static void ags_recall_real_run_inter(AgsRecall *recall);
+static void ags_recall_real_run_post(AgsRecall *recall);
 
-void ags_recall_real_do_feedback(AgsRecall *recall);
-void ags_recall_real_feed_output_queue(AgsRecall *recall);
+static void ags_recall_real_do_feedback(AgsRecall *recall);
+static void ags_recall_real_feed_output_queue(AgsRecall *recall);
 
-void ags_recall_real_stop_persistent(AgsRecall *recall);
-void ags_recall_real_cancel(AgsRecall *recall);
-void ags_recall_real_done(AgsRecall *recall);
+static void ags_recall_real_stop_persistent(AgsRecall *recall);
+static void ags_recall_real_cancel(AgsRecall *recall);
+static void ags_recall_real_done(AgsRecall *recall);
 
-void ags_recall_real_midi1_control_change(AgsRecall *recall);
+static void ags_recall_real_midi1_control_change(AgsRecall *recall);
 
-void ags_recall_real_midi2_control_change(AgsRecall *recall);
+static void ags_recall_real_midi2_control_change(AgsRecall *recall);
 
-void ags_recall_real_jack_metadata(AgsRecall *recall);
+static void ags_recall_real_jack_metadata(AgsRecall *recall);
 
-AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
-				     AgsRecallID *recall_id,
-				     guint *n_params, gchar **parameter_name, GValue *value);
+static AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
+					    AgsRecallID *recall_id,
+					    guint *n_params, gchar **parameter_name, GValue *value);
 
-void ags_recall_child_done(AgsRecall *child,
-			   AgsRecall *parent);
+static void ags_recall_child_done(AgsRecall *child,
+				  AgsRecall *parent);
 
 /**
  * SECTION:ags_recall

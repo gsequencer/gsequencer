@@ -22,41 +22,41 @@
 #include <stdlib.h>
 #include <math.h>
 
-void ags_led_class_init(AgsLedClass *led);
-void ags_led_init(AgsLed *led);
-void ags_led_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec);
-void ags_led_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec);
+static void ags_led_class_init(AgsLedClass *led);
+static void ags_led_init(AgsLed *led);
+static void ags_led_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+static void ags_led_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 
-void ags_led_realize(GtkWidget *widget);
-void ags_led_unrealize(GtkWidget *widget);
+static void ags_led_realize(GtkWidget *widget);
+static void ags_led_unrealize(GtkWidget *widget);
 
-void ags_led_measure(GtkWidget *widget,
-		     GtkOrientation orientation,
-		     int for_size,
-		     int *minimum,
-		     int *natural,
-		     int *minimum_baseline,
-		     int *natural_baseline);
-void ags_led_size_allocate(GtkWidget *widget,
-			   int width,
-			   int height,
-			   int baseline);
+static void ags_led_measure(GtkWidget *widget,
+			    GtkOrientation orientation,
+			    int for_size,
+			    int *minimum,
+			    int *natural,
+			    int *minimum_baseline,
+			    int *natural_baseline);
+static void ags_led_size_allocate(GtkWidget *widget,
+				  int width,
+				  int height,
+				  int baseline);
 
-void ags_led_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					 AgsLed *led);
+static void ags_led_frame_clock_update_callback(GdkFrameClock *frame_clock,
+						AgsLed *led);
 
-void ags_led_snapshot(GtkWidget *widget,
-		      GtkSnapshot *snapshot);
+static void ags_led_snapshot(GtkWidget *widget,
+			     GtkSnapshot *snapshot);
 
-void ags_led_draw(AgsLed *led,
-		  cairo_t *cr,
-		  gboolean is_animation);
+static void ags_led_draw(AgsLed *led,
+			 cairo_t *cr,
+			 gboolean is_animation);
 
 /**
  * SECTION:ags_led

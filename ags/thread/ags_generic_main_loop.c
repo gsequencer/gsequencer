@@ -23,31 +23,31 @@
 
 #include <ags/i18n.h>
 
-void ags_generic_main_loop_class_init(AgsGenericMainLoopClass *generic_main_loop);
-void ags_generic_main_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop);
-void ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop);
-void ags_generic_main_loop_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_generic_main_loop_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_generic_main_loop_finalize(GObject *gobject);
+static void ags_generic_main_loop_class_init(AgsGenericMainLoopClass *generic_main_loop);
+static void ags_generic_main_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop);
+static void ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop);
+static void ags_generic_main_loop_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_generic_main_loop_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_generic_main_loop_finalize(GObject *gobject);
 
-GRecMutex* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
-gboolean ags_generic_main_loop_is_syncing(AgsMainLoop *main_loop);
-void ags_generic_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
-gboolean ags_generic_main_loop_is_critical_region(AgsMainLoop *main_loop);
-void ags_generic_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop);
-void ags_generic_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop);
-guint ags_generic_main_loop_test_queued_critical_region(AgsMainLoop *main_loop);
-void ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
-					    gdouble frequency);
+static GRecMutex* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
+static void ags_generic_main_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
+static gboolean ags_generic_main_loop_is_syncing(AgsMainLoop *main_loop);
+static void ags_generic_main_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
+static gboolean ags_generic_main_loop_is_critical_region(AgsMainLoop *main_loop);
+static void ags_generic_main_loop_inc_queued_critical_region(AgsMainLoop *main_loop);
+static void ags_generic_main_loop_dec_queued_critical_region(AgsMainLoop *main_loop);
+static guint ags_generic_main_loop_test_queued_critical_region(AgsMainLoop *main_loop);
+static void ags_generic_main_loop_change_frequency(AgsMainLoop *main_loop,
+						   gdouble frequency);
 
-void ags_generic_main_loop_start(AgsThread *thread);
+static void ags_generic_main_loop_start(AgsThread *thread);
 
 /**
  * SECTION:ags_generic_main_loop

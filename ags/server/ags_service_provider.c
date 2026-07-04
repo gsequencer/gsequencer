@@ -19,7 +19,7 @@
 
 #include <ags/server/ags_service_provider.h>
 
-void ags_service_provider_class_init(AgsServiceProviderInterface *ginterface);
+static void ags_service_provider_class_init(AgsServiceProviderInterface *ginterface);
 
 /**
  * SECTION:ags_service_provider

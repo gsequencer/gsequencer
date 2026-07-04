@@ -31,29 +31,29 @@
 
 #include <ags/i18n.h>
 
-void ags_line_member_class_init(AgsLineMemberClass *line_member);
-void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_line_member_init(AgsLineMember *line_member);
-void ags_line_member_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_line_member_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_line_member_finalize(GObject *gobject);
+static void ags_line_member_class_init(AgsLineMemberClass *line_member);
+static void ags_line_member_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_line_member_init(AgsLineMember *line_member);
+static void ags_line_member_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_line_member_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_line_member_finalize(GObject *gobject);
 
-void ags_line_member_connect(AgsConnectable *connectable);
-void ags_line_member_disconnect(AgsConnectable *connectable);
+static void ags_line_member_connect(AgsConnectable *connectable);
+static void ags_line_member_disconnect(AgsConnectable *connectable);
 
-void ags_line_member_real_change_port(AgsLineMember *line_member,
-				      gpointer port_data);
+static void ags_line_member_real_change_port(AgsLineMember *line_member,
+					     gpointer port_data);
 
-AgsPort* ags_line_member_find_specifier(GList *recall,
-					gchar *specifier);
+static AgsPort* ags_line_member_find_specifier(GList *recall,
+					       gchar *specifier);
 
-GList* ags_line_member_real_find_port(AgsLineMember *line_member);
+static GList* ags_line_member_real_find_port(AgsLineMember *line_member);
 
 
 /**

@@ -31,63 +31,63 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-void ags_xml_certificate_class_init(AgsXmlCertificateClass *xml_certificate);
-void ags_xml_certificate_certificate_interface_init(AgsCertificateInterface *certificate);
-void ags_xml_certificate_init(AgsXmlCertificate *xml_certificate);
-void ags_xml_certificate_finalize(GObject *gobject);
+static void ags_xml_certificate_class_init(AgsXmlCertificateClass *xml_certificate);
+static void ags_xml_certificate_certificate_interface_init(AgsCertificateInterface *certificate);
+static void ags_xml_certificate_init(AgsXmlCertificate *xml_certificate);
+static void ags_xml_certificate_finalize(GObject *gobject);
 
 gchar** ags_xml_certificate_get_cert_uuid(AgsCertificate *certificate,
 					  GObject *security_context,
 					  gchar *user_uuid,
 					  gchar *security_token,
 					  GError **error);
-void ags_xml_certificate_set_domain(AgsCertificate *certificate,
+static void ags_xml_certificate_set_domain(AgsCertificate *certificate,
 				    GObject *security_context,
 				    gchar *user_uuid,
 				    gchar *security_token,
 				    gchar *cert_uuid,
 				    gchar *domain,
 				    GError **error);
-gchar* ags_xml_certificate_get_domain(AgsCertificate *certificate,
+static gchar* ags_xml_certificate_get_domain(AgsCertificate *certificate,
 				      GObject *security_context,
 				      gchar *user_uuid,
 				      gchar *security_token,
 				      gchar *cert_uuid,
 				      GError **error);
-void ags_xml_certificate_set_key_type(AgsCertificate *certificate,
+static void ags_xml_certificate_set_key_type(AgsCertificate *certificate,
 				      GObject *security_context,
 				      gchar *user_uuid,
 				      gchar *security_token,
 				      gchar *cert_uuid,
 				      gchar *key_type,
 				      GError **error);
-gchar* ags_xml_certificate_get_key_type(AgsCertificate *certificate,
+static gchar* ags_xml_certificate_get_key_type(AgsCertificate *certificate,
 					GObject *security_context,
 					gchar *user_uuid,
 					gchar *security_token,
 					gchar *cert_uuid,
 					GError **error);
-void ags_xml_certificate_set_public_key_file(AgsCertificate *certificate,
+static void ags_xml_certificate_set_public_key_file(AgsCertificate *certificate,
 					     GObject *security_context,
 					     gchar *user_uuid,
 					     gchar *security_token,
 					     gchar *cert_uuid,
 					     gchar *public_key_file,
 					     GError **error);
-gchar* ags_xml_certificate_get_public_key_file(AgsCertificate *certificate,
+static gchar* ags_xml_certificate_get_public_key_file(AgsCertificate *certificate,
 					       GObject *security_context,
 					       gchar *user_uuid,
 					       gchar *security_token,
 					       gchar *cert_uuid,
 					       GError **error);
-void ags_xml_certificate_set_private_key_file(AgsCertificate *certificate,
+static void ags_xml_certificate_set_private_key_file(AgsCertificate *certificate,
 					      GObject *security_context,
 					      gchar *user_uuid,
 					      gchar *security_token,
 					      gchar *cert_uuid,
 					      gchar *private_key_file,
 					      GError **error);
-gchar* ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
+static gchar* ags_xml_certificate_get_private_key_file(AgsCertificate *certificate,
 						GObject *security_context,
 						gchar *user_uuid,
 						gchar *security_token,

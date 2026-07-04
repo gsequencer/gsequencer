@@ -30,12 +30,12 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_tremolo_audio_signal_class_init(AgsFxTremoloAudioSignalClass *fx_tremolo_audio_signal);
-void ags_fx_tremolo_audio_signal_init(AgsFxTremoloAudioSignal *fx_tremolo_audio_signal);
-void ags_fx_tremolo_audio_signal_dispose(GObject *gobject);
-void ags_fx_tremolo_audio_signal_finalize(GObject *gobject);
+static void ags_fx_tremolo_audio_signal_class_init(AgsFxTremoloAudioSignalClass *fx_tremolo_audio_signal);
+static void ags_fx_tremolo_audio_signal_init(AgsFxTremoloAudioSignal *fx_tremolo_audio_signal);
+static void ags_fx_tremolo_audio_signal_dispose(GObject *gobject);
+static void ags_fx_tremolo_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall);
+static void ags_fx_tremolo_audio_signal_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_tremolo_audio_signal

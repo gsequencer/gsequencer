@@ -39,41 +39,41 @@
 
 #include <ags/i18n.h>
 
-void ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thread_application_context);
-void ags_thread_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
-void ags_thread_application_context_init(AgsThreadApplicationContext *thread_application_context);
-void ags_thread_application_context_set_property(GObject *gobject,
-						 guint prop_id,
-						 const GValue *value,
-						 GParamSpec *param_spec);
-void ags_thread_application_context_get_property(GObject *gobject,
-						 guint prop_id,
-						 GValue *value,
-						 GParamSpec *param_spec);
-void ags_thread_application_context_finalize(GObject *gobject);
+static void ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thread_application_context);
+static void ags_thread_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_thread_application_context_concurrency_provider_interface_init(AgsConcurrencyProviderInterface *concurrency_provider);
+static void ags_thread_application_context_init(AgsThreadApplicationContext *thread_application_context);
+static void ags_thread_application_context_set_property(GObject *gobject,
+							guint prop_id,
+							const GValue *value,
+							GParamSpec *param_spec);
+static void ags_thread_application_context_get_property(GObject *gobject,
+							guint prop_id,
+							GValue *value,
+							GParamSpec *param_spec);
+static void ags_thread_application_context_finalize(GObject *gobject);
 
-void ags_thread_application_context_connect(AgsConnectable *connectable);
-void ags_thread_application_context_disconnect(AgsConnectable *connectable);
+static void ags_thread_application_context_connect(AgsConnectable *connectable);
+static void ags_thread_application_context_disconnect(AgsConnectable *connectable);
 
-AgsThread* ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
-void ags_thread_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
-						  AgsThread *main_loop);
-AgsTaskLauncher* ags_thread_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
-void ags_thread_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
-						      AgsTaskLauncher *task_launcher);
-AgsThreadPool* ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
-void ags_thread_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
-						    AgsThreadPool *thread_pool);
-GList* ags_thread_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
-void ags_thread_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
-					       GList *worker);
+static AgsThread* ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
+static void ags_thread_application_context_set_main_loop(AgsConcurrencyProvider *concurrency_provider,
+							 AgsThread *main_loop);
+static AgsTaskLauncher* ags_thread_application_context_get_task_launcher(AgsConcurrencyProvider *concurrency_provider);
+static void ags_thread_application_context_set_task_launcher(AgsConcurrencyProvider *concurrency_provider,
+							     AgsTaskLauncher *task_launcher);
+static AgsThreadPool* ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
+static void ags_thread_application_context_set_thread_pool(AgsConcurrencyProvider *concurrency_provider,
+							   AgsThreadPool *thread_pool);
+static GList* ags_thread_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
+static void ags_thread_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
+						      GList *worker);
 
-void ags_thread_application_context_prepare(AgsApplicationContext *application_context);
-void ags_thread_application_context_setup(AgsApplicationContext *application_context);
+static void ags_thread_application_context_prepare(AgsApplicationContext *application_context);
+static void ags_thread_application_context_setup(AgsApplicationContext *application_context);
 
-void ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
-						       AgsThreadApplicationContext *thread_application_context);
+static void ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *group, gchar *key, gchar *value,
+							      AgsThreadApplicationContext *thread_application_context);
 
 /**
  * SECTION:ags_thread_application_context

@@ -33,9 +33,9 @@
 #include <ags/i18n.h>
 
 #if defined(AGS_WITH_GTK_UNIX_PRINT) 
-void ags_online_help_window_pdf_print_response_callback(GtkDialog *dialog,
-							gint response,
-							AgsOnlineHelpWindow *online_help_window);
+static void ags_online_help_window_pdf_print_response_callback(GtkDialog *dialog,
+							       gint response,
+							       AgsOnlineHelpWindow *online_help_window);
 #endif
 
 gboolean

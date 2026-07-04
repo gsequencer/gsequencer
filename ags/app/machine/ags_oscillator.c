@@ -24,13 +24,13 @@
 
 #include <ags/i18n.h>
 
-void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
-void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_oscillator_init(AgsOscillator *oscillator);
+static void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
+static void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_oscillator_init(AgsOscillator *oscillator);
 
-gboolean ags_oscillator_is_connected(AgsConnectable *connectable);
-void ags_oscillator_connect(AgsConnectable *connectable);
-void ags_oscillator_disconnect(AgsConnectable *connectable);
+static gboolean ags_oscillator_is_connected(AgsConnectable *connectable);
+static void ags_oscillator_connect(AgsConnectable *connectable);
+static void ags_oscillator_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_oscillator

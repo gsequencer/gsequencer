@@ -61,16 +61,16 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
-void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_selector_init(AgsMachineSelector *machine_selector);
-void ags_machine_selector_show(GtkWidget *widget);
+static void ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector);
+static void ags_machine_selector_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_selector_init(AgsMachineSelector *machine_selector);
+static void ags_machine_selector_show(GtkWidget *widget);
 
-gboolean ags_machine_selector_is_connected(AgsConnectable *connectable);
-void ags_machine_selector_connect(AgsConnectable *connectable);
-void ags_machine_selector_disconnect(AgsConnectable *connectable);
+static gboolean ags_machine_selector_is_connected(AgsConnectable *connectable);
+static void ags_machine_selector_connect(AgsConnectable *connectable);
+static void ags_machine_selector_disconnect(AgsConnectable *connectable);
 
-void ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
+static void ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
 
 /**
  * SECTION:ags_machine_selector

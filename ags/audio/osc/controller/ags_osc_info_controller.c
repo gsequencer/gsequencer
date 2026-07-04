@@ -26,22 +26,22 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controller);
-void ags_osc_info_controller_init(AgsOscInfoController *osc_info_controller);
-void ags_osc_info_controller_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_osc_info_controller_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_osc_info_controller_dispose(GObject *gobject);
-void ags_osc_info_controller_finalize(GObject *gobject);
+static void ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controller);
+static void ags_osc_info_controller_init(AgsOscInfoController *osc_info_controller);
+static void ags_osc_info_controller_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_osc_info_controller_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_osc_info_controller_dispose(GObject *gobject);
+static void ags_osc_info_controller_finalize(GObject *gobject);
 
-gpointer ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
-					       AgsOscConnection *osc_connection,
-					       guchar *message, guint message_size);
+static gpointer ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
+						      AgsOscConnection *osc_connection,
+						      guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_info_controller

@@ -29,32 +29,32 @@
 
 #include <ags/i18n.h>
 
-void ags_gstreamer_client_class_init(AgsGstreamerClientClass *gstreamer_client);
-void ags_gstreamer_client_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_gstreamer_client_init(AgsGstreamerClient *gstreamer_client);
-void ags_gstreamer_client_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_gstreamer_client_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_gstreamer_client_dispose(GObject *gobject);
-void ags_gstreamer_client_finalize(GObject *gobject);
+static void ags_gstreamer_client_class_init(AgsGstreamerClientClass *gstreamer_client);
+static void ags_gstreamer_client_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_gstreamer_client_init(AgsGstreamerClient *gstreamer_client);
+static void ags_gstreamer_client_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_gstreamer_client_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_gstreamer_client_dispose(GObject *gobject);
+static void ags_gstreamer_client_finalize(GObject *gobject);
 
-AgsUUID* ags_gstreamer_client_get_uuid(AgsConnectable *connectable);
-gboolean ags_gstreamer_client_has_resource(AgsConnectable *connectable);
-gboolean ags_gstreamer_client_is_ready(AgsConnectable *connectable);
-void ags_gstreamer_client_add_to_registry(AgsConnectable *connectable);
-void ags_gstreamer_client_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_gstreamer_client_list_resource(AgsConnectable *connectable);
-xmlNode* ags_gstreamer_client_xml_compose(AgsConnectable *connectable);
-void ags_gstreamer_client_xml_parse(AgsConnectable *connectable,
-				    xmlNode *node);
-gboolean ags_gstreamer_client_is_connected(AgsConnectable *connectable);
-void ags_gstreamer_client_connect(AgsConnectable *connectable);
-void ags_gstreamer_client_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_gstreamer_client_get_uuid(AgsConnectable *connectable);
+static gboolean ags_gstreamer_client_has_resource(AgsConnectable *connectable);
+static gboolean ags_gstreamer_client_is_ready(AgsConnectable *connectable);
+static void ags_gstreamer_client_add_to_registry(AgsConnectable *connectable);
+static void ags_gstreamer_client_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_gstreamer_client_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_gstreamer_client_xml_compose(AgsConnectable *connectable);
+static void ags_gstreamer_client_xml_parse(AgsConnectable *connectable,
+					   xmlNode *node);
+static gboolean ags_gstreamer_client_is_connected(AgsConnectable *connectable);
+static void ags_gstreamer_client_connect(AgsConnectable *connectable);
+static void ags_gstreamer_client_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_gstreamer_client

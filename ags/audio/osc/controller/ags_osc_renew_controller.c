@@ -46,63 +46,63 @@
 #include <sys/types.h>
 #include <regex.h>
 
-void ags_osc_renew_controller_class_init(AgsOscRenewControllerClass *osc_renew_controller);
-void ags_osc_renew_controller_init(AgsOscRenewController *osc_renew_controller);
-void ags_osc_renew_controller_set_property(GObject *gobject,
-					   guint prop_id,
-					   const GValue *value,
-					   GParamSpec *param_spec);
-void ags_osc_renew_controller_get_property(GObject *gobject,
-					   guint prop_id,
-					   GValue *value,
-					   GParamSpec *param_spec);
-void ags_osc_renew_controller_dispose(GObject *gobject);
-void ags_osc_renew_controller_finalize(GObject *gobject);
+static void ags_osc_renew_controller_class_init(AgsOscRenewControllerClass *osc_renew_controller);
+static void ags_osc_renew_controller_init(AgsOscRenewController *osc_renew_controller);
+static void ags_osc_renew_controller_set_property(GObject *gobject,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *param_spec);
+static void ags_osc_renew_controller_get_property(GObject *gobject,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *param_spec);
+static void ags_osc_renew_controller_dispose(GObject *gobject);
+static void ags_osc_renew_controller_finalize(GObject *gobject);
 
-gpointer ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_controller,
-						     AgsOscConnection *osc_connection,
-						     GObject *soundcard,
-						     guchar *message, guint message_size,
-						     gchar *type_tag,
-						     gchar *path, guint path_offset);
-gpointer ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_controller,
-						     AgsOscConnection *osc_connection,
-						     GObject *sequencer,
-						     guchar *message, guint message_size,
-						     gchar *type_tag,
-						     gchar *path, guint path_offset);
+static gpointer ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_controller,
+							    AgsOscConnection *osc_connection,
+							    GObject *soundcard,
+							    guchar *message, guint message_size,
+							    gchar *type_tag,
+							    gchar *path, guint path_offset);
+static gpointer ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_controller,
+							    AgsOscConnection *osc_connection,
+							    GObject *sequencer,
+							    guchar *message, guint message_size,
+							    gchar *type_tag,
+							    gchar *path, guint path_offset);
 
-gpointer ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_controller,
-						 AgsOscConnection *osc_connection,
-						 AgsAudio *audio,
-						 guchar *message, guint message_size,
-						 gchar *type_tag,
-						 gchar *path, guint path_offset);
-gpointer ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_controller,
-						   AgsOscConnection *osc_connection,
-						   AgsChannel *channel,
-						   guchar *message, guint message_size,
-						   gchar *type_tag,
-						   gchar *path, guint path_offset);
+static gpointer ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_controller,
+							AgsOscConnection *osc_connection,
+							AgsAudio *audio,
+							guchar *message, guint message_size,
+							gchar *type_tag,
+							gchar *path, guint path_offset);
+static gpointer ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_controller,
+							  AgsOscConnection *osc_connection,
+							  AgsChannel *channel,
+							  guchar *message, guint message_size,
+							  gchar *type_tag,
+							  gchar *path, guint path_offset);
 
-gpointer ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_controller,
-						  AgsOscConnection *osc_connection,
-						  AgsRecall *recall,
-						  guchar *message, guint message_size,
-						  gchar *type_tag,
-						  gchar *path, guint path_offset);
+static gpointer ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_controller,
+							 AgsOscConnection *osc_connection,
+							 AgsRecall *recall,
+							 guchar *message, guint message_size,
+							 gchar *type_tag,
+							 gchar *path, guint path_offset);
 
-gpointer ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controller,
-						AgsOscConnection *osc_connection,
-						AgsRecall *parent,
-						AgsPort *port,
-						guchar *message, guint message_size,
-						gchar *type_tag,
-						gchar *path, guint path_offset);
+static gpointer ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controller,
+						       AgsOscConnection *osc_connection,
+						       AgsRecall *parent,
+						       AgsPort *port,
+						       guchar *message, guint message_size,
+						       gchar *type_tag,
+						       gchar *path, guint path_offset);
 
-gpointer ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controller,
-						AgsOscConnection *osc_connection,
-						guchar *message, guint message_size);
+static gpointer ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controller,
+						       AgsOscConnection *osc_connection,
+						       guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_renew_controller

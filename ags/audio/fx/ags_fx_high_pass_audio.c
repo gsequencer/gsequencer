@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_high_pass_audio_class_init(AgsFxHighPassAudioClass *fx_high_pass_audio);
-void ags_fx_high_pass_audio_init(AgsFxHighPassAudio *fx_high_pass_audio);
-void ags_fx_high_pass_audio_dispose(GObject *gobject);
-void ags_fx_high_pass_audio_finalize(GObject *gobject);
+static void ags_fx_high_pass_audio_class_init(AgsFxHighPassAudioClass *fx_high_pass_audio);
+static void ags_fx_high_pass_audio_init(AgsFxHighPassAudio *fx_high_pass_audio);
+static void ags_fx_high_pass_audio_dispose(GObject *gobject);
+static void ags_fx_high_pass_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_high_pass_audio

@@ -21,9 +21,9 @@
 
 #include <ags/audio/ags_recall_audio_signal.h>
 
-void ags_generic_recall_recycling_class_init(AgsGenericRecallRecyclingClass *generic_recall_recycling);
-void ags_generic_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall_recycling);
+static void ags_generic_recall_recycling_class_init(AgsGenericRecallRecyclingClass *generic_recall_recycling);
+static void ags_generic_recall_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_generic_recall_recycling_init(AgsGenericRecallRecycling *generic_recall_recycling);
 
 /**
  * SECTION:ags_generic_recall_recycling

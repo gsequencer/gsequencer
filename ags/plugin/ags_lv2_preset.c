@@ -25,17 +25,17 @@
 
 #include <ags/i18n.h>
 
-void ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset);
-void ags_lv2_preset_init(AgsLv2Preset *lv2_preset);
-void ags_lv2_preset_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_lv2_preset_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_lv2_preset_finalize(GObject *gobject);
+static void ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset);
+static void ags_lv2_preset_init(AgsLv2Preset *lv2_preset);
+static void ags_lv2_preset_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_lv2_preset_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_lv2_preset_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_preset

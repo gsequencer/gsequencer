@@ -27,82 +27,82 @@
 #include <string.h>
 #include <math.h>
 
-void ags_piano_class_init(AgsPianoClass *piano);
-void ags_piano_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_piano_init(AgsPiano *piano);
-void ags_piano_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_piano_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
-void ags_piano_finalize(GObject *gobject);
+static void ags_piano_class_init(AgsPianoClass *piano);
+static void ags_piano_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_piano_init(AgsPiano *piano);
+static void ags_piano_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+static void ags_piano_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+static void ags_piano_finalize(GObject *gobject);
 
-void ags_piano_realize(GtkWidget *widget);
-void ags_piano_unrealize(GtkWidget *widget);
+static void ags_piano_realize(GtkWidget *widget);
+static void ags_piano_unrealize(GtkWidget *widget);
 
-void ags_piano_measure(GtkWidget *widget,
-		       GtkOrientation orientation,
-		       int for_size,
-		       int *minimum,
-		       int *natural,
-		       int *minimum_baseline,
-		       int *natural_baseline);
-void ags_piano_size_allocate(GtkWidget *widget,
-			     int width,
-			     int height,
-			     int baseline);
+static void ags_piano_measure(GtkWidget *widget,
+			      GtkOrientation orientation,
+			      int for_size,
+			      int *minimum,
+			      int *natural,
+			      int *minimum_baseline,
+			      int *natural_baseline);
+static void ags_piano_size_allocate(GtkWidget *widget,
+				    int width,
+				    int height,
+				    int baseline);
 
-void ags_piano_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					   AgsPiano *piano);
-
-void ags_piano_snapshot(GtkWidget *widget,
-			GtkSnapshot *snapshot);
-
-gboolean ags_piano_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						  gint n_press,
-						  gdouble x,
-						  gdouble y,
+static void ags_piano_frame_clock_update_callback(GdkFrameClock *frame_clock,
 						  AgsPiano *piano);
-gboolean ags_piano_gesture_click_released_callback(GtkGestureClick *event_controller,
-						   gint n_press,
-						   gdouble x,
-						   gdouble y,
-						   AgsPiano *piano);
 
-gboolean ags_piano_key_pressed_callback(GtkEventControllerKey *event_controller,
-					guint keyval,
-					guint keycode,
-					GdkModifierType state,
-					AgsPiano *piano);
-gboolean ags_piano_key_released_callback(GtkEventControllerKey *event_controller,
-					 guint keyval,
-					 guint keycode,
-					 GdkModifierType state,
-					 AgsPiano *piano);
-gboolean ags_piano_modifiers_callback(GtkEventControllerKey *event_controller,
-				      GdkModifierType keyval,
-				      AgsPiano *piano);
+static void ags_piano_snapshot(GtkWidget *widget,
+			       GtkSnapshot *snapshot);
 
-gboolean ags_piano_motion_callback(GtkEventControllerMotion *event_controller,
-				   gdouble x,
-				   gdouble y,
-				   AgsPiano *piano);
+static gboolean ags_piano_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							 gint n_press,
+							 gdouble x,
+							 gdouble y,
+							 AgsPiano *piano);
+static gboolean ags_piano_gesture_click_released_callback(GtkGestureClick *event_controller,
+							  gint n_press,
+							  gdouble x,
+							  gdouble y,
+							  AgsPiano *piano);
 
-void ags_piano_draw(AgsPiano *piano,
-		    cairo_t *cr,
-		    gboolean is_animation);
+static gboolean ags_piano_key_pressed_callback(GtkEventControllerKey *event_controller,
+					       guint keyval,
+					       guint keycode,
+					       GdkModifierType state,
+					       AgsPiano *piano);
+static gboolean ags_piano_key_released_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
+						AgsPiano *piano);
+static gboolean ags_piano_modifiers_callback(GtkEventControllerKey *event_controller,
+					     GdkModifierType keyval,
+					     AgsPiano *piano);
+
+static gboolean ags_piano_motion_callback(GtkEventControllerMotion *event_controller,
+					  gdouble x,
+					  gdouble y,
+					  AgsPiano *piano);
+
+static void ags_piano_draw(AgsPiano *piano,
+			   cairo_t *cr,
+			   gboolean is_animation);
 
 
-void ags_piano_real_key_pressed(AgsPiano *piano,
-				gchar *note, gint key_code);
-void ags_piano_real_key_released(AgsPiano *piano,
-				 gchar *note, gint key_code);
+static void ags_piano_real_key_pressed(AgsPiano *piano,
+				       gchar *note, gint key_code);
+static void ags_piano_real_key_released(AgsPiano *piano,
+					gchar *note, gint key_code);
 
-void ags_piano_real_key_clicked(AgsPiano *piano,
-				gchar *note, gint key_code);
+static void ags_piano_real_key_clicked(AgsPiano *piano,
+				       gchar *note, gint key_code);
 
 /**
  * SECTION:ags_piano

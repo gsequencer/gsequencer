@@ -25,20 +25,20 @@
 
 #include <ags/i18n.h>
 
-void ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard);
-void ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard);
-void ags_seek_soundcard_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_seek_soundcard_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_seek_soundcard_dispose(GObject *gobject);
-void ags_seek_soundcard_finalize(GObject *gobject);
+static void ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard);
+static void ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard);
+static void ags_seek_soundcard_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_seek_soundcard_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_seek_soundcard_dispose(GObject *gobject);
+static void ags_seek_soundcard_finalize(GObject *gobject);
 
-void ags_seek_soundcard_launch(AgsTask *task);
+static void ags_seek_soundcard_launch(AgsTask *task);
 
 /**
  * SECTION:ags_seek_soundcard

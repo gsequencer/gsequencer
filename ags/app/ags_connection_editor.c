@@ -24,28 +24,28 @@
 
 #include <ags/i18n.h>
 
-void ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor);
-void ags_connection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_connection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_connection_editor_init(AgsConnectionEditor *connection_editor);
-void ags_connection_editor_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_connection_editor_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
+static void ags_connection_editor_class_init(AgsConnectionEditorClass *connection_editor);
+static void ags_connection_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_connection_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_connection_editor_init(AgsConnectionEditor *connection_editor);
+static void ags_connection_editor_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_connection_editor_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
 
-void ags_connection_editor_connect(AgsConnectable *connectable);
-void ags_connection_editor_disconnect(AgsConnectable *connectable);
+static void ags_connection_editor_connect(AgsConnectable *connectable);
+static void ags_connection_editor_disconnect(AgsConnectable *connectable);
 
-void ags_connection_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_connection_editor_apply(AgsApplicable *applicable);
-void ags_connection_editor_reset(AgsApplicable *applicable);
+static void ags_connection_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_connection_editor_apply(AgsApplicable *applicable);
+static void ags_connection_editor_reset(AgsApplicable *applicable);
 
-void ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor,
-					    AgsMachine *machine);
+static void ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_editor,
+						   AgsMachine *machine);
 
 /**
  * SECTION:ags_connection_editor

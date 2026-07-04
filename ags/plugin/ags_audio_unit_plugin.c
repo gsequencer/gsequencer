@@ -29,35 +29,35 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-void ags_audio_unit_plugin_class_init(AgsAudioUnitPluginClass *audio_unit_plugin);
-void ags_audio_unit_plugin_init (AgsAudioUnitPlugin *audio_unit_plugin);
-void ags_audio_unit_plugin_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_audio_unit_plugin_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_audio_unit_plugin_finalize(GObject *gobject);
+static void ags_audio_unit_plugin_class_init(AgsAudioUnitPluginClass *audio_unit_plugin);
+static void ags_audio_unit_plugin_init (AgsAudioUnitPlugin *audio_unit_plugin);
+static void ags_audio_unit_plugin_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_audio_unit_plugin_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_audio_unit_plugin_finalize(GObject *gobject);
 
-gpointer ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
-					   guint samplerate,
-					   guint buffer_size);
+static gpointer ags_audio_unit_plugin_instantiate(AgsBasePlugin *base_plugin,
+						  guint samplerate,
+						  guint buffer_size);
 
-void ags_audio_unit_plugin_connect_port(AgsBasePlugin *base_plugin,
-					gpointer plugin_handle,
-					guint port_index,
-					gpointer data_location);
-void ags_audio_unit_plugin_activate(AgsBasePlugin *base_plugin,
-				    gpointer plugin_handle);
-void ags_audio_unit_plugin_deactivate(AgsBasePlugin *base_plugin,
-				      gpointer plugin_handle);
-void ags_audio_unit_plugin_run(AgsBasePlugin *base_plugin,
-			       gpointer plugin_handle,
-			       snd_seq_event_t *seq_event,
-			       guint frame_count);
-void ags_audio_unit_plugin_load_plugin(AgsBasePlugin *base_plugin);
+static void ags_audio_unit_plugin_connect_port(AgsBasePlugin *base_plugin,
+					       gpointer plugin_handle,
+					       guint port_index,
+					       gpointer data_location);
+static void ags_audio_unit_plugin_activate(AgsBasePlugin *base_plugin,
+					   gpointer plugin_handle);
+static void ags_audio_unit_plugin_deactivate(AgsBasePlugin *base_plugin,
+					     gpointer plugin_handle);
+static void ags_audio_unit_plugin_run(AgsBasePlugin *base_plugin,
+				      gpointer plugin_handle,
+				      snd_seq_event_t *seq_event,
+				      guint frame_count);
+static void ags_audio_unit_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
 /**
  * SECTION:ags_audio_unit_plugin

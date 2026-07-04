@@ -26,22 +26,22 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_button);
-void ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button);
-void ags_machine_radio_button_set_property(GObject *gobject,
-					   guint prop_id,
-					   const GValue *value,
-					   GParamSpec *param_spec);
-void ags_machine_radio_button_get_property(GObject *gobject,
-					   guint prop_id,
-					   GValue *value,
-					   GParamSpec *param_spec);
-void ags_machine_radio_button_finalize(GObject *gobject);
+static void ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_button);
+static void ags_machine_radio_button_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_radio_button_init(AgsMachineRadioButton *machine_radio_button);
+static void ags_machine_radio_button_set_property(GObject *gobject,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *param_spec);
+static void ags_machine_radio_button_get_property(GObject *gobject,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *param_spec);
+static void ags_machine_radio_button_finalize(GObject *gobject);
 
-gboolean ags_machine_radio_button_is_connected(AgsConnectable *connectable);
-void ags_machine_radio_button_connect(AgsConnectable *connectable);
-void ags_machine_radio_button_disconnect(AgsConnectable *connectable);
+static gboolean ags_machine_radio_button_is_connected(AgsConnectable *connectable);
+static void ags_machine_radio_button_connect(AgsConnectable *connectable);
+static void ags_machine_radio_button_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_machine_radio_button

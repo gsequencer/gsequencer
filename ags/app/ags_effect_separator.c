@@ -21,17 +21,17 @@
 
 #include <ags/i18n.h>
 
-void ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator);
-void ags_effect_separator_init(AgsEffectSeparator *effect_separator);
-void ags_effect_separator_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_separator_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_effect_separator_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
+static void ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator);
+static void ags_effect_separator_init(AgsEffectSeparator *effect_separator);
+static void ags_effect_separator_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_effect_separator_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_effect_separator_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
 
 /**
  * SECTION:ags_effect_separator
