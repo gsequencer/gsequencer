@@ -45,15 +45,15 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_recall_set_loop(AgsMachine *machine,
-				 AgsRecall *recall);
+static void ags_machine_recall_set_loop(AgsMachine *machine,
+					AgsRecall *recall);
 
-void ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-void ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-void ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-void ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-void ags_connection_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
-int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
+static void ags_machine_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+static void ags_machine_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+static void ags_machine_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+static void ags_machine_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+static void ags_connection_editor_dialog_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+static int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 void
 ags_machine_check_message_callback(GObject *application_context, AgsMachine *machine)

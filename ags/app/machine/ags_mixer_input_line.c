@@ -29,16 +29,16 @@
 
 #include <ags/i18n.h>
 
-void ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line);
-void ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line);
+static void ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line);
+static void ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line);
 
-void ags_mixer_input_line_connect(AgsConnectable *connectable);
-void ags_mixer_input_line_disconnect(AgsConnectable *connectable);
+static void ags_mixer_input_line_connect(AgsConnectable *connectable);
+static void ags_mixer_input_line_disconnect(AgsConnectable *connectable);
 
-void ags_mixer_input_line_set_channel(AgsLine *line, AgsChannel *channel);
-void ags_mixer_input_line_map_recall(AgsLine *line,
-				     guint output_pad_start);
+static void ags_mixer_input_line_set_channel(AgsLine *line, AgsChannel *channel);
+static void ags_mixer_input_line_map_recall(AgsLine *line,
+					    guint output_pad_start);
 
 /**
  * SECTION:ags_mixer_input_line

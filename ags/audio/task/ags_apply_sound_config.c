@@ -80,26 +80,26 @@
 
 #include <ags/i18n.h>
 
-void ags_apply_sound_config_class_init(AgsApplySoundConfigClass *apply_sound_config);
-void ags_apply_sound_config_init(AgsApplySoundConfig *apply_sound_config);
-void ags_apply_sound_config_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_apply_sound_config_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_apply_sound_config_dispose(GObject *gobject);
-void ags_apply_sound_config_finalize(GObject *gobject);
+static void ags_apply_sound_config_class_init(AgsApplySoundConfigClass *apply_sound_config);
+static void ags_apply_sound_config_init(AgsApplySoundConfig *apply_sound_config);
+static void ags_apply_sound_config_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_apply_sound_config_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_apply_sound_config_dispose(GObject *gobject);
+static void ags_apply_sound_config_finalize(GObject *gobject);
 
-void ags_apply_sound_config_change_max_precision(AgsThread *thread,
-						 gdouble max_precision);
-void ags_apply_sound_config_soundcard_presets(AgsTask *task,
-					      GType soundcard_type, guint soundcard_count);
-void ags_apply_sound_config_sequencer_presets(AgsTask *task,
-					      GType sequencer_type, guint sequencer_count);
-void ags_apply_sound_config_launch(AgsTask *task);
+static void ags_apply_sound_config_change_max_precision(AgsThread *thread,
+							gdouble max_precision);
+static void ags_apply_sound_config_soundcard_presets(AgsTask *task,
+						     GType soundcard_type, guint soundcard_count);
+static void ags_apply_sound_config_sequencer_presets(AgsTask *task,
+						     GType sequencer_type, guint sequencer_count);
+static void ags_apply_sound_config_launch(AgsTask *task);
 
 /**
  * SECTION:ags_apply_sound_config

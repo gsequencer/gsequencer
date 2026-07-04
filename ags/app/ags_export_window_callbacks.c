@@ -28,9 +28,9 @@
 
 #include <ags/i18n.h>
 
-void ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
-						       gint response,
-						       AgsExportWindow *export_window);
+static void ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
+							      gint response,
+							      AgsExportWindow *export_window);
 
 gboolean
 ags_export_window_close_request_callback(GtkWindow *window, gpointer user_data)

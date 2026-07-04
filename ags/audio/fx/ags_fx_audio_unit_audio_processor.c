@@ -29,19 +29,19 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_audio_unit_audio_processor_class_init(AgsFxAudioUnitAudioProcessorClass *fx_audio_unit_audio_processor);
-void ags_fx_audio_unit_audio_processor_init(AgsFxAudioUnitAudioProcessor *fx_audio_unit_audio_processor);
-void ags_fx_audio_unit_audio_processor_dispose(GObject *gobject);
-void ags_fx_audio_unit_audio_processor_finalize(GObject *gobject);
+static void ags_fx_audio_unit_audio_processor_class_init(AgsFxAudioUnitAudioProcessorClass *fx_audio_unit_audio_processor);
+static void ags_fx_audio_unit_audio_processor_init(AgsFxAudioUnitAudioProcessor *fx_audio_unit_audio_processor);
+static void ags_fx_audio_unit_audio_processor_dispose(GObject *gobject);
+static void ags_fx_audio_unit_audio_processor_finalize(GObject *gobject);
 
-void ags_fx_audio_unit_audio_processor_run_init_pre(AgsRecall *recall);
-void ags_fx_audio_unit_audio_processor_run_inter(AgsRecall *recall);
-void ags_fx_audio_unit_audio_processor_done(AgsRecall *recall);
+static void ags_fx_audio_unit_audio_processor_run_init_pre(AgsRecall *recall);
+static void ags_fx_audio_unit_audio_processor_run_inter(AgsRecall *recall);
+static void ags_fx_audio_unit_audio_processor_done(AgsRecall *recall);
 
-void ags_fx_audio_unit_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
-					      AgsNote *note,
-					      guint velocity,
-					      guint key_mode);
+static void ags_fx_audio_unit_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
+						     AgsNote *note,
+						     guint velocity,
+						     guint key_mode);
 
 /**
  * SECTION:ags_fx_audio_unit_audio_processor

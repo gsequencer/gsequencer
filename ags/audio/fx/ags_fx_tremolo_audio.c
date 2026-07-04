@@ -23,18 +23,18 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_tremolo_audio_class_init(AgsFxTremoloAudioClass *fx_tremolo_audio);
-void ags_fx_tremolo_audio_init(AgsFxTremoloAudio *fx_tremolo_audio);
-void ags_fx_tremolo_audio_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_fx_tremolo_audio_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_fx_tremolo_audio_dispose(GObject *gobject);
-void ags_fx_tremolo_audio_finalize(GObject *gobject);
+static void ags_fx_tremolo_audio_class_init(AgsFxTremoloAudioClass *fx_tremolo_audio);
+static void ags_fx_tremolo_audio_init(AgsFxTremoloAudio *fx_tremolo_audio);
+static void ags_fx_tremolo_audio_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_fx_tremolo_audio_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_fx_tremolo_audio_dispose(GObject *gobject);
+static void ags_fx_tremolo_audio_finalize(GObject *gobject);
 
 static AgsPluginPort* ags_fx_tremolo_audio_get_tremolo_enabled_plugin_port();
 static AgsPluginPort* ags_fx_tremolo_audio_get_tremolo_gain_plugin_port();

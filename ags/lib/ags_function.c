@@ -29,21 +29,21 @@
 
 #include <ags/i18n.h>
 
-void ags_function_class_init(AgsFunctionClass *function);
-void ags_function_init (AgsFunction *function);
-void ags_function_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_function_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_function_finalize(GObject *gobject);
+static void ags_function_class_init(AgsFunctionClass *function);
+static void ags_function_init (AgsFunction *function);
+static void ags_function_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+static void ags_function_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+static void ags_function_finalize(GObject *gobject);
 
-gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
-gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
-guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
+static gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
+static gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
+static guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
 
 /**
  * SECTION:ags_function

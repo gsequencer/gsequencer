@@ -23,15 +23,15 @@
 #include <ags/app/ags_window.h>
 #include <ags/app/ags_preferences.h>
 
-void ags_plugin_preferences_class_init(AgsPluginPreferencesClass *plugin_preferences);
-void ags_plugin_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_plugin_preferences_init(AgsPluginPreferences *plugin_preferences);
+static void ags_plugin_preferences_class_init(AgsPluginPreferencesClass *plugin_preferences);
+static void ags_plugin_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_plugin_preferences_init(AgsPluginPreferences *plugin_preferences);
 
-void ags_plugin_preferences_connect(AgsConnectable *connectable);
-void ags_plugin_preferences_disconnect(AgsConnectable *connectable);
+static void ags_plugin_preferences_connect(AgsConnectable *connectable);
+static void ags_plugin_preferences_disconnect(AgsConnectable *connectable);
 
-void ags_plugin_preferences_reset(AgsPluginPreferences *plugin_preferences);
-void* ags_plugin_preferences_refresh(void *ptr);
+static void ags_plugin_preferences_reset(AgsPluginPreferences *plugin_preferences);
+static void* ags_plugin_preferences_refresh(void *ptr);
 
 /**
  * SECTION:ags_plugin_preferences

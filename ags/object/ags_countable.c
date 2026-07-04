@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_countable.h>
 
-void ags_countable_base_init(AgsCountableInterface *ginterface);
+static void ags_countable_base_init(AgsCountableInterface *ginterface);
 
 /**
  * SECTION:ags_countable

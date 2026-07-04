@@ -26,22 +26,22 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-void ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard);
-void ags_export_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_export_soundcard_init(AgsExportSoundcard *export_soundcard);
-void ags_export_soundcard_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_export_soundcard_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_export_soundcard_finalize(GObject *gobject);
+static void ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard);
+static void ags_export_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_export_soundcard_init(AgsExportSoundcard *export_soundcard);
+static void ags_export_soundcard_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_export_soundcard_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_export_soundcard_finalize(GObject *gobject);
 
-gboolean ags_export_soundcard_is_connected(AgsConnectable *connectable);
-void ags_export_soundcard_connect(AgsConnectable *connectable);
-void ags_export_soundcard_disconnect(AgsConnectable *connectable);
+static gboolean ags_export_soundcard_is_connected(AgsConnectable *connectable);
+static void ags_export_soundcard_connect(AgsConnectable *connectable);
+static void ags_export_soundcard_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_export_soundcard

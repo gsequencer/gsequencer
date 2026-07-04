@@ -19,7 +19,7 @@
 
 #include <ags/server/security/ags_certificate.h>
 
-void ags_certificate_base_init(AgsCertificateInterface *ginterface);
+static void ags_certificate_base_init(AgsCertificateInterface *ginterface);
 
 /**
  * SECTION:ags_certificate

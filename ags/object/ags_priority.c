@@ -37,27 +37,27 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-void ags_priority_class_init(AgsPriorityClass *priority_class);
-void ags_priority_init(AgsPriority *priority);
-void ags_priority_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_priority_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_priority_dispose(GObject *gobject);
-void ags_priority_finalize(GObject *gobject);
+static void ags_priority_class_init(AgsPriorityClass *priority_class);
+static void ags_priority_init(AgsPriority *priority);
+static void ags_priority_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+static void ags_priority_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+static void ags_priority_dispose(GObject *gobject);
+static void ags_priority_finalize(GObject *gobject);
 
-gchar* ags_priority_get_version(AgsPriority *priority);
-void ags_priority_set_version(AgsPriority *priority, gchar *version);
-gchar* ags_priority_get_build_id(AgsPriority *priority);
-void ags_priority_set_build_id(AgsPriority *priority, gchar *build_id);
+static gchar* ags_priority_get_version(AgsPriority *priority);
+static void ags_priority_set_version(AgsPriority *priority, gchar *version);
+static gchar* ags_priority_get_build_id(AgsPriority *priority);
+static void ags_priority_set_build_id(AgsPriority *priority, gchar *build_id);
 
-void ags_priority_real_load_defaults(AgsPriority *priority);
-void ags_priority_real_set_value(AgsPriority *priority, gchar *group, gchar *key, gchar *value);
-gchar* ags_priority_real_get_value(AgsPriority *priority, gchar *group, gchar *key);
+static void ags_priority_real_load_defaults(AgsPriority *priority);
+static void ags_priority_real_set_value(AgsPriority *priority, gchar *group, gchar *key, gchar *value);
+static gchar* ags_priority_real_get_value(AgsPriority *priority, gchar *group, gchar *key);
 
 /**
  * SECTION:ags_priority
@@ -83,7 +83,7 @@ enum{
 static gpointer ags_priority_parent_class = NULL;
 static guint priority_signals[LAST_SIGNAL];
 
-AgsPriority *ags_priority = NULL;
+static AgsPriority *ags_priority = NULL;
 
 GType
 ags_priority_get_type (void)

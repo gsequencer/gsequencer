@@ -23,21 +23,21 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_volume_channel_class_init(AgsFxVolumeChannelClass *fx_volume_channel);
-void ags_fx_volume_channel_mutable_interface_init(AgsMutableInterface *mutable);
-void ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel);
-void ags_fx_volume_channel_set_property(GObject *gobject,
+static void ags_fx_volume_channel_class_init(AgsFxVolumeChannelClass *fx_volume_channel);
+static void ags_fx_volume_channel_mutable_interface_init(AgsMutableInterface *mutable);
+static void ags_fx_volume_channel_init(AgsFxVolumeChannel *fx_volume_channel);
+static void ags_fx_volume_channel_set_property(GObject *gobject,
 					guint prop_id,
 					const GValue *value,
 					GParamSpec *param_spec);
-void ags_fx_volume_channel_get_property(GObject *gobject,
+static void ags_fx_volume_channel_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
-void ags_fx_volume_channel_dispose(GObject *gobject);
-void ags_fx_volume_channel_finalize(GObject *gobject);
+static void ags_fx_volume_channel_dispose(GObject *gobject);
+static void ags_fx_volume_channel_finalize(GObject *gobject);
 
-void ags_fx_volume_channel_set_muted(AgsMutable *mutable, gboolean muted);
+static void ags_fx_volume_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
 static AgsPluginPort* ags_fx_volume_channel_get_muted_plugin_port();
 static AgsPluginPort* ags_fx_volume_channel_get_volume_plugin_port();

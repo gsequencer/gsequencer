@@ -28,18 +28,18 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-void ags_sequencer_editor_class_init(AgsSequencerEditorClass *sequencer_editor);
-void ags_sequencer_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_sequencer_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor);
+static void ags_sequencer_editor_class_init(AgsSequencerEditorClass *sequencer_editor);
+static void ags_sequencer_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_sequencer_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_sequencer_editor_init(AgsSequencerEditor *sequencer_editor);
 
-gboolean ags_sequencer_editor_is_connected(AgsConnectable *connectable);
-void ags_sequencer_editor_connect(AgsConnectable *connectable);
-void ags_sequencer_editor_disconnect(AgsConnectable *connectable);
+static gboolean ags_sequencer_editor_is_connected(AgsConnectable *connectable);
+static void ags_sequencer_editor_connect(AgsConnectable *connectable);
+static void ags_sequencer_editor_disconnect(AgsConnectable *connectable);
 
-void ags_sequencer_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_sequencer_editor_apply(AgsApplicable *applicable);
-void ags_sequencer_editor_reset(AgsApplicable *applicable);
+static void ags_sequencer_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_sequencer_editor_apply(AgsApplicable *applicable);
+static void ags_sequencer_editor_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_sequencer_editor

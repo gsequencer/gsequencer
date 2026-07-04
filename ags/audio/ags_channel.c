@@ -106,169 +106,169 @@
  * Usually you instantiate a recall for both contices. See `play` and `recall` properties.
  */
 
-void ags_channel_class_init(AgsChannelClass *channel_class);
-void ags_channel_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_channel_init(AgsChannel *channel);
-void ags_channel_set_property(GObject *gobject,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *param_spec);
-void ags_channel_get_property(GObject *gobject,
-			      guint prop_id,
-			      GValue *value,
-			      GParamSpec *param_spec);
-void ags_channel_dispose(GObject *gobject);
-void ags_channel_finalize(GObject *gobject);
+static void ags_channel_class_init(AgsChannelClass *channel_class);
+static void ags_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_channel_init(AgsChannel *channel);
+static void ags_channel_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+static void ags_channel_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
+static void ags_channel_dispose(GObject *gobject);
+static void ags_channel_finalize(GObject *gobject);
 
-AgsUUID* ags_channel_get_uuid(AgsConnectable *connectable);
-gboolean ags_channel_has_resource(AgsConnectable *connectable);
-gboolean ags_channel_is_ready(AgsConnectable *connectable);
-void ags_channel_add_to_registry(AgsConnectable *connectable);
-void ags_channel_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_channel_list_resource(AgsConnectable *connectable);
-xmlNode* ags_channel_xml_compose(AgsConnectable *connectable);
-void ags_channel_xml_parse(AgsConnectable *connectable,
-			   xmlNode *node);
-gboolean ags_channel_is_connected(AgsConnectable *connectable);
-void ags_channel_connect(AgsConnectable *connectable);
-void ags_channel_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_channel_get_uuid(AgsConnectable *connectable);
+static gboolean ags_channel_has_resource(AgsConnectable *connectable);
+static gboolean ags_channel_is_ready(AgsConnectable *connectable);
+static void ags_channel_add_to_registry(AgsConnectable *connectable);
+static void ags_channel_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_channel_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_channel_xml_compose(AgsConnectable *connectable);
+static void ags_channel_xml_parse(AgsConnectable *connectable,
+				  xmlNode *node);
+static gboolean ags_channel_is_connected(AgsConnectable *connectable);
+static void ags_channel_connect(AgsConnectable *connectable);
+static void ags_channel_disconnect(AgsConnectable *connectable);
 
-void ags_channel_real_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard);
+static void ags_channel_real_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard);
 
-void ags_channel_real_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard);
+static void ags_channel_real_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard);
 
-void ags_channel_real_set_samplerate(AgsChannel *channel, guint samplerate);
+static void ags_channel_real_set_samplerate(AgsChannel *channel, guint samplerate);
 
-void ags_channel_real_set_buffer_size(AgsChannel *channel, guint buffer_size);
+static void ags_channel_real_set_buffer_size(AgsChannel *channel, guint buffer_size);
 
-void ags_channel_real_set_format(AgsChannel *channel, AgsSoundcardFormat format);
+static void ags_channel_real_set_format(AgsChannel *channel, AgsSoundcardFormat format);
 
-gboolean ags_channel_check_loop(AgsChannel *output,
-				AgsAudio *audio,
-				guint level);
+static gboolean ags_channel_check_loop(AgsChannel *output,
+				       AgsAudio *audio,
+				       guint level);
 
-gboolean ags_channel_reset_recycling_recursive_input(AgsChannel *input,
-						     AgsAudio **found_next, AgsAudio **found_prev,
-						     AgsChannel **next_channel, AgsChannel **prev_channel,
-						     AgsRecycling **replace_with_first_recycling, AgsRecycling **replace_with_last_recycling,
-						     guint *complete_level_first, guint *complete_level_last,
-						     gboolean *find_next, gboolean *find_prev,
-						     gboolean *replace_first, gboolean *replace_last);
-void ags_channel_reset_recycling_recursive_output(AgsChannel *output,
+static gboolean ags_channel_reset_recycling_recursive_input(AgsChannel *input,
+							    AgsAudio **found_next, AgsAudio **found_prev,
+							    AgsChannel **next_channel, AgsChannel **prev_channel,
+							    AgsRecycling **replace_with_first_recycling, AgsRecycling **replace_with_last_recycling,
+							    guint *complete_level_first, guint *complete_level_last,
+							    gboolean *find_next, gboolean *find_prev,
+							    gboolean *replace_first, gboolean *replace_last);
+static void ags_channel_reset_recycling_recursive_output(AgsChannel *output,
+							 AgsAudio **found_next, AgsAudio **found_prev,
+							 AgsChannel **next_channel, AgsChannel **prev_channel,
+							 AgsRecycling **replace_with_first_recycling, AgsRecycling **replace_with_last_recycling,
+							 guint *complete_level_first, guint *complete_level_last,
+							 gboolean *find_next, gboolean *find_prev,
+							 gboolean *replace_first, gboolean *replace_last);
+static void ags_channel_reset_recycling_recursive(AgsChannel *input,
 						  AgsAudio **found_next, AgsAudio **found_prev,
 						  AgsChannel **next_channel, AgsChannel **prev_channel,
 						  AgsRecycling **replace_with_first_recycling, AgsRecycling **replace_with_last_recycling,
 						  guint *complete_level_first, guint *complete_level_last,
 						  gboolean *find_next, gboolean *find_prev,
 						  gboolean *replace_first, gboolean *replace_last);
-void ags_channel_reset_recycling_recursive(AgsChannel *input,
-					   AgsAudio **found_next, AgsAudio **found_prev,
-					   AgsChannel **next_channel, AgsChannel **prev_channel,
-					   AgsRecycling **replace_with_first_recycling, AgsRecycling **replace_with_last_recycling,
-					   guint *complete_level_first, guint *complete_level_last,
-					   gboolean *find_next, gboolean *find_prev,
-					   gboolean *replace_first, gboolean *replace_last);
 
-void ags_channel_reset_recycling_reset_recycling_context_up(AgsChannel *current);
-void ags_channel_reset_recycling_reset_recycling_context_down(AgsChannel *current_output,
-							      AgsRecyclingContext *new_recycling_context, AgsRecyclingContext *old_recycling_context);
-void ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *current_output,
-								    AgsRecyclingContext *new_recycling_context, AgsRecyclingContext *old_recycling_context);
+static void ags_channel_reset_recycling_reset_recycling_context_up(AgsChannel *current);
+static void ags_channel_reset_recycling_reset_recycling_context_down(AgsChannel *current_output,
+								     AgsRecyclingContext *new_recycling_context, AgsRecyclingContext *old_recycling_context);
+static void ags_channel_reset_recycling_reset_recycling_context_down_input(AgsChannel *current_output,
+									   AgsRecyclingContext *new_recycling_context, AgsRecyclingContext *old_recycling_context);
   
-void ags_channel_reset_recycling_emit_changed_input(AgsChannel *start_channel, AgsChannel *input,
-						    AgsRecycling *changed_old_first_recycling, AgsRecycling *changed_old_last_recycling,
-						    AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
-						    AgsRecycling *first_recycling, AgsRecycling *last_recycling);
-void ags_channel_reset_recycling_emit_changed_output(AgsChannel *start_channel, AgsChannel *output,
+static void ags_channel_reset_recycling_emit_changed_input(AgsChannel *start_channel, AgsChannel *input,
+							   AgsRecycling *changed_old_first_recycling, AgsRecycling *changed_old_last_recycling,
+							   AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
+							   AgsRecycling *first_recycling, AgsRecycling *last_recycling);
+static void ags_channel_reset_recycling_emit_changed_output(AgsChannel *start_channel, AgsChannel *output,
+							    AgsRecycling *changed_old_first_recycling, AgsRecycling *changed_old_last_recycling,
+							    AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
+							    AgsRecycling *first_recycling, AgsRecycling *last_recycling);
+static void ags_channel_reset_recycling_emit_changed(AgsChannel *start_channel, AgsChannel *input,
 						     AgsRecycling *changed_old_first_recycling, AgsRecycling *changed_old_last_recycling,
 						     AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
 						     AgsRecycling *first_recycling, AgsRecycling *last_recycling);
-void ags_channel_reset_recycling_emit_changed(AgsChannel *start_channel, AgsChannel *input,
-					      AgsRecycling *changed_old_first_recycling, AgsRecycling *changed_old_last_recycling,
-					      AgsRecycling *old_first_recycling, AgsRecycling *old_last_recycling,
-					      AgsRecycling *first_recycling, AgsRecycling *last_recycling);
 
-void ags_channel_real_recycling_changed(AgsChannel *channel,
-					AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-					AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-					AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-					AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+static void ags_channel_real_recycling_changed(AgsChannel *channel,
+					       AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+					       AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+					       AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+					       AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
-void ags_channel_real_duplicate_recall(AgsChannel *channel,
-				       AgsRecallID *recall_id);
-void ags_channel_real_resolve_recall(AgsChannel *channel,
-				     AgsRecallID *recall_id);
-void ags_channel_real_init_recall(AgsChannel *channel,
-				  AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
-void ags_channel_real_play_recall(AgsChannel *channel,
-				  AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
-void ags_channel_real_done_recall(AgsChannel *channel,
-				  AgsRecallID *recall_id);
-void ags_channel_real_cancel_recall(AgsChannel *channel,
-				    AgsRecallID *recall_id);
+static void ags_channel_real_duplicate_recall(AgsChannel *channel,
+					      AgsRecallID *recall_id);
+static void ags_channel_real_resolve_recall(AgsChannel *channel,
+					    AgsRecallID *recall_id);
+static void ags_channel_real_init_recall(AgsChannel *channel,
+					 AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
+static void ags_channel_real_play_recall(AgsChannel *channel,
+					 AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
+static void ags_channel_real_done_recall(AgsChannel *channel,
+					 AgsRecallID *recall_id);
+static void ags_channel_real_cancel_recall(AgsChannel *channel,
+					   AgsRecallID *recall_id);
 
-void ags_channel_real_cleanup_recall(AgsChannel *channel,
-				     AgsRecallID *recall_id);
+static void ags_channel_real_cleanup_recall(AgsChannel *channel,
+					    AgsRecallID *recall_id);
 
-void ags_channel_recall_done_callback(AgsRecall *recall,
-				      AgsChannel *channel);
+static void ags_channel_recall_done_callback(AgsRecall *recall,
+					     AgsChannel *channel);
 
-GList* ags_channel_real_start(AgsChannel *channel,
-			      gint sound_scope);
-void ags_channel_real_stop(AgsChannel *channel,
-			   GList *recall_id, gint sound_scope);
+static GList* ags_channel_real_start(AgsChannel *channel,
+				     gint sound_scope);
+static void ags_channel_real_stop(AgsChannel *channel,
+				  GList *recall_id, gint sound_scope);
 
-GList* ags_channel_real_check_scope(AgsChannel *channel, gint sound_scope);
+static GList* ags_channel_real_check_scope(AgsChannel *channel, gint sound_scope);
 
-void ags_channel_recursive_set_property_setv(AgsChannel *channel,
-					     gint n_params,
-					     gchar **parameter_name, GValue *value);
-void ags_channel_recursive_set_property_down(AgsChannel *channel,
-					     gint n_params,
-					     gchar **parameter_name, GValue *value);
-void ags_channel_recursive_set_property_down_input(AgsChannel *channel,
-						   gint n_params,
-						   gchar **parameter_name, GValue *value);
+static void ags_channel_recursive_set_property_setv(AgsChannel *channel,
+						    gint n_params,
+						    gchar **parameter_name, GValue *value);
+static void ags_channel_recursive_set_property_down(AgsChannel *channel,
+						    gint n_params,
+						    gchar **parameter_name, GValue *value);
+static void ags_channel_recursive_set_property_down_input(AgsChannel *channel,
+							  gint n_params,
+							  gchar **parameter_name, GValue *value);
 
-void ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
-					      AgsRecyclingContext *recycling_context,
-					      gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
-						AgsRecyclingContext *recycling_context,
-						gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_setup_run_stage_down_input(AgsChannel *channel,
-						      AgsRecyclingContext *recycling_context,
-						      gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_prepare_run_stage_up(AgsChannel *channel,
-						AgsRecyclingContext *recycling_context,
-						gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
+static void ags_channel_recursive_setup_run_stage_up(AgsChannel *channel,
+						     AgsRecyclingContext *recycling_context,
+						     gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_setup_run_stage_down(AgsChannel *channel,
+						       AgsRecyclingContext *recycling_context,
+						       gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_setup_run_stage_down_input(AgsChannel *channel,
+							     AgsRecyclingContext *recycling_context,
+							     gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_prepare_run_stage_up(AgsChannel *channel,
+						       AgsRecyclingContext *recycling_context,
+						       gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_prepare_run_stage_down(AgsChannel *channel,
+							 AgsRecyclingContext *recycling_context,
+							 gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_prepare_run_stage_down_input(AgsChannel *channel,
+							       AgsRecyclingContext *recycling_context,
+							       gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_do_run_stage_up(AgsChannel *channel,
 						  AgsRecyclingContext *recycling_context,
-						  gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_prepare_run_stage_down_input(AgsChannel *channel,
-							AgsRecyclingContext *recycling_context,
-							gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_do_run_stage_up(AgsChannel *channel,
-					   AgsRecyclingContext *recycling_context,
-					   gint sound_scope, AgsSoundStagingFlags staging_flags);
-void ags_channel_recursive_do_run_stage_down(AgsChannel *channel,
-					     AgsRecyclingContext *recycling_context,
-					     gint sound_scope, AgsSoundStagingFlags staging_flags);
-void ags_channel_recursive_do_run_stage_down_input(AgsChannel *channel,
-						   AgsRecyclingContext *recycling_context,
-						   gint sound_scope, AgsSoundStagingFlags staging_flags);
-void ags_channel_recursive_cleanup_run_stage_up(AgsChannel *channel,
-						AgsRecyclingContext *recycling_context,
-						gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_cleanup_run_stage_down(AgsChannel *channel,
-						  AgsRecyclingContext *recycling_context,
-						  gint sound_scope, AgsSoundStagingFlags local_staging_flags);
-void ags_channel_recursive_cleanup_run_stage_down_input(AgsChannel *channel,
-							AgsRecyclingContext *recycling_context,
-							gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+						  gint sound_scope, AgsSoundStagingFlags staging_flags);
+static void ags_channel_recursive_do_run_stage_down(AgsChannel *channel,
+						    AgsRecyclingContext *recycling_context,
+						    gint sound_scope, AgsSoundStagingFlags staging_flags);
+static void ags_channel_recursive_do_run_stage_down_input(AgsChannel *channel,
+							  AgsRecyclingContext *recycling_context,
+							  gint sound_scope, AgsSoundStagingFlags staging_flags);
+static void ags_channel_recursive_cleanup_run_stage_up(AgsChannel *channel,
+						       AgsRecyclingContext *recycling_context,
+						       gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_cleanup_run_stage_down(AgsChannel *channel,
+							 AgsRecyclingContext *recycling_context,
+							 gint sound_scope, AgsSoundStagingFlags local_staging_flags);
+static void ags_channel_recursive_cleanup_run_stage_down_input(AgsChannel *channel,
+							       AgsRecyclingContext *recycling_context,
+							       gint sound_scope, AgsSoundStagingFlags local_staging_flags);
 
-void ags_channel_real_recursive_run_stage(AgsChannel *channel,
-					  gint sound_scope, AgsSoundStagingFlags staging_flags);
+static void ags_channel_real_recursive_run_stage(AgsChannel *channel,
+						 gint sound_scope, AgsSoundStagingFlags staging_flags);
 
 enum{
   RECYCLING_CHANGED,
@@ -321,17 +321,17 @@ enum{
   PROP_RECALL,
 };
 
-enum{
+typedef enum AgsChannelRecursivePrepareStagingFlags{
   AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID      = 1,
   AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE          = 1 <<  1,
   AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE            = 1 <<  2,
-}AgsChannelRecursivePrepareStagingFlags;
+};
 
-enum{
+typedef enum AgsChannelRecursiveCleanupStagingFlags{
   AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL_RECALL      = 1,
   AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE_RECALL      = 1 <<  1,
   AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE                      = 1 <<  2,
-}AgsChannelRecursiveCleanupStagingFlags;
+};
 
 static gpointer ags_channel_parent_class = NULL;
 static guint channel_signals[LAST_SIGNAL];

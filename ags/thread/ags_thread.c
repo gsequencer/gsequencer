@@ -37,40 +37,40 @@
 
 #include <errno.h>
 
-void ags_thread_class_init(AgsThreadClass *thread);
-void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_thread_init(AgsThread *thread);
-void ags_thread_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_thread_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_thread_finalize(GObject *gobject);
+static void ags_thread_class_init(AgsThreadClass *thread);
+static void ags_thread_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_thread_init(AgsThread *thread);
+static void ags_thread_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_thread_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_thread_finalize(GObject *gobject);
 
-AgsUUID* ags_thread_get_uuid(AgsConnectable *connectable);
-gboolean ags_thread_has_resource(AgsConnectable *connectable);
-gboolean ags_thread_is_ready(AgsConnectable *connectable);
-void ags_thread_add_to_registry(AgsConnectable *connectable);
-void ags_thread_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_thread_list_resource(AgsConnectable *connectable);
-xmlNode* ags_thread_xml_compose(AgsConnectable *connectable);
-void ags_thread_xml_parse(AgsConnectable *connectable,
-			  xmlNode *node);
-gboolean ags_thread_is_connected(AgsConnectable *connectable);
-void ags_thread_connect(AgsConnectable *connectable);
-void ags_thread_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_thread_get_uuid(AgsConnectable *connectable);
+static gboolean ags_thread_has_resource(AgsConnectable *connectable);
+static gboolean ags_thread_is_ready(AgsConnectable *connectable);
+static void ags_thread_add_to_registry(AgsConnectable *connectable);
+static void ags_thread_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_thread_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_thread_xml_compose(AgsConnectable *connectable);
+static void ags_thread_xml_parse(AgsConnectable *connectable,
+				 xmlNode *node);
+static gboolean ags_thread_is_connected(AgsConnectable *connectable);
+static void ags_thread_connect(AgsConnectable *connectable);
+static void ags_thread_disconnect(AgsConnectable *connectable);
 
-guint ags_thread_real_clock(AgsThread *thread);
+static guint ags_thread_real_clock(AgsThread *thread);
 
-void ags_thread_real_start(AgsThread *thread);
-void ags_thread_real_stop(AgsThread *thread);
+static void ags_thread_real_start(AgsThread *thread);
+static void ags_thread_real_stop(AgsThread *thread);
 
-void ags_thread_real_recover_dead_lock(AgsThread *thread);
+static void ags_thread_real_recover_dead_lock(AgsThread *thread);
 
-void* ags_thread_loop(void *ptr);
+static void* ags_thread_loop(void *ptr);
 
 /**
  * SECTION:ags_thread

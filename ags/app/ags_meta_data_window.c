@@ -24,24 +24,24 @@
 
 #include <ags/i18n.h>
 
-void ags_meta_data_window_class_init(AgsMetaDataWindowClass *meta_data_window);
-void ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window);
+static void ags_meta_data_window_class_init(AgsMetaDataWindowClass *meta_data_window);
+static void ags_meta_data_window_init(AgsMetaDataWindow *meta_data_window);
 
-gboolean ags_meta_data_window_key_pressed_callback(GtkEventControllerKey *event_controller,
-						   guint keyval,
-						   guint keycode,
-						   GdkModifierType state,
-						   AgsMetaDataWindow *meta_data_window);
-void ags_meta_data_window_key_released_callback(GtkEventControllerKey *event_controller,
-						guint keyval,
-						guint keycode,
-						GdkModifierType state,
-						AgsMetaDataWindow *meta_data_window);
-gboolean ags_meta_data_window_modifiers_callback(GtkEventControllerKey *event_controller,
-						 GdkModifierType keyval,
-						 AgsMetaDataWindow *meta_data_window);
+static gboolean ags_meta_data_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+							  guint keyval,
+							  guint keycode,
+							  GdkModifierType state,
+							  AgsMetaDataWindow *meta_data_window);
+static void ags_meta_data_window_key_released_callback(GtkEventControllerKey *event_controller,
+						       guint keyval,
+						       guint keycode,
+						       GdkModifierType state,
+						       AgsMetaDataWindow *meta_data_window);
+static gboolean ags_meta_data_window_modifiers_callback(GtkEventControllerKey *event_controller,
+							GdkModifierType keyval,
+							AgsMetaDataWindow *meta_data_window);
 
-gboolean ags_meta_data_window_close_request_callback(GtkWindow *window, gpointer user_data);
+static gboolean ags_meta_data_window_close_request_callback(GtkWindow *window, gpointer user_data);
 
 static gpointer ags_meta_data_window_parent_class = NULL;
 

@@ -30,17 +30,17 @@
 
 #include <ags/i18n.h>
 
-void ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box);
-void ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pattern_box_init(AgsPatternBox *pattern_box);
-void ags_pattern_box_finalize(GObject *gobject);
+static void ags_pattern_box_class_init(AgsPatternBoxClass *pattern_box);
+static void ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_pattern_box_init(AgsPatternBox *pattern_box);
+static void ags_pattern_box_finalize(GObject *gobject);
 
-gboolean ags_pattern_box_is_connected(AgsConnectable *connectable);
-void ags_pattern_box_connect(AgsConnectable *connectable);
-void ags_pattern_box_disconnect(AgsConnectable *connectable);
+static gboolean ags_pattern_box_is_connected(AgsConnectable *connectable);
+static void ags_pattern_box_connect(AgsConnectable *connectable);
+static void ags_pattern_box_disconnect(AgsConnectable *connectable);
 
-void ags_pattern_box_realize(GtkWidget *widget);
-void ags_pattern_box_show(GtkWidget *widget);
+static void ags_pattern_box_realize(GtkWidget *widget);
+static void ags_pattern_box_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_pattern_box

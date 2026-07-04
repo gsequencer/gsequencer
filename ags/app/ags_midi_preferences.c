@@ -28,18 +28,18 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-void ags_midi_preferences_class_init(AgsMidiPreferencesClass *midi_preferences);
-void ags_midi_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_midi_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_midi_preferences_init(AgsMidiPreferences *midi_preferences);
+static void ags_midi_preferences_class_init(AgsMidiPreferencesClass *midi_preferences);
+static void ags_midi_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_midi_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_midi_preferences_init(AgsMidiPreferences *midi_preferences);
 
-gboolean ags_midi_preferences_is_connected(AgsConnectable *connectable);
-void ags_midi_preferences_connect(AgsConnectable *connectable);
-void ags_midi_preferences_disconnect(AgsConnectable *connectable);
+static gboolean ags_midi_preferences_is_connected(AgsConnectable *connectable);
+static void ags_midi_preferences_connect(AgsConnectable *connectable);
+static void ags_midi_preferences_disconnect(AgsConnectable *connectable);
 
-void ags_midi_preferences_set_update(AgsApplicable *applicable, gboolean update);
-void ags_midi_preferences_apply(AgsApplicable *applicable);
-void ags_midi_preferences_reset(AgsApplicable *applicable);
+static void ags_midi_preferences_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_midi_preferences_apply(AgsApplicable *applicable);
+static void ags_midi_preferences_reset(AgsApplicable *applicable);
 static void ags_midi_preferences_finalize(GObject *gobject);
 
 /**

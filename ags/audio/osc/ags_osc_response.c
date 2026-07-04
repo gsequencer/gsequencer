@@ -25,18 +25,18 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_response_class_init(AgsOscResponseClass *osc_response);
-void ags_osc_response_init(AgsOscResponse *osc_response);
-void ags_osc_response_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_osc_response_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_osc_response_dispose(GObject *gobject);
-void ags_osc_response_finalize(GObject *gobject);
+static void ags_osc_response_class_init(AgsOscResponseClass *osc_response);
+static void ags_osc_response_init(AgsOscResponse *osc_response);
+static void ags_osc_response_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_osc_response_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_osc_response_dispose(GObject *gobject);
+static void ags_osc_response_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_osc_response

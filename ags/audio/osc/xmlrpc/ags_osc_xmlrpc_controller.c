@@ -45,46 +45,46 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_controller);
-void ags_osc_xmlrpc_controller_plugin_controller_interface_init(AgsPluginControllerInterface *plugin_controller);
-void ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller);
-void ags_osc_xmlrpc_controller_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec);
-void ags_osc_xmlrpc_controller_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec);
-void ags_osc_xmlrpc_controller_dispose(GObject *gobject);
-void ags_osc_xmlrpc_controller_finalize(GObject *gobject);
+static void ags_osc_xmlrpc_controller_class_init(AgsOscXmlrpcControllerClass *osc_xmlrpc_controller);
+static void ags_osc_xmlrpc_controller_plugin_controller_interface_init(AgsPluginControllerInterface *plugin_controller);
+static void ags_osc_xmlrpc_controller_init(AgsOscXmlrpcController *osc_xmlrpc_controller);
+static void ags_osc_xmlrpc_controller_set_property(GObject *gobject,
+						   guint prop_id,
+						   const GValue *value,
+						   GParamSpec *param_spec);
+static void ags_osc_xmlrpc_controller_get_property(GObject *gobject,
+						   guint prop_id,
+						   GValue *value,
+						   GParamSpec *param_spec);
+static void ags_osc_xmlrpc_controller_dispose(GObject *gobject);
+static void ags_osc_xmlrpc_controller_finalize(GObject *gobject);
 
-gboolean ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_controller);
+static gboolean ags_osc_xmlrpc_controller_delegate_timeout(AgsOscXmlrpcController *osc_xmlrpc_controller);
 
-void ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
-void ags_osc_xmlrpc_controller_real_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
+static void ags_osc_xmlrpc_controller_real_start_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
+static void ags_osc_xmlrpc_controller_real_stop_delegate(AgsOscXmlrpcController *osc_xmlrpc_controller);
 
-gsize ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
-					    AgsOscWebsocketConnection *osc_websocket_connection,
-					    SoupMessage *msg,
-					    GHashTable *query,
-					    guchar *packet, gsize packet_size,
-					    gsize offset);
-gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
-					     AgsOscWebsocketConnection *osc_websocket_connection,
-					     SoupServerMessage *msg,
-					     GHashTable *query,
-					     guchar *packet, gsize packet_size,
-					     gsize offset,
-					     gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
+static gsize ags_osc_xmlrpc_controller_read_bundle(AgsOscXmlrpcController *osc_xmlrpc_controller,
+						   AgsOscWebsocketConnection *osc_websocket_connection,
+						   SoupMessage *msg,
+						   GHashTable *query,
+						   guchar *packet, gsize packet_size,
+						   gsize offset);
+static gsize ags_osc_xmlrpc_controller_read_message(AgsOscXmlrpcController *osc_xmlrpc_controller,
+						    AgsOscWebsocketConnection *osc_websocket_connection,
+						    SoupServerMessage *msg,
+						    GHashTable *query,
+						    guchar *packet, gsize packet_size,
+						    gsize offset,
+						    gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
 
-gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
-					      SoupServerMessage *msg,
-					      GHashTable *query,
-					      GObject *security_context,
-					      gchar *context_path,
-					      gchar *login,
-					      gchar *security_token);
+static gpointer ags_osc_xmlrpc_controller_do_request(AgsPluginController *plugin_controller,
+						     SoupServerMessage *msg,
+						     GHashTable *query,
+						     GObject *security_context,
+						     gchar *context_path,
+						     gchar *login,
+						     gchar *security_token);
 
 enum{
   PROP_0,

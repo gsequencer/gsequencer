@@ -27,13 +27,13 @@
 #include <ags/app/ags_effect_bridge.h>
 #include <ags/app/ags_effect_line.h>
 
-void ags_ffplayer_input_pad_class_init(AgsFFPlayerInputPadClass *ffplayer_input_pad);
-void ags_ffplayer_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ffplayer_input_pad_init(AgsFFPlayerInputPad *ffplayer_input_pad);
-void ags_ffplayer_input_pad_finalize(GObject *gobject);
+static void ags_ffplayer_input_pad_class_init(AgsFFPlayerInputPadClass *ffplayer_input_pad);
+static void ags_ffplayer_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ffplayer_input_pad_init(AgsFFPlayerInputPad *ffplayer_input_pad);
+static void ags_ffplayer_input_pad_finalize(GObject *gobject);
 
-void ags_ffplayer_input_pad_connect(AgsConnectable *connectable);
-void ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable);
+static void ags_ffplayer_input_pad_connect(AgsConnectable *connectable);
+static void ags_ffplayer_input_pad_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_ffplayer_input_pad

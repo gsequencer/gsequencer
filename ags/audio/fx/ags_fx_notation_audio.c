@@ -21,22 +21,22 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio);
-void ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio);
-void ags_fx_notation_audio_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_fx_notation_audio_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_fx_notation_audio_dispose(GObject *gobject);
-void ags_fx_notation_audio_finalize(GObject *gobject);
+static void ags_fx_notation_audio_class_init(AgsFxNotationAudioClass *fx_notation_audio);
+static void ags_fx_notation_audio_init(AgsFxNotationAudio *fx_notation_audio);
+static void ags_fx_notation_audio_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_fx_notation_audio_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_fx_notation_audio_dispose(GObject *gobject);
+static void ags_fx_notation_audio_finalize(GObject *gobject);
 
-void ags_fx_notation_audio_notify_output_soundcard_callback(GObject *gobject,
-							    GParamSpec *pspec,
-							    gpointer user_data);
+static void ags_fx_notation_audio_notify_output_soundcard_callback(GObject *gobject,
+								   GParamSpec *pspec,
+								   gpointer user_data);
 
 /**
  * SECTION:ags_fx_notation_audio

@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_ladspa_audio_class_init(AgsFxLadspaAudioClass *fx_ladspa_audio);
-void ags_fx_ladspa_audio_init(AgsFxLadspaAudio *fx_ladspa_audio);
-void ags_fx_ladspa_audio_dispose(GObject *gobject);
-void ags_fx_ladspa_audio_finalize(GObject *gobject);
+static void ags_fx_ladspa_audio_class_init(AgsFxLadspaAudioClass *fx_ladspa_audio);
+static void ags_fx_ladspa_audio_init(AgsFxLadspaAudio *fx_ladspa_audio);
+static void ags_fx_ladspa_audio_dispose(GObject *gobject);
+static void ags_fx_ladspa_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_ladspa_audio

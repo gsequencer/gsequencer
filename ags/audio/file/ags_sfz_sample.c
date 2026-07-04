@@ -30,65 +30,65 @@
 
 #include <ags/i18n.h>
 
-void ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample);
-void ags_sfz_sample_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_sfz_sample_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
-void ags_sfz_sample_init(AgsSFZSample *sfz_sample);
-void ags_sfz_sample_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_sfz_sample_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_sfz_sample_dispose(GObject *gobject);
-void ags_sfz_sample_finalize(GObject *gobject);
+static void ags_sfz_sample_class_init(AgsSFZSampleClass *sfz_sample);
+static void ags_sfz_sample_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_sfz_sample_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
+static void ags_sfz_sample_init(AgsSFZSample *sfz_sample);
+static void ags_sfz_sample_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_sfz_sample_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_sfz_sample_dispose(GObject *gobject);
+static void ags_sfz_sample_finalize(GObject *gobject);
 
-AgsUUID* ags_sfz_sample_get_uuid(AgsConnectable *connectable);
-gboolean ags_sfz_sample_has_resource(AgsConnectable *connectable);
-gboolean ags_sfz_sample_is_ready(AgsConnectable *connectable);
-void ags_sfz_sample_add_to_registry(AgsConnectable *connectable);
-void ags_sfz_sample_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_sfz_sample_list_resource(AgsConnectable *connectable);
-xmlNode* ags_sfz_sample_xml_compose(AgsConnectable *connectable);
-void ags_sfz_sample_xml_parse(AgsConnectable *connectable,
-			      xmlNode *node);
-gboolean ags_sfz_sample_is_connected(AgsConnectable *connectable);
-void ags_sfz_sample_connect(AgsConnectable *connectable);
-void ags_sfz_sample_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_sfz_sample_get_uuid(AgsConnectable *connectable);
+static gboolean ags_sfz_sample_has_resource(AgsConnectable *connectable);
+static gboolean ags_sfz_sample_is_ready(AgsConnectable *connectable);
+static void ags_sfz_sample_add_to_registry(AgsConnectable *connectable);
+static void ags_sfz_sample_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_sfz_sample_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_sfz_sample_xml_compose(AgsConnectable *connectable);
+static void ags_sfz_sample_xml_parse(AgsConnectable *connectable,
+				     xmlNode *node);
+static gboolean ags_sfz_sample_is_connected(AgsConnectable *connectable);
+static void ags_sfz_sample_connect(AgsConnectable *connectable);
+static void ags_sfz_sample_disconnect(AgsConnectable *connectable);
 
-gboolean ags_sfz_sample_open(AgsSoundResource *sound_resource,
-			     gchar *filename);
-gboolean ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
-				gchar *filename,
-				guint audio_channels, guint samplerate,
-				gboolean create);
-void ags_sfz_sample_info(AgsSoundResource *sound_resource,
-			 guint *frame_count,
-			 guint *loop_start, guint *loop_end);
-void ags_sfz_sample_set_presets(AgsSoundResource *sound_resource,
-				guint channels,
-				guint samplerate,
-				guint buffer_size,
-				guint format);
-void ags_sfz_sample_get_presets(AgsSoundResource *sound_resource,
-				guint *channels,
-				guint *samplerate,
-				guint *buffer_size,
-				guint *format);
-guint ags_sfz_sample_read(AgsSoundResource *sound_resource,
-			  void *dbuffer, guint daudio_channels,
-			  guint audio_channel,
-			  guint frame_count, guint format);
-void ags_sfz_sample_write(AgsSoundResource *sound_resource,
-			  void *sbuffer, guint saudio_channels,
-			  guint audio_channel,
-			  guint frame_count, guint format);
-void ags_sfz_sample_flush(AgsSoundResource *sound_resource);
-void ags_sfz_sample_seek(AgsSoundResource *sound_resource,
-			 gint64 frame_count, gint whence);
-void ags_sfz_sample_close(AgsSoundResource *sound_resource);
+static gboolean ags_sfz_sample_open(AgsSoundResource *sound_resource,
+				    gchar *filename);
+static gboolean ags_sfz_sample_rw_open(AgsSoundResource *sound_resource,
+				       gchar *filename,
+				       guint audio_channels, guint samplerate,
+				       gboolean create);
+static void ags_sfz_sample_info(AgsSoundResource *sound_resource,
+				guint *frame_count,
+				guint *loop_start, guint *loop_end);
+static void ags_sfz_sample_set_presets(AgsSoundResource *sound_resource,
+				       guint channels,
+				       guint samplerate,
+				       guint buffer_size,
+				       guint format);
+static void ags_sfz_sample_get_presets(AgsSoundResource *sound_resource,
+				       guint *channels,
+				       guint *samplerate,
+				       guint *buffer_size,
+				       guint *format);
+static guint ags_sfz_sample_read(AgsSoundResource *sound_resource,
+				 void *dbuffer, guint daudio_channels,
+				 guint audio_channel,
+				 guint frame_count, guint format);
+static void ags_sfz_sample_write(AgsSoundResource *sound_resource,
+				 void *sbuffer, guint saudio_channels,
+				 guint audio_channel,
+				 guint frame_count, guint format);
+static void ags_sfz_sample_flush(AgsSoundResource *sound_resource);
+static void ags_sfz_sample_seek(AgsSoundResource *sound_resource,
+				gint64 frame_count, gint whence);
+static void ags_sfz_sample_close(AgsSoundResource *sound_resource);
 
 /**
  * SECTION:ags_sfz_sample

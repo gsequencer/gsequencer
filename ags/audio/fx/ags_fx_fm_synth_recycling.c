@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_fm_synth_recycling_class_init(AgsFxFMSynthRecyclingClass *fx_fm_synth_recycling);
-void ags_fx_fm_synth_recycling_init(AgsFxFMSynthRecycling *fx_fm_synth_recycling);
-void ags_fx_fm_synth_recycling_dispose(GObject *gobject);
-void ags_fx_fm_synth_recycling_finalize(GObject *gobject);
+static void ags_fx_fm_synth_recycling_class_init(AgsFxFMSynthRecyclingClass *fx_fm_synth_recycling);
+static void ags_fx_fm_synth_recycling_init(AgsFxFMSynthRecycling *fx_fm_synth_recycling);
+static void ags_fx_fm_synth_recycling_dispose(GObject *gobject);
+static void ags_fx_fm_synth_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_fm_synth_recycling

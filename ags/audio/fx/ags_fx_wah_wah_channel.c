@@ -25,18 +25,18 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel);
-void ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel);
-void ags_fx_wah_wah_channel_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_fx_wah_wah_channel_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_fx_wah_wah_channel_dispose(GObject *gobject);
-void ags_fx_wah_wah_channel_finalize(GObject *gobject);
+static void ags_fx_wah_wah_channel_class_init(AgsFxWahWahChannelClass *fx_wah_wah_channel);
+static void ags_fx_wah_wah_channel_init(AgsFxWahWahChannel *fx_wah_wah_channel);
+static void ags_fx_wah_wah_channel_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_fx_wah_wah_channel_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_fx_wah_wah_channel_dispose(GObject *gobject);
+static void ags_fx_wah_wah_channel_finalize(GObject *gobject);
 
 static AgsPluginPort* ags_fx_wah_wah_channel_get_wah_wah_enabled_plugin_port();
 static AgsPluginPort* ags_fx_wah_wah_channel_get_wah_wah_length_mode_plugin_port();

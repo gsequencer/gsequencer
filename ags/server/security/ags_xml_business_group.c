@@ -31,30 +31,30 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
-void ags_xml_business_group_class_init(AgsXmlBusinessGroupClass *xml_business_group);
-void ags_xml_business_group_business_group_interface_init(AgsBusinessGroupInterface *business_group);
-void ags_xml_business_group_init(AgsXmlBusinessGroup *xml_business_group);
-void ags_xml_business_group_finalize(GObject *gobject);
+static void ags_xml_business_group_class_init(AgsXmlBusinessGroupClass *xml_business_group);
+static void ags_xml_business_group_business_group_interface_init(AgsBusinessGroupInterface *business_group);
+static void ags_xml_business_group_init(AgsXmlBusinessGroup *xml_business_group);
+static void ags_xml_business_group_finalize(GObject *gobject);
 
 gchar** ags_xml_business_group_get_group_uuid(AgsBusinessGroup *business_group,
 					      GObject *security_context,
 					      gchar *user_uuid,
 					      gchar *security_token,
 					      GError **error);
-void ags_xml_business_group_set_group_name(AgsBusinessGroup *business_group,
+static void ags_xml_business_group_set_group_name(AgsBusinessGroup *business_group,
 					   GObject *security_context,
 					   gchar *user_uuid,
 					   gchar *security_token,
 					   gchar *group_uuid,
 					   gchar *group_name,
 					   GError **error);
-gchar* ags_xml_business_group_get_group_name(AgsBusinessGroup *business_group,
+static gchar* ags_xml_business_group_get_group_name(AgsBusinessGroup *business_group,
 					     GObject *security_context,
 					     gchar *user_uuid,
 					     gchar *security_token,
 					     gchar *group_uuid,
 					     GError **error);  
-void ags_xml_business_group_set_user(AgsBusinessGroup *business_group,
+static void ags_xml_business_group_set_user(AgsBusinessGroup *business_group,
 				     GObject *security_context,
 				     gchar *user_uuid,
 				     gchar *security_token,

@@ -82,7 +82,7 @@
 #endif
 
 #if defined(AGS_WITH_AUDIO_UNIT_PLUGINS)
-gboolean ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin);
+static gboolean ags_machine_util_audio_unit_bridge_test_plugin(AgsAudioUnitPlugin *audio_unit_plugin);
 #endif
 
 /**

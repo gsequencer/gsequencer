@@ -21,13 +21,13 @@
 
 #include <ags/i18n.h>
 
-void ags_stop_thread_class_init(AgsStopThreadClass *stop_thread);
-void ags_stop_thread_init(AgsStopThread *stop_thread);
-void ags_stop_thread_dispose(GObject *gobject);
-void ags_stop_thread_finalize(GObject *gobject);
+static void ags_stop_thread_class_init(AgsStopThreadClass *stop_thread);
+static void ags_stop_thread_init(AgsStopThread *stop_thread);
+static void ags_stop_thread_dispose(GObject *gobject);
+static void ags_stop_thread_finalize(GObject *gobject);
 
-void ags_stop_thread_recursive(AgsThread *thread);
-void ags_stop_thread_launch(AgsTask *task);
+static void ags_stop_thread_recursive(AgsThread *thread);
+static void ags_stop_thread_launch(AgsTask *task);
 
 /**
  * SECTION:ags_stop_thread

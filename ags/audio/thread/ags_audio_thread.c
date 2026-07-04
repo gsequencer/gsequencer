@@ -36,26 +36,26 @@
 
 #include <ags/i18n.h>
 
-void ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread);
-void ags_audio_thread_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_thread_init(AgsAudioThread *audio_thread);
-void ags_audio_thread_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_audio_thread_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_audio_thread_dispose(GObject *gobject);
-void ags_audio_thread_finalize(GObject *gobject);
+static void ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread);
+static void ags_audio_thread_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_thread_init(AgsAudioThread *audio_thread);
+static void ags_audio_thread_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_audio_thread_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_audio_thread_dispose(GObject *gobject);
+static void ags_audio_thread_finalize(GObject *gobject);
 
-void ags_audio_thread_start(AgsThread *thread);
-void ags_audio_thread_run(AgsThread *thread);
-void ags_audio_thread_stop(AgsThread *thread);
+static void ags_audio_thread_start(AgsThread *thread);
+static void ags_audio_thread_run(AgsThread *thread);
+static void ags_audio_thread_stop(AgsThread *thread);
 
-void ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback);
-void ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback);
+static void ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback);
+static void ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPlayback *playback);
 
 /**
  * SECTION:ags_audio_thread

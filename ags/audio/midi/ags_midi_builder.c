@@ -26,120 +26,120 @@
 
 #include <ags/i18n.h>
 
-void ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder);
-void ags_midi_builder_init(AgsMidiBuilder *midi_builder);
-void ags_midi_builder_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_midi_builder_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_midi_builder_dispose(GObject *gobject);
-void ags_midi_builder_finalize(GObject *gobject);
+static void ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder);
+static void ags_midi_builder_init(AgsMidiBuilder *midi_builder);
+static void ags_midi_builder_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_midi_builder_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_midi_builder_dispose(GObject *gobject);
+static void ags_midi_builder_finalize(GObject *gobject);
 
-void ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
-				     int c);
-void ags_midi_builder_real_on_error(AgsMidiBuilder *builder,
-				    GError **error);
+static void ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
+					    int c);
+static void ags_midi_builder_real_on_error(AgsMidiBuilder *builder,
+					   GError **error);
 
 /* channel messages */
-void ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
-					 guint offset, guint format,
-					 guint track_count, guint division,
-					 guint times, guint bpm,
-					 guint clicks);
-void ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
-					gchar *track_name);
+static void ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
+						guint offset, guint format,
+						guint track_count, guint division,
+						guint times, guint bpm,
+						guint clicks);
+static void ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
+					       gchar *track_name);
 
-void ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
-					 guint delta_time,
-					 guint audio_channel,
-					 guint note,
-					 guint velocity);
-void ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
-					  guint delta_time,
-					  guint audio_channel,
-					  guint note,
-					  guint velocity);
-void ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
-					       guint delta_time,
-					       guint audio_channel,
-					       guint note,
-					       guint pressure);
-
-void ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
-						   guint delta_time,
-						   guint channel,
-						   guint control,
-						   guint value);
-void ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
-						    guint delta_time,
-						    guint channel,
-						    guint transmitter);
-void ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
+static void ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
+						guint delta_time,
+						guint audio_channel,
+						guint note,
+						guint velocity);
+static void ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
 						 guint delta_time,
-						 guint channel,
-						 guint program);
-void ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
-						  guint delta_time,
-						  guint channel,
-						  guint pressure);
+						 guint audio_channel,
+						 guint note,
+						 guint velocity);
+static void ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
+						      guint delta_time,
+						      guint audio_channel,
+						      guint note,
+						      guint pressure);
+
+static void ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
+							  guint delta_time,
+							  guint channel,
+							  guint control,
+							  guint value);
+static void ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
+							   guint delta_time,
+							   guint channel,
+							   guint transmitter);
+static void ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
+							guint delta_time,
+							guint channel,
+							guint program);
+static void ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
+							 guint delta_time,
+							 guint channel,
+							 guint pressure);
 
 /* sysex and system common */
-void ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
-					guint delta_time,
-					guchar *sysex_data, guint length);
+static void ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
+					       guint delta_time,
+					       guchar *sysex_data, guint length);
 
-void ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
-						guint delta_time,
-						guint message_type,
-						guint values);
-void ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
-						guint delta_time,
-						guint song_position);
-void ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
-					      guint delta_time,
-					      guint song_select);
-void ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
-					       guint delta_time);
+static void ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
+						       guint delta_time,
+						       guint message_type,
+						       guint values);
+static void ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
+						       guint delta_time,
+						       guint song_position);
+static void ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
+						     guint delta_time,
+						     guint song_select);
+static void ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
+						      guint delta_time);
   
 /* meta events */
-void ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
-						  guint delta_time,
-						  guint sequence);
-void ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
-					guint delta_time,
-					guint rr, guint hr, guint mn, guint se, guint fr);
-void ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
-					guint delta_time,
-					guint tempo);  
-void ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
-						 guint delta_time,
-						 guint nn, guint dd, guint cc, guint bb);
-void ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
-						guint delta_time,
-						guint sf, guint mi);
-void ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
+static void ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
+							 guint delta_time,
+							 guint sequence);
+static void ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
+					       guint delta_time,
+					       guint rr, guint hr, guint mn, guint se, guint fr);
+static void ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
+					       guint delta_time,
+					       guint tempo);  
+static void ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
+							guint delta_time,
+							guint nn, guint dd, guint cc, guint bb);
+static void ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
 						       guint delta_time,
-						       guint len, guint id, guint data);
-void ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
-					     guint delta_time,
-					     gchar *text, guint length);
+						       guint sf, guint mi);
+static void ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
+							      guint delta_time,
+							      guint len, guint id, guint data);
+static void ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
+						    guint delta_time,
+						    gchar *text, guint length);
 
-void ags_midi_builder_append_xml_node_header(AgsMidiBuilder *midi_builder,
-					     xmlNode *node);
-void ags_midi_builder_append_xml_node_tracks(AgsMidiBuilder *midi_builder,
-					     xmlNode *node);
-void ags_midi_builder_append_xml_node_track(AgsMidiBuilder *midi_builder,
-					    xmlNode *node);
-void ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
-					      xmlNode *node);
-void ags_midi_builder_append_xml_node_system_common(AgsMidiBuilder *midi_builder,
+static void ags_midi_builder_append_xml_node_header(AgsMidiBuilder *midi_builder,
 						    xmlNode *node);
-void ags_midi_builder_append_xml_node_meta_event(AgsMidiBuilder *midi_builder,
-						 xmlNode *node);
+static void ags_midi_builder_append_xml_node_tracks(AgsMidiBuilder *midi_builder,
+						    xmlNode *node);
+static void ags_midi_builder_append_xml_node_track(AgsMidiBuilder *midi_builder,
+						   xmlNode *node);
+static void ags_midi_builder_append_xml_node_message(AgsMidiBuilder *midi_builder,
+						     xmlNode *node);
+static void ags_midi_builder_append_xml_node_system_common(AgsMidiBuilder *midi_builder,
+							   xmlNode *node);
+static void ags_midi_builder_append_xml_node_meta_event(AgsMidiBuilder *midi_builder,
+							xmlNode *node);
 
 /**
  * SECTION:ags_midi_builder

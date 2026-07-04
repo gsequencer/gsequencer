@@ -30,30 +30,30 @@
 
 #include <ags/i18n.h>
 
-void ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread);
-void ags_sequencer_thread_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread);
-void ags_sequencer_thread_set_property(GObject *gobject,
-				       guint prop_id,
-				       const GValue *value,
-				       GParamSpec *param_spec);
-void ags_sequencer_thread_get_property(GObject *gobject,
-				       guint prop_id,
-				       GValue *value,
-				       GParamSpec *param_spec);
-void ags_sequencer_thread_connect(AgsConnectable *connectable);
-void ags_sequencer_thread_disconnect(AgsConnectable *connectable);
-void ags_sequencer_thread_dispose(GObject *gobject);
-void ags_sequencer_thread_finalize(GObject *gobject);
+static void ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread);
+static void ags_sequencer_thread_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_sequencer_thread_init(AgsSequencerThread *sequencer_thread);
+static void ags_sequencer_thread_set_property(GObject *gobject,
+					      guint prop_id,
+					      const GValue *value,
+					      GParamSpec *param_spec);
+static void ags_sequencer_thread_get_property(GObject *gobject,
+					      guint prop_id,
+					      GValue *value,
+					      GParamSpec *param_spec);
+static void ags_sequencer_thread_connect(AgsConnectable *connectable);
+static void ags_sequencer_thread_disconnect(AgsConnectable *connectable);
+static void ags_sequencer_thread_dispose(GObject *gobject);
+static void ags_sequencer_thread_finalize(GObject *gobject);
 
-void ags_sequencer_thread_start(AgsThread *thread);
-void ags_sequencer_thread_run(AgsThread *thread);
-void ags_sequencer_thread_stop(AgsThread *thread);
+static void ags_sequencer_thread_start(AgsThread *thread);
+static void ags_sequencer_thread_run(AgsThread *thread);
+static void ags_sequencer_thread_stop(AgsThread *thread);
 
-void ags_sequencer_stopped_all_callback(AgsAudioLoop *audio_loop,
-					AgsSequencerThread *sequencer_thread);
+static void ags_sequencer_stopped_all_callback(AgsAudioLoop *audio_loop,
+					       AgsSequencerThread *sequencer_thread);
 
-void ags_sequencer_thread_real_recover_dead_lock(AgsThread *thread);
+static void ags_sequencer_thread_real_recover_dead_lock(AgsThread *thread);
 
 /**
  * SECTION:ags_sequencer_thread

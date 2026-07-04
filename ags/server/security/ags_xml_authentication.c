@@ -40,31 +40,31 @@
 
 #include <ags/config.h>
 
-void ags_xml_authentication_class_init(AgsXmlAuthenticationClass *xml_authentication);
-void ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface *authentication);
-void ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication);
-void ags_xml_authentication_finalize(GObject *gobject);
+static void ags_xml_authentication_class_init(AgsXmlAuthenticationClass *xml_authentication);
+static void ags_xml_authentication_authentication_interface_init(AgsAuthenticationInterface *authentication);
+static void ags_xml_authentication_init(AgsXmlAuthentication *xml_authentication);
+static void ags_xml_authentication_finalize(GObject *gobject);
 
 gchar** ags_xml_authentication_get_authentication_module(AgsAuthentication *authentication);
-gboolean ags_xml_authentication_login(AgsAuthentication *authentication,
+static gboolean ags_xml_authentication_login(AgsAuthentication *authentication,
 				      gchar *login,
 				      gchar *password,
 				      gchar **user_uuid,
 				      gchar **security_token,
 				      GError **error);
-gboolean ags_xml_authentication_logout(AgsAuthentication *authentication,
+static gboolean ags_xml_authentication_logout(AgsAuthentication *authentication,
 				       GObject *security_context,
 				       gchar *login,
 				       gchar *security_token,
 				       GError **error); 
-gchar* ags_xml_authentication_generate_token(AgsAuthentication *authentication,
+static gchar* ags_xml_authentication_generate_token(AgsAuthentication *authentication,
 					     GError **error);
-gchar* ags_xml_authentication_get_digest(AgsAuthentication *authentication,
+static gchar* ags_xml_authentication_get_digest(AgsAuthentication *authentication,
 					 gchar *realm,
 					 gchar *login,
 					 gchar *security_token,
 					 GError **error);
-gboolean ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
+static gboolean ags_xml_authentication_is_session_active(AgsAuthentication *authentication,
 						  GObject *security_context,
 						  gchar *user_uuid,
 						  gchar *security_token,

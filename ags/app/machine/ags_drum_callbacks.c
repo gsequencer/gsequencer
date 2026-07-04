@@ -37,7 +37,7 @@
 #define AGS_AUDIO_FILE_DEVOUT "AgsAudioFileDevout"
 #define AGS_DRUM_PLAY_RECALL "AgsDrumPlayRecall"
 
-void ags_drum_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
+static void ags_drum_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
 				     AgsDrum *drum);
 
 void

@@ -32,42 +32,42 @@
 
 #include <ags/i18n.h>
 
-void ags_preferences_class_init(AgsPreferencesClass *preferences);
-void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_preferences_init(AgsPreferences *preferences);
-void ags_preferences_dispose(GObject *gobject);
-void ags_preferences_finalize(GObject *gobject);
+static void ags_preferences_class_init(AgsPreferencesClass *preferences);
+static void ags_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_preferences_init(AgsPreferences *preferences);
+static void ags_preferences_dispose(GObject *gobject);
+static void ags_preferences_finalize(GObject *gobject);
 
-gboolean ags_preferences_is_connected(AgsConnectable *connectable);
-void ags_preferences_connect(AgsConnectable *connectable);
-void ags_preferences_disconnect(AgsConnectable *connectable);
+static gboolean ags_preferences_is_connected(AgsConnectable *connectable);
+static void ags_preferences_connect(AgsConnectable *connectable);
+static void ags_preferences_disconnect(AgsConnectable *connectable);
 
-void ags_preferences_set_update(AgsApplicable *applicable, gboolean update);
-void ags_preferences_apply(AgsApplicable *applicable);
-void ags_preferences_reset(AgsApplicable *applicable);
+static void ags_preferences_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_preferences_apply(AgsApplicable *applicable);
+static void ags_preferences_reset(AgsApplicable *applicable);
 
-void ags_preferences_show(GtkWidget *widget);
+static void ags_preferences_show(GtkWidget *widget);
 
-void ags_preferences_activate_button_callback(GtkButton *activate_button,
-					      AgsPreferences *preferences);
+static void ags_preferences_activate_button_callback(GtkButton *activate_button,
+						     AgsPreferences *preferences);
 
-gboolean ags_preferences_key_pressed_callback(GtkEventControllerKey *event_controller,
-					      guint keyval,
-					      guint keycode,
-					      GdkModifierType state,
-					      AgsPreferences *preferences);
-void ags_preferences_key_released_callback(GtkEventControllerKey *event_controller,
-					   guint keyval,
-					   guint keycode,
-					   GdkModifierType state,
-					   AgsPreferences *preferences);
-gboolean ags_preferences_modifiers_callback(GtkEventControllerKey *event_controller,
-					    GdkModifierType keyval,
-					    AgsPreferences *preferences);
+static gboolean ags_preferences_key_pressed_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsPreferences *preferences);
+static void ags_preferences_key_released_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsPreferences *preferences);
+static gboolean ags_preferences_modifiers_callback(GtkEventControllerKey *event_controller,
+						   GdkModifierType keyval,
+						   AgsPreferences *preferences);
 
-void ags_preferences_real_response(AgsPreferences *preferences,
-				   gint response_id);
+static void ags_preferences_real_response(AgsPreferences *preferences,
+					  gint response_id);
 
 /**
  * SECTION:ags_preferences

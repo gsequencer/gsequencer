@@ -40,12 +40,12 @@
 
 #include <string.h>
 
-void ags_frame_clock_class_init(AgsFrameClockClass *frame_clock);
-void ags_frame_clock_init(AgsFrameClock *frame_clock);
-void ags_frame_clock_finalize(GObject *gobject);
+static void ags_frame_clock_class_init(AgsFrameClockClass *frame_clock);
+static void ags_frame_clock_init(AgsFrameClock *frame_clock);
+static void ags_frame_clock_finalize(GObject *gobject);
 
-void ags_frame_clock_counter_init(AgsFrameClock *frame_clock);
-void ags_frame_clock_counter_reset(AgsFrameClock *frame_clock);
+static void ags_frame_clock_counter_init(AgsFrameClock *frame_clock);
+static void ags_frame_clock_counter_reset(AgsFrameClock *frame_clock);
 
 /**
  * SECTION:ags_frame_clock

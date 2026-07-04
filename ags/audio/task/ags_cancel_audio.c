@@ -23,20 +23,20 @@
 
 #include <ags/i18n.h>
 
-void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
-void ags_cancel_audio_init(AgsCancelAudio *cancel_audio);
-void ags_cancel_audio_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_cancel_audio_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_cancel_audio_dispose(GObject *gobject);
-void ags_cancel_audio_finalize(GObject *gobject);
+static void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
+static void ags_cancel_audio_init(AgsCancelAudio *cancel_audio);
+static void ags_cancel_audio_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_cancel_audio_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_cancel_audio_dispose(GObject *gobject);
+static void ags_cancel_audio_finalize(GObject *gobject);
 
-void ags_cancel_audio_launch(AgsTask *task);
+static void ags_cancel_audio_launch(AgsTask *task);
 
 /**
  * SECTION:ags_cancel_audio

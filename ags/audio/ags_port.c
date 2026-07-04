@@ -28,37 +28,37 @@
 
 #include <ags/i18n.h>
 
-void ags_port_class_init(AgsPortClass *port_class);
-void ags_port_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_port_init(AgsPort *port);
-void ags_port_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_port_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_port_dispose(GObject *gobject);
-void ags_port_finalize(GObject *gobject);
+static void ags_port_class_init(AgsPortClass *port_class);
+static void ags_port_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_port_init(AgsPort *port);
+static void ags_port_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_port_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_port_dispose(GObject *gobject);
+static void ags_port_finalize(GObject *gobject);
 
-AgsUUID* ags_port_get_uuid(AgsConnectable *connectable);
-gboolean ags_port_has_resource(AgsConnectable *connectable);
-gboolean ags_port_is_ready(AgsConnectable *connectable);
-void ags_port_add_to_registry(AgsConnectable *connectable);
-void ags_port_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_port_list_resource(AgsConnectable *connectable);
-xmlNode* ags_port_xml_compose(AgsConnectable *connectable);
-void ags_port_xml_parse(AgsConnectable *connectable,
-			  xmlNode *node);
-gboolean ags_port_is_connected(AgsConnectable *connectable);
-void ags_port_connect(AgsConnectable *connectable);
-void ags_port_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_port_get_uuid(AgsConnectable *connectable);
+static gboolean ags_port_has_resource(AgsConnectable *connectable);
+static gboolean ags_port_is_ready(AgsConnectable *connectable);
+static void ags_port_add_to_registry(AgsConnectable *connectable);
+static void ags_port_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_port_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_port_xml_compose(AgsConnectable *connectable);
+static void ags_port_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
+static gboolean ags_port_is_connected(AgsConnectable *connectable);
+static void ags_port_connect(AgsConnectable *connectable);
+static void ags_port_disconnect(AgsConnectable *connectable);
 
-void ags_port_real_safe_read(AgsPort *port, GValue *value);
-void ags_port_real_safe_write(AgsPort *port, GValue *value);
-void ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value);
-void ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
+static void ags_port_real_safe_read(AgsPort *port, GValue *value);
+static void ags_port_real_safe_write(AgsPort *port, GValue *value);
+static void ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *value);
+static void ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
 
 /**
  * SECTION:ags_port

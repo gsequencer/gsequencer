@@ -26,31 +26,31 @@
 
 #include <ags/i18n.h>
 
-void ags_midi_cc_editor_class_init(AgsMidiCCEditorClass *midi_cc_editor);
-void ags_midi_cc_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_midi_cc_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor);
+static void ags_midi_cc_editor_class_init(AgsMidiCCEditorClass *midi_cc_editor);
+static void ags_midi_cc_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_midi_cc_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_midi_cc_editor_init(AgsMidiCCEditor *midi_cc_editor);
 
-gboolean ags_midi_cc_editor_is_connected(AgsConnectable *connectable);
-void ags_midi_cc_editor_connect(AgsConnectable *connectable);
-void ags_midi_cc_editor_disconnect(AgsConnectable *connectable);
+static gboolean ags_midi_cc_editor_is_connected(AgsConnectable *connectable);
+static void ags_midi_cc_editor_connect(AgsConnectable *connectable);
+static void ags_midi_cc_editor_disconnect(AgsConnectable *connectable);
 
-void ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
-					   AgsRecall *recall,
-					   guint midi2_channel,
-					   gchar *specifier);
-void ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
-					   AgsRecall *recall,
-					   guint32 midi2_group,
-					   guint32 midi2_channel,
-					   guint32 midi2_note,
-					   gchar *specifier);
+static void ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
+						  AgsRecall *recall,
+						  guint midi2_channel,
+						  gchar *specifier);
+static void ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
+						  AgsRecall *recall,
+						  guint32 midi2_group,
+						  guint32 midi2_channel,
+						  guint32 midi2_note,
+						  gchar *specifier);
 
-void ags_midi_cc_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_midi_cc_editor_apply(AgsApplicable *applicable);
-void ags_midi_cc_editor_reset(AgsApplicable *applicable);
+static void ags_midi_cc_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_midi_cc_editor_apply(AgsApplicable *applicable);
+static void ags_midi_cc_editor_reset(AgsApplicable *applicable);
 
-void ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor);
+static void ags_midi_cc_editor_load_port(AgsMidiCCEditor *midi_cc_editor);
 
 /**
  * SECTION:ags_midi_cc_editor

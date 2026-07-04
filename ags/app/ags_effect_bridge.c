@@ -25,29 +25,29 @@
 
 #include <ags/i18n.h>
 
-void ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge);
-void ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_effect_bridge_init(AgsEffectBridge *effect_bridge);
-void ags_effect_bridge_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_effect_bridge_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_effect_bridge_connect(AgsConnectable *connectable);
-void ags_effect_bridge_disconnect(AgsConnectable *connectable);
+static void ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge);
+static void ags_effect_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_effect_bridge_init(AgsEffectBridge *effect_bridge);
+static void ags_effect_bridge_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_effect_bridge_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_effect_bridge_connect(AgsConnectable *connectable);
+static void ags_effect_bridge_disconnect(AgsConnectable *connectable);
 
-void ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
-						  guint new_size, guint old_size);
-void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
-					GType channel_type,
-					guint new_size, guint old_size);
-void ags_effect_bridge_real_map_recall(AgsEffectBridge *effect_bridge);
-GList* ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge);
+static void ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
+							 guint new_size, guint old_size);
+static void ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
+					       GType channel_type,
+					       guint new_size, guint old_size);
+static void ags_effect_bridge_real_map_recall(AgsEffectBridge *effect_bridge);
+static GList* ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge);
 
-void ags_effect_bridge_real_refresh_port(AgsEffectBridge *effect_bridge);
+static void ags_effect_bridge_real_refresh_port(AgsEffectBridge *effect_bridge);
 
 /**
  * SECTION:ags_effect_bridge

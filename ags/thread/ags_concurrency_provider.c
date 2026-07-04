@@ -21,7 +21,7 @@
 
 #include <math.h>
 
-void ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *ginterface);
+static void ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *ginterface);
 
 /**
  * SECTION:ags_concurrency_provider

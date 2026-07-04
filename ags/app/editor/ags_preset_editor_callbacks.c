@@ -29,7 +29,7 @@
 
 #include <ags/i18n.h>
 
-void ags_preset_editor_open_response_callback(AgsFileDialog *file_dialog, gint response,
+static void ags_preset_editor_open_response_callback(AgsFileDialog *file_dialog, gint response,
 					      AgsPresetEditor *preset_editor);
 
 void

@@ -48,27 +48,27 @@
 
 #include <ags/i18n.h>
 
-void ags_config_class_init(AgsConfigClass *config_class);
-void ags_config_init(AgsConfig *config);
-void ags_config_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_config_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_config_dispose(GObject *gobject);
-void ags_config_finalize(GObject *gobject);
+static void ags_config_class_init(AgsConfigClass *config_class);
+static void ags_config_init(AgsConfig *config);
+static void ags_config_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_config_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_config_dispose(GObject *gobject);
+static void ags_config_finalize(GObject *gobject);
 
-gchar* ags_config_get_version(AgsConfig *config);
-void ags_config_set_version(AgsConfig *config, gchar *version);
-gchar* ags_config_get_build_id(AgsConfig *config);
-void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
+static gchar* ags_config_get_version(AgsConfig *config);
+static void ags_config_set_version(AgsConfig *config, gchar *version);
+static gchar* ags_config_get_build_id(AgsConfig *config);
+static void ags_config_set_build_id(AgsConfig *config, gchar *build_id);
 
-void ags_config_real_load_defaults(AgsConfig *config);
-void ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value);
-gchar* ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key);
+static void ags_config_real_load_defaults(AgsConfig *config);
+static void ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value);
+static gchar* ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key);
 
 /**
  * SECTION:ags_config
@@ -94,7 +94,7 @@ enum{
 static gpointer ags_config_parent_class = NULL;
 static guint config_signals[LAST_SIGNAL];
 
-AgsConfig *ags_config = NULL;
+static AgsConfig *ags_config = NULL;
 
 GType
 ags_config_get_type (void)

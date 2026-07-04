@@ -21,20 +21,20 @@
 
 #include <ags/object/ags_connectable.h>
 
-void ags_server_status_class_init(AgsServerStatusClass *server_status);
-void ags_server_status_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_server_status_init(AgsServerStatus *server_status);
-void ags_server_status_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_server_status_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_server_status_connect(AgsConnectable *connectable);
-void ags_server_status_disconnect(AgsConnectable *connectable);
-void ags_server_status_finalize(GObject *gobject);
+static void ags_server_status_class_init(AgsServerStatusClass *server_status);
+static void ags_server_status_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_server_status_init(AgsServerStatus *server_status);
+static void ags_server_status_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_server_status_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_server_status_connect(AgsConnectable *connectable);
+static void ags_server_status_disconnect(AgsConnectable *connectable);
+static void ags_server_status_finalize(GObject *gobject);
 
 enum{
   PROP_0,

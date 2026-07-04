@@ -24,13 +24,13 @@
 
 #include <ags/i18n.h>
 
-void ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator);
-void ags_fm_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator);
+static void ags_fm_oscillator_class_init(AgsFMOscillatorClass *fm_oscillator);
+static void ags_fm_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_fm_oscillator_init(AgsFMOscillator *fm_oscillator);
 
-gboolean ags_fm_oscillator_is_connected(AgsConnectable *connectable);
-void ags_fm_oscillator_connect(AgsConnectable *connectable);
-void ags_fm_oscillator_disconnect(AgsConnectable *connectable);
+static gboolean ags_fm_oscillator_is_connected(AgsConnectable *connectable);
+static void ags_fm_oscillator_connect(AgsConnectable *connectable);
+static void ags_fm_oscillator_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_fm_oscillator

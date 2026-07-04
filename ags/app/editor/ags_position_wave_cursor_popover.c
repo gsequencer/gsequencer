@@ -32,36 +32,36 @@
 
 #include <ags/i18n.h>
 
-void ags_position_wave_cursor_popover_class_init(AgsPositionWaveCursorPopoverClass *position_wave_cursor_popover);
-void ags_position_wave_cursor_popover_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_position_wave_cursor_popover_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_position_wave_cursor_popover_init(AgsPositionWaveCursorPopover *position_wave_cursor_popover);
-void ags_position_wave_cursor_popover_finalize(GObject *gobject);
+static void ags_position_wave_cursor_popover_class_init(AgsPositionWaveCursorPopoverClass *position_wave_cursor_popover);
+static void ags_position_wave_cursor_popover_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_position_wave_cursor_popover_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_position_wave_cursor_popover_init(AgsPositionWaveCursorPopover *position_wave_cursor_popover);
+static void ags_position_wave_cursor_popover_finalize(GObject *gobject);
 
-gboolean ags_position_wave_cursor_popover_is_connected(AgsConnectable *connectable);
-void ags_position_wave_cursor_popover_connect(AgsConnectable *connectable);
-void ags_position_wave_cursor_popover_disconnect(AgsConnectable *connectable);
+static gboolean ags_position_wave_cursor_popover_is_connected(AgsConnectable *connectable);
+static void ags_position_wave_cursor_popover_connect(AgsConnectable *connectable);
+static void ags_position_wave_cursor_popover_disconnect(AgsConnectable *connectable);
 
-void ags_position_wave_cursor_popover_set_update(AgsApplicable *applicable, gboolean update);
-void ags_position_wave_cursor_popover_apply(AgsApplicable *applicable);
-void ags_position_wave_cursor_popover_reset(AgsApplicable *applicable);
+static void ags_position_wave_cursor_popover_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_position_wave_cursor_popover_apply(AgsApplicable *applicable);
+static void ags_position_wave_cursor_popover_reset(AgsApplicable *applicable);
 
-gboolean ags_position_wave_cursor_popover_key_pressed_callback(GtkEventControllerKey *event_controller,
-							       guint keyval,
-							       guint keycode,
-							       GdkModifierType state,
-							       AgsPositionWaveCursorPopover *position_wave_cursor_popover);
-void ags_position_wave_cursor_popover_key_released_callback(GtkEventControllerKey *event_controller,
-							    guint keyval,
-							    guint keycode,
-							    GdkModifierType state,
-							    AgsPositionWaveCursorPopover *position_wave_cursor_popover);
-gboolean ags_position_wave_cursor_popover_modifiers_callback(GtkEventControllerKey *event_controller,
-							     GdkModifierType keyval,
-							     AgsPositionWaveCursorPopover *position_wave_cursor_popover);
+static gboolean ags_position_wave_cursor_popover_key_pressed_callback(GtkEventControllerKey *event_controller,
+								      guint keyval,
+								      guint keycode,
+								      GdkModifierType state,
+								      AgsPositionWaveCursorPopover *position_wave_cursor_popover);
+static void ags_position_wave_cursor_popover_key_released_callback(GtkEventControllerKey *event_controller,
+								   guint keyval,
+								   guint keycode,
+								   GdkModifierType state,
+								   AgsPositionWaveCursorPopover *position_wave_cursor_popover);
+static gboolean ags_position_wave_cursor_popover_modifiers_callback(GtkEventControllerKey *event_controller,
+								    GdkModifierType keyval,
+								    AgsPositionWaveCursorPopover *position_wave_cursor_popover);
 
-void ags_position_wave_cursor_popover_activate_button_callback(GtkButton *activate_button,
-							       AgsPositionWaveCursorPopover *position_wave_cursor_popover);
+static void ags_position_wave_cursor_popover_activate_button_callback(GtkButton *activate_button,
+								      AgsPositionWaveCursorPopover *position_wave_cursor_popover);
 
 /**
  * SECTION:ags_position_wave_cursor_popover

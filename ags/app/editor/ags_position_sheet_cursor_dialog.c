@@ -28,18 +28,18 @@
 
 #include <ags/i18n.h>
 
-void ags_position_sheet_cursor_dialog_class_init(AgsPositionSheetCursorDialogClass *position_sheet_cursor_dialog);
-void ags_position_sheet_cursor_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_position_sheet_cursor_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_position_sheet_cursor_dialog_init(AgsPositionSheetCursorDialog *position_sheet_cursor_dialog);
-void ags_position_sheet_cursor_dialog_finalize(GObject *gobject);
+static void ags_position_sheet_cursor_dialog_class_init(AgsPositionSheetCursorDialogClass *position_sheet_cursor_dialog);
+static void ags_position_sheet_cursor_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_position_sheet_cursor_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_position_sheet_cursor_dialog_init(AgsPositionSheetCursorDialog *position_sheet_cursor_dialog);
+static void ags_position_sheet_cursor_dialog_finalize(GObject *gobject);
 
-void ags_position_sheet_cursor_dialog_connect(AgsConnectable *connectable);
-void ags_position_sheet_cursor_dialog_disconnect(AgsConnectable *connectable);
+static void ags_position_sheet_cursor_dialog_connect(AgsConnectable *connectable);
+static void ags_position_sheet_cursor_dialog_disconnect(AgsConnectable *connectable);
 
-void ags_position_sheet_cursor_dialog_set_update(AgsApplicable *applicable, gboolean update);
-void ags_position_sheet_cursor_dialog_apply(AgsApplicable *applicable);
-void ags_position_sheet_cursor_dialog_reset(AgsApplicable *applicable);
+static void ags_position_sheet_cursor_dialog_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_position_sheet_cursor_dialog_apply(AgsApplicable *applicable);
+static void ags_position_sheet_cursor_dialog_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_position_sheet_cursor_dialog

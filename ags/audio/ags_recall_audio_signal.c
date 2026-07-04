@@ -23,19 +23,19 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signal);
-void ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal);
-void ags_recall_audio_signal_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_recall_audio_signal_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_recall_audio_signal_dispose(GObject *gobject);
-void ags_recall_audio_signal_finalize(GObject *gobject);
+static void ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signal);
+static void ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal);
+static void ags_recall_audio_signal_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_recall_audio_signal_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_recall_audio_signal_dispose(GObject *gobject);
+static void ags_recall_audio_signal_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recall_audio_signal

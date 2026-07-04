@@ -21,9 +21,9 @@
 
 #include <ags/server/security/ags_auth_security_context.h>
 
-void ags_business_group_manager_class_init(AgsBusinessGroupManagerClass *business_group_manager);
-void ags_business_group_manager_init (AgsBusinessGroupManager *business_group_manager);
-void ags_business_group_manager_finalize(GObject *gobject);
+static void ags_business_group_manager_class_init(AgsBusinessGroupManagerClass *business_group_manager);
+static void ags_business_group_manager_init (AgsBusinessGroupManager *business_group_manager);
+static void ags_business_group_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_business_group_manager
@@ -37,7 +37,7 @@ void ags_business_group_manager_finalize(GObject *gobject);
 
 static gpointer ags_business_group_manager_parent_class = NULL;
 
-AgsBusinessGroupManager *ags_business_group_manager = NULL;
+static AgsBusinessGroupManager *ags_business_group_manager = NULL;
 
 GType
 ags_business_group_manager_get_type (void)

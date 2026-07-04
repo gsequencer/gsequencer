@@ -29,18 +29,18 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency);
-void ags_recall_dependency_init(AgsRecallDependency *recall_dependency);
-void ags_recall_dependency_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_recall_dependency_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_recall_dependency_dispose(GObject *gobject);
-void ags_recall_dependency_finalize(GObject *gobject);
+static void ags_recall_dependency_class_init(AgsRecallDependencyClass *recall_dependency);
+static void ags_recall_dependency_init(AgsRecallDependency *recall_dependency);
+static void ags_recall_dependency_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_recall_dependency_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_recall_dependency_dispose(GObject *gobject);
+static void ags_recall_dependency_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recall_dependency

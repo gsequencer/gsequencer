@@ -21,7 +21,7 @@
 
 #include <math.h>
 
-void ags_plugin_base_init(AgsPluginInterface *ginterface);
+static void ags_plugin_base_init(AgsPluginInterface *ginterface);
 
 /**
  * SECTION:ags_plugin

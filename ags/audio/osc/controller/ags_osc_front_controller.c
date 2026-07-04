@@ -45,37 +45,37 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_controller);
-void ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller);
-void ags_osc_front_controller_set_property(GObject *gobject,
-					   guint prop_id,
-					   const GValue *value,
-					   GParamSpec *param_spec);
-void ags_osc_front_controller_get_property(GObject *gobject,
-					   guint prop_id,
-					   GValue *value,
-					   GParamSpec *param_spec);
-void ags_osc_front_controller_dispose(GObject *gobject);
-void ags_osc_front_controller_finalize(GObject *gobject);
+static void ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_controller);
+static void ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller);
+static void ags_osc_front_controller_set_property(GObject *gobject,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *param_spec);
+static void ags_osc_front_controller_get_property(GObject *gobject,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *param_spec);
+static void ags_osc_front_controller_dispose(GObject *gobject);
+static void ags_osc_front_controller_finalize(GObject *gobject);
 
-void* ags_osc_front_controller_delegate_thread(void *ptr);
+static void* ags_osc_front_controller_delegate_thread(void *ptr);
 
-void ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_controller);
-void ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_controller);
+static void ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_controller);
+static void ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_controller);
 
-gsize ags_osc_front_controller_read_bundle(AgsOscFrontController *osc_front_controller,
-					   AgsOscConnection *osc_connection,
-					   guchar *packet, gsize packet_size,
-					   gsize offset);
-gsize ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controller,
-					    AgsOscConnection *osc_connection,
-					    guchar *packet, gsize packet_size,
-					    gsize offset,
-					    gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
-
-gpointer ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
+static gsize ags_osc_front_controller_read_bundle(AgsOscFrontController *osc_front_controller,
 						  AgsOscConnection *osc_connection,
-						  guchar *packet, gsize packet_size);
+						  guchar *packet, gsize packet_size,
+						  gsize offset);
+static gsize ags_osc_front_controller_read_message(AgsOscFrontController *osc_front_controller,
+						   AgsOscConnection *osc_connection,
+						   guchar *packet, gsize packet_size,
+						   gsize offset,
+						   gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
+
+static gpointer ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
+							 AgsOscConnection *osc_connection,
+							 guchar *packet, gsize packet_size);
 
 /**
  * SECTION:ags_osc_front_controller

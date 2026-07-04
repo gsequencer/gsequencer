@@ -30,52 +30,52 @@
 
 #include <ags/i18n.h>
 
-void ags_ipatch_class_init(AgsIpatchClass *ipatch);
-void ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_container);
-void ags_ipatch_init(AgsIpatch *ipatch);
-void ags_ipatch_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_ipatch_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_ipatch_finalize(GObject *gobject);
+static void ags_ipatch_class_init(AgsIpatchClass *ipatch);
+static void ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_container);
+static void ags_ipatch_init(AgsIpatch *ipatch);
+static void ags_ipatch_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_ipatch_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_ipatch_finalize(GObject *gobject);
 
-AgsUUID* ags_ipatch_get_uuid(AgsConnectable *connectable);
-gboolean ags_ipatch_has_resource(AgsConnectable *connectable);
-gboolean ags_ipatch_is_ready(AgsConnectable *connectable);
-void ags_ipatch_add_to_registry(AgsConnectable *connectable);
-void ags_ipatch_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_ipatch_list_resource(AgsConnectable *connectable);
-xmlNode* ags_ipatch_xml_compose(AgsConnectable *connectable);
-void ags_ipatch_xml_parse(AgsConnectable *connectable,
-			  xmlNode *node);
-gboolean ags_ipatch_is_connected(AgsConnectable *connectable);
-void ags_ipatch_connect(AgsConnectable *connectable);
-void ags_ipatch_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_ipatch_get_uuid(AgsConnectable *connectable);
+static gboolean ags_ipatch_has_resource(AgsConnectable *connectable);
+static gboolean ags_ipatch_is_ready(AgsConnectable *connectable);
+static void ags_ipatch_add_to_registry(AgsConnectable *connectable);
+static void ags_ipatch_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_ipatch_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_ipatch_xml_compose(AgsConnectable *connectable);
+static void ags_ipatch_xml_parse(AgsConnectable *connectable,
+				 xmlNode *node);
+static gboolean ags_ipatch_is_connected(AgsConnectable *connectable);
+static void ags_ipatch_connect(AgsConnectable *connectable);
+static void ags_ipatch_disconnect(AgsConnectable *connectable);
 
-gboolean ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename);
-guint ags_ipatch_get_level_count(AgsSoundContainer *sound_container);
-guint ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container);
-gchar* ags_ipatch_get_level_id(AgsSoundContainer *sound_container);
-guint ags_ipatch_get_level_index(AgsSoundContainer *sound_container);
-guint ags_ipatch_level_up(AgsSoundContainer *sound_container,
-			  guint level_count);
-guint ags_ipatch_select_level_by_id(AgsSoundContainer *sound_container,
-				    gchar *level_id);
-guint ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
-				       guint level_index);
+static gboolean ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename);
+static guint ags_ipatch_get_level_count(AgsSoundContainer *sound_container);
+static guint ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container);
+static gchar* ags_ipatch_get_level_id(AgsSoundContainer *sound_container);
+static guint ags_ipatch_get_level_index(AgsSoundContainer *sound_container);
+static guint ags_ipatch_level_up(AgsSoundContainer *sound_container,
+				 guint level_count);
+static guint ags_ipatch_select_level_by_id(AgsSoundContainer *sound_container,
+					   gchar *level_id);
+static guint ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
+					      guint level_index);
 gchar** ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container);
-GList* ags_ipatch_get_resource_all(AgsSoundContainer *sound_container);
-GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
-				       gchar *resource_name);
-GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
-					guint resource_index);
-GList* ags_ipatch_get_resource_current(AgsSoundContainer *sound_container);
-void ags_ipatch_close(AgsSoundContainer *sound_container);
+static GList* ags_ipatch_get_resource_all(AgsSoundContainer *sound_container);
+static GList* ags_ipatch_get_resource_by_name(AgsSoundContainer *sound_container,
+					      gchar *resource_name);
+static GList* ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
+					       guint resource_index);
+static GList* ags_ipatch_get_resource_current(AgsSoundContainer *sound_container);
+static void ags_ipatch_close(AgsSoundContainer *sound_container);
 
 /**
  * SECTION:ags_ipatch

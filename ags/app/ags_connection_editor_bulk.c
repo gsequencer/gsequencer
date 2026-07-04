@@ -25,18 +25,18 @@
 
 #include <ags/i18n.h>
 
-void ags_connection_editor_bulk_class_init(AgsConnectionEditorBulkClass *connection_editor_bulk);
-void ags_connection_editor_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_connection_editor_bulk_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk);
-void ags_connection_editor_bulk_dispose(GObject *gobject);
+static void ags_connection_editor_bulk_class_init(AgsConnectionEditorBulkClass *connection_editor_bulk);
+static void ags_connection_editor_bulk_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_connection_editor_bulk_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_connection_editor_bulk_init(AgsConnectionEditorBulk *connection_editor_bulk);
+static void ags_connection_editor_bulk_dispose(GObject *gobject);
 
-void ags_connection_editor_bulk_connect(AgsConnectable *connectable);
-void ags_connection_editor_bulk_disconnect(AgsConnectable *connectable);
+static void ags_connection_editor_bulk_connect(AgsConnectable *connectable);
+static void ags_connection_editor_bulk_disconnect(AgsConnectable *connectable);
 
-void ags_connection_editor_bulk_set_update(AgsApplicable *applicable, gboolean update);
-void ags_connection_editor_bulk_apply(AgsApplicable *applicable);
-void ags_connection_editor_bulk_reset(AgsApplicable *applicable);
+static void ags_connection_editor_bulk_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_connection_editor_bulk_apply(AgsApplicable *applicable);
+static void ags_connection_editor_bulk_reset(AgsApplicable *applicable);
 
 static gpointer ags_connection_editor_bulk_parent_class = NULL;
 

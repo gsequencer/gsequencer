@@ -28,42 +28,42 @@
 
 #include <ags/i18n.h>
 
-void ags_recycling_class_init(AgsRecyclingClass *recycling_class);
-void ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recycling_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_recycling_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_recycling_init(AgsRecycling *recycling);
-void ags_recycling_dispose(GObject *gobject);
-void ags_recycling_finalize(GObject *gobject);
+static void ags_recycling_class_init(AgsRecyclingClass *recycling_class);
+static void ags_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recycling_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_recycling_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_recycling_init(AgsRecycling *recycling);
+static void ags_recycling_dispose(GObject *gobject);
+static void ags_recycling_finalize(GObject *gobject);
 
-AgsUUID* ags_recycling_get_uuid(AgsConnectable *connectable);
-gboolean ags_recycling_has_resource(AgsConnectable *connectable);
-gboolean ags_recycling_is_ready(AgsConnectable *connectable);
-void ags_recycling_add_to_registry(AgsConnectable *connectable);
-void ags_recycling_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_recycling_list_resource(AgsConnectable *connectable);
-xmlNode* ags_recycling_xml_compose(AgsConnectable *connectable);
-void ags_recycling_xml_parse(AgsConnectable *connectable,
-			     xmlNode *node);
-gboolean ags_recycling_is_connected(AgsConnectable *connectable);
-void ags_recycling_connect(AgsConnectable *connectable);
-void ags_recycling_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_recycling_get_uuid(AgsConnectable *connectable);
+static gboolean ags_recycling_has_resource(AgsConnectable *connectable);
+static gboolean ags_recycling_is_ready(AgsConnectable *connectable);
+static void ags_recycling_add_to_registry(AgsConnectable *connectable);
+static void ags_recycling_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_recycling_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_recycling_xml_compose(AgsConnectable *connectable);
+static void ags_recycling_xml_parse(AgsConnectable *connectable,
+				    xmlNode *node);
+static gboolean ags_recycling_is_connected(AgsConnectable *connectable);
+static void ags_recycling_connect(AgsConnectable *connectable);
+static void ags_recycling_disconnect(AgsConnectable *connectable);
 
-void ags_recycling_real_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard);
+static void ags_recycling_real_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard);
 
-void ags_recycling_real_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard);
+static void ags_recycling_real_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard);
 
-void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
-					 AgsAudioSignal *audio_signal);
+static void ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
+						AgsAudioSignal *audio_signal);
 
-void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
-					    AgsAudioSignal *audio_signal);
+static void ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
+						   AgsAudioSignal *audio_signal);
 
 /**
  * SECTION:ags_recycling

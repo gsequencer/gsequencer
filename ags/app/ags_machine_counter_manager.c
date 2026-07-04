@@ -64,10 +64,10 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_counter_manager_class_init(AgsMachineCounterManagerClass *machine_counter_manager);
-void ags_machine_counter_manager_init (AgsMachineCounterManager *machine_counter_manager);
-void ags_machine_counter_manager_dispose(GObject *gobject);
-void ags_machine_counter_manager_finalize(GObject *gobject);
+static void ags_machine_counter_manager_class_init(AgsMachineCounterManagerClass *machine_counter_manager);
+static void ags_machine_counter_manager_init (AgsMachineCounterManager *machine_counter_manager);
+static void ags_machine_counter_manager_dispose(GObject *gobject);
+static void ags_machine_counter_manager_finalize(GObject *gobject);
 
 static gpointer ags_machine_counter_manager_parent_class = NULL;
 

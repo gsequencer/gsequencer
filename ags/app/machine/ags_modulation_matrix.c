@@ -42,16 +42,16 @@
 
 #include <ags/i18n.h>
 
-void ags_modulation_matrix_class_init(AgsModulationMatrixClass *modulation_matrix);
-void ags_modulation_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix);
-void ags_modulation_matrix_finalize(GObject *gobject);
+static void ags_modulation_matrix_class_init(AgsModulationMatrixClass *modulation_matrix);
+static void ags_modulation_matrix_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix);
+static void ags_modulation_matrix_finalize(GObject *gobject);
 
-gboolean ags_modulation_matrix_is_connected(AgsConnectable *connectable);
-void ags_modulation_matrix_connect(AgsConnectable *connectable);
-void ags_modulation_matrix_disconnect(AgsConnectable *connectable);
+static gboolean ags_modulation_matrix_is_connected(AgsConnectable *connectable);
+static void ags_modulation_matrix_connect(AgsConnectable *connectable);
+static void ags_modulation_matrix_disconnect(AgsConnectable *connectable);
 
-void ags_modulation_matrix_show(GtkWidget *widget);
+static void ags_modulation_matrix_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_modulation_matrix

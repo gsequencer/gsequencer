@@ -54,25 +54,25 @@
 
 #include <ags/i18n.h>
 
-void ags_track_mapper_class_init(AgsTrackMapperClass *track_mapper);
-void ags_track_mapper_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_track_mapper_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_track_mapper_init(AgsTrackMapper *track_mapper);
-void ags_track_mapper_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_track_mapper_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
+static void ags_track_mapper_class_init(AgsTrackMapperClass *track_mapper);
+static void ags_track_mapper_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_track_mapper_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_track_mapper_init(AgsTrackMapper *track_mapper);
+static void ags_track_mapper_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_track_mapper_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
 
-void ags_track_mapper_connect(AgsConnectable *connectable);
-void ags_track_mapper_disconnect(AgsConnectable *connectable);
+static void ags_track_mapper_connect(AgsConnectable *connectable);
+static void ags_track_mapper_disconnect(AgsConnectable *connectable);
 
-void ags_track_mapper_set_update(AgsApplicable *applicable, gboolean update);
-void ags_track_mapper_apply(AgsApplicable *applicable);
-void ags_track_mapper_reset(AgsApplicable *applicable);
+static void ags_track_mapper_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_track_mapper_apply(AgsApplicable *applicable);
+static void ags_track_mapper_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_track_mapper

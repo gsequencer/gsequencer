@@ -29,14 +29,14 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_export_controller_class_init(AgsOscExportControllerClass *osc_export_controller);
-void ags_osc_export_controller_init(AgsOscExportController *osc_export_controller);
-void ags_osc_export_controller_dispose(GObject *gobject);
-void ags_osc_export_controller_finalize(GObject *gobject);
+static void ags_osc_export_controller_class_init(AgsOscExportControllerClass *osc_export_controller);
+static void ags_osc_export_controller_init(AgsOscExportController *osc_export_controller);
+static void ags_osc_export_controller_dispose(GObject *gobject);
+static void ags_osc_export_controller_finalize(GObject *gobject);
 
-gpointer ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_controller,
-						  AgsOscConnection *osc_connection,
-						  guchar *message, guint message_size);
+static gpointer ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_controller,
+							 AgsOscConnection *osc_connection,
+							 guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_export_controller

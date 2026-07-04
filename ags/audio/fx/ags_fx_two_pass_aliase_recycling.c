@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_two_pass_aliase_recycling_class_init(AgsFxTwoPassAliaseRecyclingClass *fx_two_pass_aliase_recycling);
-void ags_fx_two_pass_aliase_recycling_init(AgsFxTwoPassAliaseRecycling *fx_two_pass_aliase_recycling);
-void ags_fx_two_pass_aliase_recycling_dispose(GObject *gobject);
-void ags_fx_two_pass_aliase_recycling_finalize(GObject *gobject);
+static void ags_fx_two_pass_aliase_recycling_class_init(AgsFxTwoPassAliaseRecyclingClass *fx_two_pass_aliase_recycling);
+static void ags_fx_two_pass_aliase_recycling_init(AgsFxTwoPassAliaseRecycling *fx_two_pass_aliase_recycling);
+static void ags_fx_two_pass_aliase_recycling_dispose(GObject *gobject);
+static void ags_fx_two_pass_aliase_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_two_pass_aliase_recycling

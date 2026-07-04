@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_analyse_audio_class_init(AgsFxAnalyseAudioClass *fx_analyse_audio);
-void ags_fx_analyse_audio_init(AgsFxAnalyseAudio *fx_analyse_audio);
-void ags_fx_analyse_audio_dispose(GObject *gobject);
-void ags_fx_analyse_audio_finalize(GObject *gobject);
+static void ags_fx_analyse_audio_class_init(AgsFxAnalyseAudioClass *fx_analyse_audio);
+static void ags_fx_analyse_audio_init(AgsFxAnalyseAudio *fx_analyse_audio);
+static void ags_fx_analyse_audio_dispose(GObject *gobject);
+static void ags_fx_analyse_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_analyse_audio

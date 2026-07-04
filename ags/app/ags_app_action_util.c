@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -124,20 +124,20 @@ static locale_t c_utf8_locale;
 
 static gboolean locale_initialized = FALSE;
 
-void ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
-						gint response,
-						gpointer data);
+static void ags_app_action_util_open_response_callback(AgsFileDialog *file_dialog,
+						       gint response,
+						       gpointer data);
 
-void ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
-						   gint response,
-						   gpointer data);
+static void ags_app_action_util_save_as_response_callback(AgsFileDialog *file_dialog,
+							  gint response,
+							  gpointer data);
 
 #if defined(AGS_WITH_VST3)
-void ags_app_action_util_add_vst3_bridge_add_audio_callback(AgsTask *task,
-							    AgsVst3Bridge *vst3_bridge);
+static void ags_app_action_util_add_vst3_bridge_add_audio_callback(AgsTask *task,
+								   AgsVst3Bridge *vst3_bridge);
 
-void ags_app_action_util_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
-								 AgsLiveVst3Bridge *live_vst3_bridge);
+static void ags_app_action_util_add_live_vst3_bridge_add_audio_callback(AgsTask *task,
+									AgsLiveVst3Bridge *live_vst3_bridge);
 #endif
 
 void
