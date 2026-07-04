@@ -41,11 +41,11 @@
 #include <ags/audio/ags_fluid_util.h>
 
 /* Linear interpolation table (2 coefficients centered on 1st) */
-gboolean interp_coeff_linear_initialized = FALSE;
+static gboolean interp_coeff_linear_initialized = FALSE;
 
-gdouble interp_coeff_linear[AGS_FLUID_INTERP_MAX][2];
+static gdouble interp_coeff_linear[AGS_FLUID_INTERP_MAX][2];
 
-GMutex interp_coeff_linear_mutex;
+static GMutex interp_coeff_linear_mutex;
 
 /**
  * SECTION:ags_fluid_interpolate_linear_util
