@@ -21,14 +21,14 @@
 
 #include <gdk/gdk.h>
 
-void ags_simple_file_read_class_init(AgsSimpleFileReadClass *simple_file_read);
-void ags_simple_file_read_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_simple_file_read_init(AgsSimpleFileRead *simple_file_read);
-void ags_simple_file_read_connect(AgsConnectable *connectable);
-void ags_simple_file_read_disconnect(AgsConnectable *connectable);
-void ags_simple_file_read_finalize(GObject *gobject);
+static void ags_simple_file_read_class_init(AgsSimpleFileReadClass *simple_file_read);
+static void ags_simple_file_read_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_simple_file_read_init(AgsSimpleFileRead *simple_file_read);
+static void ags_simple_file_read_connect(AgsConnectable *connectable);
+static void ags_simple_file_read_disconnect(AgsConnectable *connectable);
+static void ags_simple_file_read_finalize(GObject *gobject);
 
-void ags_simple_file_read_launch(AgsTask *task);
+static void ags_simple_file_read_launch(AgsTask *task);
 
 /**
  * SECTION:ags_simple_file_read

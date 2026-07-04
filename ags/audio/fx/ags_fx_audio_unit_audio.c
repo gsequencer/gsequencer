@@ -49,51 +49,51 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_audio_unit_audio_class_init(AgsFxAudioUnitAudioClass *fx_audio_unit_audio);
-void ags_fx_audio_unit_audio_init(AgsFxAudioUnitAudio *fx_audio_unit_audio);
-void ags_fx_audio_unit_audio_dispose(GObject *gobject);
-void ags_fx_audio_unit_audio_finalize(GObject *gobject);
+static void ags_fx_audio_unit_audio_class_init(AgsFxAudioUnitAudioClass *fx_audio_unit_audio);
+static void ags_fx_audio_unit_audio_init(AgsFxAudioUnitAudio *fx_audio_unit_audio);
+static void ags_fx_audio_unit_audio_dispose(GObject *gobject);
+static void ags_fx_audio_unit_audio_finalize(GObject *gobject);
 
-void ags_fx_audio_unit_audio_notify_audio_callback(GObject *gobject,
-						   GParamSpec *pspec,
-						   gpointer user_data);
-void ags_fx_audio_unit_audio_notify_filename_callback(GObject *gobject,
-						      GParamSpec *pspec,
-						      gpointer user_data);
-void ags_fx_audio_unit_audio_notify_effect_callback(GObject *gobject,
-						    GParamSpec *pspec,
-						    gpointer user_data);
-void ags_fx_audio_unit_audio_notify_buffer_size_callback(GObject *gobject,
-							 GParamSpec *pspec,
-							 gpointer user_data);
-void ags_fx_audio_unit_audio_notify_samplerate_callback(GObject *gobject,
-							GParamSpec *pspec,
-							gpointer user_data);
+static void ags_fx_audio_unit_audio_notify_audio_callback(GObject *gobject,
+							  GParamSpec *pspec,
+							  gpointer user_data);
+static void ags_fx_audio_unit_audio_notify_filename_callback(GObject *gobject,
+							     GParamSpec *pspec,
+							     gpointer user_data);
+static void ags_fx_audio_unit_audio_notify_effect_callback(GObject *gobject,
+							   GParamSpec *pspec,
+							   gpointer user_data);
+static void ags_fx_audio_unit_audio_notify_buffer_size_callback(GObject *gobject,
+								GParamSpec *pspec,
+								gpointer user_data);
+static void ags_fx_audio_unit_audio_notify_samplerate_callback(GObject *gobject,
+							       GParamSpec *pspec,
+							       gpointer user_data);
 
-void ags_fx_audio_unit_audio_set_audio_channels_callback(AgsAudio *audio,
-							 guint audio_channels, guint audio_channels_old,
-							 AgsFxAudioUnitAudio *fx_audio_unit_audio);
-void ags_fx_audio_unit_audio_set_pads_callback(AgsAudio *audio,
-					       GType channel_type,
-					       guint pads, guint pads_old,
-					       AgsFxAudioUnitAudio *fx_audio_unit_audio);
-
-void ags_fx_audio_unit_audio_scope_data_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio,
-						    AgsFxAudioUnitAudioScopeData *scope_data);
-
-void ags_fx_audio_unit_audio_port_safe_write_callback(AgsPort *port,
-						      GValue *value,
+static void ags_fx_audio_unit_audio_set_audio_channels_callback(AgsAudio *audio,
+								guint audio_channels, guint audio_channels_old,
+								AgsFxAudioUnitAudio *fx_audio_unit_audio);
+static void ags_fx_audio_unit_audio_set_pads_callback(AgsAudio *audio,
+						      GType channel_type,
+						      guint pads, guint pads_old,
 						      AgsFxAudioUnitAudio *fx_audio_unit_audio);
 
-void ags_fx_audio_unit_audio_scope_data_load_port(AgsFxAudioUnitAudio *fx_audio_unit_audio,
-						  AgsFxAudioUnitAudioScopeData *scope_data);
+static void ags_fx_audio_unit_audio_scope_data_load_plugin(AgsFxAudioUnitAudio *fx_audio_unit_audio,
+							   AgsFxAudioUnitAudioScopeData *scope_data);
 
-void* ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data);
+static void ags_fx_audio_unit_audio_port_safe_write_callback(AgsPort *port,
+							     GValue *value,
+							     AgsFxAudioUnitAudio *fx_audio_unit_audio);
 
-gboolean ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio);
-GList* ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_unit_audio);
+static void ags_fx_audio_unit_audio_scope_data_load_port(AgsFxAudioUnitAudio *fx_audio_unit_audio,
+							 AgsFxAudioUnitAudioScopeData *scope_data);
 
-void* ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data);
+static void* ags_fx_audio_unit_audio_render_thread_loop_mono(gpointer data);
+
+static gboolean ags_fx_audio_unit_audio_is_stereo_ready(AgsFxAudioUnitAudio *fx_audio_unit_audio);
+static GList* ags_fx_audio_unit_audio_pull_stereo_iterate_data(AgsFxAudioUnitAudio *fx_audio_unit_audio);
+
+static void* ags_fx_audio_unit_audio_render_thread_loop_stereo(gpointer data);
 
 /**
  * SECTION:ags_fx_audio_unit_audio
@@ -124,13 +124,13 @@ __thread guint ags_fx_audio_unit_iterate_sub_block = 0;
 
 static gpointer ags_fx_audio_unit_audio_parent_class = NULL;
 
-const gchar *ags_fx_audio_unit_audio_plugin_name = "ags-fx-audio-unit";
+static const gchar *ags_fx_audio_unit_audio_plugin_name = "ags-fx-audio-unit";
 
-const gchar *ags_fx_audio_unit_audio_specifier[] = {
+static const gchar *ags_fx_audio_unit_audio_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_audio_unit_audio_control_port[] = {
+static const gchar *ags_fx_audio_unit_audio_control_port[] = {
   NULL,
 };
 
@@ -3854,6 +3854,7 @@ ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_au
 /**
  * ags_fx_audio_unit_audio_render_thread_iteration:
  * @fx_audio_unit_audio: the #AgsFxAudioUnitAudio
+ * @channel_data: the #AgsFxAudioUnitAudioChannelData-struct
  * @audio_signal: the #AgsAudioSignal
  * @pad: the pad
  * @audio_channel: the audio channel

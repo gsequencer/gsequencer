@@ -26,7 +26,7 @@
 
 #include <ags/i18n.h>
 
-void ags_audiorec_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
+static void ags_audiorec_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
 					 AgsAudiorec *audiorec);
 
 void

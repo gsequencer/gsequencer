@@ -32,20 +32,20 @@
 
 #include <ags/i18n.h>
 
-void ags_sfz_instrument_loader_class_init(AgsSFZInstrumentLoaderClass *sfz_instrument_loader);
-void ags_sfz_instrument_loader_init(AgsSFZInstrumentLoader *sfz_instrument_loader);
-void ags_sfz_instrument_loader_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec);
-void ags_sfz_instrument_loader_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec);
-void ags_sfz_instrument_loader_dispose(GObject *gobject);
-void ags_sfz_instrument_loader_finalize(GObject *gobject);
+static void ags_sfz_instrument_loader_class_init(AgsSFZInstrumentLoaderClass *sfz_instrument_loader);
+static void ags_sfz_instrument_loader_init(AgsSFZInstrumentLoader *sfz_instrument_loader);
+static void ags_sfz_instrument_loader_set_property(GObject *gobject,
+						   guint prop_id,
+						   const GValue *value,
+						   GParamSpec *param_spec);
+static void ags_sfz_instrument_loader_get_property(GObject *gobject,
+						   guint prop_id,
+						   GValue *value,
+						   GParamSpec *param_spec);
+static void ags_sfz_instrument_loader_dispose(GObject *gobject);
+static void ags_sfz_instrument_loader_finalize(GObject *gobject);
 
-void* ags_sfz_instrument_loader_run(void *ptr);
+static void* ags_sfz_instrument_loader_run(void *ptr);
 
 /**
  * SECTION:ags_sfz_instrument_loader

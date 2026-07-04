@@ -32,15 +32,15 @@
 
 #include <ags/i18n.h>
 
-void ags_mixer_class_init(AgsMixerClass *mixer);
-void ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_mixer_init(AgsMixer *mixer);
-void ags_mixer_finalize(GObject *gobject);
+static void ags_mixer_class_init(AgsMixerClass *mixer);
+static void ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_mixer_init(AgsMixer *mixer);
+static void ags_mixer_finalize(GObject *gobject);
 
-void ags_mixer_connect(AgsConnectable *connectable);
-void ags_mixer_disconnect(AgsConnectable *connectable);
+static void ags_mixer_connect(AgsConnectable *connectable);
+static void ags_mixer_disconnect(AgsConnectable *connectable);
 
-void ags_mixer_map_recall(AgsMachine *machine);
+static void ags_mixer_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_mixer

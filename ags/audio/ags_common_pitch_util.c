@@ -19,8 +19,8 @@
 
 #include <ags/audio/ags_common_pitch_util.h>
 
-gpointer ags_common_pitch_util_copy(AgsCommonPitchUtil *ptr);
-void ags_common_pitch_util_free(AgsCommonPitchUtil *ptr);
+static gpointer ags_common_pitch_util_copy(AgsCommonPitchUtil *ptr);
+static void ags_common_pitch_util_free(AgsCommonPitchUtil *ptr);
 
 GType
 ags_common_pitch_util_get_type(void)

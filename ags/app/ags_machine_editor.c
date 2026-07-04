@@ -24,28 +24,28 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
-void ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_machine_editor_init(AgsMachineEditor *machine_editor);
-void ags_machine_editor_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_machine_editor_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
+static void ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor);
+static void ags_machine_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_machine_editor_init(AgsMachineEditor *machine_editor);
+static void ags_machine_editor_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_machine_editor_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
 
-gboolean ags_machine_editor_is_connected(AgsConnectable *connectable);
-void ags_machine_editor_connect(AgsConnectable *connectable);
-void ags_machine_editor_disconnect(AgsConnectable *connectable);
+static gboolean ags_machine_editor_is_connected(AgsConnectable *connectable);
+static void ags_machine_editor_connect(AgsConnectable *connectable);
+static void ags_machine_editor_disconnect(AgsConnectable *connectable);
 
-void ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_machine_editor_apply(AgsApplicable *applicable);
-void ags_machine_editor_reset(AgsApplicable *applicable);
+static void ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_machine_editor_apply(AgsApplicable *applicable);
+static void ags_machine_editor_reset(AgsApplicable *applicable);
 
-void ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor,
+static void ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor,
 					 AgsMachine *machine);
 
 /**

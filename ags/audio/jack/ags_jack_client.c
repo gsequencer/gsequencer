@@ -37,37 +37,37 @@
 
 #include <ags/i18n.h>
 
-void ags_jack_client_class_init(AgsJackClientClass *jack_client);
-void ags_jack_client_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_jack_client_init(AgsJackClient *jack_client);
-void ags_jack_client_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_jack_client_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_jack_client_dispose(GObject *gobject);
-void ags_jack_client_finalize(GObject *gobject);
+static void ags_jack_client_class_init(AgsJackClientClass *jack_client);
+static void ags_jack_client_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_jack_client_init(AgsJackClient *jack_client);
+static void ags_jack_client_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_jack_client_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_jack_client_dispose(GObject *gobject);
+static void ags_jack_client_finalize(GObject *gobject);
 
-AgsUUID* ags_jack_client_get_uuid(AgsConnectable *connectable);
-gboolean ags_jack_client_has_resource(AgsConnectable *connectable);
-gboolean ags_jack_client_is_ready(AgsConnectable *connectable);
-void ags_jack_client_add_to_registry(AgsConnectable *connectable);
-void ags_jack_client_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_jack_client_list_resource(AgsConnectable *connectable);
-xmlNode* ags_jack_client_xml_compose(AgsConnectable *connectable);
-void ags_jack_client_xml_parse(AgsConnectable *connectable,
-			       xmlNode *node);
-gboolean ags_jack_client_is_connected(AgsConnectable *connectable);
-void ags_jack_client_connect(AgsConnectable *connectable);
-void ags_jack_client_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_jack_client_get_uuid(AgsConnectable *connectable);
+static gboolean ags_jack_client_has_resource(AgsConnectable *connectable);
+static gboolean ags_jack_client_is_ready(AgsConnectable *connectable);
+static void ags_jack_client_add_to_registry(AgsConnectable *connectable);
+static void ags_jack_client_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_jack_client_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_jack_client_xml_compose(AgsConnectable *connectable);
+static void ags_jack_client_xml_parse(AgsConnectable *connectable,
+				      xmlNode *node);
+static gboolean ags_jack_client_is_connected(AgsConnectable *connectable);
+static void ags_jack_client_connect(AgsConnectable *connectable);
+static void ags_jack_client_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_JACK
-void ags_jack_client_shutdown(void *arg);
-int ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr);
-int ags_jack_client_xrun_callback(void *ptr);
+static void ags_jack_client_shutdown(void *arg);
+static int ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr);
+static int ags_jack_client_xrun_callback(void *ptr);
 #endif
 
 /**

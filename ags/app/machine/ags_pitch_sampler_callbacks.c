@@ -26,7 +26,7 @@
 
 #include <ags/i18n.h>
 
-void ags_pitch_sampler_open_response_callback(AgsFileDialog *file_dialog, gint response,
+static void ags_pitch_sampler_open_response_callback(AgsFileDialog *file_dialog, gint response,
 					      AgsPitchSampler *pitch_sampler);
 
 void

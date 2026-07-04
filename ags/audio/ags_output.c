@@ -21,9 +21,9 @@
 
 #include <ags/audio/ags_audio.h>
 
-void ags_output_class_init(AgsOutputClass *output_class);
-void ags_output_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_output_init(AgsOutput *output);
+static void ags_output_class_init(AgsOutputClass *output_class);
+static void ags_output_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_output_init(AgsOutput *output);
 
 /**
  * SECTION:ags_output

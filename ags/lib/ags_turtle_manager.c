@@ -21,10 +21,10 @@
 
 #include <ags/lib/ags_turtle.h>
 
-void ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager);
-void ags_turtle_manager_init (AgsTurtleManager *turtle_manager);
-void ags_turtle_manager_dispose(GObject *gobject);
-void ags_turtle_manager_finalize(GObject *gobject);
+static void ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager);
+static void ags_turtle_manager_init (AgsTurtleManager *turtle_manager);
+static void ags_turtle_manager_dispose(GObject *gobject);
+static void ags_turtle_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_turtle_manager
@@ -38,7 +38,7 @@ void ags_turtle_manager_finalize(GObject *gobject);
 
 static gpointer ags_turtle_manager_parent_class = NULL;
 
-AgsTurtleManager *ags_turtle_manager = NULL;
+static AgsTurtleManager *ags_turtle_manager = NULL;
 
 GType
 ags_turtle_manager_get_type (void)

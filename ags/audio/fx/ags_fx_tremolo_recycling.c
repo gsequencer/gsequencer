@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_tremolo_recycling_class_init(AgsFxTremoloRecyclingClass *fx_tremolo_recycling);
-void ags_fx_tremolo_recycling_init(AgsFxTremoloRecycling *fx_tremolo_recycling);
-void ags_fx_tremolo_recycling_dispose(GObject *gobject);
-void ags_fx_tremolo_recycling_finalize(GObject *gobject);
+static void ags_fx_tremolo_recycling_class_init(AgsFxTremoloRecyclingClass *fx_tremolo_recycling);
+static void ags_fx_tremolo_recycling_init(AgsFxTremoloRecycling *fx_tremolo_recycling);
+static void ags_fx_tremolo_recycling_dispose(GObject *gobject);
+static void ags_fx_tremolo_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_tremolo_recycling
@@ -40,7 +40,7 @@ void ags_fx_tremolo_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_tremolo_recycling_parent_class = NULL;
 
-const gchar *ags_fx_tremolo_recycling_plugin_name = "ags-fx-tremolo";
+static const gchar *ags_fx_tremolo_recycling_plugin_name = "ags-fx-tremolo";
 
 GType
 ags_fx_tremolo_recycling_get_type()

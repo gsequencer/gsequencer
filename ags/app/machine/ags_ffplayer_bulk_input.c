@@ -20,15 +20,15 @@
 #include <ags/app/machine/ags_ffplayer_bulk_input.h>
 #include <ags/app/machine/ags_ffplayer_bulk_input_callbacks.h>
 
-void ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input);
-void ags_ffplayer_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input);
+static void ags_ffplayer_bulk_input_class_init(AgsFFPlayerBulkInputClass *ffplayer_bulk_input);
+static void ags_ffplayer_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ffplayer_bulk_input_init(AgsFFPlayerBulkInput *ffplayer_bulk_input);
 static void ags_ffplayer_bulk_input_finalize(GObject *gobject);
 
-void ags_ffplayer_bulk_input_connect(AgsConnectable *connectable);
-void ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable);
+static void ags_ffplayer_bulk_input_connect(AgsConnectable *connectable);
+static void ags_ffplayer_bulk_input_disconnect(AgsConnectable *connectable);
 
-void ags_ffplayer_bulk_input_map_recall(AgsEffectBulk *effect_bulk);
+static void ags_ffplayer_bulk_input_map_recall(AgsEffectBulk *effect_bulk);
 
 /**
  * SECTION:ags_ffplayer_bulk_input

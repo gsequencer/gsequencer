@@ -26,24 +26,24 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio);
-void ags_recall_audio_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_audio_init(AgsRecallAudio *recall_audio);
-void ags_recall_audio_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_recall_audio_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_recall_audio_dispose(GObject *gobject);
-void ags_recall_audio_finalize(GObject *gobject);
+static void ags_recall_audio_class_init(AgsRecallAudioClass *recall_audio);
+static void ags_recall_audio_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_audio_init(AgsRecallAudio *recall_audio);
+static void ags_recall_audio_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_recall_audio_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_recall_audio_dispose(GObject *gobject);
+static void ags_recall_audio_finalize(GObject *gobject);
 
-void ags_recall_audio_automate(AgsRecall *recall);
-AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
-				      AgsRecallID *recall_id,
-				      guint *n_params, gchar **parameter_name, GValue *value);
+static void ags_recall_audio_automate(AgsRecall *recall);
+static AgsRecall* ags_recall_audio_duplicate(AgsRecall *recall,
+					     AgsRecallID *recall_id,
+					     guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_recall_audio

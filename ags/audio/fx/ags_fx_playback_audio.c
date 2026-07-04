@@ -21,18 +21,18 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio);
-void ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio);
-void ags_fx_playback_audio_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_fx_playback_audio_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_fx_playback_audio_dispose(GObject *gobject);
-void ags_fx_playback_audio_finalize(GObject *gobject);
+static void ags_fx_playback_audio_class_init(AgsFxPlaybackAudioClass *fx_playback_audio);
+static void ags_fx_playback_audio_init(AgsFxPlaybackAudio *fx_playback_audio);
+static void ags_fx_playback_audio_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_fx_playback_audio_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_fx_playback_audio_dispose(GObject *gobject);
+static void ags_fx_playback_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_playback_audio
@@ -46,9 +46,9 @@ void ags_fx_playback_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_playback_audio_parent_class = NULL;
 
-const gchar *ags_fx_playback_audio_plugin_name = "ags-fx-playback";
+static const gchar *ags_fx_playback_audio_plugin_name = "ags-fx-playback";
 
-const gchar* ags_fx_playback_audio_specifier[] = {
+static const gchar* ags_fx_playback_audio_specifier[] = {
   "./bpm[0]",
   "./tact[0]",
   "./delay[0]",
@@ -66,7 +66,7 @@ const gchar* ags_fx_playback_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_playback_audio_control_port[] = {
+static const gchar* ags_fx_playback_audio_control_port[] = {
   "1/14",
   "2/14",
   "3/14",

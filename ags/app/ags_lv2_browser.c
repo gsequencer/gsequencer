@@ -32,17 +32,17 @@
 
 #include <ags/i18n.h>
 
-void ags_lv2_browser_class_init(AgsLv2BrowserClass *lv2_browser);
-void ags_lv2_browser_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_lv2_browser_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_lv2_browser_init(AgsLv2Browser *lv2_browser);
+static void ags_lv2_browser_class_init(AgsLv2BrowserClass *lv2_browser);
+static void ags_lv2_browser_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_lv2_browser_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_lv2_browser_init(AgsLv2Browser *lv2_browser);
 
-void ags_lv2_browser_connect(AgsConnectable *connectable);
-void ags_lv2_browser_disconnect(AgsConnectable *connectable);
+static void ags_lv2_browser_connect(AgsConnectable *connectable);
+static void ags_lv2_browser_disconnect(AgsConnectable *connectable);
 
-void ags_lv2_browser_set_update(AgsApplicable *applicable, gboolean update);
-void ags_lv2_browser_apply(AgsApplicable *applicable);
-void ags_lv2_browser_reset(AgsApplicable *applicable);
+static void ags_lv2_browser_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_lv2_browser_apply(AgsApplicable *applicable);
+static void ags_lv2_browser_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_lv2_browser

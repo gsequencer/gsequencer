@@ -31,20 +31,20 @@
 
 #include <ags/i18n.h>
 
-void ags_open_wave_class_init(AgsOpenWaveClass *open_wave);
-void ags_open_wave_init(AgsOpenWave *open_wave);
-void ags_open_wave_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_open_wave_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_open_wave_dispose(GObject *gobject);
-void ags_open_wave_finalize(GObject *gobject);
+static void ags_open_wave_class_init(AgsOpenWaveClass *open_wave);
+static void ags_open_wave_init(AgsOpenWave *open_wave);
+static void ags_open_wave_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_open_wave_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_open_wave_dispose(GObject *gobject);
+static void ags_open_wave_finalize(GObject *gobject);
 
-void ags_open_wave_launch(AgsTask *task);
+static void ags_open_wave_launch(AgsTask *task);
 
 /**
  * SECTION:ags_open_wave

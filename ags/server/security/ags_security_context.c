@@ -33,17 +33,17 @@
 
 #include <ags/i18n.h>
 
-void ags_security_context_class_init(AgsSecurityContextClass *security_context);
-void ags_security_context_init(AgsSecurityContext *security_context);
-void ags_security_context_set_property(GObject *gobject,
+static void ags_security_context_class_init(AgsSecurityContextClass *security_context);
+static void ags_security_context_init(AgsSecurityContext *security_context);
+static void ags_security_context_set_property(GObject *gobject,
 				       guint prop_id,
 				       const GValue *value,
 				       GParamSpec *param_spec);
-void ags_security_context_get_property(GObject *gobject,
+static void ags_security_context_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
-void ags_security_context_finalize(GObject *gobject);
+static void ags_security_context_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_security_context

@@ -21,14 +21,14 @@
 
 #include <gdk/gdk.h>
 
-void ags_simple_file_write_class_init(AgsSimpleFileWriteClass *simple_file_write);
-void ags_simple_file_write_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_simple_file_write_init(AgsSimpleFileWrite *simple_file_write);
-void ags_simple_file_write_connect(AgsConnectable *connectable);
-void ags_simple_file_write_disconnect(AgsConnectable *connectable);
-void ags_simple_file_write_finalize(GObject *gobject);
+static void ags_simple_file_write_class_init(AgsSimpleFileWriteClass *simple_file_write);
+static void ags_simple_file_write_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_simple_file_write_init(AgsSimpleFileWrite *simple_file_write);
+static void ags_simple_file_write_connect(AgsConnectable *connectable);
+static void ags_simple_file_write_disconnect(AgsConnectable *connectable);
+static void ags_simple_file_write_finalize(GObject *gobject);
 
-void ags_simple_file_write_launch(AgsTask *task);
+static void ags_simple_file_write_launch(AgsTask *task);
 
 /**
  * SECTION:ags_simple_file_write

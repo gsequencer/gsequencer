@@ -25,29 +25,29 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_editor_line_class_init(AgsMachineEditorLineClass *machine_editor_line);
-void ags_machine_editor_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_editor_line_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line);
-void ags_machine_editor_line_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_machine_editor_line_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
+static void ags_machine_editor_line_class_init(AgsMachineEditorLineClass *machine_editor_line);
+static void ags_machine_editor_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_editor_line_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_machine_editor_line_init(AgsMachineEditorLine *machine_editor_line);
+static void ags_machine_editor_line_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_machine_editor_line_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
 
-void ags_machine_editor_line_connect(AgsConnectable *connectable);
-void ags_machine_editor_line_disconnect(AgsConnectable *connectable);
+static void ags_machine_editor_line_connect(AgsConnectable *connectable);
+static void ags_machine_editor_line_disconnect(AgsConnectable *connectable);
 
-void ags_machine_editor_line_notify_channel_callback(GObject *gobject,
-						     GParamSpec *pspec,
-						     gpointer user_data);
+static void ags_machine_editor_line_notify_channel_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    gpointer user_data);
 
-void ags_machine_editor_line_set_update(AgsApplicable *applicable, gboolean update);
-void ags_machine_editor_line_apply(AgsApplicable *applicable);
-void ags_machine_editor_line_reset(AgsApplicable *applicable);
+static void ags_machine_editor_line_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_machine_editor_line_apply(AgsApplicable *applicable);
+static void ags_machine_editor_line_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_machine_editor_line

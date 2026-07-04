@@ -32,17 +32,17 @@
 
 #include <ags/i18n.h>
 
-void ags_ladspa_browser_class_init(AgsLadspaBrowserClass *ladspa_browser);
-void ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser);
-void ags_ladspa_browser_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ladspa_browser_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_ladspa_browser_class_init(AgsLadspaBrowserClass *ladspa_browser);
+static void ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser);
+static void ags_ladspa_browser_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ladspa_browser_applicable_interface_init(AgsApplicableInterface *applicable);
 
-void ags_ladspa_browser_connect(AgsConnectable *connectable);
-void ags_ladspa_browser_disconnect(AgsConnectable *connectable);
+static void ags_ladspa_browser_connect(AgsConnectable *connectable);
+static void ags_ladspa_browser_disconnect(AgsConnectable *connectable);
 
-void ags_ladspa_browser_set_update(AgsApplicable *applicable, gboolean update);
-void ags_ladspa_browser_apply(AgsApplicable *applicable);
-void ags_ladspa_browser_reset(AgsApplicable *applicable);
+static void ags_ladspa_browser_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_ladspa_browser_apply(AgsApplicable *applicable);
+static void ags_ladspa_browser_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_ladspa_browser

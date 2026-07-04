@@ -26,17 +26,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-void ags_buffer_class_init(AgsBufferClass *buffer);
-void ags_buffer_init(AgsBuffer *buffer);
-void ags_buffer_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_buffer_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_buffer_finalize(GObject *gobject);
+static void ags_buffer_class_init(AgsBufferClass *buffer);
+static void ags_buffer_init(AgsBuffer *buffer);
+static void ags_buffer_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_buffer_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_buffer_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_buffer

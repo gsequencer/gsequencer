@@ -80,6 +80,10 @@ struct _AgsAudioContainerClass
 
 GType ags_audio_container_get_type();
 
+gboolean ags_audio_container_test_flags(AgsAudioContainer *audio_container, guint flags);
+void ags_audio_container_set_flags(AgsAudioContainer *audio_container, guint flags);
+void ags_audio_container_unset_flags(AgsAudioContainer *audio_container, guint flags);
+
 gboolean ags_audio_container_check_suffix(gchar *filename);
 
 GList* ags_audio_container_find_sound_resource(AgsAudioContainer *audio_container,

@@ -25,22 +25,22 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_two_pass_aliase_channel_class_init(AgsFxTwoPassAliaseChannelClass *fx_two_pass_aliase_channel);
-void ags_fx_two_pass_aliase_channel_init(AgsFxTwoPassAliaseChannel *fx_two_pass_aliase_channel);
-void ags_fx_two_pass_aliase_channel_set_property(GObject *gobject,
-						 guint prop_id,
-						 const GValue *value,
-						 GParamSpec *param_spec);
-void ags_fx_two_pass_aliase_channel_get_property(GObject *gobject,
-						 guint prop_id,
-						 GValue *value,
-						 GParamSpec *param_spec);
-void ags_fx_two_pass_aliase_channel_dispose(GObject *gobject);
-void ags_fx_two_pass_aliase_channel_finalize(GObject *gobject);
+static void ags_fx_two_pass_aliase_channel_class_init(AgsFxTwoPassAliaseChannelClass *fx_two_pass_aliase_channel);
+static void ags_fx_two_pass_aliase_channel_init(AgsFxTwoPassAliaseChannel *fx_two_pass_aliase_channel);
+static void ags_fx_two_pass_aliase_channel_set_property(GObject *gobject,
+							guint prop_id,
+							const GValue *value,
+							GParamSpec *param_spec);
+static void ags_fx_two_pass_aliase_channel_get_property(GObject *gobject,
+							guint prop_id,
+							GValue *value,
+							GParamSpec *param_spec);
+static void ags_fx_two_pass_aliase_channel_dispose(GObject *gobject);
+static void ags_fx_two_pass_aliase_channel_finalize(GObject *gobject);
 
-void ags_fx_two_pass_aliase_channel_notify_buffer_size_callback(GObject *gobject,
-								GParamSpec *pspec,
-								gpointer user_data);
+static void ags_fx_two_pass_aliase_channel_notify_buffer_size_callback(GObject *gobject,
+								       GParamSpec *pspec,
+								       gpointer user_data);
 
 static AgsPluginPort* ags_fx_two_pass_aliase_channel_get_enabled_plugin_port();
 static AgsPluginPort* ags_fx_two_pass_aliase_channel_get_a_amount_plugin_port();
@@ -60,9 +60,9 @@ static AgsPluginPort* ags_fx_two_pass_aliase_channel_get_b_phase_plugin_port();
 
 static gpointer ags_fx_two_pass_aliase_channel_parent_class = NULL;
 
-const gchar *ags_fx_two_pass_aliase_channel_plugin_name = "ags-fx-two-pass-aliase";
+static const gchar *ags_fx_two_pass_aliase_channel_plugin_name = "ags-fx-two-pass-aliase";
 
-const gchar* ags_fx_two_pass_aliase_channel_specifier[] = {
+static const gchar* ags_fx_two_pass_aliase_channel_specifier[] = {
   "./enabled[0]",
   "./a-amount[0]",
   "./a-phase[0]",
@@ -71,7 +71,7 @@ const gchar* ags_fx_two_pass_aliase_channel_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_two_pass_aliase_channel_control_port[] = {
+static const gchar* ags_fx_two_pass_aliase_channel_control_port[] = {
   "1/5",
   "2/5",
   "3/5",

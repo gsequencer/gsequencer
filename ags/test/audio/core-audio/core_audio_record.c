@@ -150,7 +150,7 @@ main(int argc, char **argv)
   
   record.file = (SNDFILE *) sf_open(wav_filename,
 				    SFM_WRITE,
-				    info);
+				    record.info);
   
   if(record.file == NULL){
     fprintf(stderr, "failed to open output file '%s': %s\n",

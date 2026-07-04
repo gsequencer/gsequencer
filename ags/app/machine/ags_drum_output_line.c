@@ -26,16 +26,16 @@
 
 #include <math.h>
 
-void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
-void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
+static void ags_drum_output_line_class_init(AgsDrumOutputLineClass *drum_output_line);
+static void ags_drum_output_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_drum_output_line_init(AgsDrumOutputLine *drum_output_line);
 
-void ags_drum_output_line_connect(AgsConnectable *connectable);
-void ags_drum_output_line_disconnect(AgsConnectable *connectable);
+static void ags_drum_output_line_connect(AgsConnectable *connectable);
+static void ags_drum_output_line_disconnect(AgsConnectable *connectable);
 
-void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
-void ags_drum_output_line_map_recall(AgsLine *line,
-				     guint output_pad_start);
+static void ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel);
+static void ags_drum_output_line_map_recall(AgsLine *line,
+					    guint output_pad_start);
 
 /**
  * SECTION:ags_drum_output_line

@@ -26,32 +26,32 @@
 
 #include <ags/i18n.h>
 
-void ags_sfz_group_class_init(AgsSFZGroupClass *sfz_group);
-void ags_sfz_group_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_sfz_group_init(AgsSFZGroup *sfz_group);
-void ags_sfz_group_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_sfz_group_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_sfz_group_dispose(GObject *gobject);
-void ags_sfz_group_finalize(GObject *gobject);
+static void ags_sfz_group_class_init(AgsSFZGroupClass *sfz_group);
+static void ags_sfz_group_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_sfz_group_init(AgsSFZGroup *sfz_group);
+static void ags_sfz_group_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_sfz_group_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_sfz_group_dispose(GObject *gobject);
+static void ags_sfz_group_finalize(GObject *gobject);
 
-AgsUUID* ags_sfz_group_get_uuid(AgsConnectable *connectable);
-gboolean ags_sfz_group_has_resource(AgsConnectable *connectable);
-gboolean ags_sfz_group_is_ready(AgsConnectable *connectable);
-void ags_sfz_group_add_to_registry(AgsConnectable *connectable);
-void ags_sfz_group_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_sfz_group_list_resource(AgsConnectable *connectable);
-xmlNode* ags_sfz_group_xml_compose(AgsConnectable *connectable);
-void ags_sfz_group_xml_parse(AgsConnectable *connectable,
-			     xmlNode *node);
-gboolean ags_sfz_group_is_connected(AgsConnectable *connectable);
-void ags_sfz_group_connect(AgsConnectable *connectable);
-void ags_sfz_group_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_sfz_group_get_uuid(AgsConnectable *connectable);
+static gboolean ags_sfz_group_has_resource(AgsConnectable *connectable);
+static gboolean ags_sfz_group_is_ready(AgsConnectable *connectable);
+static void ags_sfz_group_add_to_registry(AgsConnectable *connectable);
+static void ags_sfz_group_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_sfz_group_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_sfz_group_xml_compose(AgsConnectable *connectable);
+static void ags_sfz_group_xml_parse(AgsConnectable *connectable,
+				    xmlNode *node);
+static gboolean ags_sfz_group_is_connected(AgsConnectable *connectable);
+static void ags_sfz_group_connect(AgsConnectable *connectable);
+static void ags_sfz_group_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_sfz_group

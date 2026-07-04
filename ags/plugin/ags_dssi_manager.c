@@ -40,10 +40,10 @@
 
 #include <ags/config.h>
 
-void ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager);
-void ags_dssi_manager_init (AgsDssiManager *dssi_manager);
-void ags_dssi_manager_dispose(GObject *gobject);
-void ags_dssi_manager_finalize(GObject *gobject);
+static void ags_dssi_manager_class_init(AgsDssiManagerClass *dssi_manager);
+static void ags_dssi_manager_init (AgsDssiManager *dssi_manager);
+static void ags_dssi_manager_dispose(GObject *gobject);
+static void ags_dssi_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_dssi_manager
@@ -57,8 +57,8 @@ void ags_dssi_manager_finalize(GObject *gobject);
 
 static gpointer ags_dssi_manager_parent_class = NULL;
 
-AgsDssiManager *ags_dssi_manager = NULL;
-gchar **ags_dssi_default_path = NULL;
+static AgsDssiManager *ags_dssi_manager = NULL;
+static gchar **ags_dssi_default_path = NULL;
 
 GType
 ags_dssi_manager_get_type (void)

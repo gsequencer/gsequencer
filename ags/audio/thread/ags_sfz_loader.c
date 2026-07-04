@@ -28,20 +28,20 @@
 
 #include <ags/i18n.h>
 
-void ags_sfz_loader_class_init(AgsSFZLoaderClass *sfz_loader);
-void ags_sfz_loader_init(AgsSFZLoader *sfz_loader);
-void ags_sfz_loader_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_sfz_loader_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_sfz_loader_dispose(GObject *gobject);
-void ags_sfz_loader_finalize(GObject *gobject);
+static void ags_sfz_loader_class_init(AgsSFZLoaderClass *sfz_loader);
+static void ags_sfz_loader_init(AgsSFZLoader *sfz_loader);
+static void ags_sfz_loader_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_sfz_loader_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_sfz_loader_dispose(GObject *gobject);
+static void ags_sfz_loader_finalize(GObject *gobject);
 
-void* ags_sfz_loader_run(void *ptr);
+static void* ags_sfz_loader_run(void *ptr);
 
 /**
  * SECTION:ags_sfz_loader

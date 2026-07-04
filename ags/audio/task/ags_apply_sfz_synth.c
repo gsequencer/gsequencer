@@ -30,20 +30,20 @@
 
 #include <ags/i18n.h>
 
-void ags_apply_sfz_synth_class_init(AgsApplySFZSynthClass *apply_sfz_synth);
-void ags_apply_sfz_synth_init(AgsApplySFZSynth *apply_sfz_synth);
-void ags_apply_sfz_synth_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_apply_sfz_synth_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_apply_sfz_synth_dispose(GObject *gobject);
-void ags_apply_sfz_synth_finalize(GObject *gobject);
+static void ags_apply_sfz_synth_class_init(AgsApplySFZSynthClass *apply_sfz_synth);
+static void ags_apply_sfz_synth_init(AgsApplySFZSynth *apply_sfz_synth);
+static void ags_apply_sfz_synth_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_apply_sfz_synth_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_apply_sfz_synth_dispose(GObject *gobject);
+static void ags_apply_sfz_synth_finalize(GObject *gobject);
 
-void ags_apply_sfz_synth_launch(AgsTask *task);
+static void ags_apply_sfz_synth_launch(AgsTask *task);
 
 /**
  * SECTION:ags_apply_sfz_synth

@@ -19,12 +19,12 @@
 
 #include <ags/plugin/ags_lv2_urid_manager.h>
 
-void ags_lv2_urid_manager_class_init(AgsLv2UridManagerClass *lv2_urid_manager);
-void ags_lv2_urid_manager_init(AgsLv2UridManager *lv2_urid_manager);
-void ags_lv2_urid_manager_finalize(GObject *gobject);
+static void ags_lv2_urid_manager_class_init(AgsLv2UridManagerClass *lv2_urid_manager);
+static void ags_lv2_urid_manager_init(AgsLv2UridManager *lv2_urid_manager);
+static void ags_lv2_urid_manager_finalize(GObject *gobject);
 
-void ags_lv2_urid_manager_destroy_data(gpointer data);
-gboolean ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user_data);
+static void ags_lv2_urid_manager_destroy_data(gpointer data);
+static gboolean ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user_data);
 
 /**
  * SECTION:ags_lv2_urid_manager
@@ -39,7 +39,7 @@ gboolean ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user
 
 static gpointer ags_lv2_urid_manager_parent_class = NULL;
 
-AgsLv2UridManager *ags_lv2_urid_manager = NULL;
+static AgsLv2UridManager *ags_lv2_urid_manager = NULL;
 
 GType
 ags_lv2_urid_manager_get_type()

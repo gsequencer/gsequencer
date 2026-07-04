@@ -25,14 +25,14 @@
 
 #include <stdlib.h>
 
-void ags_destroy_worker_class_init(AgsDestroyWorkerClass *destroy_worker);
-void ags_destroy_worker_init(AgsDestroyWorker *destroy_worker);
-void ags_destroy_worker_finalize(GObject *gobject);
+static void ags_destroy_worker_class_init(AgsDestroyWorkerClass *destroy_worker);
+static void ags_destroy_worker_init(AgsDestroyWorker *destroy_worker);
+static void ags_destroy_worker_finalize(GObject *gobject);
 
-void ags_destroy_worker_start(AgsThread *thread);
-void ags_destroy_worker_stop(AgsThread *thread);
+static void ags_destroy_worker_start(AgsThread *thread);
+static void ags_destroy_worker_stop(AgsThread *thread);
 
-void ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread);
+static void ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread);
 
 /**
  * SECTION:ags_destroy_worker
@@ -47,7 +47,7 @@ void ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread);
 
 static gpointer ags_destroy_worker_parent_class = NULL;
 
-AgsDestroyWorker *ags_destroy_worker = NULL;
+static AgsDestroyWorker *ags_destroy_worker = NULL;
 
 GType
 ags_destroy_worker_get_type()

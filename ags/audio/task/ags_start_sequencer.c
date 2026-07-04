@@ -24,20 +24,20 @@
 
 #include <ags/i18n.h>
 
-void ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer);
-void ags_start_sequencer_init(AgsStartSequencer *start_sequencer);
-void ags_start_sequencer_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_start_sequencer_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_start_sequencer_dispose(GObject *gobject);
-void ags_start_sequencer_finalize(GObject *gobject);
+static void ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer);
+static void ags_start_sequencer_init(AgsStartSequencer *start_sequencer);
+static void ags_start_sequencer_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_start_sequencer_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_start_sequencer_dispose(GObject *gobject);
+static void ags_start_sequencer_finalize(GObject *gobject);
 
-void ags_start_sequencer_launch(AgsTask *task);
+static void ags_start_sequencer_launch(AgsTask *task);
 
 /**
  * SECTION:ags_start_sequencer

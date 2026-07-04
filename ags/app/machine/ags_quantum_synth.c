@@ -33,33 +33,33 @@
 
 #include <ags/i18n.h>
 
-void ags_quantum_synth_class_init(AgsQuantumSynthClass *quantum_synth);
-void ags_quantum_synth_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_quantum_synth_init(AgsQuantumSynth *quantum_synth);
-void ags_quantum_synth_finalize(GObject *gobject);
+static void ags_quantum_synth_class_init(AgsQuantumSynthClass *quantum_synth);
+static void ags_quantum_synth_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_quantum_synth_init(AgsQuantumSynth *quantum_synth);
+static void ags_quantum_synth_finalize(GObject *gobject);
 
-void ags_quantum_synth_connect(AgsConnectable *connectable);
-void ags_quantum_synth_disconnect(AgsConnectable *connectable);
+static void ags_quantum_synth_connect(AgsConnectable *connectable);
+static void ags_quantum_synth_disconnect(AgsConnectable *connectable);
 
-void ags_quantum_synth_show(GtkWidget *widget);
+static void ags_quantum_synth_show(GtkWidget *widget);
 
-void ags_quantum_synth_resize_audio_channels(AgsMachine *machine,
-					     guint audio_channels, guint audio_channels_old,
-					     gpointer data);
-void ags_quantum_synth_resize_pads(AgsMachine *machine, GType channel_type,
-				   guint pads, guint pads_old,
-				   gpointer data);
+static void ags_quantum_synth_resize_audio_channels(AgsMachine *machine,
+						    guint audio_channels, guint audio_channels_old,
+						    gpointer data);
+static void ags_quantum_synth_resize_pads(AgsMachine *machine, GType channel_type,
+					  guint pads, guint pads_old,
+					  gpointer data);
 
-void ags_quantum_synth_map_recall(AgsMachine *machine);
+static void ags_quantum_synth_map_recall(AgsMachine *machine);
 
-void ags_quantum_synth_input_map_recall(AgsQuantumSynth *quantum_synth,
-					guint audio_channel_start,
-					guint input_pad_start);
-void ags_quantum_synth_output_map_recall(AgsQuantumSynth *quantum_synth,
-					 guint audio_channel_start,
-					 guint output_pad_start);
+static void ags_quantum_synth_input_map_recall(AgsQuantumSynth *quantum_synth,
+					       guint audio_channel_start,
+					       guint input_pad_start);
+static void ags_quantum_synth_output_map_recall(AgsQuantumSynth *quantum_synth,
+						guint audio_channel_start,
+						guint output_pad_start);
 
-void ags_quantum_synth_refresh_port(AgsMachine *machine);
+static void ags_quantum_synth_refresh_port(AgsMachine *machine);
 
 /**
  * SECTION:ags_quantum_synth
@@ -789,7 +789,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_1,
 		      12);
@@ -815,7 +815,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_2,
 		      12);
@@ -841,7 +841,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_3,
 		      12);
@@ -867,7 +867,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_4,
 		      12);
@@ -893,7 +893,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_5,
 		      12);
@@ -919,7 +919,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_6,
 		      12);
@@ -945,7 +945,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_0_seq_volume_7,
 		      12);
@@ -1855,7 +1855,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_0,
 		      12);
@@ -1881,7 +1881,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_1,
 		      12);
@@ -1906,7 +1906,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
   gtk_adjustment_set_page_increment(adjustment,
 				    0.1);
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_2,
 		      12);
@@ -1932,7 +1932,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_3,
 		      12);
@@ -1958,7 +1958,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_4,
 		      12);
@@ -1984,7 +1984,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_5,
 		      12);
@@ -2010,7 +2010,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_6,
 		      12);
@@ -2036,7 +2036,7 @@ ags_quantum_synth_init(AgsQuantumSynth *quantum_synth)
 				    0.1);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.0);
 
   ags_dial_set_radius(quantum_synth->synth_1_seq_volume_7,
 		      12);

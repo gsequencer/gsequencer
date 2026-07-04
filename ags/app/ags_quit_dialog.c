@@ -37,34 +37,34 @@
 
 #include <ags/i18n.h>
 
-void ags_quit_dialog_class_init(AgsQuitDialogClass *quit_dialog);
-void ags_quit_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_quit_dialog_init(AgsQuitDialog *quit_dialog);
-void ags_quit_dialog_finalize(GObject *gobject);
+static void ags_quit_dialog_class_init(AgsQuitDialogClass *quit_dialog);
+static void ags_quit_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_quit_dialog_init(AgsQuitDialog *quit_dialog);
+static void ags_quit_dialog_finalize(GObject *gobject);
 
-gboolean ags_quit_dialog_is_connected(AgsConnectable *connectable);
-void ags_quit_dialog_connect(AgsConnectable *connectable);
-void ags_quit_dialog_disconnect(AgsConnectable *connectable);
+static gboolean ags_quit_dialog_is_connected(AgsConnectable *connectable);
+static void ags_quit_dialog_connect(AgsConnectable *connectable);
+static void ags_quit_dialog_disconnect(AgsConnectable *connectable);
 
-void ags_quit_dialog_close_request_callback(GtkWindow *window,
-					    AgsQuitDialog *quit_dialog);
+static void ags_quit_dialog_close_request_callback(GtkWindow *window,
+						   AgsQuitDialog *quit_dialog);
 
-gboolean ags_quit_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
-					      guint keyval,
-					      guint keycode,
-					      GdkModifierType state,
-					      AgsQuitDialog *quit_dialog);
-void ags_quit_dialog_key_released_callback(GtkEventControllerKey *event_controller,
-					   guint keyval,
-					   guint keycode,
-					   GdkModifierType state,
-					   AgsQuitDialog *quit_dialog);
-gboolean ags_quit_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
-					    GdkModifierType keyval,
-					    AgsQuitDialog *quit_dialog);
+static gboolean ags_quit_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsQuitDialog *quit_dialog);
+static void ags_quit_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsQuitDialog *quit_dialog);
+static gboolean ags_quit_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						   GdkModifierType keyval,
+						   AgsQuitDialog *quit_dialog);
 
-void ags_quit_dialog_real_response(AgsQuitDialog *quit_dialog,
-				   gint response);
+static void ags_quit_dialog_real_response(AgsQuitDialog *quit_dialog,
+					  gint response);
 
 /**
  * SECTION:ags_quit_dialog

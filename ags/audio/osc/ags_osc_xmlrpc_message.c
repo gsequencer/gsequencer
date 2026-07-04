@@ -21,18 +21,18 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_xmlrpc_message_class_init(AgsOscXmlrpcMessageClass *osc_xmlrpc_message);
-void ags_osc_xmlrpc_message_init(AgsOscXmlrpcMessage *osc_xmlrpc_message);
-void ags_osc_xmlrpc_message_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_osc_xmlrpc_message_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_osc_xmlrpc_message_dispose(GObject *gobject);
-void ags_osc_xmlrpc_message_finalize(GObject *gobject);
+static void ags_osc_xmlrpc_message_class_init(AgsOscXmlrpcMessageClass *osc_xmlrpc_message);
+static void ags_osc_xmlrpc_message_init(AgsOscXmlrpcMessage *osc_xmlrpc_message);
+static void ags_osc_xmlrpc_message_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_osc_xmlrpc_message_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_osc_xmlrpc_message_dispose(GObject *gobject);
+static void ags_osc_xmlrpc_message_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_osc_xmlrpc_message

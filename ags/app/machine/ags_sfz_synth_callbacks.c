@@ -29,7 +29,7 @@
 #include <complex.h>
 #include <math.h>
 
-void ags_sfz_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
+static void ags_sfz_synth_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
 						 AgsMachine *machine);
 
 void

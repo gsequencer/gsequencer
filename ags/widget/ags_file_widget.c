@@ -52,72 +52,72 @@
 
 #include <ags/i18n.h>
 
-void ags_file_widget_class_init(AgsFileWidgetClass *file_widget);
-void ags_file_widget_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_file_widget_init(AgsFileWidget *file_widget);
-void ags_file_widget_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_widget_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_widget_dispose(GObject *gobject);
-void ags_file_widget_finalize(GObject *gobject);
+static void ags_file_widget_class_init(AgsFileWidgetClass *file_widget);
+static void ags_file_widget_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_file_widget_init(AgsFileWidget *file_widget);
+static void ags_file_widget_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_widget_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_widget_dispose(GObject *gobject);
+static void ags_file_widget_finalize(GObject *gobject);
 
-void ags_file_widget_real_refresh(AgsFileWidget *file_widget);
-void ags_file_widget_real_create_dir(AgsFileWidget *file_widget,
-				     gchar *dir_path);
+static void ags_file_widget_real_refresh(AgsFileWidget *file_widget);
+static void ags_file_widget_real_create_dir(AgsFileWidget *file_widget,
+					    gchar *dir_path);
 
-void ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_item,
-				   AgsFileWidget *file_widget);
-void ags_file_widget_primary_key_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
-					      AgsFileWidget *file_widget);
-void ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
-					AgsFileWidget *file_widget);
-
-void ags_file_widget_location_entry_callback(GtkEntry *location_entry,
-					     AgsFileWidget *file_widget);
-
-void ags_file_widget_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						    gint n_press,
-						    gdouble x,
-						    gdouble y,
-						    AgsFileWidget *file_widget);
-void ags_file_widget_gesture_click_released_callback(GtkGestureClick *event_controller,
-						     gint n_press,
-						     gdouble x,
-						     gdouble y,
+static void ags_file_widget_factory_setup(GtkListItemFactory *factory, GtkListItem *list_item,
+					  AgsFileWidget *file_widget);
+static void ags_file_widget_primary_key_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
 						     AgsFileWidget *file_widget);
+static void ags_file_widget_value_factory_bind(GtkListItemFactory *factory, GtkListItem *list_item,
+					       AgsFileWidget *file_widget);
 
-void ags_file_widget_filename_activate_callback(GtkListView *list_view,
-						guint position,
-						AgsFileWidget *file_widget);
+static void ags_file_widget_location_entry_callback(GtkEntry *location_entry,
+						    AgsFileWidget *file_widget);
 
-void ags_file_widget_location_drop_down_callback(GObject *location,
-						 GParamSpec *pspec,
-						 AgsFileWidget *file_widget);
-void ags_file_widget_location_callback(AgsIconLink *icon_link,
-				       AgsFileWidget *file_widget);
-void ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
-				       AgsFileWidget *file_widget);
+static void ags_file_widget_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							   gint n_press,
+							   gdouble x,
+							   gdouble y,
+							   AgsFileWidget *file_widget);
+static void ags_file_widget_gesture_click_released_callback(GtkGestureClick *event_controller,
+							    gint n_press,
+							    gdouble x,
+							    gdouble y,
+							    AgsFileWidget *file_widget);
 
-void ags_file_widget_rename_response_callback(AgsInputDialog *input_dialog,
-					      gint response,
+static void ags_file_widget_filename_activate_callback(GtkListView *list_view,
+						       guint position,
+						       AgsFileWidget *file_widget);
+
+static void ags_file_widget_location_drop_down_callback(GObject *location,
+							GParamSpec *pspec,
+							AgsFileWidget *file_widget);
+static void ags_file_widget_location_callback(AgsIconLink *icon_link,
 					      AgsFileWidget *file_widget);
-void ags_file_widget_mkdir_response_callback(AgsInputDialog *input_dialog,
-					     gint response,
-					     AgsFileWidget *file_widget);
+static void ags_file_widget_bookmark_callback(AgsIconLink *icon_link,
+					      AgsFileWidget *file_widget);
 
-void ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
-				     AgsFileWidget *file_widget);
-void ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
-				    AgsFileWidget *file_widget);
-void ags_file_widget_show_hidden_files_callback(GAction *action, GVariant *parameter,
-						AgsFileWidget *file_widget);
-void ags_file_widget_add_bookmark_callback(GAction *action, GVariant *parameter,
+static void ags_file_widget_rename_response_callback(AgsInputDialog *input_dialog,
+						     gint response,
+						     AgsFileWidget *file_widget);
+static void ags_file_widget_mkdir_response_callback(AgsInputDialog *input_dialog,
+						    gint response,
+						    AgsFileWidget *file_widget);
+
+static void ags_file_widget_rename_callback(GAction *action, GVariant *parameter,
+					    AgsFileWidget *file_widget);
+static void ags_file_widget_mkdir_callback(GAction *action, GVariant *parameter,
 					   AgsFileWidget *file_widget);
+static void ags_file_widget_show_hidden_files_callback(GAction *action, GVariant *parameter,
+						       AgsFileWidget *file_widget);
+static void ags_file_widget_add_bookmark_callback(GAction *action, GVariant *parameter,
+						  AgsFileWidget *file_widget);
 
 /**
  * SECTION:ags_file_widget

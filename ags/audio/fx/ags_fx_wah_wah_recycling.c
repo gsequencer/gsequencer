@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_wah_wah_recycling_class_init(AgsFxWahWahRecyclingClass *fx_wah_wah_recycling);
-void ags_fx_wah_wah_recycling_init(AgsFxWahWahRecycling *fx_wah_wah_recycling);
-void ags_fx_wah_wah_recycling_dispose(GObject *gobject);
-void ags_fx_wah_wah_recycling_finalize(GObject *gobject);
+static void ags_fx_wah_wah_recycling_class_init(AgsFxWahWahRecyclingClass *fx_wah_wah_recycling);
+static void ags_fx_wah_wah_recycling_init(AgsFxWahWahRecycling *fx_wah_wah_recycling);
+static void ags_fx_wah_wah_recycling_dispose(GObject *gobject);
+static void ags_fx_wah_wah_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_wah_wah_recycling
@@ -40,7 +40,7 @@ void ags_fx_wah_wah_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_wah_wah_recycling_parent_class = NULL;
 
-const gchar *ags_fx_wah_wah_recycling_plugin_name = "ags-fx-wah-wah";
+static const gchar *ags_fx_wah_wah_recycling_plugin_name = "ags-fx-wah-wah";
 
 GType
 ags_fx_wah_wah_recycling_get_type()

@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_sf2_synth_recycling_class_init(AgsFxSF2SynthRecyclingClass *fx_sf2_synth_recycling);
-void ags_fx_sf2_synth_recycling_init(AgsFxSF2SynthRecycling *fx_sf2_synth_recycling);
-void ags_fx_sf2_synth_recycling_dispose(GObject *gobject);
-void ags_fx_sf2_synth_recycling_finalize(GObject *gobject);
+static void ags_fx_sf2_synth_recycling_class_init(AgsFxSF2SynthRecyclingClass *fx_sf2_synth_recycling);
+static void ags_fx_sf2_synth_recycling_init(AgsFxSF2SynthRecycling *fx_sf2_synth_recycling);
+static void ags_fx_sf2_synth_recycling_dispose(GObject *gobject);
+static void ags_fx_sf2_synth_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_sf2_synth_recycling
@@ -40,7 +40,7 @@ void ags_fx_sf2_synth_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_sf2_synth_recycling_parent_class = NULL;
 
-const gchar *ags_fx_sf2_synth_recycling_plugin_name = "ags-fx-sf2-synth";
+static const gchar *ags_fx_sf2_synth_recycling_plugin_name = "ags-fx-sf2-synth";
 
 GType
 ags_fx_sf2_synth_recycling_get_type()

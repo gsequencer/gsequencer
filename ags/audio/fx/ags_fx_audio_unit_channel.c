@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_audio_unit_channel_class_init(AgsFxAudioUnitChannelClass *fx_audio_unit_channel);
-void ags_fx_audio_unit_channel_init(AgsFxAudioUnitChannel *fx_audio_unit_channel);
-void ags_fx_audio_unit_channel_dispose(GObject *gobject);
-void ags_fx_audio_unit_channel_finalize(GObject *gobject);
+static void ags_fx_audio_unit_channel_class_init(AgsFxAudioUnitChannelClass *fx_audio_unit_channel);
+static void ags_fx_audio_unit_channel_init(AgsFxAudioUnitChannel *fx_audio_unit_channel);
+static void ags_fx_audio_unit_channel_dispose(GObject *gobject);
+static void ags_fx_audio_unit_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_audio_unit_channel
@@ -38,7 +38,7 @@ void ags_fx_audio_unit_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_audio_unit_channel_parent_class = NULL;
 
-const gchar *ags_fx_audio_unit_channel_plugin_name = "ags-fx-audio-unit";
+static const gchar *ags_fx_audio_unit_channel_plugin_name = "ags-fx-audio-unit";
 
 GType
 ags_fx_audio_unit_channel_get_type()

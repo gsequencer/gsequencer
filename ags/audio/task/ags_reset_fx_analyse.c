@@ -23,13 +23,13 @@
 
 #include <ags/i18n.h>
 
-void ags_reset_fx_analyse_class_init(AgsResetFxAnalyseClass *reset_fx_analyse);
-void ags_reset_fx_analyse_init(AgsResetFxAnalyse *reset_fx_analyse);
-void ags_reset_fx_analyse_connect(AgsConnectable *connectable);
-void ags_reset_fx_analyse_dispose(GObject *gobject);
-void ags_reset_fx_analyse_finalize(GObject *gobject);
+static void ags_reset_fx_analyse_class_init(AgsResetFxAnalyseClass *reset_fx_analyse);
+static void ags_reset_fx_analyse_init(AgsResetFxAnalyse *reset_fx_analyse);
+static void ags_reset_fx_analyse_connect(AgsConnectable *connectable);
+static void ags_reset_fx_analyse_dispose(GObject *gobject);
+static void ags_reset_fx_analyse_finalize(GObject *gobject);
 
-void ags_reset_fx_analyse_launch(AgsTask *task);
+static void ags_reset_fx_analyse_launch(AgsTask *task);
 
 /**
  * SECTION:ags_reset_fx_analyse
@@ -43,7 +43,7 @@ void ags_reset_fx_analyse_launch(AgsTask *task);
 
 static gpointer ags_reset_fx_analyse_parent_class = NULL;
 
-AgsResetFxAnalyse *ags_reset_fx_analyse = NULL;
+static AgsResetFxAnalyse *ags_reset_fx_analyse = NULL;
 
 GType
 ags_reset_fx_analyse_get_type()

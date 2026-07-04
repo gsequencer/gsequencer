@@ -29,12 +29,12 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_buffer_audio_signal_class_init(AgsFxBufferAudioSignalClass *fx_buffer_audio_signal);
-void ags_fx_buffer_audio_signal_init(AgsFxBufferAudioSignal *fx_buffer_audio_signal);
-void ags_fx_buffer_audio_signal_dispose(GObject *gobject);
-void ags_fx_buffer_audio_signal_finalize(GObject *gobject);
+static void ags_fx_buffer_audio_signal_class_init(AgsFxBufferAudioSignalClass *fx_buffer_audio_signal);
+static void ags_fx_buffer_audio_signal_init(AgsFxBufferAudioSignal *fx_buffer_audio_signal);
+static void ags_fx_buffer_audio_signal_dispose(GObject *gobject);
+static void ags_fx_buffer_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall);
+static void ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_audio_signal
@@ -48,7 +48,7 @@ void ags_fx_buffer_audio_signal_real_run_inter(AgsRecall *recall);
 
 static gpointer ags_fx_buffer_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_buffer_audio_signal_plugin_name = "ags-fx-buffer";
+static const gchar *ags_fx_buffer_audio_signal_plugin_name = "ags-fx-buffer";
 
 GType
 ags_fx_buffer_audio_signal_get_type()

@@ -1,7 +1,24 @@
+ags (9.0.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (9.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added static modifier to all ags-fx source code
+	* renamed ags_fluid_interp_coeff_4th_order* with proper prefix
+	* renamed ags_fluid_ct2hz_tab* with proper prefix
+
+ags (9.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added static modifier to functions in all source files
+
 ags (9.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* added libags-globlas.txt exporting ags_application_context as extern variable
+	* added visibility attribute to global variable in ags/object/ags_application_context.c
 	* removed gen-sym-libags-audio.pl
 	* removed gen-sym-libags-gui.pl
 	* removed gen-sym-libags-server.pl

@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_pattern_channel_class_init(AgsFxPatternChannelClass *fx_pattern_channel);
-void ags_fx_pattern_channel_init(AgsFxPatternChannel *fx_pattern_channel);
-void ags_fx_pattern_channel_dispose(GObject *gobject);
-void ags_fx_pattern_channel_finalize(GObject *gobject);
+static void ags_fx_pattern_channel_class_init(AgsFxPatternChannelClass *fx_pattern_channel);
+static void ags_fx_pattern_channel_init(AgsFxPatternChannel *fx_pattern_channel);
+static void ags_fx_pattern_channel_dispose(GObject *gobject);
+static void ags_fx_pattern_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_pattern_channel
@@ -38,7 +38,7 @@ void ags_fx_pattern_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_pattern_channel_parent_class = NULL;
 
-const gchar *ags_fx_pattern_channel_plugin_name = "ags-fx-pattern";
+static const gchar *ags_fx_pattern_channel_plugin_name = "ags-fx-pattern";
 
 GType
 ags_fx_pattern_channel_get_type()

@@ -1,6 +1,0 @@
-VERS_9.0 {
-    global:
-        ags_application_context;
-    local:
-        *;
-};

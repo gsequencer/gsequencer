@@ -27,15 +27,15 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_lv2_audio_processor_class_init(AgsFxLv2AudioProcessorClass *fx_lv2_audio_processor);
-void ags_fx_lv2_audio_processor_init(AgsFxLv2AudioProcessor *fx_lv2_audio_processor);
-void ags_fx_lv2_audio_processor_dispose(GObject *gobject);
-void ags_fx_lv2_audio_processor_finalize(GObject *gobject);
+static void ags_fx_lv2_audio_processor_class_init(AgsFxLv2AudioProcessorClass *fx_lv2_audio_processor);
+static void ags_fx_lv2_audio_processor_init(AgsFxLv2AudioProcessor *fx_lv2_audio_processor);
+static void ags_fx_lv2_audio_processor_dispose(GObject *gobject);
+static void ags_fx_lv2_audio_processor_finalize(GObject *gobject);
 
-void ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
-				       AgsNote *note,
-				       guint velocity,
-				       guint key_mode);
+static void ags_fx_lv2_audio_processor_key_on(AgsFxNotationAudioProcessor *fx_notation_audio_processor,
+					      AgsNote *note,
+					      guint velocity,
+					      guint key_mode);
 
 /**
  * SECTION:ags_fx_lv2_audio_processor

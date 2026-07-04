@@ -25,18 +25,18 @@
 
 #include <stdlib.h>
 
-void ags_osc_controller_class_init(AgsOscControllerClass *osc_controller);
-void ags_osc_controller_init(AgsOscController *osc_controller);
-void ags_osc_controller_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_osc_controller_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_osc_controller_dispose(GObject *gobject);
-void ags_osc_controller_finalize(GObject *gobject);
+static void ags_osc_controller_class_init(AgsOscControllerClass *osc_controller);
+static void ags_osc_controller_init(AgsOscController *osc_controller);
+static void ags_osc_controller_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_osc_controller_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_osc_controller_dispose(GObject *gobject);
+static void ags_osc_controller_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_osc_controller

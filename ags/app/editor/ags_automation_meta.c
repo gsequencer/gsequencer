@@ -26,12 +26,12 @@
 
 #include <ags/i18n.h>
 
-void ags_automation_meta_class_init(AgsAutomationMetaClass *automation_meta);
-void ags_automation_meta_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_automation_meta_init(AgsAutomationMeta *automation_meta);
+static void ags_automation_meta_class_init(AgsAutomationMetaClass *automation_meta);
+static void ags_automation_meta_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_automation_meta_init(AgsAutomationMeta *automation_meta);
 
-void ags_automation_meta_connect(AgsConnectable *connectable);
-void ags_automation_meta_disconnect(AgsConnectable *connectable);
+static void ags_automation_meta_connect(AgsConnectable *connectable);
+static void ags_automation_meta_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_automation_meta

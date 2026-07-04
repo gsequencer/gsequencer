@@ -31,33 +31,33 @@
 
 #include <ags/i18n.h>
 
-void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
-void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ffplayer_init(AgsFFPlayer *ffplayer);
-void ags_ffplayer_finalize(GObject *gobject);
+static void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
+static void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ffplayer_init(AgsFFPlayer *ffplayer);
+static void ags_ffplayer_finalize(GObject *gobject);
 
-void ags_ffplayer_connect(AgsConnectable *connectable);
-void ags_ffplayer_disconnect(AgsConnectable *connectable);
+static void ags_ffplayer_connect(AgsConnectable *connectable);
+static void ags_ffplayer_disconnect(AgsConnectable *connectable);
 
-void ags_ffplayer_realize(GtkWidget *widget);
+static void ags_ffplayer_realize(GtkWidget *widget);
 
-void ags_ffplayer_resize_audio_channels(AgsMachine *machine,
-				     guint audio_channels, guint audio_channels_old,
+static void ags_ffplayer_resize_audio_channels(AgsMachine *machine,
+					       guint audio_channels, guint audio_channels_old,
+					       gpointer data);
+static void ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
+				     guint pads, guint pads_old,
 				     gpointer data);
-void ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
-			      guint pads, guint pads_old,
-			      gpointer data);
 
-void ags_ffplayer_map_recall(AgsMachine *machine);
-void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer,
-				    guint audio_channel_start,
-				    guint output_pad_start);
-void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
-				   guint audio_channel_start,
-				   guint input_pad_start);
+static void ags_ffplayer_map_recall(AgsMachine *machine);
+static void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer,
+					   guint audio_channel_start,
+					   guint output_pad_start);
+static void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer,
+					  guint audio_channel_start,
+					  guint input_pad_start);
 
-void ags_ffplayer_apply_sf2_synth_launch_callback(AgsTask *task,
-						  AgsFFPlayer *ffplayer);
+static void ags_ffplayer_apply_sf2_synth_launch_callback(AgsTask *task,
+							 AgsFFPlayer *ffplayer);
 
 /**
  * SECTION:ags_ffplayer

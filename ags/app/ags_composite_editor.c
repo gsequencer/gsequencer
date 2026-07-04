@@ -88,95 +88,95 @@
 
 #include <ags/i18n.h>
 
-void ags_composite_editor_class_init(AgsCompositeEditorClass *composite_editor);
-void ags_composite_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_composite_editor_init(AgsCompositeEditor *composite_editor);
+static void ags_composite_editor_class_init(AgsCompositeEditorClass *composite_editor);
+static void ags_composite_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_composite_editor_init(AgsCompositeEditor *composite_editor);
 
-void ags_composite_editor_show(GtkWidget *widget);
+static void ags_composite_editor_show(GtkWidget *widget);
 
-AgsUUID* ags_composite_editor_get_uuid(AgsConnectable *connectable);
-gboolean ags_composite_editor_has_resource(AgsConnectable *connectable);
-gboolean ags_composite_editor_is_ready(AgsConnectable *connectable);
-void ags_composite_editor_add_to_registry(AgsConnectable *connectable);
-void ags_composite_editor_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_composite_editor_list_resource(AgsConnectable *connectable);
-xmlNode* ags_composite_editor_xml_compose(AgsConnectable *connectable);
-void ags_composite_editor_xml_parse(AgsConnectable *connectable,
-				    xmlNode *node);
-gboolean ags_composite_editor_is_connected(AgsConnectable *connectable);
-void ags_composite_editor_connect(AgsConnectable *connectable);
-void ags_composite_editor_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_composite_editor_get_uuid(AgsConnectable *connectable);
+static gboolean ags_composite_editor_has_resource(AgsConnectable *connectable);
+static gboolean ags_composite_editor_is_ready(AgsConnectable *connectable);
+static void ags_composite_editor_add_to_registry(AgsConnectable *connectable);
+static void ags_composite_editor_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_composite_editor_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_composite_editor_xml_compose(AgsConnectable *connectable);
+static void ags_composite_editor_xml_parse(AgsConnectable *connectable,
+					   xmlNode *node);
+static gboolean ags_composite_editor_is_connected(AgsConnectable *connectable);
+static void ags_composite_editor_connect(AgsConnectable *connectable);
+static void ags_composite_editor_disconnect(AgsConnectable *connectable);
 
-void ags_composite_editor_get_boundary(AgsCompositeEditor *composite_editor,
-				       AgsMachine *machine,
-				       AgsNotation *notation,
-				       guint *lower, guint *upper);
-void ags_composite_editor_invert_notation(AgsCompositeEditor *composite_editor,
-					  AgsMachine *machine,
-					  AgsNotation *notation,
-					  guint lower, guint upper);
+static void ags_composite_editor_get_boundary(AgsCompositeEditor *composite_editor,
+					      AgsMachine *machine,
+					      AgsNotation *notation,
+					      guint *lower, guint *upper);
+static void ags_composite_editor_invert_notation(AgsCompositeEditor *composite_editor,
+						 AgsMachine *machine,
+						 AgsNotation *notation,
+						 guint lower, guint upper);
 
-void ags_composite_editor_paste_notation_async(GObject *source_object,
-					       GAsyncResult *res,
-					       AgsCompositeEditor *composite_editor);
-void ags_composite_editor_paste_automation_async(GObject *source_object,
-						 GAsyncResult *res,
-						 AgsCompositeEditor *composite_editor);
-void ags_composite_editor_paste_wave_async(GObject *source_object,
-					   GAsyncResult *res,
-					   AgsCompositeEditor *composite_editor);
+static void ags_composite_editor_paste_notation_async(GObject *source_object,
+						      GAsyncResult *res,
+						      AgsCompositeEditor *composite_editor);
+static void ags_composite_editor_paste_automation_async(GObject *source_object,
+							GAsyncResult *res,
+							AgsCompositeEditor *composite_editor);
+static void ags_composite_editor_paste_wave_async(GObject *source_object,
+						  GAsyncResult *res,
+						  AgsCompositeEditor *composite_editor);
 
-gint ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
-					     AgsMachine *machine,
-					     xmlNode *notation_node,
-					     AgsTimestamp *timestamp,
-					     gboolean match_channel, gboolean no_duplicates,
-					     guint position_x, guint position_y,
-					     gboolean paste_from_position,
-					     gint *last_x);
-gint ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
-					 AgsMachine *machine,
-					 xmlNode *audio_node,
-					 guint position_x, guint position_y,
-					 gboolean paste_from_position,
-					 gint *last_x);
+static gint ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
+						    AgsMachine *machine,
+						    xmlNode *notation_node,
+						    AgsTimestamp *timestamp,
+						    gboolean match_channel, gboolean no_duplicates,
+						    guint position_x, guint position_y,
+						    gboolean paste_from_position,
+						    gint *last_x);
+static gint ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
+						AgsMachine *machine,
+						xmlNode *audio_node,
+						guint position_x, guint position_y,
+						gboolean paste_from_position,
+						gint *last_x);
 
-gint ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
-					       AgsNotebook *notebook,
-					       AgsMachine *machine,
-					       xmlNode *automation_node,
-					       AgsTimestamp *timestamp,
-					       gboolean match_line, gboolean no_duplicates,
-					       guint position_x, guint position_y,
-					       gboolean paste_from_position,
-					       gint *last_x);
-gint ags_composite_editor_paste_automation(AgsCompositeEditor *composite_editor,
-					   AgsNotebook *notebook,
-					   AgsMachine *machine,
-					   xmlNode *audio_node,
-					   guint position_x, guint position_y,
-					   gboolean paste_from_position,
-					   gint *last_x);
+static gint ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
+						      AgsNotebook *notebook,
+						      AgsMachine *machine,
+						      xmlNode *automation_node,
+						      AgsTimestamp *timestamp,
+						      gboolean match_line, gboolean no_duplicates,
+						      guint position_x, guint position_y,
+						      gboolean paste_from_position,
+						      gint *last_x);
+static gint ags_composite_editor_paste_automation(AgsCompositeEditor *composite_editor,
+						  AgsNotebook *notebook,
+						  AgsMachine *machine,
+						  xmlNode *audio_node,
+						  guint position_x, guint position_y,
+						  gboolean paste_from_position,
+						  gint *last_x);
 
-gint ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
-					 AgsMachine *machine,
-					 AgsNotebook *notebook,
-					 xmlNode *wave_node,
-					 AgsTimestamp *timestamp,
-					 gboolean match_line,
-					 gboolean paste_from_position,
-					 guint64 position_x,
-					 gint64 *last_x);
-gint ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
-				     AgsMachine *machine,
-				     AgsNotebook *notebook,
-				     xmlNode *audio_node,
-				     gboolean paste_from_position,
-				     guint64 position_x,
-				     guint64 relative_offset);
+static gint ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
+						AgsMachine *machine,
+						AgsNotebook *notebook,
+						xmlNode *wave_node,
+						AgsTimestamp *timestamp,
+						gboolean match_line,
+						gboolean paste_from_position,
+						guint64 position_x,
+						gint64 *last_x);
+static gint ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
+					    AgsMachine *machine,
+					    AgsNotebook *notebook,
+					    xmlNode *audio_node,
+					    gboolean paste_from_position,
+					    guint64 position_x,
+					    guint64 relative_offset);
 
-void ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
-					       AgsMachine *machine);
+static void ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
+						      AgsMachine *machine);
 
 enum{
   MACHINE_CHANGED,

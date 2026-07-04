@@ -25,34 +25,34 @@
 
 #include <ags/i18n.h>
 
-void ags_task_completion_class_init(AgsTaskCompletionClass *task_completion);
-void ags_task_completion_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_task_completion_init(AgsTaskCompletion *task_completion);
-void ags_task_completion_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_task_completion_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_task_completion_finalize(GObject *gobject);
+static void ags_task_completion_class_init(AgsTaskCompletionClass *task_completion);
+static void ags_task_completion_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_task_completion_init(AgsTaskCompletion *task_completion);
+static void ags_task_completion_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_task_completion_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_task_completion_finalize(GObject *gobject);
 
-AgsUUID* ags_task_completion_get_uuid(AgsConnectable *connectable);
-gboolean ags_task_completion_has_resource(AgsConnectable *connectable);
-gboolean ags_task_completion_is_ready(AgsConnectable *connectable);
-void ags_task_completion_add_to_registry(AgsConnectable *connectable);
-void ags_task_completion_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_task_completion_list_resource(AgsConnectable *connectable);
-xmlNode* ags_task_completion_xml_compose(AgsConnectable *connectable);
-void ags_task_completion_xml_parse(AgsConnectable *connectable,
-				   xmlNode *node);
-gboolean ags_task_completion_is_connected(AgsConnectable *connectable);
-void ags_task_completion_connect(AgsConnectable *connectable);
-void ags_task_completion_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_task_completion_get_uuid(AgsConnectable *connectable);
+static gboolean ags_task_completion_has_resource(AgsConnectable *connectable);
+static gboolean ags_task_completion_is_ready(AgsConnectable *connectable);
+static void ags_task_completion_add_to_registry(AgsConnectable *connectable);
+static void ags_task_completion_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_task_completion_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_task_completion_xml_compose(AgsConnectable *connectable);
+static void ags_task_completion_xml_parse(AgsConnectable *connectable,
+					  xmlNode *node);
+static gboolean ags_task_completion_is_connected(AgsConnectable *connectable);
+static void ags_task_completion_connect(AgsConnectable *connectable);
+static void ags_task_completion_disconnect(AgsConnectable *connectable);
 
-void ags_task_completion_launch_callback(AgsTask *task,
-					 AgsTaskCompletion *task_completion);
+static void ags_task_completion_launch_callback(AgsTask *task,
+						AgsTaskCompletion *task_completion);
 
 /**
  * SECTION:ags_task_completion

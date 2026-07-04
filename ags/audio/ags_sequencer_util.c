@@ -27,8 +27,8 @@
 
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
-gpointer ags_sequencer_util_copy(gpointer ptr);
-void ags_sequencer_util_free(gpointer ptr);
+static gpointer ags_sequencer_util_copy(gpointer ptr);
+static void ags_sequencer_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_sequencer_util

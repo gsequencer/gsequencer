@@ -25,20 +25,20 @@
 
 #include <ags/i18n.h>
 
-void ags_stop_soundcard_class_init(AgsStopSoundcardClass *stop_soundcard);
-void ags_stop_soundcard_init(AgsStopSoundcard *stop_soundcard);
-void ags_stop_soundcard_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_stop_soundcard_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_stop_soundcard_dispose(GObject *gobject);
-void ags_stop_soundcard_finalize(GObject *gobject);
+static void ags_stop_soundcard_class_init(AgsStopSoundcardClass *stop_soundcard);
+static void ags_stop_soundcard_init(AgsStopSoundcard *stop_soundcard);
+static void ags_stop_soundcard_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_stop_soundcard_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_stop_soundcard_dispose(GObject *gobject);
+static void ags_stop_soundcard_finalize(GObject *gobject);
 
-void ags_stop_soundcard_launch(AgsTask *task);
+static void ags_stop_soundcard_launch(AgsTask *task);
 
 /**
  * SECTION:ags_stop_soundcard

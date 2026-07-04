@@ -31,54 +31,54 @@
 
 #include <ags/i18n.h>
 
-void ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard);
-void ags_midi_export_wizard_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_midi_export_wizard_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard);
-void ags_midi_export_wizard_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_midi_export_wizard_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
+static void ags_midi_export_wizard_class_init(AgsMidiExportWizardClass *midi_export_wizard);
+static void ags_midi_export_wizard_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_midi_export_wizard_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard);
+static void ags_midi_export_wizard_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_midi_export_wizard_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
 
-void ags_midi_export_wizard_connect(AgsConnectable *connectable);
-void ags_midi_export_wizard_disconnect(AgsConnectable *connectable);
+static void ags_midi_export_wizard_connect(AgsConnectable *connectable);
+static void ags_midi_export_wizard_disconnect(AgsConnectable *connectable);
 
-void ags_midi_export_wizard_set_update(AgsApplicable *applicable, gboolean update);
-void ags_midi_export_wizard_apply(AgsApplicable *applicable);
-void ags_midi_export_wizard_reset(AgsApplicable *applicable);
+static void ags_midi_export_wizard_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_midi_export_wizard_apply(AgsApplicable *applicable);
+static void ags_midi_export_wizard_reset(AgsApplicable *applicable);
 
-void ags_midi_export_wizard_show(GtkWidget *widget);
+static void ags_midi_export_wizard_show(GtkWidget *widget);
 
-void ags_midi_export_wizard_close_request_callback(GtkWindow *window,
-						   AgsMidiExportWizard *midi_export_wizard);
+static void ags_midi_export_wizard_close_request_callback(GtkWindow *window,
+							  AgsMidiExportWizard *midi_export_wizard);
 
-void ags_midi_export_wizard_previous_button_callback(GtkButton *activate_button,
-						     AgsMidiExportWizard *midi_export_wizard);
-void ags_midi_export_wizard_next_button_callback(GtkButton *activate_button,
-						 AgsMidiExportWizard *midi_export_wizard);
-void ags_midi_export_wizard_activate_button_callback(GtkButton *activate_button,
-						     AgsMidiExportWizard *midi_export_wizard);
+static void ags_midi_export_wizard_previous_button_callback(GtkButton *activate_button,
+							    AgsMidiExportWizard *midi_export_wizard);
+static void ags_midi_export_wizard_next_button_callback(GtkButton *activate_button,
+							AgsMidiExportWizard *midi_export_wizard);
+static void ags_midi_export_wizard_activate_button_callback(GtkButton *activate_button,
+							    AgsMidiExportWizard *midi_export_wizard);
 
-gboolean ags_midi_export_wizard_key_pressed_callback(GtkEventControllerKey *event_controller,
-						     guint keyval,
-						     guint keycode,
-						     GdkModifierType state,
-						     AgsMidiExportWizard *midi_export_wizard);
-void ags_midi_export_wizard_key_released_callback(GtkEventControllerKey *event_controller,
-						  guint keyval,
-						  guint keycode,
-						  GdkModifierType state,
-						  AgsMidiExportWizard *midi_export_wizard);
-gboolean ags_midi_export_wizard_modifiers_callback(GtkEventControllerKey *event_controller,
-						   GdkModifierType keyval,
-						   AgsMidiExportWizard *midi_export_wizard);
+static gboolean ags_midi_export_wizard_key_pressed_callback(GtkEventControllerKey *event_controller,
+							    guint keyval,
+							    guint keycode,
+							    GdkModifierType state,
+							    AgsMidiExportWizard *midi_export_wizard);
+static void ags_midi_export_wizard_key_released_callback(GtkEventControllerKey *event_controller,
+							 guint keyval,
+							 guint keycode,
+							 GdkModifierType state,
+							 AgsMidiExportWizard *midi_export_wizard);
+static gboolean ags_midi_export_wizard_modifiers_callback(GtkEventControllerKey *event_controller,
+							  GdkModifierType keyval,
+							  AgsMidiExportWizard *midi_export_wizard);
 
-void ags_midi_export_wizard_real_response(AgsMidiExportWizard *midi_export_wizard,
-					  gint response_id);
+static void ags_midi_export_wizard_real_response(AgsMidiExportWizard *midi_export_wizard,
+						 gint response_id);
 
 /**
  * SECTION:ags_midi_export_wizard

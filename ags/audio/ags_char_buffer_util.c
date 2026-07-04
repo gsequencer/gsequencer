@@ -19,8 +19,8 @@
 
 #include <ags/audio/ags_char_buffer_util.h>
 
-gpointer ags_char_buffer_util_copy(gpointer ptr);
-void ags_char_buffer_util_free(gpointer ptr);
+static gpointer ags_char_buffer_util_copy(gpointer ptr);
+static void ags_char_buffer_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_char_buffer_util

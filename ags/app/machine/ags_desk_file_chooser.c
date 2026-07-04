@@ -19,9 +19,9 @@
 
 #include <ags/app/machine/ags_desk_file_chooser.h>
 
-void ags_desk_file_chooser_class_init(AgsDeskFileChooserClass *desk_file_chooser);
-void ags_desk_file_chooser_init(AgsDeskFileChooser *desk_file_chooser);
-void ags_desk_file_chooser_finalize(GObject *gobject);
+static void ags_desk_file_chooser_class_init(AgsDeskFileChooserClass *desk_file_chooser);
+static void ags_desk_file_chooser_init(AgsDeskFileChooser *desk_file_chooser);
+static void ags_desk_file_chooser_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_desk_file_chooser

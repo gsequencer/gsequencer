@@ -19,50 +19,50 @@
 
 #include "ags_indicator.h"
 
-void ags_indicator_class_init(AgsIndicatorClass *indicator);
-void ags_indicator_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_indicator_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
-void ags_indicator_init(AgsIndicator *indicator);
-void ags_indicator_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_indicator_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_indicator_dispose(GObject *gobject);
+static void ags_indicator_class_init(AgsIndicatorClass *indicator);
+static void ags_indicator_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_indicator_accessible_range_interface_init(GtkAccessibleRangeInterface *accessible_range);
+static void ags_indicator_init(AgsIndicator *indicator);
+static void ags_indicator_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_indicator_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_indicator_dispose(GObject *gobject);
 
-void ags_indicator_realize(GtkWidget *widget);
-void ags_indicator_unrealize(GtkWidget *widget);
+static void ags_indicator_realize(GtkWidget *widget);
+static void ags_indicator_unrealize(GtkWidget *widget);
 
-void ags_indicator_measure(GtkWidget *widget,
-			   GtkOrientation orientation,
-			   int for_size,
-			   int *minimum,
-			   int *natural,
-			   int *minimum_baseline,
-			   int *natural_baseline);
-void ags_indicator_size_allocate(GtkWidget *widget,
-				 int width,
-				 int height,
-				 int baseline);
+static void ags_indicator_measure(GtkWidget *widget,
+				  GtkOrientation orientation,
+				  int for_size,
+				  int *minimum,
+				  int *natural,
+				  int *minimum_baseline,
+				  int *natural_baseline);
+static void ags_indicator_size_allocate(GtkWidget *widget,
+					int width,
+					int height,
+					int baseline);
 
-gboolean ags_indicator_set_current_value(GtkAccessibleRange *accessible_range,
-					 gdouble current_value);
+static gboolean ags_indicator_set_current_value(GtkAccessibleRange *accessible_range,
+						gdouble current_value);
 
-void ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					       AgsIndicator *indicator);
+static void ags_indicator_frame_clock_update_callback(GdkFrameClock *frame_clock,
+						      AgsIndicator *indicator);
 
-void ags_indicator_snapshot(GtkWidget *widget,
-			    GtkSnapshot *snapshot);
+static void ags_indicator_snapshot(GtkWidget *widget,
+				   GtkSnapshot *snapshot);
 
-void ags_indicator_draw(AgsIndicator *indicator,
-			cairo_t *cr,
-			gboolean is_animation);
+static void ags_indicator_draw(AgsIndicator *indicator,
+			       cairo_t *cr,
+			       gboolean is_animation);
 
-void ags_indicator_adjustment_changed_callback(GtkAdjustment *adjustment,
-					       AgsIndicator *indicator);
+static void ags_indicator_adjustment_changed_callback(GtkAdjustment *adjustment,
+						      AgsIndicator *indicator);
 
 /**
  * SECTION:ags_indicator
