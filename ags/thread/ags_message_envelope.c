@@ -38,6 +38,10 @@ static void ags_message_envelope_get_property(GObject *gobject,
 static void ags_message_envelope_dispose(GObject *gobject);
 static void ags_message_envelope_finalize(GObject *gobject);
 
+static void ags_message_envelope_set_parameter(AgsMessageEnvelope *message_envelope,
+					       guint n_params,
+					       gchar **parameter_name, GValue *value);
+
 /**
  * SECTION:ags_message_envelope
  * @short_description: message envelope

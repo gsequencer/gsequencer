@@ -28,6 +28,9 @@ static GMutex regex_mutex;
 static gpointer ags_math_util_copy(gpointer ptr);
 static void ags_math_util_free(gpointer ptr);
 
+static gchar** ags_math_util_rewrite_numeric(gchar *numeric_str,
+					     gboolean preserve_constants);
+
 /**
  * SECTION:ags_math_util
  * @short_description: math util

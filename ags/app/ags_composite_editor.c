@@ -2285,6 +2285,8 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 		
   GList *start_notation, *notation;
 
+  xmlChar *prop;
+  
   gint first_x;
   guint current_x;
   gint i;
@@ -2338,22 +2340,28 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 			 5)){
 	    guint tmp;
 
-	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      BAD_CAST "x1"),
+	    prop = xmlGetProp(child,
+			      BAD_CAST "x1");
+	    
+	    tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
 				   NULL,
 				   10);
 
 	    if(tmp > current_x){
 	      current_x = tmp;
 	    }
+
+	    xmlFree(prop);
 	  }
 	}
 
 	child = child->next;
       }
 
-      x_boundary = g_ascii_strtoull(xmlGetProp(notation_node,
-					       BAD_CAST "x_boundary"),
+      prop = xmlGetProp(notation_node,
+			BAD_CAST "x_boundary");
+      
+      x_boundary = g_ascii_strtoull(AGS_BAD_CAST prop,
 				    NULL,
 				    10);
 
@@ -2370,7 +2378,9 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 	  
       if(current_x > last_x[0]){
 	last_x[0] = current_x;
-      }	
+      }
+
+      xmlFree(prop);
     }else{
       xmlNode *child;
 
@@ -2390,14 +2400,18 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 			 5)){
 	    guint tmp;
 
-	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      BAD_CAST "x1"),
+	    prop = xmlGetProp(child,
+			      BAD_CAST "x1");
+	    
+	    tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
 				   NULL,
 				   10);
 
 	    if(tmp > current_x){
 	      current_x = tmp;
 	    }
+
+	    xmlFree(prop);
 	  }
 	}
 
@@ -4048,7 +4062,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &buffer_size, "UTF-8", TRUE);
 
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
-			   buffer);
+			   AGS_BAD_CAST buffer);
 
     xmlFreeDoc(clipboard);
   }else if(composite_editor->selected_edit == composite_editor->sheet_edit){
@@ -4140,7 +4154,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
 
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
-			   buffer);
+			   AGS_BAD_CAST buffer);
 
     xmlFreeDoc(clipboard);
   }else if(composite_editor->selected_edit == composite_editor->wave_edit){
@@ -4214,7 +4228,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
 
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
-			   buffer);
+			   AGS_BAD_CAST buffer);
 
     xmlFreeDoc(clipboard);
 #else
@@ -4418,7 +4432,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &buffer_size, "UTF-8", TRUE);
 
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
-			   buffer);
+			   AGS_BAD_CAST buffer);
 
     xmlFreeDoc(clipboard);
     
@@ -4520,7 +4534,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
 
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
-			   buffer);
+			   AGS_BAD_CAST buffer);
 
     xmlFreeDoc(clipboard);
     
@@ -4597,7 +4611,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
 
     gdk_clipboard_set_text(gdk_display_get_clipboard(gdk_display_get_default()),
-			   buffer);
+			   AGS_BAD_CAST buffer);
 
     xmlFreeDoc(clipboard);
     
