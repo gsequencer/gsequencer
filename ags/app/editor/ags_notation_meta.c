@@ -26,12 +26,12 @@
 
 #include <ags/i18n.h>
 
-void ags_notation_meta_class_init(AgsNotationMetaClass *notation_meta);
-void ags_notation_meta_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_notation_meta_init(AgsNotationMeta *notation_meta);
+static void ags_notation_meta_class_init(AgsNotationMetaClass *notation_meta);
+static void ags_notation_meta_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_notation_meta_init(AgsNotationMeta *notation_meta);
 
-void ags_notation_meta_connect(AgsConnectable *connectable);
-void ags_notation_meta_disconnect(AgsConnectable *connectable);
+static void ags_notation_meta_connect(AgsConnectable *connectable);
+static void ags_notation_meta_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_notation_meta

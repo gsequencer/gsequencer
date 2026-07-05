@@ -36,45 +36,45 @@
 
 #include <ags/i18n.h>
 
-void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
-void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop);
-void ags_audio_loop_init(AgsAudioLoop *audio_loop);
-void ags_audio_loop_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_audio_loop_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_audio_loop_dispose(GObject *gobject);
-void ags_audio_loop_finalize(GObject *gobject);
+static void ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop);
+static void ags_audio_loop_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop);
+static void ags_audio_loop_init(AgsAudioLoop *audio_loop);
+static void ags_audio_loop_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_audio_loop_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_audio_loop_dispose(GObject *gobject);
+static void ags_audio_loop_finalize(GObject *gobject);
 
-GRecMutex* ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop);
-void ags_audio_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
-gboolean ags_audio_loop_is_syncing(AgsMainLoop *main_loop);
-void ags_audio_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
-gboolean ags_audio_loop_is_critical_region(AgsMainLoop *main_loop);
-void ags_audio_loop_inc_queued_critical_region(AgsMainLoop *main_loop);
-void ags_audio_loop_dec_queued_critical_region(AgsMainLoop *main_loop);
-guint ags_audio_loop_test_queued_critical_region(AgsMainLoop *main_loop);
-void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
-				     gdouble frequency);
+static GRecMutex* ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop);
+static void ags_audio_loop_set_syncing(AgsMainLoop *main_loop, gboolean is_syncing);
+static gboolean ags_audio_loop_is_syncing(AgsMainLoop *main_loop);
+static void ags_audio_loop_set_critical_region(AgsMainLoop *main_loop, gboolean is_critical_region);
+static gboolean ags_audio_loop_is_critical_region(AgsMainLoop *main_loop);
+static void ags_audio_loop_inc_queued_critical_region(AgsMainLoop *main_loop);
+static void ags_audio_loop_dec_queued_critical_region(AgsMainLoop *main_loop);
+static guint ags_audio_loop_test_queued_critical_region(AgsMainLoop *main_loop);
+static void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
+					    gdouble frequency);
 
-void ags_audio_loop_start(AgsThread *thread);
-void ags_audio_loop_run(AgsThread *thread);
+static void ags_audio_loop_start(AgsThread *thread);
+static void ags_audio_loop_run(AgsThread *thread);
 
-void ags_audio_loop_play_channel(AgsAudioLoop *audio_loop);
-void ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop,
-						AgsPlayback *playback);
-void ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
-						AgsPlayback *playback);
-void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
-void ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop,
-					      AgsPlaybackDomain *playback_domain);
-void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop,
-					      AgsPlaybackDomain *playback_domain);
+static void ags_audio_loop_play_channel(AgsAudioLoop *audio_loop);
+static void ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop,
+						       AgsPlayback *playback);
+static void ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
+						       AgsPlayback *playback);
+static void ags_audio_loop_play_audio(AgsAudioLoop *audio_loop);
+static void ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop,
+						     AgsPlaybackDomain *playback_domain);
+static void ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop,
+						     AgsPlaybackDomain *playback_domain);
 
 /**
  * SECTION:ags_audio_loop

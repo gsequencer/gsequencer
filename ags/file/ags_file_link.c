@@ -28,28 +28,28 @@
 
 #include <ags/i18n.h>
 
-void ags_file_link_class_init(AgsFileLinkClass *file_link);
-void ags_file_link_plugin_interface_init(AgsPluginInterface *plugin);
-void ags_file_link_init(AgsFileLink *file_link);
-void ags_file_link_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_file_link_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-gchar* ags_file_link_get_name(AgsPlugin *plugin);
-void ags_file_link_set_name(AgsPlugin *plugin, gchar *name);
-gchar* ags_file_link_get_version(AgsPlugin *plugin);
-void ags_file_link_set_version(AgsPlugin *plugin, gchar *version);
-gchar* ags_file_link_get_build_id(AgsPlugin *plugin);
-void ags_file_link_set_build_id(AgsPlugin *plugin, gchar *build_id);
-gchar* ags_file_link_get_xml_type(AgsPlugin *plugin);
-void ags_file_link_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
-void ags_file_link_read(GObject *file, xmlNode *node, AgsPlugin *plugin);
-xmlNode* ags_file_link_write(GObject *file, xmlNode *parent, AgsPlugin *plugin);
-void ags_file_link_finalize(GObject *gobject);
+static void ags_file_link_class_init(AgsFileLinkClass *file_link);
+static void ags_file_link_plugin_interface_init(AgsPluginInterface *plugin);
+static void ags_file_link_init(AgsFileLink *file_link);
+static void ags_file_link_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_file_link_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static gchar* ags_file_link_get_name(AgsPlugin *plugin);
+static void ags_file_link_set_name(AgsPlugin *plugin, gchar *name);
+static gchar* ags_file_link_get_version(AgsPlugin *plugin);
+static void ags_file_link_set_version(AgsPlugin *plugin, gchar *version);
+static gchar* ags_file_link_get_build_id(AgsPlugin *plugin);
+static void ags_file_link_set_build_id(AgsPlugin *plugin, gchar *build_id);
+static gchar* ags_file_link_get_xml_type(AgsPlugin *plugin);
+static void ags_file_link_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
+static void ags_file_link_read(GObject *file, xmlNode *node, AgsPlugin *plugin);
+static xmlNode* ags_file_link_write(GObject *file, xmlNode *parent, AgsPlugin *plugin);
+static void ags_file_link_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_file_link

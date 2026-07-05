@@ -24,23 +24,23 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_playback_channel_processor_class_init(AgsFxPlaybackChannelProcessorClass *fx_playback_channel_processor);
-void ags_fx_playback_channel_processor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_fx_playback_channel_processor_init(AgsFxPlaybackChannelProcessor *fx_playback_channel_processor);
-void ags_fx_playback_channel_processor_dispose(GObject *gobject);
-void ags_fx_playback_channel_processor_finalize(GObject *gobject);
+static void ags_fx_playback_channel_processor_class_init(AgsFxPlaybackChannelProcessorClass *fx_playback_channel_processor);
+static void ags_fx_playback_channel_processor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_fx_playback_channel_processor_init(AgsFxPlaybackChannelProcessor *fx_playback_channel_processor);
+static void ags_fx_playback_channel_processor_dispose(GObject *gobject);
+static void ags_fx_playback_channel_processor_finalize(GObject *gobject);
 
-void ags_fx_playback_channel_processor_connect(AgsConnectable *connectable);
-void ags_fx_playback_channel_processor_disconnect(AgsConnectable *connectable);
+static void ags_fx_playback_channel_processor_connect(AgsConnectable *connectable);
+static void ags_fx_playback_channel_processor_disconnect(AgsConnectable *connectable);
 
-void ags_fx_playback_channel_processor_source_recycling_changed_callback(AgsChannel *channel,
-									 AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-									 AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-									 AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-									 AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
-									 AgsFxPlaybackChannelProcessor *fx_playback_channel_processor);
+static void ags_fx_playback_channel_processor_source_recycling_changed_callback(AgsChannel *channel,
+										AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+										AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+										AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+										AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
+										AgsFxPlaybackChannelProcessor *fx_playback_channel_processor);
 
-void ags_fx_playback_channel_processor_real_run_inter(AgsRecall *recall);
+static void ags_fx_playback_channel_processor_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_playback_channel_processor
@@ -55,7 +55,7 @@ void ags_fx_playback_channel_processor_real_run_inter(AgsRecall *recall);
 static gpointer ags_fx_playback_channel_processor_parent_class = NULL;
 static AgsConnectableInterface* ags_fx_playback_channel_processor_parent_connectable_interface;
 
-const gchar *ags_fx_playback_channel_processor_plugin_name = "ags-fx-playback";
+static const gchar *ags_fx_playback_channel_processor_plugin_name = "ags-fx-playback";
 
 GType
 ags_fx_playback_channel_processor_get_type()

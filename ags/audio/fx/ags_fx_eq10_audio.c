@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_eq10_audio_class_init(AgsFxEq10AudioClass *fx_eq10_audio);
-void ags_fx_eq10_audio_init(AgsFxEq10Audio *fx_eq10_audio);
-void ags_fx_eq10_audio_dispose(GObject *gobject);
-void ags_fx_eq10_audio_finalize(GObject *gobject);
+static void ags_fx_eq10_audio_class_init(AgsFxEq10AudioClass *fx_eq10_audio);
+static void ags_fx_eq10_audio_init(AgsFxEq10Audio *fx_eq10_audio);
+static void ags_fx_eq10_audio_dispose(GObject *gobject);
+static void ags_fx_eq10_audio_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_eq10_audio
@@ -38,7 +38,7 @@ void ags_fx_eq10_audio_finalize(GObject *gobject);
 
 static gpointer ags_fx_eq10_audio_parent_class = NULL;
 
-const gchar *ags_fx_eq10_audio_plugin_name = "ags-fx-eq10";
+static const gchar *ags_fx_eq10_audio_plugin_name = "ags-fx-eq10";
 
 GType
 ags_fx_eq10_audio_get_type()

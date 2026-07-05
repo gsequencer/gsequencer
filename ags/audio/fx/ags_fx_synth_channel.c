@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_synth_channel_class_init(AgsFxSynthChannelClass *fx_synth_channel);
-void ags_fx_synth_channel_init(AgsFxSynthChannel *fx_synth_channel);
-void ags_fx_synth_channel_dispose(GObject *gobject);
-void ags_fx_synth_channel_finalize(GObject *gobject);
+static void ags_fx_synth_channel_class_init(AgsFxSynthChannelClass *fx_synth_channel);
+static void ags_fx_synth_channel_init(AgsFxSynthChannel *fx_synth_channel);
+static void ags_fx_synth_channel_dispose(GObject *gobject);
+static void ags_fx_synth_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_synth_channel
@@ -40,13 +40,13 @@ void ags_fx_synth_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_synth_channel_parent_class = NULL;
 
-const gchar *ags_fx_synth_channel_plugin_name = "ags-fx-synth";
+static const gchar *ags_fx_synth_channel_plugin_name = "ags-fx-synth";
 
-const gchar* ags_fx_synth_channel_specifier[] = {
+static const gchar* ags_fx_synth_channel_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_synth_channel_control_port[] = {
+static const gchar* ags_fx_synth_channel_control_port[] = {
   NULL,
 };
 

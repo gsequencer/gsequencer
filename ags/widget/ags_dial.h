@@ -51,10 +51,20 @@ G_BEGIN_DECLS
 typedef struct _AgsDial AgsDial;
 typedef struct _AgsDialClass AgsDialClass;
 
+/**
+ * AgsDialFlags: 
+ * @AGS_DIAL_WITH_BUTTONS: with buttons
+ * @AGS_DIAL_SEEMLESS_MODE: seemless mode
+ * @AGS_DIAL_INVERSE_LIGHT: inverse light
+ * @AGS_DIAL_NO_UPDATE: no update
+ * 
+ * Enum values to specify particular flags.
+ */
 typedef enum{
   AGS_DIAL_WITH_BUTTONS           = 1,
   AGS_DIAL_SEEMLESS_MODE          = 1 <<  1,
   AGS_DIAL_INVERSE_LIGHT          = 1 <<  2,
+  AGS_DIAL_NO_UPDATE              = 1 <<  3,
 }AgsDialFlags;
 
 typedef enum{

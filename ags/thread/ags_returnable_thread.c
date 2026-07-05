@@ -33,23 +33,23 @@
 
 #include <ags/i18n.h>
 
-void ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread);
-void ags_returnable_thread_init(AgsReturnableThread *returnable_thread);
-void ags_returnable_thread_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_returnable_thread_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_returnable_thread_dispose(GObject *gobject);
-void ags_returnable_thread_finalize(GObject *gobject);
+static void ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread);
+static void ags_returnable_thread_init(AgsReturnableThread *returnable_thread);
+static void ags_returnable_thread_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_returnable_thread_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_returnable_thread_dispose(GObject *gobject);
+static void ags_returnable_thread_finalize(GObject *gobject);
 
-void ags_returnable_thread_start(AgsThread *thread);
-void ags_returnable_thread_run(AgsThread *thread);
-void ags_returnable_thread_stop(AgsThread *thread);
-void ags_returnable_thread_resume(AgsThread *thread);
+static void ags_returnable_thread_start(AgsThread *thread);
+static void ags_returnable_thread_run(AgsThread *thread);
+static void ags_returnable_thread_stop(AgsThread *thread);
+static void ags_returnable_thread_resume(AgsThread *thread);
 
 /**
  * SECTION:ags_returnable_thread

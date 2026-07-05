@@ -58,6 +58,8 @@ GType ags_scrolled_scale_box_get_type(void);
 
 GtkScrolledWindow* ags_scrolled_scale_box_get_scrolled_window(AgsScrolledScaleBox *scrolled_scale_box);
 
+AgsScaleBox* ags_scrolled_scale_box_get_scale_box(AgsScrolledScaleBox *scrolled_scale_box);
+
 AgsScrolledScaleBox* ags_scrolled_scale_box_new();
 
 G_END_DECLS

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,33 +26,33 @@
 
 #include <ags/i18n.h>
 
-void ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member);
-void ags_bulk_member_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_bulk_member_init(AgsBulkMember *bulk_member);
-void ags_bulk_member_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_bulk_member_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_bulk_member_finalize(GObject *gobject);
+static void ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member);
+static void ags_bulk_member_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_bulk_member_init(AgsBulkMember *bulk_member);
+static void ags_bulk_member_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_bulk_member_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_bulk_member_finalize(GObject *gobject);
 
-void ags_bulk_member_connect(AgsConnectable *connectable);
-void ags_bulk_member_disconnect(AgsConnectable *connectable);
+static void ags_bulk_member_connect(AgsConnectable *connectable);
+static void ags_bulk_member_disconnect(AgsConnectable *connectable);
 
-void ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
-				     GList *list,
-				     gpointer port_data);
+static void ags_bulk_member_change_port_all(AgsBulkMember *bulk_member,
+					    GList *list,
+					    gpointer port_data);
 
-void ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
-				      gpointer port_data);
+static void ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
+					     gpointer port_data);
 
-AgsPort* ags_bulk_member_find_specifier(GList *recall,
-					gchar *specifier);
+static AgsPort* ags_bulk_member_find_specifier(GList *recall,
+					       gchar *specifier);
 
-GList* ags_bulk_member_real_find_port(AgsBulkMember *bulk_member);
+static GList* ags_bulk_member_real_find_port(AgsBulkMember *bulk_member);
 
 /**
  * SECTION:ags_bulk_member

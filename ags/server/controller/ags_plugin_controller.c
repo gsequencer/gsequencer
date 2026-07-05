@@ -19,7 +19,7 @@
 
 #include <ags/server/controller/ags_plugin_controller.h>
 
-void ags_plugin_controller_class_init(AgsPluginControllerInterface *ginterface);
+static void ags_plugin_controller_class_init(AgsPluginControllerInterface *ginterface);
 
 /**
  * SECTION:ags_plugin_controller

@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_applicable.h>
 
-void ags_applicable_base_init(AgsApplicableInterface *ginterface);
+static void ags_applicable_base_init(AgsApplicableInterface *ginterface);
 
 /**
  * SECTION:ags_applicable

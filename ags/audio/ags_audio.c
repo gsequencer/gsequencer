@@ -145,151 +145,151 @@
  * properties.
  */
 
-void ags_audio_class_init(AgsAudioClass *audio_class);
-void ags_audio_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_init(AgsAudio *audio);
-void ags_audio_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_audio_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
-void ags_audio_dispose(GObject *gobject);
-void ags_audio_finalize(GObject *gobject);
+static void ags_audio_class_init(AgsAudioClass *audio_class);
+static void ags_audio_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_init(AgsAudio *audio);
+static void ags_audio_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+static void ags_audio_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+static void ags_audio_dispose(GObject *gobject);
+static void ags_audio_finalize(GObject *gobject);
 
-AgsUUID* ags_audio_get_uuid(AgsConnectable *connectable);
-gboolean ags_audio_has_resource(AgsConnectable *connectable);
-gboolean ags_audio_is_ready(AgsConnectable *connectable);
-void ags_audio_add_to_registry(AgsConnectable *connectable);
-void ags_audio_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_audio_list_resource(AgsConnectable *connectable);
-xmlNode* ags_audio_xml_compose(AgsConnectable *connectable);
-void ags_audio_xml_parse(AgsConnectable *connectable,
-			 xmlNode *node);
-gboolean ags_audio_is_connected(AgsConnectable *connectable);
-void ags_audio_connect(AgsConnectable *connectable);
-void ags_audio_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_audio_get_uuid(AgsConnectable *connectable);
+static gboolean ags_audio_has_resource(AgsConnectable *connectable);
+static gboolean ags_audio_is_ready(AgsConnectable *connectable);
+static void ags_audio_add_to_registry(AgsConnectable *connectable);
+static void ags_audio_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_audio_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_audio_xml_compose(AgsConnectable *connectable);
+static void ags_audio_xml_parse(AgsConnectable *connectable,
+				xmlNode *node);
+static gboolean ags_audio_is_connected(AgsConnectable *connectable);
+static void ags_audio_connect(AgsConnectable *connectable);
+static void ags_audio_disconnect(AgsConnectable *connectable);
 
-void ags_audio_set_ability_flags_channel(AgsChannel *start_channel, guint ability_flags);
-void ags_audio_unset_ability_flags_channel(AgsChannel *start_channel, guint ability_flags);
+static void ags_audio_set_ability_flags_channel(AgsChannel *start_channel, guint ability_flags);
+static void ags_audio_unset_ability_flags_channel(AgsChannel *start_channel, guint ability_flags);
 
-void ags_audio_set_audio_channels_grow(AgsAudio *audio,
-				       GType channel_type,
-				       guint audio_channels, guint audio_channels_old,
-				       guint bank_dim_0, guint bank_dim_1, guint bank_dim_2,
-				       gboolean add_recycling, gboolean add_pattern, gboolean add_synth_generator,
-				       gboolean link_recycling,
-				       gboolean set_sync_link, gboolean set_async_link);
+static void ags_audio_set_audio_channels_grow(AgsAudio *audio,
+					      GType channel_type,
+					      guint audio_channels, guint audio_channels_old,
+					      guint bank_dim_0, guint bank_dim_1, guint bank_dim_2,
+					      gboolean add_recycling, gboolean add_pattern, gboolean add_synth_generator,
+					      gboolean link_recycling,
+					      gboolean set_sync_link, gboolean set_async_link);
 
-void ags_audio_set_audio_channels_shrink_zero(AgsAudio *audio);
-void ags_audio_set_audio_channels_shrink(AgsAudio *audio,
-					 guint audio_channels, guint audio_channels_old);
-void ags_audio_set_audio_channels_shrink_notation(AgsAudio *audio,
-						  guint audio_channels, guint audio_channels_old);
-void ags_audio_set_audio_channels_shrink_automation(AgsAudio *audio,
-						    guint audio_channels, guint audio_channels_old);
-void ags_audio_set_audio_channels_shrink_wave(AgsAudio *audio,
-					      guint audio_channels, guint audio_channels_old);
-void ags_audio_set_audio_channels_shrink_midi(AgsAudio *audio,
-					      guint audio_channels, guint audio_channels_old);
+static void ags_audio_set_audio_channels_shrink_zero(AgsAudio *audio);
+static void ags_audio_set_audio_channels_shrink(AgsAudio *audio,
+						guint audio_channels, guint audio_channels_old);
+static void ags_audio_set_audio_channels_shrink_notation(AgsAudio *audio,
+							 guint audio_channels, guint audio_channels_old);
+static void ags_audio_set_audio_channels_shrink_automation(AgsAudio *audio,
+							   guint audio_channels, guint audio_channels_old);
+static void ags_audio_set_audio_channels_shrink_wave(AgsAudio *audio,
+						     guint audio_channels, guint audio_channels_old);
+static void ags_audio_set_audio_channels_shrink_midi(AgsAudio *audio,
+						     guint audio_channels, guint audio_channels_old);
       
-void ags_audio_real_set_audio_channels(AgsAudio *audio,
-				       guint audio_channels, guint audio_channels_old);
+static void ags_audio_real_set_audio_channels(AgsAudio *audio,
+					      guint audio_channels, guint audio_channels_old);
 
-void ags_audio_set_pads_grow(AgsAudio *audio,
-			     GType channel_type,
-			     guint pads, guint pads_old,
-			     guint bank_dim_0, guint bank_dim_1, guint bank_dim_2,
-			     gboolean add_recycling, gboolean add_pattern, gboolean add_synth_generator,
-			     gboolean link_recycling,
-			     gboolean set_sync_link, gboolean set_async_link);
-void ags_audio_set_pads_unlink(AgsAudio *audio,
-			       GType channel_type,
-			       guint pads);
-void ags_audio_set_pads_shrink_zero(AgsAudio *audio,
+static void ags_audio_set_pads_grow(AgsAudio *audio,
 				    GType channel_type,
-				    guint pads);
-void ags_audio_set_pads_shrink(AgsAudio *audio,
-			       GType channel_type,
-			       guint pads);
-void ags_audio_set_pads_remove_notes(AgsAudio *audio,
-				     GType channel_type,
-				     guint pads);
-void ags_audio_set_pads_shrink_automation(AgsAudio *audio,
-					  GType channel_type,
-					  guint pads);
-void ags_audio_set_pads_shrink_wave(AgsAudio *audio,
+				    guint pads, guint pads_old,
+				    guint bank_dim_0, guint bank_dim_1, guint bank_dim_2,
+				    gboolean add_recycling, gboolean add_pattern, gboolean add_synth_generator,
+				    gboolean link_recycling,
+				    gboolean set_sync_link, gboolean set_async_link);
+static void ags_audio_set_pads_unlink(AgsAudio *audio,
+				      GType channel_type,
+				      guint pads);
+static void ags_audio_set_pads_shrink_zero(AgsAudio *audio,
+					   GType channel_type,
+					   guint pads);
+static void ags_audio_set_pads_shrink(AgsAudio *audio,
+				      GType channel_type,
+				      guint pads);
+static void ags_audio_set_pads_remove_notes(AgsAudio *audio,
+					    GType channel_type,
+					    guint pads);
+static void ags_audio_set_pads_shrink_automation(AgsAudio *audio,
+						 GType channel_type,
+						 guint pads);
+static void ags_audio_set_pads_shrink_wave(AgsAudio *audio,
+					   GType channel_type,
+					   guint pads);
+static void ags_audio_set_pads_shrink_midi(AgsAudio *audio,
+					   GType channel_type,
+					   guint pads);
+
+static void ags_audio_real_set_pads(AgsAudio *audio,
 				    GType channel_type,
-				    guint pads);
-void ags_audio_set_pads_shrink_midi(AgsAudio *audio,
-				    GType channel_type,
-				    guint pads);
+				    guint channels, guint channels_old);
 
-void ags_audio_real_set_pads(AgsAudio *audio,
-			     GType channel_type,
-			     guint channels, guint channels_old);
+static void ags_audio_real_set_output_soundcard(AgsAudio *audio, GObject *output_soundcard);
 
-void ags_audio_real_set_output_soundcard(AgsAudio *audio, GObject *output_soundcard);
+static void ags_audio_real_set_input_soundcard(AgsAudio *audio, GObject *input_soundcard);
 
-void ags_audio_real_set_input_soundcard(AgsAudio *audio, GObject *input_soundcard);
+static void ags_audio_real_set_output_sequencer(AgsAudio *audio, GObject *output_sequencer);
 
-void ags_audio_real_set_output_sequencer(AgsAudio *audio, GObject *output_sequencer);
+static void ags_audio_real_set_input_sequencer(AgsAudio *audio, GObject *input_sequencer);
 
-void ags_audio_real_set_input_sequencer(AgsAudio *audio, GObject *input_sequencer);
+static void ags_audio_set_samplerate_channel(AgsChannel *start_channel, guint samplerate);
+static void ags_audio_real_set_samplerate(AgsAudio *audio, guint samplerate);
 
-void ags_audio_set_samplerate_channel(AgsChannel *start_channel, guint samplerate);
-void ags_audio_real_set_samplerate(AgsAudio *audio, guint samplerate);
+static void ags_audio_set_buffer_size_channel(AgsChannel *start_channel, guint buffer_size);
+static void ags_audio_real_set_buffer_size(AgsAudio *audio, guint buffer_size);
 
-void ags_audio_set_buffer_size_channel(AgsChannel *start_channel, guint buffer_size);
-void ags_audio_real_set_buffer_size(AgsAudio *audio, guint buffer_size);
+static void ags_audio_set_format_channel(AgsChannel *start_channel, AgsSoundcardFormat format);
+static void ags_audio_real_set_format(AgsAudio *audio, AgsSoundcardFormat format);
 
-void ags_audio_set_format_channel(AgsChannel *start_channel, AgsSoundcardFormat format);
-void ags_audio_real_set_format(AgsAudio *audio, AgsSoundcardFormat format);
+static void ags_audio_real_duplicate_recall(AgsAudio *audio,
+					    AgsRecallID *recall_id,
+					    guint pad, guint audio_channel,
+					    guint line);
+static void ags_audio_real_resolve_recall(AgsAudio *audio,
+					  AgsRecallID *recall_id);
 
-void ags_audio_real_duplicate_recall(AgsAudio *audio,
-				     AgsRecallID *recall_id,
-				     guint pad, guint audio_channel,
-				     guint line);
-void ags_audio_real_resolve_recall(AgsAudio *audio,
-				   AgsRecallID *recall_id);
+static void ags_audio_real_init_recall(AgsAudio *audio,
+				       AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
+static void ags_audio_real_play_recall(AgsAudio *audio,
+				       AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
 
-void ags_audio_real_init_recall(AgsAudio *audio,
-				AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
-void ags_audio_real_play_recall(AgsAudio *audio,
-				AgsRecallID *recall_id, AgsSoundStagingFlags staging_flags);
+static void ags_audio_real_done_recall(AgsAudio *audio,
+				       AgsRecallID *recall_id);
+static void ags_audio_real_cancel_recall(AgsAudio *audio,
+					 AgsRecallID *recall_id);
 
-void ags_audio_real_done_recall(AgsAudio *audio,
-				AgsRecallID *recall_id);
-void ags_audio_real_cancel_recall(AgsAudio *audio,
-				  AgsRecallID *recall_id);
+static void ags_audio_real_cleanup_recall(AgsAudio *audio,
+					  AgsRecallID *recall_id);
 
-void ags_audio_real_cleanup_recall(AgsAudio *audio,
-				   AgsRecallID *recall_id);
+static void ags_audio_recall_done_callback(AgsRecall *recall,
+					   AgsAudio *audio);
 
-void ags_audio_recall_done_callback(AgsRecall *recall,
-				    AgsAudio *audio);
+static GList* ags_audio_real_start(AgsAudio *audio,
+				   gint sound_scope);
+static void ags_audio_real_stop(AgsAudio *audio,
+				GList *recall_id, gint sound_scope);
 
-GList* ags_audio_real_start(AgsAudio *audio,
-			    gint sound_scope);
-void ags_audio_real_stop(AgsAudio *audio,
-			 GList *recall_id, gint sound_scope);
+static GList* ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope);
 
-GList* ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope);
+static void ags_audio_set_property_all(AgsAudio *audio,
+				       gint n_params,
+				       const gchar *parameter_name[], const GValue value[]);
+static void ags_audio_recursive_set_property_down(AgsChannel *channel,
+						  gint n_params,
+						  const gchar *parameter_name[], const GValue value[]);
+static void ags_audio_recursive_set_property_down_input(AgsChannel *channel,
+							gint n_params,
+							const gchar *parameter_name[], const GValue value[]);
 
-void ags_audio_set_property_all(AgsAudio *audio,
-				gint n_params,
-				const gchar *parameter_name[], const GValue value[]);
-void ags_audio_recursive_set_property_down(AgsChannel *channel,
-					   gint n_params,
-					   const gchar *parameter_name[], const GValue value[]);
-void ags_audio_recursive_set_property_down_input(AgsChannel *channel,
-						 gint n_params,
-						 const gchar *parameter_name[], const GValue value[]);
-
-void ags_audio_real_recursive_run_stage(AgsAudio *audio,
-					gint sound_scope, guint stage);
+static void ags_audio_real_recursive_run_stage(AgsAudio *audio,
+					       gint sound_scope, guint stage);
 
 enum{
   SET_AUDIO_CHANNELS,

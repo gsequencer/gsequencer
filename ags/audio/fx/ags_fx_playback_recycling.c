@@ -29,23 +29,23 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_playback_recycling_class_init(AgsFxPlaybackRecyclingClass *fx_playback_recycling);
-void ags_fx_playback_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_fx_playback_recycling_init(AgsFxPlaybackRecycling *fx_playback_recycling);
-void ags_fx_playback_recycling_dispose(GObject *gobject);
-void ags_fx_playback_recycling_finalize(GObject *gobject);
+static void ags_fx_playback_recycling_class_init(AgsFxPlaybackRecyclingClass *fx_playback_recycling);
+static void ags_fx_playback_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_fx_playback_recycling_init(AgsFxPlaybackRecycling *fx_playback_recycling);
+static void ags_fx_playback_recycling_dispose(GObject *gobject);
+static void ags_fx_playback_recycling_finalize(GObject *gobject);
 
-void ags_fx_playback_recycling_connect(AgsConnectable *connectable);
-void ags_fx_playback_recycling_disconnect(AgsConnectable *connectable);
+static void ags_fx_playback_recycling_connect(AgsConnectable *connectable);
+static void ags_fx_playback_recycling_disconnect(AgsConnectable *connectable);
 
-void ags_fx_playback_recycling_notify_source_callback(GObject *gobject,
+static void ags_fx_playback_recycling_notify_source_callback(GObject *gobject,
 						      GParamSpec *pspec,
 						      gpointer user_data);
 
-void ags_fx_playback_recycling_add_audio_signal_callback(AgsRecycling *recycling,
+static void ags_fx_playback_recycling_add_audio_signal_callback(AgsRecycling *recycling,
 							 AgsAudioSignal *audio_signal,
 							 AgsFxPlaybackRecycling *fx_playback_recycling);
-void ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycling,
+static void ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycling,
 							    AgsAudioSignal *audio_signal,
 							    AgsFxPlaybackRecycling *fx_playback_recycling);
 
@@ -62,7 +62,7 @@ void ags_fx_playback_recycling_remove_audio_signal_callback(AgsRecycling *recycl
 static gpointer ags_fx_playback_recycling_parent_class = NULL;
 static AgsConnectableInterface* ags_fx_playback_recycling_parent_connectable_interface;
 
-const gchar *ags_fx_playback_recycling_plugin_name = "ags-fx-playback";
+static const gchar *ags_fx_playback_recycling_plugin_name = "ags-fx-playback";
 
 GType
 ags_fx_playback_recycling_get_type()

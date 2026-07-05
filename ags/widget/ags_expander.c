@@ -21,26 +21,26 @@
 
 #include <stdlib.h>
 
-void ags_expander_class_init(AgsExpanderClass *expander);
-void ags_expander_init(AgsExpander *expander);
-void ags_expander_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_expander_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_expander_finalize(GObject *gobject);
-void ags_expander_show(GtkWidget *widget);
+static void ags_expander_class_init(AgsExpanderClass *expander);
+static void ags_expander_init(AgsExpander *expander);
+static void ags_expander_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+static void ags_expander_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+static void ags_expander_finalize(GObject *gobject);
+static void ags_expander_show(GtkWidget *widget);
 
-void ags_expander_activate_callback(GtkExpander *expander,
-				    AgsExpander *expander_with_grid);
+static void ags_expander_activate_callback(GtkExpander *expander,
+					   AgsExpander *expander_with_grid);
 
-void ags_expander_insert_child(AgsExpander *expander,
-			       AgsExpanderChild *child);
-void ags_expander_remove_child(AgsExpander *expander,
-			       AgsExpanderChild *child);
+static void ags_expander_insert_child(AgsExpander *expander,
+				      AgsExpanderChild *child);
+static void ags_expander_remove_child(AgsExpander *expander,
+				      AgsExpanderChild *child);
 
 /**
  * SECTION:ags_expander

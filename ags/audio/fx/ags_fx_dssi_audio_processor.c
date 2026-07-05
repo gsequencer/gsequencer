@@ -19,10 +19,10 @@
 
 #include <ags/audio/fx/ags_fx_dssi_audio_processor.h>
 
-void ags_fx_dssi_audio_processor_class_init(AgsFxDssiAudioProcessorClass *fx_dssi_audio_processor);
-void ags_fx_dssi_audio_processor_init(AgsFxDssiAudioProcessor *fx_dssi_audio_processor);
-void ags_fx_dssi_audio_processor_dispose(GObject *gobject);
-void ags_fx_dssi_audio_processor_finalize(GObject *gobject);
+static void ags_fx_dssi_audio_processor_class_init(AgsFxDssiAudioProcessorClass *fx_dssi_audio_processor);
+static void ags_fx_dssi_audio_processor_init(AgsFxDssiAudioProcessor *fx_dssi_audio_processor);
+static void ags_fx_dssi_audio_processor_dispose(GObject *gobject);
+static void ags_fx_dssi_audio_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_dssi_audio_processor

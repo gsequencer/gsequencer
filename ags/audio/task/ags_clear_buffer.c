@@ -43,20 +43,20 @@
 
 #include <ags/i18n.h>
 
-void ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer);
-void ags_clear_buffer_init(AgsClearBuffer *clear_buffer);
-void ags_clear_buffer_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_clear_buffer_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_clear_buffer_dispose(GObject *gobject);
-void ags_clear_buffer_finalize(GObject *gobject);
+static void ags_clear_buffer_class_init(AgsClearBufferClass *clear_buffer);
+static void ags_clear_buffer_init(AgsClearBuffer *clear_buffer);
+static void ags_clear_buffer_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_clear_buffer_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_clear_buffer_dispose(GObject *gobject);
+static void ags_clear_buffer_finalize(GObject *gobject);
 
-void ags_clear_buffer_launch(AgsTask *task);
+static void ags_clear_buffer_launch(AgsTask *task);
 
 /**
  * SECTION:ags_clear_buffer

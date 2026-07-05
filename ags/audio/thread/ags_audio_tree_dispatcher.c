@@ -31,36 +31,36 @@
 
 #include <ags/i18n.h>
 
-void ags_audio_tree_dispatcher_class_init(AgsAudioTreeDispatcherClass *audio_tree_dispatcher);
-void ags_audio_tree_dispatcher_init(AgsAudioTreeDispatcher *audio_tree_dispatcher);
-void ags_audio_tree_dispatcher_dispose(GObject *gobject);
-void ags_audio_tree_dispatcher_finalize(GObject *gobject);
+static void ags_audio_tree_dispatcher_class_init(AgsAudioTreeDispatcherClass *audio_tree_dispatcher);
+static void ags_audio_tree_dispatcher_init(AgsAudioTreeDispatcher *audio_tree_dispatcher);
+static void ags_audio_tree_dispatcher_dispose(GObject *gobject);
+static void ags_audio_tree_dispatcher_finalize(GObject *gobject);
 
-GList* ags_audio_tree_dispatcher_compile_tree_list_audio(AgsAudio *audio,
-							 GObject *dispatch_source,
-							 gint sound_scope,
-							 GList *tree_list);
-
-GList* ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
-							      GObject *dispatch_source,
-							      gint sound_scope,
-							      AgsRecyclingContext *recycling_context,
-							      GList *tree_list);
-GList* ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
+static GList* ags_audio_tree_dispatcher_compile_tree_list_audio(AgsAudio *audio,
 								GObject *dispatch_source,
 								gint sound_scope,
-								AgsRecyclingContext *recycling_context,
 								GList *tree_list);
-GList* ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *channel,
-								      GObject *dispatch_source,
-								      gint sound_scope,
-								      AgsRecyclingContext *recycling_context,
-								      GList *tree_list);
 
-GList* ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
-							   GObject *dispatch_source,
-							   gint sound_scope,
-							   GList *tree_list);
+static GList* ags_audio_tree_dispatcher_compile_tree_list_channel_up(AgsChannel *channel,
+								     GObject *dispatch_source,
+								     gint sound_scope,
+								     AgsRecyclingContext *recycling_context,
+								     GList *tree_list);
+static GList* ags_audio_tree_dispatcher_compile_tree_list_channel_down(AgsChannel *channel,
+								       GObject *dispatch_source,
+								       gint sound_scope,
+								       AgsRecyclingContext *recycling_context,
+								       GList *tree_list);
+static GList* ags_audio_tree_dispatcher_compile_tree_list_channel_down_input(AgsChannel *channel,
+									     GObject *dispatch_source,
+									     gint sound_scope,
+									     AgsRecyclingContext *recycling_context,
+									     GList *tree_list);
+
+static GList* ags_audio_tree_dispatcher_compile_tree_list_channel(AgsChannel *channel,
+								  GObject *dispatch_source,
+								  gint sound_scope,
+								  GList *tree_list);
 
 /**
  * SECTION:ags_audio_tree_dispatcher
@@ -1139,7 +1139,7 @@ ags_audio_tree_dispatcher_remove_dispatch_source(AgsAudioTreeDispatcher *audio_t
 }
 
 /**
- * ags_audio_tree_dispatcher_get_tree_list:
+ * ags_audio_tree_dispatcher_get_staging_program:
  * @audio_tree_dispatcher: the #AgsAudioTreeDispatcher
  * @staging_program_count: (out): the staging program count return value
  * 

@@ -26,26 +26,26 @@
 
 #include <ags/i18n.h>
 
-void ags_set_format_class_init(AgsSetFormatClass *set_format);
-void ags_set_format_init(AgsSetFormat *set_format);
-void ags_set_format_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_set_format_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_set_format_dispose(GObject *gobject);
-void ags_set_format_finalize(GObject *gobject);
+static void ags_set_format_class_init(AgsSetFormatClass *set_format);
+static void ags_set_format_init(AgsSetFormat *set_format);
+static void ags_set_format_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_set_format_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_set_format_dispose(GObject *gobject);
+static void ags_set_format_finalize(GObject *gobject);
 
-void ags_set_format_launch(AgsTask *task);
+static void ags_set_format_launch(AgsTask *task);
 
-void ags_set_format_audio_signal(AgsSetFormat *set_format, AgsAudioSignal *audio_signal);
-void ags_set_format_recycling(AgsSetFormat *set_format, AgsRecycling *recycling);
-void ags_set_format_channel(AgsSetFormat *set_format, AgsChannel *channel);
-void ags_set_format_audio(AgsSetFormat *set_format, AgsAudio *audio);
-void ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard);
+static void ags_set_format_audio_signal(AgsSetFormat *set_format, AgsAudioSignal *audio_signal);
+static void ags_set_format_recycling(AgsSetFormat *set_format, AgsRecycling *recycling);
+static void ags_set_format_channel(AgsSetFormat *set_format, AgsChannel *channel);
+static void ags_set_format_audio(AgsSetFormat *set_format, AgsAudio *audio);
+static void ags_set_format_soundcard(AgsSetFormat *set_format, GObject *soundcard);
 
 /**
  * SECTION:ags_set_format

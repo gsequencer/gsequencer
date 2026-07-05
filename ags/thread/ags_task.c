@@ -23,18 +23,18 @@
 
 #include <ags/i18n.h>
 
-void ags_task_class_init(AgsTaskClass *task);
-void ags_task_init(AgsTask *task);
-void ags_task_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_task_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_task_dispose(GObject *gobject);
-void ags_task_finalize(GObject *gobject);
+static void ags_task_class_init(AgsTaskClass *task);
+static void ags_task_init(AgsTask *task);
+static void ags_task_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_task_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_task_dispose(GObject *gobject);
+static void ags_task_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_task

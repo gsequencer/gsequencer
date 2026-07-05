@@ -25,25 +25,25 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_analyse_channel_class_init(AgsFxAnalyseChannelClass *fx_analyse_channel);
-void ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel);
-void ags_fx_analyse_channel_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_fx_analyse_channel_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_fx_analyse_channel_dispose(GObject *gobject);
-void ags_fx_analyse_channel_finalize(GObject *gobject);
+static void ags_fx_analyse_channel_class_init(AgsFxAnalyseChannelClass *fx_analyse_channel);
+static void ags_fx_analyse_channel_init(AgsFxAnalyseChannel *fx_analyse_channel);
+static void ags_fx_analyse_channel_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_fx_analyse_channel_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_fx_analyse_channel_dispose(GObject *gobject);
+static void ags_fx_analyse_channel_finalize(GObject *gobject);
 
-void ags_fx_analyse_channel_notify_samplerate_callback(GObject *gobject,
-						       GParamSpec *pspec,
-						       gpointer user_data);
-void ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
-							GParamSpec *pspec,
-							gpointer user_data);
+static void ags_fx_analyse_channel_notify_samplerate_callback(GObject *gobject,
+							      GParamSpec *pspec,
+							      gpointer user_data);
+static void ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
+							       GParamSpec *pspec,
+							       gpointer user_data);
 
 /**
  * SECTION:ags_fx_analyse_channel
@@ -57,15 +57,15 @@ void ags_fx_analyse_channel_notify_buffer_size_callback(GObject *gobject,
 
 static gpointer ags_fx_analyse_channel_parent_class = NULL;
 
-const gchar *ags_fx_analyse_channel_plugin_name = "ags-fx-analyse";
+static const gchar *ags_fx_analyse_channel_plugin_name = "ags-fx-analyse";
 
-const gchar* ags_fx_analyse_channel_specifier[] = {
+static const gchar* ags_fx_analyse_channel_specifier[] = {
   "./frequency[0]",
   "./magnitude[0]",
   NULL,
 };
 
-const gchar* ags_fx_analyse_channel_control_port[] = {
+static const gchar* ags_fx_analyse_channel_control_port[] = {
   "1/2",
   "2/2",
   NULL,

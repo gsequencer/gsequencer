@@ -22,10 +22,10 @@
 #include <ags/thread/ags_message_queue.h>
 #include <ags/thread/ags_message_envelope.h>
 
-void ags_message_delivery_class_init(AgsMessageDeliveryClass *message_delivery);
-void ags_message_delivery_init(AgsMessageDelivery *message_delivery);
-void ags_message_delivery_dispose(GObject *gobject);
-void ags_message_delivery_finalize(GObject *gobject);
+static void ags_message_delivery_class_init(AgsMessageDeliveryClass *message_delivery);
+static void ags_message_delivery_init(AgsMessageDelivery *message_delivery);
+static void ags_message_delivery_dispose(GObject *gobject);
+static void ags_message_delivery_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_message_delivery
@@ -62,7 +62,7 @@ void ags_message_delivery_finalize(GObject *gobject);
  * * ags_message_delivery_add_message_envelope()
  */
 
-AgsMessageDelivery *ags_message_delivery = NULL;
+static AgsMessageDelivery *ags_message_delivery = NULL;
 
 static gpointer ags_message_delivery_parent_class = NULL;
 

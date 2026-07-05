@@ -22,10 +22,10 @@
 #include <math.h>
 #include <complex.h>
 
-void ags_frequency_map_manager_class_init(AgsFrequencyMapManagerClass *frequency_map_manager);
-void ags_frequency_map_manager_init (AgsFrequencyMapManager *frequency_map_manager);
-void ags_frequency_map_manager_dispose(GObject *gobject);
-void ags_frequency_map_manager_finalize(GObject *gobject);
+static void ags_frequency_map_manager_class_init(AgsFrequencyMapManagerClass *frequency_map_manager);
+static void ags_frequency_map_manager_init (AgsFrequencyMapManager *frequency_map_manager);
+static void ags_frequency_map_manager_dispose(GObject *gobject);
+static void ags_frequency_map_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_frequency_map_manager
@@ -39,18 +39,18 @@ void ags_frequency_map_manager_finalize(GObject *gobject);
 
 static gpointer ags_frequency_map_manager_parent_class = NULL;
 
-AgsFrequencyMapManager *ags_frequency_map_manager = NULL;
+static AgsFrequencyMapManager *ags_frequency_map_manager = NULL;
 
-guint ags_frequency_map_manager_default_samplerate_count = 4;
-guint ags_frequency_map_manager_default_samplerate[] = {
+static guint ags_frequency_map_manager_default_samplerate_count = 4;
+static guint ags_frequency_map_manager_default_samplerate[] = {
   44100,
   48000,
   96000,
   192000,
 };
 
-guint ags_frequency_map_manager_default_buffer_size_count = 6;
-guint ags_frequency_map_manager_default_buffer_size[] = {
+static guint ags_frequency_map_manager_default_buffer_size_count = 6;
+static guint ags_frequency_map_manager_default_buffer_size[] = {
   128,
   256,
   512,

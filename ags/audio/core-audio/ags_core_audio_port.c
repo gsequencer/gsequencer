@@ -44,71 +44,71 @@
 
 #define AGS_CORE_AUDIO_PORT_USE_HW (1)
 
-void ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port);
-void ags_core_audio_port_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port);
-void ags_core_audio_port_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_core_audio_port_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_core_audio_port_dispose(GObject *gobject);
-void ags_core_audio_port_finalize(GObject *gobject);
+static void ags_core_audio_port_class_init(AgsCoreAudioPortClass *core_audio_port);
+static void ags_core_audio_port_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port);
+static void ags_core_audio_port_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_core_audio_port_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_core_audio_port_dispose(GObject *gobject);
+static void ags_core_audio_port_finalize(GObject *gobject);
 
-AgsUUID* ags_core_audio_port_get_uuid(AgsConnectable *connectable);
-gboolean ags_core_audio_port_has_resource(AgsConnectable *connectable);
-gboolean ags_core_audio_port_is_ready(AgsConnectable *connectable);
-void ags_core_audio_port_add_to_registry(AgsConnectable *connectable);
-void ags_core_audio_port_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_core_audio_port_list_resource(AgsConnectable *connectable);
-xmlNode* ags_core_audio_port_xml_compose(AgsConnectable *connectable);
-void ags_core_audio_port_xml_parse(AgsConnectable *connectable,
-				   xmlNode *node);
-gboolean ags_core_audio_port_is_connected(AgsConnectable *connectable);
-void ags_core_audio_port_connect(AgsConnectable *connectable);
-void ags_core_audio_port_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_core_audio_port_get_uuid(AgsConnectable *connectable);
+static gboolean ags_core_audio_port_has_resource(AgsConnectable *connectable);
+static gboolean ags_core_audio_port_is_ready(AgsConnectable *connectable);
+static void ags_core_audio_port_add_to_registry(AgsConnectable *connectable);
+static void ags_core_audio_port_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_core_audio_port_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_core_audio_port_xml_compose(AgsConnectable *connectable);
+static void ags_core_audio_port_xml_parse(AgsConnectable *connectable,
+					  xmlNode *node);
+static gboolean ags_core_audio_port_is_connected(AgsConnectable *connectable);
+static void ags_core_audio_port_connect(AgsConnectable *connectable);
+static void ags_core_audio_port_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_CORE_AUDIO
-OSStatus ags_core_audio_port_hw_output_callback(AudioObjectID device,
-						const AudioTimeStamp* time_now,
-						const AudioBufferList* in,
-						const AudioTimeStamp* in_time,
-						AudioBufferList* out,
-						const AudioTimeStamp* out_tim,
-						AgsCoreAudioPort *core_audio_port);
-OSStatus ags_core_audio_port_hw_input_callback(AudioObjectID device,
-					       const AudioTimeStamp* time_now,
-					       const AudioBufferList* in,
-					       const AudioTimeStamp* in_time,
-					       AudioBufferList* out,
-					       const AudioTimeStamp* out_tim,
-					       AgsCoreAudioPort *core_audio_port);
+static OSStatus ags_core_audio_port_hw_output_callback(AudioObjectID device,
+						       const AudioTimeStamp* time_now,
+						       const AudioBufferList* in,
+						       const AudioTimeStamp* in_time,
+						       AudioBufferList* out,
+						       const AudioTimeStamp* out_tim,
+						       AgsCoreAudioPort *core_audio_port);
+static OSStatus ags_core_audio_port_hw_input_callback(AudioObjectID device,
+						      const AudioTimeStamp* time_now,
+						      const AudioBufferList* in,
+						      const AudioTimeStamp* in_time,
+						      AudioBufferList* out,
+						      const AudioTimeStamp* out_tim,
+						      AgsCoreAudioPort *core_audio_port);
 
-void* ags_core_audio_port_cached_output_thread(AgsCoreAudioPort *core_audio_port);
-void* ags_core_audio_port_cached_input_thread(AgsCoreAudioPort *core_audio_port);
+static void* ags_core_audio_port_cached_output_thread(AgsCoreAudioPort *core_audio_port);
+static void* ags_core_audio_port_cached_input_thread(AgsCoreAudioPort *core_audio_port);
 
-void* ags_core_audio_port_output_thread(AgsCoreAudioPort *core_audio_port);
-void* ags_core_audio_port_input_thread(AgsCoreAudioPort *core_audio_port);
+static void* ags_core_audio_port_output_thread(AgsCoreAudioPort *core_audio_port);
+static void* ags_core_audio_port_input_thread(AgsCoreAudioPort *core_audio_port);
 
-void ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
+static void ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
+							    AudioQueueRef in_audio_queue, AudioQueueBufferRef in_buffer);
+static void ags_core_audio_port_cached_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
+							   AudioQueueRef in_audio_queue, AudioQueueBufferRef in_buffer,
+							   const AudioTimeStamp *in_start_time, UInt32 in_num_packets,
+							   const AudioStreamPacketDescription *in_packet_desc);
+
+static void ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
 						     AudioQueueRef in_audio_queue, AudioQueueBufferRef in_buffer);
-void ags_core_audio_port_cached_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
+static void ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
 						    AudioQueueRef in_audio_queue, AudioQueueBufferRef in_buffer,
 						    const AudioTimeStamp *in_start_time, UInt32 in_num_packets,
 						    const AudioStreamPacketDescription *in_packet_desc);
 
-void ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
-					      AudioQueueRef in_audio_queue, AudioQueueBufferRef in_buffer);
-void ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
-					     AudioQueueRef in_audio_queue, AudioQueueBufferRef in_buffer,
-					     const AudioTimeStamp *in_start_time, UInt32 in_num_packets,
-					     const AudioStreamPacketDescription *in_packet_desc);
-
-void ags_core_audio_port_midi_notify_callback(const MIDINotification  *message,
-					      void *ref_con);
+static void ags_core_audio_port_midi_notify_callback(const MIDINotification  *message,
+						     void *ref_con);
 #endif
 
 /**
@@ -140,10 +140,10 @@ volatile gint ags_core_audio_port_output_run_loop_initialized;
 volatile gint ags_core_audio_port_input_run_loop_initialized;
 
 #ifdef AGS_MAC_BUNDLE
-void ags_core_audio_port_premain() __attribute__ ((constructor));
+static void ags_core_audio_port_premain() __attribute__ ((constructor));
 #endif
 
-void ags_core_audio_port_premain()
+static void ags_core_audio_port_premain()
 {
   ags_atomic_int_set(&ags_core_audio_port_output_run_loop_initialized,
 		     FALSE);
@@ -151,8 +151,8 @@ void ags_core_audio_port_premain()
 		     FALSE);
 }
 
-CFRunLoopRef ags_core_audio_port_output_run_loop = NULL;
-CFRunLoopRef ags_core_audio_port_input_run_loop = NULL;
+static CFRunLoopRef ags_core_audio_port_output_run_loop = NULL;
+static CFRunLoopRef ags_core_audio_port_input_run_loop = NULL;
 #endif
 
 GType

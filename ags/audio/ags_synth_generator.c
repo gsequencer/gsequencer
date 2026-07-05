@@ -30,17 +30,17 @@
 
 #include <ags/i18n.h>
 
-void ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator);
-void ags_synth_generator_init(AgsSynthGenerator *synth_generator);
-void ags_synth_generator_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_synth_generator_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_synth_generator_finalize(GObject *gobject);
+static void ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator);
+static void ags_synth_generator_init(AgsSynthGenerator *synth_generator);
+static void ags_synth_generator_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_synth_generator_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_synth_generator_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_synth_generator
@@ -79,7 +79,7 @@ enum{
 
 static gpointer ags_synth_generator_parent_class = NULL;
 
-const gchar *ags_synth_generator_plugin_name = "ags-synth-generator";
+static const gchar *ags_synth_generator_plugin_name = "ags-synth-generator";
 
 GType
 ags_synth_generator_get_type()

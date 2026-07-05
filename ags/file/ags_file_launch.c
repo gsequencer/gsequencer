@@ -21,17 +21,17 @@
 
 #include <ags/i18n.h>
 
-void ags_file_launch_class_init(AgsFileLaunchClass *file_launch);
-void ags_file_launch_init (AgsFileLaunch *file_launch);
-void ags_file_launch_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_launch_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_launch_finalize(GObject *gobject);
+static void ags_file_launch_class_init(AgsFileLaunchClass *file_launch);
+static void ags_file_launch_init (AgsFileLaunch *file_launch);
+static void ags_file_launch_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_launch_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_launch_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_file_launch

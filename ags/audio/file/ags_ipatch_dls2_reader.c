@@ -23,32 +23,32 @@
 
 #include <ags/i18n.h>
 
-void ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader);
-void ags_ipatch_dls2_reader_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_ipatch_dls2_reader_init(AgsIpatchDLS2Reader *ipatch_dls2_reader);
-void ags_ipatch_dls2_reader_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_ipatch_dls2_reader_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_ipatch_dls2_reader_dispose(GObject *gobject);
-void ags_ipatch_dls2_reader_finalize(GObject *gobject);
+static void ags_ipatch_dls2_reader_class_init(AgsIpatchDLS2ReaderClass *ipatch_dls2_reader);
+static void ags_ipatch_dls2_reader_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_ipatch_dls2_reader_init(AgsIpatchDLS2Reader *ipatch_dls2_reader);
+static void ags_ipatch_dls2_reader_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_ipatch_dls2_reader_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_ipatch_dls2_reader_dispose(GObject *gobject);
+static void ags_ipatch_dls2_reader_finalize(GObject *gobject);
 
-AgsUUID* ags_ipatch_dls2_reader_get_uuid(AgsConnectable *connectable);
-gboolean ags_ipatch_dls2_reader_has_resource(AgsConnectable *connectable);
-gboolean ags_ipatch_dls2_reader_is_ready(AgsConnectable *connectable);
-void ags_ipatch_dls2_reader_add_to_registry(AgsConnectable *connectable);
-void ags_ipatch_dls2_reader_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_ipatch_dls2_reader_list_resource(AgsConnectable *connectable);
-xmlNode* ags_ipatch_dls2_reader_xml_compose(AgsConnectable *connectable);
-void ags_ipatch_dls2_reader_xml_parse(AgsConnectable *connectable,
-				   xmlNode *node);
-gboolean ags_ipatch_dls2_reader_is_connected(AgsConnectable *connectable);
-void ags_ipatch_dls2_reader_connect(AgsConnectable *connectable);
-void ags_ipatch_dls2_reader_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_ipatch_dls2_reader_get_uuid(AgsConnectable *connectable);
+static gboolean ags_ipatch_dls2_reader_has_resource(AgsConnectable *connectable);
+static gboolean ags_ipatch_dls2_reader_is_ready(AgsConnectable *connectable);
+static void ags_ipatch_dls2_reader_add_to_registry(AgsConnectable *connectable);
+static void ags_ipatch_dls2_reader_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_ipatch_dls2_reader_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_ipatch_dls2_reader_xml_compose(AgsConnectable *connectable);
+static void ags_ipatch_dls2_reader_xml_parse(AgsConnectable *connectable,
+					     xmlNode *node);
+static gboolean ags_ipatch_dls2_reader_is_connected(AgsConnectable *connectable);
+static void ags_ipatch_dls2_reader_connect(AgsConnectable *connectable);
+static void ags_ipatch_dls2_reader_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_ipatch_dls2_reader

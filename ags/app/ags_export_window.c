@@ -27,28 +27,28 @@
 #include <stdlib.h>
 #include <ags/i18n.h>
 
-void ags_export_window_class_init(AgsExportWindowClass *export_window);
-void ags_export_window_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_export_window_init(AgsExportWindow *export_window);
-void ags_export_window_finalize(GObject *gobject);
+static void ags_export_window_class_init(AgsExportWindowClass *export_window);
+static void ags_export_window_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_export_window_init(AgsExportWindow *export_window);
+static void ags_export_window_finalize(GObject *gobject);
 
-gboolean ags_export_window_is_connected(AgsConnectable *connectable);
-void ags_export_window_connect(AgsConnectable *connectable);
-void ags_export_window_disconnect(AgsConnectable *connectable);
+static gboolean ags_export_window_is_connected(AgsConnectable *connectable);
+static void ags_export_window_connect(AgsConnectable *connectable);
+static void ags_export_window_disconnect(AgsConnectable *connectable);
 
-gboolean ags_export_window_key_pressed_callback(GtkEventControllerKey *event_controller,
-						guint keyval,
-						guint keycode,
-						GdkModifierType state,
-						AgsExportWindow *export_window);
-void ags_export_window_key_released_callback(GtkEventControllerKey *event_controller,
-					     guint keyval,
-					     guint keycode,
-					     GdkModifierType state,
-					     AgsExportWindow *export_window);
-gboolean ags_export_window_modifiers_callback(GtkEventControllerKey *event_controller,
-					      GdkModifierType keyval,
-					      AgsExportWindow *export_window);
+static gboolean ags_export_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+						       guint keyval,
+						       guint keycode,
+						       GdkModifierType state,
+						       AgsExportWindow *export_window);
+static void ags_export_window_key_released_callback(GtkEventControllerKey *event_controller,
+						    guint keyval,
+						    guint keycode,
+						    GdkModifierType state,
+						    AgsExportWindow *export_window);
+static gboolean ags_export_window_modifiers_callback(GtkEventControllerKey *event_controller,
+						     GdkModifierType keyval,
+						     AgsExportWindow *export_window);
 
 /**
  * SECTION:ags_export_window

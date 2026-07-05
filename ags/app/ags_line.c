@@ -31,78 +31,78 @@
 
 #include <ags/i18n.h>
 
-void ags_line_class_init(AgsLineClass *line);
-void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_line_init(AgsLine *line);
-void ags_line_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_line_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_line_dispose(GObject *gobject);
-void ags_line_finalize(GObject *gobject);
+static void ags_line_class_init(AgsLineClass *line);
+static void ags_line_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_line_init(AgsLine *line);
+static void ags_line_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_line_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_line_dispose(GObject *gobject);
+static void ags_line_finalize(GObject *gobject);
 
-gboolean ags_line_is_connected(AgsConnectable *connectable);
-void ags_line_connect(AgsConnectable *connectable);
-void ags_line_disconnect(AgsConnectable *connectable);
+static gboolean ags_line_is_connected(AgsConnectable *connectable);
+static void ags_line_connect(AgsConnectable *connectable);
+static void ags_line_disconnect(AgsConnectable *connectable);
 
-void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
+static void ags_line_real_set_channel(AgsLine *line, AgsChannel *channel);
 
-void ags_line_add_ladspa_plugin(AgsLine *line,
-				GList *control_type_name,
-				AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-				gchar *plugin_name,
-				gchar *filename,
-				gchar *effect,
-				guint start_audio_channel, guint stop_audio_channel,
-				guint start_pad, guint stop_pad,
-				gint position,
-				guint create_flags, guint recall_flags);
-void ags_line_add_lv2_plugin(AgsLine *line,
-			     GList *control_type_name,
-			     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-			     gchar *plugin_name,
-			     gchar *filename,
-			     gchar *effect,
-			     guint start_audio_channel, guint stop_audio_channel,
-			     guint start_pad, guint stop_pad,
-			     gint position,
-			     guint create_flags, guint recall_flags);
+static void ags_line_add_ladspa_plugin(AgsLine *line,
+				       GList *control_type_name,
+				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				       gchar *plugin_name,
+				       gchar *filename,
+				       gchar *effect,
+				       guint start_audio_channel, guint stop_audio_channel,
+				       guint start_pad, guint stop_pad,
+				       gint position,
+				       guint create_flags, guint recall_flags);
+static void ags_line_add_lv2_plugin(AgsLine *line,
+				    GList *control_type_name,
+				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				    gchar *plugin_name,
+				    gchar *filename,
+				    gchar *effect,
+				    guint start_audio_channel, guint stop_audio_channel,
+				    guint start_pad, guint stop_pad,
+				    gint position,
+				    guint create_flags, guint recall_flags);
 
 #if defined(AGS_WITH_VST3)
-void ags_line_add_vst3_plugin(AgsLine *line,
-			      GList *control_type_name,
-			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-			      gchar *plugin_name,
-			      gchar *filename,
-			      gchar *effect,
-			      guint start_audio_channel, guint stop_audio_channel,
-			      guint start_pad, guint stop_pad,
-			      gint position,
-			      guint create_flags, guint recall_flags);
+static void ags_line_add_vst3_plugin(AgsLine *line,
+				     GList *control_type_name,
+				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				     gchar *plugin_name,
+				     gchar *filename,
+				     gchar *effect,
+				     guint start_audio_channel, guint stop_audio_channel,
+				     guint start_pad, guint stop_pad,
+				     gint position,
+				     guint create_flags, guint recall_flags);
 #endif
 
-void ags_line_real_add_plugin(AgsLine *line,
-			      GList *control_type_name,
-			      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
-			      gchar *plugin_name,
-			      gchar *filename,
-			      gchar *effect,
-			      guint start_audio_channel, guint stop_audio_channel,
-			      guint start_pad, guint stop_pad,
-			      gint position,
-			      guint create_flags, guint recall_flags);
-void ags_line_real_remove_plugin(AgsLine *line,
-				 guint nth);
+static void ags_line_real_add_plugin(AgsLine *line,
+				     GList *control_type_name,
+				     AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				     gchar *plugin_name,
+				     gchar *filename,
+				     gchar *effect,
+				     guint start_audio_channel, guint stop_audio_channel,
+				     guint start_pad, guint stop_pad,
+				     gint position,
+				     guint create_flags, guint recall_flags);
+static void ags_line_real_remove_plugin(AgsLine *line,
+					guint nth);
 
-void ags_line_real_map_recall(AgsLine *line,
-			      guint output_pad_start);
-GList* ags_line_real_find_port(AgsLine *line);
+static void ags_line_real_map_recall(AgsLine *line,
+				     guint output_pad_start);
+static GList* ags_line_real_find_port(AgsLine *line);
 
-void ags_line_real_refresh_port(AgsLine *line);
+static void ags_line_real_refresh_port(AgsLine *line);
 
 /**
  * SECTION:ags_line
@@ -3977,13 +3977,17 @@ ags_line_check_message(AgsLine *line)
   while(message_envelope != NULL){
     xmlNode *root_node;
 
+    xmlChar *method;
+    
     root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
     if(!xmlStrncmp(root_node->name,
 		   BAD_CAST "ags-command",
 		   12)){
-      if(!xmlStrncmp(xmlGetProp(root_node,
-				"method"),
+      method = xmlGetProp(root_node,
+			  BAD_CAST "method");
+      
+      if(!xmlStrncmp(method,
 		     BAD_CAST "AgsChannel::set-samplerate",
 		     27)){
 	guint samplerate;
@@ -3997,8 +4001,7 @@ ags_line_check_message(AgsLine *line)
 	g_object_set(line,
 		     "samplerate", samplerate,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::set-buffer-size",
 			   28)){
 	guint buffer_size;
@@ -4012,8 +4015,7 @@ ags_line_check_message(AgsLine *line)
 	g_object_set(line,
 		     "buffer-size", buffer_size,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::set-format",
 			   23)){
 	guint format;
@@ -4027,8 +4029,7 @@ ags_line_check_message(AgsLine *line)
 	g_object_set(line,
 		     "format", format,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsChannel::stop",
 			   18)){
 	GList *recall_id;
@@ -4049,6 +4050,8 @@ ags_line_check_message(AgsLine *line)
 	ags_line_stop(line,
 		      recall_id, sound_scope);
       }
+
+      xmlFree(method);
     }
       
     message_envelope = message_envelope->next;

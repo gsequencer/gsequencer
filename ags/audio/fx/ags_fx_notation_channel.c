@@ -21,10 +21,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_notation_channel_class_init(AgsFxNotationChannelClass *fx_notation_channel);
-void ags_fx_notation_channel_init(AgsFxNotationChannel *fx_notation_channel);
-void ags_fx_notation_channel_dispose(GObject *gobject);
-void ags_fx_notation_channel_finalize(GObject *gobject);
+static void ags_fx_notation_channel_class_init(AgsFxNotationChannelClass *fx_notation_channel);
+static void ags_fx_notation_channel_init(AgsFxNotationChannel *fx_notation_channel);
+static void ags_fx_notation_channel_dispose(GObject *gobject);
+static void ags_fx_notation_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_notation_channel
@@ -38,7 +38,7 @@ void ags_fx_notation_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_notation_channel_parent_class = NULL;
 
-const gchar *ags_fx_notation_channel_plugin_name = "ags-fx-notation";
+static const gchar *ags_fx_notation_channel_plugin_name = "ags-fx-notation";
 
 GType
 ags_fx_notation_channel_get_type()

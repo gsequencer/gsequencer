@@ -29,28 +29,28 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel);
-void ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_channel_init(AgsRecallChannel *recall_channel);
-void ags_recall_channel_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_recall_channel_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_recall_channel_dispose(GObject *gobject);
-void ags_recall_channel_finalize(GObject *gobject);
+static void ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel);
+static void ags_recall_channel_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_channel_init(AgsRecallChannel *recall_channel);
+static void ags_recall_channel_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_recall_channel_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_recall_channel_dispose(GObject *gobject);
+static void ags_recall_channel_finalize(GObject *gobject);
 
-void ags_recall_channel_notify_recall_container_callback(GObject *gobject,
-							 GParamSpec *pspec,
-							 gpointer user_data);
+static void ags_recall_channel_notify_recall_container_callback(GObject *gobject,
+								GParamSpec *pspec,
+								gpointer user_data);
 
-void ags_recall_channel_automate(AgsRecall *recall);
-AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
-					AgsRecallID *recall_id,
-					guint *n_params, gchar **parameter_name, GValue *value);
+static void ags_recall_channel_automate(AgsRecall *recall);
+static AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
+					       AgsRecallID *recall_id,
+					       guint *n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_recall_channel

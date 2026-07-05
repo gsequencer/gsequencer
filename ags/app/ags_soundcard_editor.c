@@ -26,19 +26,19 @@
 #include <ags/config.h>
 #include <ags/i18n.h>
 
-void ags_soundcard_editor_class_init(AgsSoundcardEditorClass *soundcard_editor);
-void ags_soundcard_editor_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_soundcard_editor_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor);
+static void ags_soundcard_editor_class_init(AgsSoundcardEditorClass *soundcard_editor);
+static void ags_soundcard_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_soundcard_editor_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor);
 static void ags_soundcard_editor_finalize(GObject *gobject);
 
-gboolean ags_soundcard_editor_is_connected(AgsConnectable *connectable);
-void ags_soundcard_editor_connect(AgsConnectable *connectable);
-void ags_soundcard_editor_disconnect(AgsConnectable *connectable);
+static gboolean ags_soundcard_editor_is_connected(AgsConnectable *connectable);
+static void ags_soundcard_editor_connect(AgsConnectable *connectable);
+static void ags_soundcard_editor_disconnect(AgsConnectable *connectable);
 
-void ags_soundcard_editor_set_update(AgsApplicable *applicable, gboolean update);
-void ags_soundcard_editor_apply(AgsApplicable *applicable);
-void ags_soundcard_editor_reset(AgsApplicable *applicable);
+static void ags_soundcard_editor_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_soundcard_editor_apply(AgsApplicable *applicable);
+static void ags_soundcard_editor_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_soundcard_editor

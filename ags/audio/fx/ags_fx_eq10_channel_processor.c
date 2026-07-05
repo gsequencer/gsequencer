@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_eq10_channel_processor_class_init(AgsFxEq10ChannelProcessorClass *fx_eq10_channel_processor);
-void ags_fx_eq10_channel_processor_init(AgsFxEq10ChannelProcessor *fx_eq10_channel_processor);
-void ags_fx_eq10_channel_processor_dispose(GObject *gobject);
-void ags_fx_eq10_channel_processor_finalize(GObject *gobject);
+static void ags_fx_eq10_channel_processor_class_init(AgsFxEq10ChannelProcessorClass *fx_eq10_channel_processor);
+static void ags_fx_eq10_channel_processor_init(AgsFxEq10ChannelProcessor *fx_eq10_channel_processor);
+static void ags_fx_eq10_channel_processor_dispose(GObject *gobject);
+static void ags_fx_eq10_channel_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_eq10_channel_processor
@@ -40,7 +40,7 @@ void ags_fx_eq10_channel_processor_finalize(GObject *gobject);
 
 static gpointer ags_fx_eq10_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_eq10_channel_processor_plugin_name = "ags-fx-eq10";
+static const gchar *ags_fx_eq10_channel_processor_plugin_name = "ags-fx-eq10";
 
 GType
 ags_fx_eq10_channel_processor_get_type()

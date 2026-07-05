@@ -31,28 +31,28 @@
 
 #include <ags/i18n.h>
 
-void ags_pitch_sampler_class_init(AgsPitchSamplerClass *pitch_sampler);
-void ags_pitch_sampler_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler);
-void ags_pitch_sampler_finalize(GObject *gobject);
+static void ags_pitch_sampler_class_init(AgsPitchSamplerClass *pitch_sampler);
+static void ags_pitch_sampler_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler);
+static void ags_pitch_sampler_finalize(GObject *gobject);
 
-void ags_pitch_sampler_connect(AgsConnectable *connectable);
-void ags_pitch_sampler_disconnect(AgsConnectable *connectable);
+static void ags_pitch_sampler_connect(AgsConnectable *connectable);
+static void ags_pitch_sampler_disconnect(AgsConnectable *connectable);
 
-void ags_pitch_sampler_resize_audio_channels(AgsMachine *machine,
-					     guint audio_channels, guint audio_channels_old,
-					     gpointer data);
-void ags_pitch_sampler_resize_pads(AgsMachine *machine, GType type,
-				   guint pads, guint pads_old,
-				   gpointer data);
+static void ags_pitch_sampler_resize_audio_channels(AgsMachine *machine,
+						    guint audio_channels, guint audio_channels_old,
+						    gpointer data);
+static void ags_pitch_sampler_resize_pads(AgsMachine *machine, GType type,
+					  guint pads, guint pads_old,
+					  gpointer data);
 
-void ags_pitch_sampler_map_recall(AgsMachine *machine);
-void ags_pitch_sampler_output_map_recall(AgsPitchSampler *pitch_sampler,
-					 guint audio_channel_start,
-					 guint output_pad_start);
-void ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler,
-					guint audio_channel_start,
-					guint input_pad_start);
+static void ags_pitch_sampler_map_recall(AgsMachine *machine);
+static void ags_pitch_sampler_output_map_recall(AgsPitchSampler *pitch_sampler,
+						guint audio_channel_start,
+						guint output_pad_start);
+static void ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler,
+					       guint audio_channel_start,
+					       guint input_pad_start);
 
 /**
  * SECTION:ags_pitch_sampler
@@ -61,7 +61,7 @@ void ags_pitch_sampler_input_map_recall(AgsPitchSampler *pitch_sampler,
  * @section_id:
  * @include: ags/app/machine/ags_pitch_sampler.h
  *
- * The #AgsPitchSampler is a composite widget to act as soundfont2 notation player.
+ * The #AgsPitchSampler is a composite widget to act as SFZ notation player.
  */
 
 static gpointer ags_pitch_sampler_parent_class = NULL;

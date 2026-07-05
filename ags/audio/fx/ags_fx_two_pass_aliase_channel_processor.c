@@ -24,12 +24,12 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_two_pass_aliase_channel_processor_class_init(AgsFxTwoPassAliaseChannelProcessorClass *fx_two_pass_aliase_channel_processor);
-void ags_fx_two_pass_aliase_channel_processor_init(AgsFxTwoPassAliaseChannelProcessor *fx_two_pass_aliase_channel_processor);
-void ags_fx_two_pass_aliase_channel_processor_dispose(GObject *gobject);
-void ags_fx_two_pass_aliase_channel_processor_finalize(GObject *gobject);
+static void ags_fx_two_pass_aliase_channel_processor_class_init(AgsFxTwoPassAliaseChannelProcessorClass *fx_two_pass_aliase_channel_processor);
+static void ags_fx_two_pass_aliase_channel_processor_init(AgsFxTwoPassAliaseChannelProcessor *fx_two_pass_aliase_channel_processor);
+static void ags_fx_two_pass_aliase_channel_processor_dispose(GObject *gobject);
+static void ags_fx_two_pass_aliase_channel_processor_finalize(GObject *gobject);
 
-void ags_fx_two_pass_aliase_channel_processor_real_run_inter(AgsRecall *recall);
+static void ags_fx_two_pass_aliase_channel_processor_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_two_pass_aliase_channel_processor
@@ -43,7 +43,7 @@ void ags_fx_two_pass_aliase_channel_processor_real_run_inter(AgsRecall *recall);
 
 static gpointer ags_fx_two_pass_aliase_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_two_pass_aliase_channel_processor_plugin_name = "ags-fx-two-pass-aliase";
+static const gchar *ags_fx_two_pass_aliase_channel_processor_plugin_name = "ags-fx-two-pass-aliase";
 
 GType
 ags_fx_two_pass_aliase_channel_processor_get_type()

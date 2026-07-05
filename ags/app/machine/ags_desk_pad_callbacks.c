@@ -25,7 +25,8 @@ ags_desk_pad_play_callback(GtkButton *button, AgsDeskPad *desk_pad)
   //TODO:JK: implement me
 }
 
-void ags_desk_pad_grab_filename_callback(GtkButton *button, AgsDeskPad *desk_pad)
+void
+ags_desk_pad_grab_filename_callback(GtkButton *button, AgsDeskPad *desk_pad)
 {
   //TODO:JK: implement me
 }

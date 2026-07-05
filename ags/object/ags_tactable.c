@@ -21,7 +21,7 @@
 
 #include <ags/object/ags_marshal.h>
 
-void ags_tactable_class_init(AgsTactableInterface *ginterface);
+static void ags_tactable_class_init(AgsTactableInterface *ginterface);
 
 /**
  * SECTION:ags_tactable

@@ -23,13 +23,13 @@
 
 #include <ags/i18n.h>
 
-void ags_reset_recall_staging_class_init(AgsResetRecallStagingClass *reset_recall_staging);
-void ags_reset_recall_staging_init(AgsResetRecallStaging *reset_recall_staging);
-void ags_reset_recall_staging_connect(AgsConnectable *connectable);
-void ags_reset_recall_staging_dispose(GObject *gobject);
-void ags_reset_recall_staging_finalize(GObject *gobject);
+static void ags_reset_recall_staging_class_init(AgsResetRecallStagingClass *reset_recall_staging);
+static void ags_reset_recall_staging_init(AgsResetRecallStaging *reset_recall_staging);
+static void ags_reset_recall_staging_connect(AgsConnectable *connectable);
+static void ags_reset_recall_staging_dispose(GObject *gobject);
+static void ags_reset_recall_staging_finalize(GObject *gobject);
 
-void ags_reset_recall_staging_launch(AgsTask *task);
+static void ags_reset_recall_staging_launch(AgsTask *task);
 
 /**
  * SECTION:ags_reset_recall_staging
@@ -43,7 +43,7 @@ void ags_reset_recall_staging_launch(AgsTask *task);
 
 static gpointer ags_reset_recall_staging_parent_class = NULL;
 
-AgsResetRecallStaging *ags_reset_recall_staging = NULL;
+static AgsResetRecallStaging *ags_reset_recall_staging = NULL;
 
 GType
 ags_reset_recall_staging_get_type()

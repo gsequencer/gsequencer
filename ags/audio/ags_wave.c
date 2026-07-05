@@ -29,57 +29,57 @@
 
 #include <errno.h>
 
-void ags_wave_class_init(AgsWaveClass *wave);
-void ags_wave_init(AgsWave *wave);
-void ags_wave_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_wave_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_wave_dispose(GObject *gobject);
-void ags_wave_finalize(GObject *gobject);
+static void ags_wave_class_init(AgsWaveClass *wave);
+static void ags_wave_init(AgsWave *wave);
+static void ags_wave_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_wave_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_wave_dispose(GObject *gobject);
+static void ags_wave_finalize(GObject *gobject);
 
-guint64 ags_wave_get_position_for_offset(guint wave_samplerate,
-					 guint wave_buffer_size,
-					 guint64 x_offset,
-					 guint64 *ret_start_x_offset,
-					 guint *ret_attack);
+static guint64 ags_wave_get_position_for_offset(guint wave_samplerate,
+						guint wave_buffer_size,
+						guint64 x_offset,
+						guint64 *ret_start_x_offset,
+						guint *ret_attack);
   
-void ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
-								xmlNode *root_node, char *version,
-								char *x_boundary,
-								gboolean reset_x_offset, guint64 x_offset,
-								gdouble delay, guint attack,
-								gboolean match_line, gboolean do_replace,
-								guint current_line,
-								guint64 relative_offset,
-								guint wave_samplerate,
-								guint wave_buffer_size,
-								guint wave_format,
-								gboolean match_timestamp);
+static void ags_wave_insert_native_level_from_clipboard_version_3_14_6(AgsWave *wave,
+								       xmlNode *root_node, char *version,
+								       char *x_boundary,
+								       gboolean reset_x_offset, guint64 x_offset,
+								       gdouble delay, guint attack,
+								       gboolean match_line, gboolean do_replace,
+								       guint current_line,
+								       guint64 relative_offset,
+								       guint wave_samplerate,
+								       guint wave_buffer_size,
+								       guint wave_format,
+								       gboolean match_timestamp);
 
-void ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
-							       xmlNode *root_node, char *version,
-							       char *x_boundary,
-							       gboolean reset_x_offset, guint64 x_offset,
-							       gdouble delay, guint attack,
-							       gboolean match_line, gboolean do_replace,
-							       guint current_line,
-							       guint64 relative_offset,
-							       guint wave_samplerate,
-							       guint wave_buffer_size,
-							       guint wave_format,
-							       gboolean match_timestamp);
+static void ags_wave_insert_native_level_from_clipboard_version_1_4_0(AgsWave *wave,
+								      xmlNode *root_node, char *version,
+								      char *x_boundary,
+								      gboolean reset_x_offset, guint64 x_offset,
+								      gdouble delay, guint attack,
+								      gboolean match_line, gboolean do_replace,
+								      guint current_line,
+								      guint64 relative_offset,
+								      guint wave_samplerate,
+								      guint wave_buffer_size,
+								      guint wave_format,
+								      gboolean match_timestamp);
 
-void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
-						 xmlNode *root_node, char *version,
-						 char *x_boundary,
-						 gboolean reset_x_offset, guint64 x_offset,
-						 gdouble delay, guint attack,
-						 gboolean match_line, gboolean do_replace);
+static void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
+							xmlNode *root_node, char *version,
+							char *x_boundary,
+							gboolean reset_x_offset, guint64 x_offset,
+							gdouble delay, guint attack,
+							gboolean match_line, gboolean do_replace);
 
 /**
  * SECTION:ags_wave

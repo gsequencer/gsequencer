@@ -116,6 +116,10 @@ guint ags_wah_wah_util_get_format(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_format(AgsWahWahUtil *wah_wah_util,
 				  guint format);
 
+guint ags_wah_wah_util_get_samplerate(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_set_samplerate(AgsWahWahUtil *wah_wah_util,
+				     guint samplerate);
+
 gdouble ags_wah_wah_util_get_volume(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_volume(AgsWahWahUtil *wah_wah_util,
 				  gdouble volume);
@@ -123,6 +127,10 @@ void ags_wah_wah_util_set_volume(AgsWahWahUtil *wah_wah_util,
 gdouble ags_wah_wah_util_get_amount(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_amount(AgsWahWahUtil *wah_wah_util,
 				  gdouble amount);
+
+gboolean ags_wah_wah_util_get_wah_wah_enabled(AgsWahWahUtil *wah_wah_util);
+void ags_wah_wah_util_set_wah_wah_enabled(AgsWahWahUtil *wah_wah_util,
+					  gboolean wah_wah_enabled);
 
 gdouble ags_wah_wah_util_get_wah_wah_lfo_depth(AgsWahWahUtil *wah_wah_util);
 void ags_wah_wah_util_set_wah_wah_lfo_depth(AgsWahWahUtil *wah_wah_util,

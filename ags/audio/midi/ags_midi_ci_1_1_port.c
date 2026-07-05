@@ -19,9 +19,9 @@
 
 #include <ags/audio/midi/ags_midi_ci_1_1_port.h>
 
-void ags_midi_ci_1_1_port_class_init(AgsMidiCI_1_1_PortClass *midi_ci_1_1_port);
-void ags_midi_ci_1_1_port_init(AgsMidiCI_1_1_Port *midi_ci_1_1_port);
-void ags_midi_ci_1_1_port_finalize(GObject *gobject);
+static void ags_midi_ci_1_1_port_class_init(AgsMidiCI_1_1_PortClass *midi_ci_1_1_port);
+static void ags_midi_ci_1_1_port_init(AgsMidiCI_1_1_Port *midi_ci_1_1_port);
+static void ags_midi_ci_1_1_port_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_midi_ci_1_1_port

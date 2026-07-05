@@ -27,25 +27,25 @@
 
 #include <ags/i18n.h>
 
-void ags_navigation_class_init(AgsNavigationClass *navigation);
-void ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_navigation_init(AgsNavigation *navigation);
-void ags_navigation_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_navigation_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_navigation_finalize(GObject *gobject);
+static void ags_navigation_class_init(AgsNavigationClass *navigation);
+static void ags_navigation_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_navigation_init(AgsNavigation *navigation);
+static void ags_navigation_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_navigation_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_navigation_finalize(GObject *gobject);
 
-gboolean ags_navigation_is_connected(AgsConnectable *connectable);
-void ags_navigation_connect(AgsConnectable *connectable);
-void ags_navigation_disconnect(AgsConnectable *connectable);
+static gboolean ags_navigation_is_connected(AgsConnectable *connectable);
+static void ags_navigation_connect(AgsConnectable *connectable);
+static void ags_navigation_disconnect(AgsConnectable *connectable);
 
-void ags_navigation_real_change_position(AgsNavigation *navigation,
-					 gdouble tact);
+static void ags_navigation_real_change_position(AgsNavigation *navigation,
+						gdouble tact);
 
 /**
  * SECTION:ags_navigation

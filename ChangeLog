@@ -1,3 +1,57 @@
+ags (9.0.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-fx-audio-unit compilation failure
+
+ags (9.0.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved visibitity attribute check in ags_application_context.c
+	* fixed some typos
+
+ags (9.0.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* hide more symbols
+	* minor improvements
+	* fixed some memory leaks
+
+ags (9.0.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements
+
+ags (9.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added static modifier to all ags-fx source code
+	* renamed ags_fluid_interp_coeff_4th_order* with proper prefix
+	* renamed ags_fluid_ct2hz_tab* with proper prefix
+
+ags (9.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added static modifier to functions in all source files
+
+ags (9.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added visibility attribute to global variable in ags/object/ags_application_context.c
+	* removed gen-sym-libags-audio.pl
+	* removed gen-sym-libags-gui.pl
+	* removed gen-sym-libags-server.pl
+	* removed gen-sym-libags-thread.pl
+	* removed gen-sym-libags-vst.pl
+	* removed gen-sym-libags.pl
+	* removed gen-symbols-all.pl
+	* removed libags.sym.in
+	* removed libags_audio.sym.in
+	* removed libags_gui.sym.in
+	* removed libags_server.sym.in
+	* removed libags_thread.sym.in
+	* removed libags_vst.sym.in
+	* removed m4/ags-symbols.m4
+
 ags (9.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -53,39 +53,39 @@
 //#define _LIBINTL_H
 #include <ags/i18n.h>
 
-void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);
-void ags_lv2_plugin_init (AgsLv2Plugin *lv2_plugin);
-void ags_lv2_plugin_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
-void ags_lv2_plugin_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
-void ags_lv2_plugin_dispose(GObject *gobject);
-void ags_lv2_plugin_finalize(GObject *gobject);
+static void ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin);
+static void ags_lv2_plugin_init (AgsLv2Plugin *lv2_plugin);
+static void ags_lv2_plugin_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_lv2_plugin_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_lv2_plugin_dispose(GObject *gobject);
+static void ags_lv2_plugin_finalize(GObject *gobject);
 
-gpointer ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
-				    guint samplerate, guint buffer_size);
-void ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
-				 gpointer plugin_handle,
-				 guint port_index,
-				 gpointer data_location);
-void ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
-			     gpointer plugin_handle);
-void ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
-			       gpointer plugin_handle);
-void ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
-			gpointer plugin_handle,
-			snd_seq_event_t *seq_event,
-			guint frame_count);
-void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
+static gpointer ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
+					   guint samplerate, guint buffer_size);
+static void ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
+					gpointer plugin_handle,
+					guint port_index,
+					gpointer data_location);
+static void ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
+				    gpointer plugin_handle);
+static void ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
+				      gpointer plugin_handle);
+static void ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
+			       gpointer plugin_handle,
+			       snd_seq_event_t *seq_event,
+			       guint frame_count);
+static void ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin);
 
-void ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
-					gpointer ladspa_handle,
-					guint bank_index,
-					guint program_index);
+static void ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
+					       gpointer ladspa_handle,
+					       guint bank_index,
+					       guint program_index);
 
 /**
  * SECTION:ags_lv2_plugin

@@ -9,9 +9,9 @@
 
 LT_CURRENT=9
 LT_REVISION=0
-LT_AGE=8
+LT_AGE=16
 
-m4_define([ags_version], [9.0.8])
+m4_define([ags_version], [9.0.16])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -920,13 +920,6 @@ AM_CONDITIONAL([WITH_AUDIO_UNIT_PLUGINS], [test "x$enable_audio_unit_plugins" ==
 AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
 
 AGS_POTFILES([])
-
-LIBAGS_SYMBOLS([])
-LIBAGS_THREAD_SYMBOLS([])
-LIBAGS_SERVER_SYMBOLS([])
-LIBAGS_AUDIO_SYMBOLS([])
-LIBAGS_VST_SYMBOLS([])
-LIBAGS_GUI_SYMBOLS([])
 
 AS_IF([test "x$enable_w32api" != xno],
       [LIBAGS_DEF([])

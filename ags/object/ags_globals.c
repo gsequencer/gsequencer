@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_globals.h>
 
-GHashTable *ags_globals = NULL;
+static GHashTable *ags_globals = NULL;
 
 static GMutex ags_globals_mutex;
 

@@ -25,56 +25,56 @@
 
 #include <ags/i18n.h>
 
-void ags_icon_link_class_init(AgsIconLinkClass *icon_link);
-void ags_icon_link_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_icon_link_init(AgsIconLink *icon_link);
-void ags_icon_link_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_icon_link_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_icon_link_dispose(GObject *gobject);
-void ags_icon_link_finalize(GObject *gobject);
+static void ags_icon_link_class_init(AgsIconLinkClass *icon_link);
+static void ags_icon_link_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_icon_link_init(AgsIconLink *icon_link);
+static void ags_icon_link_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_icon_link_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_icon_link_dispose(GObject *gobject);
+static void ags_icon_link_finalize(GObject *gobject);
 
-void ags_icon_link_snapshot(GtkWidget *widget,
-			    GtkSnapshot *snapshot);
+static void ags_icon_link_snapshot(GtkWidget *widget,
+				   GtkSnapshot *snapshot);
 
-AgsIconLink* ags_icon_link_real_copy_event(AgsIconLink *icon_link);
+static AgsIconLink* ags_icon_link_real_copy_event(AgsIconLink *icon_link);
 
-void ags_icon_link_delete_callback(GAction *action, GVariant *parameter,
-				   AgsIconLink *icon_link);
+static void ags_icon_link_delete_callback(GAction *action, GVariant *parameter,
+					  AgsIconLink *icon_link);
 
-void ags_icon_link_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						  gint n_press,
-						  gdouble x,
-						  gdouble y,
-						  AgsIconLink *icon_link);
-void ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_controller,
-						   gint n_press,
-						   gdouble x,
-						   gdouble y,
-						   AgsIconLink *icon_link);
+static void ags_icon_link_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							 gint n_press,
+							 gdouble x,
+							 gdouble y,
+							 AgsIconLink *icon_link);
+static void ags_icon_link_gesture_click_released_callback(GtkGestureClick *event_controller,
+							  gint n_press,
+							  gdouble x,
+							  gdouble y,
+							  AgsIconLink *icon_link);
 
-void ags_icon_link_gesture_secondary_pressed_callback(GtkGestureClick *event_controller,
-						      gint n_press,
-						      gdouble x,
-						      gdouble y,
-						      AgsIconLink *icon_link);
-void ags_icon_link_gesture_secondary_released_callback(GtkGestureClick *event_controller,
-						       gint n_press,
-						       gdouble x,
-						       gdouble y,
-						       AgsIconLink *icon_link);
+static void ags_icon_link_gesture_secondary_pressed_callback(GtkGestureClick *event_controller,
+							     gint n_press,
+							     gdouble x,
+							     gdouble y,
+							     AgsIconLink *icon_link);
+static void ags_icon_link_gesture_secondary_released_callback(GtkGestureClick *event_controller,
+							      gint n_press,
+							      gdouble x,
+							      gdouble y,
+							      AgsIconLink *icon_link);
 
-void ags_icon_link_enter_callback(GtkEventControllerMotion *event_controller,
-				  gdouble x,
-				  gdouble y,
-				  AgsIconLink *icon_link);
-void ags_icon_link_leave_callback(GtkEventControllerMotion *event_controller,
-				  AgsIconLink *icon_link);
+static void ags_icon_link_enter_callback(GtkEventControllerMotion *event_controller,
+					 gdouble x,
+					 gdouble y,
+					 AgsIconLink *icon_link);
+static void ags_icon_link_leave_callback(GtkEventControllerMotion *event_controller,
+					 AgsIconLink *icon_link);
 
 /**
  * SECTION:ags_icon_link

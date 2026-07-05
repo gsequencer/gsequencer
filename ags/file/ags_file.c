@@ -40,34 +40,34 @@
 
 #include <ags/i18n.h>
 
-void ags_file_class_init(AgsFileClass *file);
-void ags_file_init(AgsFile *file);
-void ags_file_set_property(GObject *gobject,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *param_spec);
-void ags_file_get_property(GObject *gobject,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *param_spec);
-void ags_file_finalize(GObject *gobject);
+static void ags_file_class_init(AgsFileClass *file);
+static void ags_file_init(AgsFile *file);
+static void ags_file_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+static void ags_file_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
+static void ags_file_finalize(GObject *gobject);
 
-void ags_file_real_open(AgsFile *file,
-			GError **error);
-void ags_file_real_open_from_data(AgsFile *file,
-				  gchar *data, guint length,
+static void ags_file_real_open(AgsFile *file,
+			       GError **error);
+static void ags_file_real_open_from_data(AgsFile *file,
+					 gchar *data, guint length,
+					 GError **error);
+static void ags_file_real_rw_open(AgsFile *file,
+				  gboolean create,
 				  GError **error);
-void ags_file_real_rw_open(AgsFile *file,
-			   gboolean create,
-			   GError **error);
 
-void ags_file_real_write(AgsFile *file);
-void ags_file_real_write_concurrent(AgsFile *file);
-void ags_file_real_write_resolve(AgsFile *file);
+static void ags_file_real_write(AgsFile *file);
+static void ags_file_real_write_concurrent(AgsFile *file);
+static void ags_file_real_write_resolve(AgsFile *file);
 
-void ags_file_real_read(AgsFile *file);
-void ags_file_real_read_resolve(AgsFile *file);
-void ags_file_real_read_start(AgsFile *file);
+static void ags_file_real_read(AgsFile *file);
+static void ags_file_real_read_resolve(AgsFile *file);
+static void ags_file_real_read_start(AgsFile *file);
 
 /**
  * SECTION:ags_file

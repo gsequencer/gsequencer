@@ -33,24 +33,24 @@
 
 #include <ags/i18n.h>
 
-void ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope);
-void ags_pattern_envelope_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pattern_envelope_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope);
-void ags_pattern_envelope_finalize(GObject *gobject);
+static void ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope);
+static void ags_pattern_envelope_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_pattern_envelope_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope);
+static void ags_pattern_envelope_finalize(GObject *gobject);
 
-gboolean ags_pattern_envelope_is_connected(AgsConnectable *connectable);
-void ags_pattern_envelope_connect(AgsConnectable *connectable);
-void ags_pattern_envelope_disconnect(AgsConnectable *connectable);
+static gboolean ags_pattern_envelope_is_connected(AgsConnectable *connectable);
+static void ags_pattern_envelope_connect(AgsConnectable *connectable);
+static void ags_pattern_envelope_disconnect(AgsConnectable *connectable);
 
-void ags_pattern_envelope_set_update(AgsApplicable *applicable, gboolean update);
-void ags_pattern_envelope_apply(AgsApplicable *applicable);
-void ags_pattern_envelope_reset(AgsApplicable *applicable);
+static void ags_pattern_envelope_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_pattern_envelope_apply(AgsApplicable *applicable);
+static void ags_pattern_envelope_reset(AgsApplicable *applicable);
 
-gchar* ags_pattern_envelope_x_label_func(gdouble value,
-					 gpointer data);
-gchar* ags_pattern_envelope_y_label_func(gdouble value,
-					 gpointer data);
+static gchar* ags_pattern_envelope_x_label_func(gdouble value,
+						gpointer data);
+static gchar* ags_pattern_envelope_y_label_func(gdouble value,
+						gpointer data);
 
 /**
  * SECTION:ags_pattern_envelope

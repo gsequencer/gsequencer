@@ -29,61 +29,61 @@
 
 #include <math.h>
 
-void ags_level_class_init(AgsLevelClass *level);
-void ags_level_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_level_init(AgsLevel *level);
-void ags_level_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_level_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
-void ags_level_finalize(GObject *gobject);
+static void ags_level_class_init(AgsLevelClass *level);
+static void ags_level_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_level_init(AgsLevel *level);
+static void ags_level_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+static void ags_level_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+static void ags_level_finalize(GObject *gobject);
 
-void ags_level_realize(GtkWidget *widget);
-void ags_level_unrealize(GtkWidget *widget);
+static void ags_level_realize(GtkWidget *widget);
+static void ags_level_unrealize(GtkWidget *widget);
 
-void ags_level_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					   AgsLevel *level);
-
-void ags_level_snapshot(GtkWidget *widget,
-			GtkSnapshot *snapshot);
-
-gboolean ags_level_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						  gint n_press,
-						  gdouble x,
-						  gdouble y,
+static void ags_level_frame_clock_update_callback(GdkFrameClock *frame_clock,
 						  AgsLevel *level);
-gboolean ags_level_gesture_click_released_callback(GtkGestureClick *event_controller,
-						   gint n_press,
-						   gdouble x,
-						   gdouble y,
-						   AgsLevel *level);
 
-gboolean ags_level_key_pressed_callback(GtkEventControllerKey *event_controller,
-					guint keyval,
-					guint keycode,
-					GdkModifierType state,
-					AgsLevel *level);
-gboolean ags_level_key_released_callback(GtkEventControllerKey *event_controller,
-					 guint keyval,
-					 guint keycode,
-					 GdkModifierType state,
-					 AgsLevel *level);
-gboolean ags_level_modifiers_callback(GtkEventControllerKey *event_controller,
-				      GdkModifierType keyval,
-				      AgsLevel *level);
+static void ags_level_snapshot(GtkWidget *widget,
+			       GtkSnapshot *snapshot);
 
-gboolean ags_level_motion_callback(GtkEventControllerMotion *event_controller,
-				   gdouble x,
-				   gdouble y,
-				   AgsLevel *level);
+static gboolean ags_level_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							 gint n_press,
+							 gdouble x,
+							 gdouble y,
+							 AgsLevel *level);
+static gboolean ags_level_gesture_click_released_callback(GtkGestureClick *event_controller,
+							  gint n_press,
+							  gdouble x,
+							  gdouble y,
+							  AgsLevel *level);
 
-void ags_level_draw(AgsLevel *level,
-		    cairo_t *cr,
-		    gboolean is_animation);
+static gboolean ags_level_key_pressed_callback(GtkEventControllerKey *event_controller,
+					       guint keyval,
+					       guint keycode,
+					       GdkModifierType state,
+					       AgsLevel *level);
+static gboolean ags_level_key_released_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
+						AgsLevel *level);
+static gboolean ags_level_modifiers_callback(GtkEventControllerKey *event_controller,
+					     GdkModifierType keyval,
+					     AgsLevel *level);
+
+static gboolean ags_level_motion_callback(GtkEventControllerMotion *event_controller,
+					  gdouble x,
+					  gdouble y,
+					  AgsLevel *level);
+
+static void ags_level_draw(AgsLevel *level,
+			   cairo_t *cr,
+			   gboolean is_animation);
 
 /**
  * SECTION:ags_level

@@ -21,17 +21,17 @@
 
 #include <ags/i18n.h>
 
-void ags_file_lookup_class_init(AgsFileLookupClass *file_lookup);
-void ags_file_lookup_init (AgsFileLookup *file_lookup);
-void ags_file_lookup_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_lookup_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_file_lookup_finalize(GObject *gobject);
+static void ags_file_lookup_class_init(AgsFileLookupClass *file_lookup);
+static void ags_file_lookup_init (AgsFileLookup *file_lookup);
+static void ags_file_lookup_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_lookup_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_file_lookup_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_file_lookup

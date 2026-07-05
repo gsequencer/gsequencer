@@ -35,41 +35,45 @@
 #include <math.h>
 #include <complex.h>
 
-gboolean ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-							 gint64 *sends,
-							 AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_0_phase_receives(AgsModularSynthUtil *modular_synth_util,
-						     gint64 *sends,
-						     AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_0_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint64 *sends,
-						      AgsModularSynthSends modular_synth_sends);
+static GType ags_modular_synth_util_get_pitch_type(AgsModularSynthUtil *modular_synth_util);
+static void ags_modular_synth_util_set_pitch_type(AgsModularSynthUtil *modular_synth_util,
+						  GType pitch_type);
 
-gboolean ags_modular_synth_util_osc_1_frequency_receives(AgsModularSynthUtil *modular_synth_util,
-							 gint64 *sends,
-							 AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_1_phase_receives(AgsModularSynthUtil *modular_synth_util,
-						     gint64 *sends,
-						     AgsModularSynthSends modular_synth_sends);
-gboolean ags_modular_synth_util_osc_1_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint64 *sends,
-						      AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_0_frequency_receives(AgsModularSynthUtil *modular_synth_util,
+								gint64 *sends,
+								AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_0_phase_receives(AgsModularSynthUtil *modular_synth_util,
+							    gint64 *sends,
+							    AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_0_volume_receives(AgsModularSynthUtil *modular_synth_util,
+							     gint64 *sends,
+							     AgsModularSynthSends modular_synth_sends);
 
-gboolean ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modular_synth_util,
-						      gint64 *sends,
-						      AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_1_frequency_receives(AgsModularSynthUtil *modular_synth_util,
+								gint64 *sends,
+								AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_1_phase_receives(AgsModularSynthUtil *modular_synth_util,
+							    gint64 *sends,
+							    AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_osc_1_volume_receives(AgsModularSynthUtil *modular_synth_util,
+							     gint64 *sends,
+							     AgsModularSynthSends modular_synth_sends);
 
-gboolean ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
-						gint64 *sends,
-						AgsModularSynthSends modular_synth_sends);
+static gboolean ags_modular_synth_util_pitch_tuning_receives(AgsModularSynthUtil *modular_synth_util,
+							     gint64 *sends,
+							     AgsModularSynthSends modular_synth_sends);
+
+static gboolean ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modular_synth_util,
+						       gint64 *sends,
+						       AgsModularSynthSends modular_synth_sends);
 
 extern void ags_fluid_interpolate_4th_order_util_config();
 
-extern gboolean interp_coeff_4th_order_initialized;
+extern gboolean ags_fluid_interp_coeff_4th_order_initialized;
 
-extern gdouble interp_coeff_4th_order[AGS_FLUID_INTERP_MAX][4];
+extern gdouble ags_fluid_interp_coeff_4th_order[AGS_FLUID_INTERP_MAX][4];
 
-extern GMutex interp_coeff_4th_order_mutex;
+extern GMutex ags_fluid_interp_coeff_4th_order_mutex;
 
 /**
  * SECTION:ags_modular_synth_util
@@ -2160,6 +2164,7 @@ ags_modular_synth_util_set_noise_gain(AgsModularSynthUtil *modular_synth_util,
 /**
  * ags_modular_synth_util_get_noise_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
+ * @noise_sends_count: (out): return location of noise sends count
  * 
  * Get noise sends of @modular_synth_util.
  * 
@@ -2186,6 +2191,7 @@ ags_modular_synth_util_get_noise_sends(AgsModularSynthUtil *modular_synth_util,
  * ags_modular_synth_util_set_noise_sends:
  * @modular_synth_util: the #AgsModularSynthUtil-struct
  * @noise_sends: the noise sends
+ * @noise_sends_count: the noise sends count
  *
  * Set @noise_sends of @modular_synth_util.
  *
@@ -4343,14 +4349,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -4422,14 +4428,14 @@ ags_modular_synth_util_compute_s8(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -6335,14 +6341,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -6414,14 +6420,14 @@ ags_modular_synth_util_compute_s16(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -8275,14 +8281,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -8354,14 +8360,14 @@ ags_modular_synth_util_compute_s24(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -10215,14 +10221,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -10294,14 +10300,14 @@ ags_modular_synth_util_compute_s32(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -12155,14 +12161,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -12234,14 +12240,14 @@ ags_modular_synth_util_compute_s64(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -14093,14 +14099,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -14172,14 +14178,14 @@ ags_modular_synth_util_compute_float(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -16033,14 +16039,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -16112,14 +16118,14 @@ ags_modular_synth_util_compute_double(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){
@@ -17147,14 +17153,14 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
     
     if(dsp_phase_index + 2 < buffer_length){
       pitch_buffer[dsp_i] = (coeffs_0 * start_point
@@ -17226,14 +17232,14 @@ ags_modular_synth_util_compute_complex(AgsModularSynthUtil *modular_synth_util)
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_4th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
     
-    coeffs_0 = interp_coeff_4th_order[row][0];
-    coeffs_1 = interp_coeff_4th_order[row][1];
-    coeffs_2 = interp_coeff_4th_order[row][2];
-    coeffs_3 = interp_coeff_4th_order[row][3];
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
     
-    g_mutex_unlock(&interp_coeff_4th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 2 < buffer_length){

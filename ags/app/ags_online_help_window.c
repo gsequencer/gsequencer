@@ -35,27 +35,27 @@
 
 #include <ags/i18n.h>
 
-void ags_online_help_window_class_init(AgsOnlineHelpWindowClass *online_help_window);
-void ags_online_help_window_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window);
+static void ags_online_help_window_class_init(AgsOnlineHelpWindowClass *online_help_window);
+static void ags_online_help_window_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_online_help_window_init(AgsOnlineHelpWindow *online_help_window);
 
-gboolean ags_online_help_window_is_connected(AgsConnectable *connectable);
-void ags_online_help_window_connect(AgsConnectable *connectable);
-void ags_online_help_window_disconnect(AgsConnectable *connectable);
+static gboolean ags_online_help_window_is_connected(AgsConnectable *connectable);
+static void ags_online_help_window_connect(AgsConnectable *connectable);
+static void ags_online_help_window_disconnect(AgsConnectable *connectable);
 
-gboolean ags_online_help_window_key_pressed_callback(GtkEventControllerKey *event_controller,
-						     guint keyval,
-						     guint keycode,
-						     GdkModifierType state,
-						     AgsOnlineHelpWindow *online_help_window);
-void ags_online_help_window_key_released_callback(GtkEventControllerKey *event_controller,
-						  guint keyval,
-						  guint keycode,
-						  GdkModifierType state,
-						  AgsOnlineHelpWindow *online_help_window);
-gboolean ags_online_help_window_modifiers_callback(GtkEventControllerKey *event_controller,
-						   GdkModifierType keyval,
-						   AgsOnlineHelpWindow *online_help_window);
+static gboolean ags_online_help_window_key_pressed_callback(GtkEventControllerKey *event_controller,
+							    guint keyval,
+							    guint keycode,
+							    GdkModifierType state,
+							    AgsOnlineHelpWindow *online_help_window);
+static void ags_online_help_window_key_released_callback(GtkEventControllerKey *event_controller,
+							 guint keyval,
+							 guint keycode,
+							 GdkModifierType state,
+							 AgsOnlineHelpWindow *online_help_window);
+static gboolean ags_online_help_window_modifiers_callback(GtkEventControllerKey *event_controller,
+							  GdkModifierType keyval,
+							  AgsOnlineHelpWindow *online_help_window);
 
 static gpointer ags_online_help_window_parent_class = NULL;
 

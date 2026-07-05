@@ -23,17 +23,17 @@
 
 #include <ags/i18n.h>
 
-void ags_marker_class_init(AgsMarkerClass *marker);
-void ags_marker_init(AgsMarker *marker);
-void ags_marker_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_marker_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_marker_finalize(GObject *gobject);
+static void ags_marker_class_init(AgsMarkerClass *marker);
+static void ags_marker_init(AgsMarker *marker);
+static void ags_marker_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_marker_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_marker_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_marker

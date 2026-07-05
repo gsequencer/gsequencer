@@ -54,26 +54,26 @@
 
 #include <ags/i18n.h>
 
-void ags_composite_toolbar_class_init(AgsCompositeToolbarClass *composite_toolbar);
-void ags_composite_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar);
+static void ags_composite_toolbar_class_init(AgsCompositeToolbarClass *composite_toolbar);
+static void ags_composite_toolbar_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar);
 
-AgsUUID* ags_composite_toolbar_get_uuid(AgsConnectable *connectable);
-gboolean ags_composite_toolbar_has_resource(AgsConnectable *connectable);
-gboolean ags_composite_toolbar_is_ready(AgsConnectable *connectable);
-void ags_composite_toolbar_add_to_registry(AgsConnectable *connectable);
-void ags_composite_toolbar_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_composite_toolbar_list_resource(AgsConnectable *connectable);
-xmlNode* ags_composite_toolbar_xml_compose(AgsConnectable *connectable);
-void ags_composite_toolbar_xml_parse(AgsConnectable *connectable,
-				     xmlNode *node);
-gboolean ags_composite_toolbar_is_connected(AgsConnectable *connectable);
-void ags_composite_toolbar_connect(AgsConnectable *connectable);
-void ags_composite_toolbar_disconnect(AgsConnectable *connectable);
-void ags_composite_toolbar_connect_connection(AgsConnectable *connectable,
-					      GObject *connection);
-void ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
-						 GObject *connection);
+static AgsUUID* ags_composite_toolbar_get_uuid(AgsConnectable *connectable);
+static gboolean ags_composite_toolbar_has_resource(AgsConnectable *connectable);
+static gboolean ags_composite_toolbar_is_ready(AgsConnectable *connectable);
+static void ags_composite_toolbar_add_to_registry(AgsConnectable *connectable);
+static void ags_composite_toolbar_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_composite_toolbar_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_composite_toolbar_xml_compose(AgsConnectable *connectable);
+static void ags_composite_toolbar_xml_parse(AgsConnectable *connectable,
+					    xmlNode *node);
+static gboolean ags_composite_toolbar_is_connected(AgsConnectable *connectable);
+static void ags_composite_toolbar_connect(AgsConnectable *connectable);
+static void ags_composite_toolbar_disconnect(AgsConnectable *connectable);
+static void ags_composite_toolbar_connect_connection(AgsConnectable *connectable,
+						     GObject *connection);
+static void ags_composite_toolbar_disconnect_connection(AgsConnectable *connectable,
+							GObject *connection);
 
 static gpointer ags_composite_toolbar_parent_class = NULL;
 

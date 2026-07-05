@@ -35,33 +35,33 @@
 
 #include <ags/i18n.h>
 
-void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
-void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audiorec_init(AgsAudiorec *audiorec);
-void ags_audiorec_finalize(GObject *gobject);
+static void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
+static void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audiorec_init(AgsAudiorec *audiorec);
+static void ags_audiorec_finalize(GObject *gobject);
 
-void ags_audiorec_connect(AgsConnectable *connectable);
-void ags_audiorec_disconnect(AgsConnectable *connectable);
+static void ags_audiorec_connect(AgsConnectable *connectable);
+static void ags_audiorec_disconnect(AgsConnectable *connectable);
 
-void ags_audiorec_show(GtkWidget *widget);
+static void ags_audiorec_show(GtkWidget *widget);
 
-void ags_audiorec_map_recall(AgsMachine *machine);
+static void ags_audiorec_map_recall(AgsMachine *machine);
 
-void ags_audiorec_resize_audio_channels(AgsMachine *machine,
-					guint audio_channels, guint audio_channels_old,
-					gpointer data);
-void ags_audiorec_resize_pads(AgsMachine *machine, GType channel_type,
-			      guint pads, guint pads_old,
-			      gpointer data);
+static void ags_audiorec_resize_audio_channels(AgsMachine *machine,
+					       guint audio_channels, guint audio_channels_old,
+					       gpointer data);
+static void ags_audiorec_resize_pads(AgsMachine *machine, GType channel_type,
+				     guint pads, guint pads_old,
+				     gpointer data);
 
-void ags_audiorec_output_map_recall(AgsAudiorec *audiorec,
-				    guint audio_channel_start,
-				    guint output_pad_start);
-void ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
-				   guint audio_channel_start,
-				   guint input_pad_start);
+static void ags_audiorec_output_map_recall(AgsAudiorec *audiorec,
+					   guint audio_channel_start,
+					   guint output_pad_start);
+static void ags_audiorec_input_map_recall(AgsAudiorec *audiorec,
+					  guint audio_channel_start,
+					  guint input_pad_start);
 
-void* ags_audiorec_fast_export_run(void *ptr);
+static void* ags_audiorec_fast_export_run(void *ptr);
 
 /**
  * SECTION:ags_audiorec

@@ -74,6 +74,7 @@ struct _AgsTaskClass
 };
 
 GType ags_task_get_type();
+GType ags_task_flags_get_type();
 
 gboolean ags_task_test_flags(AgsTask *task,
 			     AgsTaskFlags flags);

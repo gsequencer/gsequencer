@@ -38,56 +38,56 @@
 
 #include <ags/i18n.h>
 
-void ags_sfz_file_class_init(AgsSFZFileClass *sfz_file);
-void ags_sfz_file_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_sfz_file_sound_container_interface_init(AgsSoundContainerInterface *sound_container);
-void ags_sfz_file_init(AgsSFZFile *sfz_file);
-void ags_sfz_file_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_sfz_file_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_sfz_file_dispose(GObject *gobject);
-void ags_sfz_file_finalize(GObject *gobject);
+static void ags_sfz_file_class_init(AgsSFZFileClass *sfz_file);
+static void ags_sfz_file_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_sfz_file_sound_container_interface_init(AgsSoundContainerInterface *sound_container);
+static void ags_sfz_file_init(AgsSFZFile *sfz_file);
+static void ags_sfz_file_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+static void ags_sfz_file_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+static void ags_sfz_file_dispose(GObject *gobject);
+static void ags_sfz_file_finalize(GObject *gobject);
 
-AgsUUID* ags_sfz_file_get_uuid(AgsConnectable *connectable);
-gboolean ags_sfz_file_has_resource(AgsConnectable *connectable);
-gboolean ags_sfz_file_is_ready(AgsConnectable *connectable);
-void ags_sfz_file_add_to_registry(AgsConnectable *connectable);
-void ags_sfz_file_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_sfz_file_list_resource(AgsConnectable *connectable);
-xmlNode* ags_sfz_file_xml_compose(AgsConnectable *connectable);
-void ags_sfz_file_xml_parse(AgsConnectable *connectable,
-			    xmlNode *node);
-gboolean ags_sfz_file_is_connected(AgsConnectable *connectable);
-void ags_sfz_file_connect(AgsConnectable *connectable);
-void ags_sfz_file_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_sfz_file_get_uuid(AgsConnectable *connectable);
+static gboolean ags_sfz_file_has_resource(AgsConnectable *connectable);
+static gboolean ags_sfz_file_is_ready(AgsConnectable *connectable);
+static void ags_sfz_file_add_to_registry(AgsConnectable *connectable);
+static void ags_sfz_file_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_sfz_file_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_sfz_file_xml_compose(AgsConnectable *connectable);
+static void ags_sfz_file_xml_parse(AgsConnectable *connectable,
+				   xmlNode *node);
+static gboolean ags_sfz_file_is_connected(AgsConnectable *connectable);
+static void ags_sfz_file_connect(AgsConnectable *connectable);
+static void ags_sfz_file_disconnect(AgsConnectable *connectable);
 
-gboolean ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename);
-guint ags_sfz_file_get_level_count(AgsSoundContainer *sound_container);
-guint ags_sfz_file_get_nesting_level(AgsSoundContainer *sound_container);
-gchar* ags_sfz_file_get_level_id(AgsSoundContainer *sound_container);
-guint ags_sfz_file_get_level_index(AgsSoundContainer *sound_container);
-guint ags_sfz_file_level_up(AgsSoundContainer *sound_container,
-			    guint level_count);
-guint ags_sfz_file_select_level_by_id(AgsSoundContainer *sound_container,
-				      gchar *level_id);
-guint ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
-					 guint level_index);
-gchar** ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container);
-GList* ags_sfz_file_get_resource_all(AgsSoundContainer *sound_container);
-GList* ags_sfz_file_get_resource_by_name(AgsSoundContainer *sound_container,
-					 gchar *resource_name);
-GList* ags_sfz_file_get_resource_by_index(AgsSoundContainer *sound_container,
-					  guint resource_index);
-GList* ags_sfz_file_get_resource_current(AgsSoundContainer *sound_container);
-void ags_sfz_file_close(AgsSoundContainer *sound_container);
+static gboolean ags_sfz_file_open(AgsSoundContainer *sound_container, gchar *filename);
+static guint ags_sfz_file_get_level_count(AgsSoundContainer *sound_container);
+static guint ags_sfz_file_get_nesting_level(AgsSoundContainer *sound_container);
+static gchar* ags_sfz_file_get_level_id(AgsSoundContainer *sound_container);
+static guint ags_sfz_file_get_level_index(AgsSoundContainer *sound_container);
+static guint ags_sfz_file_level_up(AgsSoundContainer *sound_container,
+				   guint level_count);
+static guint ags_sfz_file_select_level_by_id(AgsSoundContainer *sound_container,
+					     gchar *level_id);
+static guint ags_sfz_file_select_level_by_index(AgsSoundContainer *sound_container,
+						guint level_index);
+static gchar** ags_sfz_file_get_sublevel_name(AgsSoundContainer *sound_container);
+static GList* ags_sfz_file_get_resource_all(AgsSoundContainer *sound_container);
+static GList* ags_sfz_file_get_resource_by_name(AgsSoundContainer *sound_container,
+						gchar *resource_name);
+static GList* ags_sfz_file_get_resource_by_index(AgsSoundContainer *sound_container,
+						 guint resource_index);
+static GList* ags_sfz_file_get_resource_current(AgsSoundContainer *sound_container);
+static void ags_sfz_file_close(AgsSoundContainer *sound_container);
 
-gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar *buffer, gsize buffer_length,
-						   gchar **iter);
+static gchar* ags_sfz_file_parse_skip_comments_and_blanks(gchar *buffer, gsize buffer_length,
+							  gchar **iter);
 
 /**
  * SECTION:ags_sfz_file

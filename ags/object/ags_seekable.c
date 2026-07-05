@@ -21,7 +21,8 @@
 
 #include <ags/object/ags_marshal.h>
 
-void ags_seekable_class_init(AgsSeekableInterface *ginterface);
+static void ags_seekable_class_init(AgsSeekableInterface *ginterface);
+static void ags_seekable_base_init(AgsSeekableInterface *ginterface);
 
 /**
  * SECTION:ags_seekable

@@ -37,7 +37,7 @@
 extern GHashTable *ags_live_lv2_bridge_lv2ui_handle;
 extern GHashTable *ags_live_lv2_bridge_lv2ui_idle;
 
-gboolean ags_live_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLiveLv2Bridge *live_lv2_bridge);
+static gboolean ags_live_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLiveLv2Bridge *live_lv2_bridge);
 
 void
 ags_live_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle)

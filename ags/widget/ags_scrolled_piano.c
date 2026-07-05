@@ -19,9 +19,9 @@
 
 #include <ags/widget/ags_scrolled_piano.h>
 
-void ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano);
-void ags_scrolled_piano_init(AgsScrolledPiano *scrolled_piano);
-void ags_scrolled_piano_finalize(GObject *gobject);
+static void ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano);
+static void ags_scrolled_piano_init(AgsScrolledPiano *scrolled_piano);
+static void ags_scrolled_piano_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_scrolled_piano

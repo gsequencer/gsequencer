@@ -21,30 +21,30 @@
 
 #include <stdlib.h>
 
-void ags_expander_set_class_init(AgsExpanderSetClass *expander_set);
-void ags_expander_set_init(AgsExpanderSet *expander_set);
-void ags_expander_set_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_expander_set_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_expander_set_finalize(GObject *gobject);
-void ags_expander_set_show(GtkWidget *widget);
+static void ags_expander_set_class_init(AgsExpanderSetClass *expander_set);
+static void ags_expander_set_init(AgsExpanderSet *expander_set);
+static void ags_expander_set_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_expander_set_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_expander_set_finalize(GObject *gobject);
+static void ags_expander_set_show(GtkWidget *widget);
 
-void ags_expander_set_draw(AgsExpanderSet *expander_set);
-void ags_expander_set_insert_child(AgsExpanderSet *expander_set,
-				   AgsExpanderSetChild *child,
-				   gboolean ghost);
-void ags_expander_set_remove_child(AgsExpanderSet *expander_set,
-				   AgsExpanderSetChild *child,
-				   gboolean ghost);
+static void ags_expander_set_draw(AgsExpanderSet *expander_set);
+static void ags_expander_set_insert_child(AgsExpanderSet *expander_set,
+					  AgsExpanderSetChild *child,
+					  gboolean ghost);
+static void ags_expander_set_remove_child(AgsExpanderSet *expander_set,
+					  AgsExpanderSetChild *child,
+					  gboolean ghost);
 
 /**
  * SECTION:ags_expander_set
- * @short_description: A container
+ * @short_description: Grid widget with expander
  * @title: AgsExpanderSet
  * @section_id:
  * @include: ags/widget/ags_expander_set.h

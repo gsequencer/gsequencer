@@ -41,63 +41,63 @@
 #include <sys/types.h>
 #include <regex.h>
 
-void ags_osc_node_controller_class_init(AgsOscNodeControllerClass *osc_node_controller);
-void ags_osc_node_controller_init(AgsOscNodeController *osc_node_controller);
-void ags_osc_node_controller_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_osc_node_controller_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_osc_node_controller_dispose(GObject *gobject);
-void ags_osc_node_controller_finalize(GObject *gobject);
+static void ags_osc_node_controller_class_init(AgsOscNodeControllerClass *osc_node_controller);
+static void ags_osc_node_controller_init(AgsOscNodeController *osc_node_controller);
+static void ags_osc_node_controller_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_osc_node_controller_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_osc_node_controller_dispose(GObject *gobject);
+static void ags_osc_node_controller_finalize(GObject *gobject);
 
-gpointer ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_controller,
-						    AgsOscConnection *osc_connection,
-						    GObject *soundcard,
-						    guchar *message, guint message_size,
-						    gchar *type_tag,
-						    gchar *path, guint path_offset);
-gpointer ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_controller,
-						    AgsOscConnection *osc_connection,
-						    GObject *sequencer,
-						    guchar *message, guint message_size,
-						    gchar *type_tag,
-						    gchar *path, guint path_offset);
+static gpointer ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_controller,
+							   AgsOscConnection *osc_connection,
+							   GObject *soundcard,
+							   guchar *message, guint message_size,
+							   gchar *type_tag,
+							   gchar *path, guint path_offset);
+static gpointer ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_controller,
+							   AgsOscConnection *osc_connection,
+							   GObject *sequencer,
+							   guchar *message, guint message_size,
+							   gchar *type_tag,
+							   gchar *path, guint path_offset);
 
-gpointer ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller,
-						AgsOscConnection *osc_connection,
-						AgsAudio *audio,
-						guchar *message, guint message_size,
-						gchar *type_tag,
-						gchar *path, guint path_offset);
-gpointer ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controller,
-						  AgsOscConnection *osc_connection,
-						  AgsChannel *channel,
-						  guchar *message, guint message_size,
-						  gchar *type_tag,
-						  gchar *path, guint path_offset);
+static gpointer ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller,
+						       AgsOscConnection *osc_connection,
+						       AgsAudio *audio,
+						       guchar *message, guint message_size,
+						       gchar *type_tag,
+						       gchar *path, guint path_offset);
+static gpointer ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controller,
+							 AgsOscConnection *osc_connection,
+							 AgsChannel *channel,
+							 guchar *message, guint message_size,
+							 gchar *type_tag,
+							 gchar *path, guint path_offset);
 
-gpointer ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controller,
-						 AgsOscConnection *osc_connection,
-						 AgsRecall *recall,
-						 guchar *message, guint message_size,
-						 gchar *type_tag,
-						 gchar *path, guint path_offset);
+static gpointer ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controller,
+							AgsOscConnection *osc_connection,
+							AgsRecall *recall,
+							guchar *message, guint message_size,
+							gchar *type_tag,
+							gchar *path, guint path_offset);
 
-gpointer ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
-					       AgsOscConnection *osc_connection,
-					       AgsRecall *parent,
-					       AgsPort *port,
-					       guchar *message, guint message_size,
-					       gchar *type_tag,
-					       gchar *path, guint path_offset);
+static gpointer ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
+						      AgsOscConnection *osc_connection,
+						      AgsRecall *parent,
+						      AgsPort *port,
+						      guchar *message, guint message_size,
+						      gchar *type_tag,
+						      gchar *path, guint path_offset);
 
-gpointer ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
-					       AgsOscConnection *osc_connection,
-					       guchar *message, guint message_size);
+static gpointer ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
+						      AgsOscConnection *osc_connection,
+						      guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_node_controller

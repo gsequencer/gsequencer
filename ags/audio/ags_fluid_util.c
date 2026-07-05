@@ -40,16 +40,16 @@
 
 #include <math.h>
 
-gpointer ags_fluid_util_copy(gpointer ptr);
-void ags_fluid_util_free(gpointer ptr);
+static gpointer ags_fluid_util_copy(gpointer ptr);
+static void ags_fluid_util_free(gpointer ptr);
 
 void ags_fluid_conversion_config();
 
-gboolean ct2hz_tab_initialized = FALSE;
+gboolean ags_fluid_ct2hz_tab_initialized = FALSE;
 
-gdouble ct2hz_tab[AGS_FLUID_CENTS_HZ_SIZE];
+gdouble ags_fluid_ct2hz_tab[AGS_FLUID_CENTS_HZ_SIZE];
 
-GMutex ct2hz_tab_mutex;
+GMutex ags_fluid_ct2hz_tab_mutex;
 
 /**
  * SECTION:ags_fluid_util
@@ -106,10 +106,10 @@ ags_fluid_conversion_config()
 {
   gint i;
 
-  g_mutex_lock(&ct2hz_tab_mutex);
+  g_mutex_lock(&ags_fluid_ct2hz_tab_mutex);
 
-  if(ct2hz_tab_initialized){
-    g_mutex_unlock(&ct2hz_tab_mutex);
+  if(ags_fluid_ct2hz_tab_initialized){
+    g_mutex_unlock(&ags_fluid_ct2hz_tab_mutex);
 
     return;
   }
@@ -118,12 +118,12 @@ ags_fluid_conversion_config()
     // 6,875 is just a factor that we already multiply into the lookup table to save
     // that multiplication in fluid_ct2hz_real()
     // 6.875 Hz because 440Hz / 2^6
-    ct2hz_tab[i] = 6.875 * powl(2.0, (double) i / 1200.0);
+    ags_fluid_ct2hz_tab[i] = 6.875 * powl(2.0, (double) i / 1200.0);
   }
 
-  ct2hz_tab_initialized = TRUE;
+  ags_fluid_ct2hz_tab_initialized = TRUE;
   
-  g_mutex_unlock(&ct2hz_tab_mutex);
+  g_mutex_unlock(&ags_fluid_ct2hz_tab_mutex);
 }
 
 /*
@@ -176,7 +176,7 @@ ags_fluid_ct2hz_real(gdouble cents)
     mult = 1u << (fac & (sizeof(mult)*8u - 1u));
 
     // don't use ldexp() either (poor performance)
-    return(mult * ct2hz_tab[rem]);
+    return(mult * ags_fluid_ct2hz_tab[rem]);
   }
 }
 

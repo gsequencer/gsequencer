@@ -36,41 +36,41 @@
 
 #include <ags/i18n.h>
 
-void ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal_class);
-void ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_audio_signal_init(AgsAudioSignal *audio_signal);
-void ags_audio_signal_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec);
-void ags_audio_signal_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec);
-void ags_audio_signal_dispose(GObject *gobject);
-void ags_audio_signal_finalize(GObject *gobject);
+static void ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal_class);
+static void ags_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_audio_signal_init(AgsAudioSignal *audio_signal);
+static void ags_audio_signal_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec);
+static void ags_audio_signal_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec);
+static void ags_audio_signal_dispose(GObject *gobject);
+static void ags_audio_signal_finalize(GObject *gobject);
 
-AgsUUID* ags_audio_signal_get_uuid(AgsConnectable *connectable);
-gboolean ags_audio_signal_has_resource(AgsConnectable *connectable);
-gboolean ags_audio_signal_is_ready(AgsConnectable *connectable);
-void ags_audio_signal_add_to_registry(AgsConnectable *connectable);
-void ags_audio_signal_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_audio_signal_list_resource(AgsConnectable *connectable);
-xmlNode* ags_audio_signal_xml_compose(AgsConnectable *connectable);
-void ags_audio_signal_xml_parse(AgsConnectable *connectable,
-				xmlNode *node);
-gboolean ags_audio_signal_is_connected(AgsConnectable *connectable);
-void ags_audio_signal_connect(AgsConnectable *connectable);
-void ags_audio_signal_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_audio_signal_get_uuid(AgsConnectable *connectable);
+static gboolean ags_audio_signal_has_resource(AgsConnectable *connectable);
+static gboolean ags_audio_signal_is_ready(AgsConnectable *connectable);
+static void ags_audio_signal_add_to_registry(AgsConnectable *connectable);
+static void ags_audio_signal_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_audio_signal_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_audio_signal_xml_compose(AgsConnectable *connectable);
+static void ags_audio_signal_xml_parse(AgsConnectable *connectable,
+				       xmlNode *node);
+static gboolean ags_audio_signal_is_connected(AgsConnectable *connectable);
+static void ags_audio_signal_connect(AgsConnectable *connectable);
+static void ags_audio_signal_disconnect(AgsConnectable *connectable);
 
-void ags_audio_signal_real_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard);
+static void ags_audio_signal_real_set_output_soundcard(AgsAudioSignal *audio_signal, GObject *output_soundcard);
 
-void ags_audio_signal_real_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard);
+static void ags_audio_signal_real_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *input_soundcard);
 
-void ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
-				    GObject *note);
-void ags_audio_signal_real_remove_note(AgsAudioSignal *audio_signal,
-				       GObject *note);
+static void ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
+					   GObject *note);
+static void ags_audio_signal_real_remove_note(AgsAudioSignal *audio_signal,
+					      GObject *note);
 
 /**
  * SECTION:ags_audio_signal

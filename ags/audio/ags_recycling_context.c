@@ -26,18 +26,18 @@
 
 #include <ags/i18n.h>
 
-void ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context_class);
-void ags_recycling_context_init(AgsRecyclingContext *recycling_context);
-void ags_recycling_context_set_property(GObject *gobject,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *param_spec);
-void ags_recycling_context_get_property(GObject *gobject,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *param_spec);
-void ags_recycling_context_dispose(GObject *gobject);
-void ags_recycling_context_finalize(GObject *gobject);
+static void ags_recycling_context_class_init(AgsRecyclingContextClass *recycling_context_class);
+static void ags_recycling_context_init(AgsRecyclingContext *recycling_context);
+static void ags_recycling_context_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+static void ags_recycling_context_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
+static void ags_recycling_context_dispose(GObject *gobject);
+static void ags_recycling_context_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_recycling_context

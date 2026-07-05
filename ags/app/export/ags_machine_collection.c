@@ -31,17 +31,17 @@
 
 #include <ags/i18n.h>
 
-void ags_machine_collection_class_init(AgsMachineCollectionClass *machine_collection);
-void ags_machine_collection_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_machine_collection_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_machine_collection_init(AgsMachineCollection *machine_collection);
+static void ags_machine_collection_class_init(AgsMachineCollectionClass *machine_collection);
+static void ags_machine_collection_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_machine_collection_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_machine_collection_init(AgsMachineCollection *machine_collection);
 
-void ags_machine_collection_connect(AgsConnectable *connectable);
-void ags_machine_collection_disconnect(AgsConnectable *connectable);
+static void ags_machine_collection_connect(AgsConnectable *connectable);
+static void ags_machine_collection_disconnect(AgsConnectable *connectable);
 
-void ags_machine_collection_set_update(AgsApplicable *applicable, gboolean update);
-void ags_machine_collection_apply(AgsApplicable *applicable);
-void ags_machine_collection_reset(AgsApplicable *applicable);
+static void ags_machine_collection_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_machine_collection_apply(AgsApplicable *applicable);
+static void ags_machine_collection_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_machine_collection

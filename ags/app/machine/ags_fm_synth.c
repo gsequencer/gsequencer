@@ -35,17 +35,17 @@
 
 #include <ags/i18n.h>
 
-void ags_fm_synth_class_init(AgsFMSynthClass *fm_synth);
-void ags_fm_synth_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_fm_synth_init(AgsFMSynth *fm_synth);
-void ags_fm_synth_finalize(GObject *gobject);
+static void ags_fm_synth_class_init(AgsFMSynthClass *fm_synth);
+static void ags_fm_synth_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_fm_synth_init(AgsFMSynth *fm_synth);
+static void ags_fm_synth_finalize(GObject *gobject);
 
-void ags_fm_synth_connect(AgsConnectable *connectable);
-void ags_fm_synth_disconnect(AgsConnectable *connectable);
+static void ags_fm_synth_connect(AgsConnectable *connectable);
+static void ags_fm_synth_disconnect(AgsConnectable *connectable);
 
-void ags_fm_synth_show(GtkWidget *widget);
+static void ags_fm_synth_show(GtkWidget *widget);
 
-void ags_fm_synth_map_recall(AgsMachine *machine);
+static void ags_fm_synth_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_fm_synth

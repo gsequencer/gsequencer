@@ -29,61 +29,61 @@
 
 #include <math.h>
 
-void ags_tempo_class_init(AgsTempoClass *tempo);
-void ags_tempo_orientable_interface_init(GtkOrientableIface *orientable);
-void ags_tempo_init(AgsTempo *tempo);
-void ags_tempo_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_tempo_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
-void ags_tempo_finalize(GObject *gobject);
+static void ags_tempo_class_init(AgsTempoClass *tempo);
+static void ags_tempo_orientable_interface_init(GtkOrientableIface *orientable);
+static void ags_tempo_init(AgsTempo *tempo);
+static void ags_tempo_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+static void ags_tempo_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+static void ags_tempo_finalize(GObject *gobject);
 
-void ags_tempo_realize(GtkWidget *widget);
-void ags_tempo_unrealize(GtkWidget *widget);
+static void ags_tempo_realize(GtkWidget *widget);
+static void ags_tempo_unrealize(GtkWidget *widget);
 
-void ags_tempo_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					   AgsTempo *tempo);
-
-void ags_tempo_snapshot(GtkWidget *widget,
-			GtkSnapshot *snapshot);
-
-gboolean ags_tempo_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-						  gint n_press,
-						  gdouble x,
-						  gdouble y,
+static void ags_tempo_frame_clock_update_callback(GdkFrameClock *frame_clock,
 						  AgsTempo *tempo);
-gboolean ags_tempo_gesture_click_released_callback(GtkGestureClick *event_controller,
-						   gint n_press,
-						   gdouble x,
-						   gdouble y,
-						   AgsTempo *tempo);
 
-gboolean ags_tempo_key_pressed_callback(GtkEventControllerKey *event_controller,
-					guint keyval,
-					guint keycode,
-					GdkModifierType state,
-					AgsTempo *tempo);
-gboolean ags_tempo_key_released_callback(GtkEventControllerKey *event_controller,
-					 guint keyval,
-					 guint keycode,
-					 GdkModifierType state,
-					 AgsTempo *tempo);
-gboolean ags_tempo_modifiers_callback(GtkEventControllerKey *event_controller,
-				      GdkModifierType keyval,
-				      AgsTempo *tempo);
+static void ags_tempo_snapshot(GtkWidget *widget,
+			       GtkSnapshot *snapshot);
 
-gboolean ags_tempo_motion_callback(GtkEventControllerMotion *event_controller,
-				   gdouble x,
-				   gdouble y,
-				   AgsTempo *tempo);
+static gboolean ags_tempo_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+							 gint n_press,
+							 gdouble x,
+							 gdouble y,
+							 AgsTempo *tempo);
+static gboolean ags_tempo_gesture_click_released_callback(GtkGestureClick *event_controller,
+							  gint n_press,
+							  gdouble x,
+							  gdouble y,
+							  AgsTempo *tempo);
 
-void ags_tempo_draw(AgsTempo *tempo,
-		    cairo_t *cr,
-		    gboolean is_animation);
+static gboolean ags_tempo_key_pressed_callback(GtkEventControllerKey *event_controller,
+					       guint keyval,
+					       guint keycode,
+					       GdkModifierType state,
+					       AgsTempo *tempo);
+static gboolean ags_tempo_key_released_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
+						AgsTempo *tempo);
+static gboolean ags_tempo_modifiers_callback(GtkEventControllerKey *event_controller,
+					     GdkModifierType keyval,
+					     AgsTempo *tempo);
+
+static gboolean ags_tempo_motion_callback(GtkEventControllerMotion *event_controller,
+					  gdouble x,
+					  gdouble y,
+					  AgsTempo *tempo);
+
+static void ags_tempo_draw(AgsTempo *tempo,
+			   cairo_t *cr,
+			   gboolean is_animation);
 
 /**
  * SECTION:ags_tempo

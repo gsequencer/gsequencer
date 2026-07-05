@@ -32,21 +32,21 @@
 
 #include <ags/i18n.h>
 
-void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
-void ags_add_audio_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_add_audio_init(AgsAddAudio *add_audio);
-void ags_add_audio_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_add_audio_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_add_audio_dispose(GObject *gobject);
-void ags_add_audio_finalize(GObject *gobject);
+static void ags_add_audio_class_init(AgsAddAudioClass *add_audio);
+static void ags_add_audio_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_add_audio_init(AgsAddAudio *add_audio);
+static void ags_add_audio_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_add_audio_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_add_audio_dispose(GObject *gobject);
+static void ags_add_audio_finalize(GObject *gobject);
 
-void ags_add_audio_launch(AgsTask *task);
+static void ags_add_audio_launch(AgsTask *task);
 
 enum{
   PROP_0,
