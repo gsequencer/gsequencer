@@ -795,7 +795,7 @@ ags_function_push_equation(AgsFunction *function,
     function->equation = (gchar **) g_realloc(function->equation,
 					      (i + 1) * sizeof(gchar *));
 
-    function->transformed_equation = (gchar **) g_realloc(function->equation,
+    function->transformed_equation = (gchar **) g_realloc(function->transformed_equation,
 							  (i + 1) * sizeof(gchar *));
   }
 

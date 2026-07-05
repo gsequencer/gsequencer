@@ -297,7 +297,7 @@ ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall)
     }
   }
 
-static  ags_fx_audio_unit_audio_signal_run_inter_END:
+ ags_fx_audio_unit_audio_signal_run_inter_END:
   
   if(audio != NULL){
     g_object_unref(audio);
@@ -496,7 +496,7 @@ ags_fx_audio_unit_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation
     }
   }
 
-static  ags_fx_audio_unit_audio_signal_stream_feed_END:
+ ags_fx_audio_unit_audio_signal_stream_feed_END:
   
   if(audio != NULL){
     g_object_unref(audio);
@@ -660,7 +660,7 @@ ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notati
     }
   }
 
-static  ags_fx_audio_unit_audio_signal_notify_remove_END:
+ ags_fx_audio_unit_audio_signal_notify_remove_END:
   
   if(audio != NULL){
     g_object_unref(audio);
