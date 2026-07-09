@@ -2255,7 +2255,7 @@ endif
 
 install_headers(libags_gui_widget_headers, install_dir: gsequencer_includedir / 'ags/widget')
 
-install_headers('libags.h', 'libags-globals.h', 'libags-audio.h', 'libags-gui.h', install_dir: gsequencer_includedir / 'ags')
+install_headers('libags.h', 'libags-globals.h', 'libags-audio.h', 'libags-audio-globals.h', 'libags-gui.h', install_dir: gsequencer_includedir / 'ags')
 
 libags_dep_sources = []
 libags_audio_dep_sources = []
