@@ -38,8 +38,8 @@ static void ags_solver_matrix_get_property(GObject *gobject,
 					   GParamSpec *param_spec);
 static void ags_solver_matrix_finalize(GObject *gobject);
 
-gchar** ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
-					     guint *symbolic_strv_length);
+static gchar** ags_solver_matrix_to_symbolic_string(AgsSolverMatrix *solver_matrix,
+						    guint *symbolic_strv_length);
 
 /**
  * SECTION:ags_solver_matrix

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,12 +40,28 @@
 
 #include <ags/audio/ags_fluid_util.h>
 
+void ags_fluid_interpolate_7th_order_util_config();
+
 /* 7th order interpolation (7 coefficients centered on 3rd) */
-static gboolean interp_coeff_7th_order_initialized = FALSE;
+#if defined(__has_attribute)
+#if __has_attribute(visibility)
+#define AGS_HAVE_ATTRIBUTE_VISIBILITY 1
+#endif
+#endif
 
-static gdouble interp_coeff_7th_order[AGS_FLUID_INTERP_MAX][AGS_FLUID_SINC_INTERP_ORDER];
+#if defined(AGS_HAVE_ATTRIBUTE_VISIBILITY)
+__attribute__((visibility("default"))) gboolean ags_fluid_interp_coeff_7th_order_initialized = FALSE;
 
-static GMutex interp_coeff_7th_order_mutex;
+__attribute__((visibility("default"))) gdouble ags_fluid_interp_coeff_7th_order[AGS_FLUID_INTERP_MAX][AGS_FLUID_SINC_INTERP_ORDER];
+
+__attribute__((visibility("default"))) GMutex ags_fluid_interp_coeff_7th_order_mutex;
+#else
+gboolean ags_fluid_interp_coeff_7th_order_initialized = FALSE;
+
+gdouble ags_fluid_interp_coeff_7th_order[AGS_FLUID_INTERP_MAX][AGS_FLUID_SINC_INTERP_ORDER];
+
+GMutex ags_fluid_interp_coeff_7th_order_mutex;
+#endif
 
 /**
  * SECTION:ags_fluid_interpolate_7th_order_util
@@ -85,10 +101,10 @@ ags_fluid_interpolate_7th_order_util_config()
   gdouble i_shifted;
   int i, i2;
   
-  g_mutex_lock(&interp_coeff_7th_order_mutex);
+  g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
   
-  if(interp_coeff_7th_order_initialized){
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+  if(ags_fluid_interp_coeff_7th_order_initialized){
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     return;
   }
@@ -112,13 +128,13 @@ ags_fluid_interpolate_7th_order_util_config()
 	v = 1.0;
       }
 
-      interp_coeff_7th_order[AGS_FLUID_INTERP_MAX - i2 - 1][i] = v;
+      ags_fluid_interp_coeff_7th_order[AGS_FLUID_INTERP_MAX - i2 - 1][i] = v;
     }
   }
   
-  interp_coeff_7th_order_initialized = TRUE;
+  ags_fluid_interp_coeff_7th_order_initialized = TRUE;
   
-  g_mutex_unlock(&interp_coeff_7th_order_mutex);
+  g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 }
 
 /**
@@ -1106,9 +1122,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
@@ -1120,7 +1136,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1151,9 +1167,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1166,7 +1182,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1198,9 +1214,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1213,7 +1229,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1246,9 +1262,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1261,7 +1277,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s8(AgsFluidInterpolate7thOrderUtil *f
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1382,9 +1398,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
@@ -1396,7 +1412,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1427,9 +1443,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1442,7 +1458,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1474,9 +1490,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1489,7 +1505,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1522,9 +1538,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1537,7 +1553,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s16(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1658,9 +1674,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
@@ -1672,7 +1688,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1703,9 +1719,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1718,7 +1734,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1750,9 +1766,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1765,7 +1781,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1798,9 +1814,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1813,7 +1829,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s24(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1934,9 +1950,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
@@ -1948,7 +1964,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -1979,9 +1995,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -1994,7 +2010,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2026,9 +2042,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2041,7 +2057,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2074,9 +2090,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2089,7 +2105,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s32(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2210,9 +2226,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
@@ -2224,7 +2240,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2255,9 +2271,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2270,7 +2286,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2302,9 +2318,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2317,7 +2333,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2350,9 +2366,9 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2365,7 +2381,7 @@ ags_fluid_interpolate_7th_order_util_pitch_s64(AgsFluidInterpolate7thOrderUtil *
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2486,9 +2502,9 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
@@ -2500,7 +2516,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2531,9 +2547,9 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2546,7 +2562,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2578,9 +2594,9 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2593,7 +2609,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2626,9 +2642,9 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2641,7 +2657,7 @@ ags_fluid_interpolate_7th_order_util_pitch_float(AgsFluidInterpolate7thOrderUtil
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2762,9 +2778,9 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       destination[dsp_i * destination_stride] = (coeffs[0] * start_points[2]
@@ -2776,7 +2792,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2807,9 +2823,9 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2822,7 +2838,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2854,9 +2870,9 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2869,7 +2885,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -2902,9 +2918,9 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -2917,7 +2933,7 @@ ags_fluid_interpolate_7th_order_util_pitch_double(AgsFluidInterpolate7thOrderUti
 						 + coeffs[6] * source[(dsp_phase_index + 3) * source_stride]);
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -3038,9 +3054,9 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index + 3 < buffer_length){
       ags_complex_set(destination + (dsp_i * destination_stride),
@@ -3053,7 +3069,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 		       + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -3084,9 +3100,9 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 1 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -3100,7 +3116,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 		       + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -3132,9 +3148,9 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 2 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -3148,7 +3164,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 		       + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
@@ -3181,9 +3197,9 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 
     row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
     
-    g_mutex_lock(&interp_coeff_7th_order_mutex);
+    g_mutex_lock(&ags_fluid_interp_coeff_7th_order_mutex);
 
-    coeffs = interp_coeff_7th_order[row];
+    coeffs = ags_fluid_interp_coeff_7th_order[row];
 
     if(dsp_phase_index - 3 > 0 &&
        dsp_phase_index + 3 < buffer_length){
@@ -3197,7 +3213,7 @@ ags_fluid_interpolate_7th_order_util_pitch_complex(AgsFluidInterpolate7thOrderUt
 		       + coeffs[6] * ags_complex_get(source + ((dsp_phase_index + 3) * source_stride))));
     }
     
-    g_mutex_unlock(&interp_coeff_7th_order_mutex);
+    g_mutex_unlock(&ags_fluid_interp_coeff_7th_order_mutex);
 
     /* increment phase */
     ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);

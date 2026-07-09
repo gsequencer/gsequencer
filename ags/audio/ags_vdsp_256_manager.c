@@ -601,7 +601,7 @@ ags_vdsp_256_manager_try_acquire_quad(AgsVDSP256Manager *vdsp_256_manager,
   
   g_rec_mutex_lock(mutex);
 
-  for(i = 0; i < 3; i++){
+  for(i = 0; i < 4; i++){
     AgsVDSPArr *vdsp_arr;
     
     GList *vdsp;

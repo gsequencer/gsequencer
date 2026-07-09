@@ -3720,17 +3720,32 @@ ags_machine_find_dialog_model(AgsMachine *machine,
 			      gchar *attribute,
 			      gchar *value)
 {
+  xmlNode *current_node;
+
+  xmlChar *prop;
+
+  gboolean success;
+
   g_return_val_if_fail(AGS_IS_MACHINE(machine), NULL);
 
-  while(dialog_model != NULL){
-    xmlNode *current_node;
-
+  while(dialog_model != NULL){    
     current_node = dialog_model->data;
 
-    if(!g_strcmp0(current_node->name, node_name)){
+    if(!g_strcmp0(AGS_BAD_CAST current_node->name, node_name)){
       if(attribute != NULL){
-	if(!g_strcmp0(xmlGetProp(current_node, attribute),
-		      value)){	
+	prop = xmlGetProp(current_node,
+			  BAD_CAST attribute);
+
+	success = FALSE;
+	
+	if(!g_strcmp0(AGS_BAD_CAST prop,
+		      value)){
+	  success = TRUE;
+	}
+
+	xmlFree(prop);
+	
+	if(success){
 	  return(dialog_model);
 	}
       }else{
@@ -4000,7 +4015,8 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
   next_current = NULL;
     
   /* create root node */
-  notation_node = xmlNewNode(NULL, BAD_CAST "notation");
+  notation_node = xmlNewNode(NULL,
+			     BAD_CAST "notation");
 
   xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
   xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
@@ -4211,13 +4227,17 @@ ags_machine_check_message(AgsMachine *machine)
   while(message_envelope != NULL){
     xmlNode *root_node;
 
+    xmlChar *method;
+
     root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
       
     if(!xmlStrncmp(root_node->name,
 		   BAD_CAST "ags-command",
 		   12)){
-      if(!xmlStrncmp(xmlGetProp(root_node,
-				"method"),
+      method = xmlGetProp(root_node,
+			  BAD_CAST "method");
+      
+      if(!xmlStrncmp(method,
 		     BAD_CAST "AgsAudio::set-samplerate",
 		     25)){
 	guint samplerate;
@@ -4231,8 +4251,7 @@ ags_machine_check_message(AgsMachine *machine)
 	g_object_set(machine,
 		     "samplerate", samplerate,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsAudio::set-buffer-size",
 			   26)){
 	guint buffer_size;
@@ -4246,8 +4265,7 @@ ags_machine_check_message(AgsMachine *machine)
 	g_object_set(machine,
 		     "buffer-size", buffer_size,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsAudio::set-format",
 			   21)){
 	guint format;
@@ -4261,8 +4279,7 @@ ags_machine_check_message(AgsMachine *machine)
 	g_object_set(machine,
 		     "format", format,
 		     NULL);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsAudio::set-audio-channels",
 			   29)){
 	guint audio_channels, audio_channels_old;
@@ -4279,8 +4296,7 @@ ags_machine_check_message(AgsMachine *machine)
 	/* resize audio channels */
 	ags_machine_resize_audio_channels(machine,
 					  audio_channels, audio_channels_old);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsAudio::set-pads",
 			   19)){
 	GType channel_type;
@@ -4304,8 +4320,7 @@ ags_machine_check_message(AgsMachine *machine)
 	ags_machine_resize_pads(machine,
 				channel_type,
 				pads, pads_old);
-      }else if(!xmlStrncmp(xmlGetProp(root_node,
-				      "method"),
+      }else if(!xmlStrncmp(method,
 			   BAD_CAST "AgsAudio::stop",
 			   15)){
 	GList *recall_id;

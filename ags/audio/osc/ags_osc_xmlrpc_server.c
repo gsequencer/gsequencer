@@ -435,7 +435,7 @@ ags_osc_xmlrpc_server_stop(AgsOscServer *osc_server)
  * @osc_xmlrpc_server: the #AgsOscXmlrpcServer
  * @path: the path
  * @origin: the origin
- * @protocols: the protocls as string vector
+ * @protocols: the protocols as string vector
  * @callback: the callback
  * @user_data: user data
  * @destroy: destroy notify function
@@ -725,7 +725,7 @@ ags_osc_xmlrpc_server_websocket_message_callback(SoupWebsocketConnection *websoc
   xmlXPathFreeObject(xpath_object);
   xmlXPathFreeContext(xpath_context);
 
-  /* security token */
+  /* redirect resource id */
   xpath = "/ags-osc-over-xmlrpc/ags-srv-redirect";
 
   xpath_context = xmlXPathNewContext(doc);

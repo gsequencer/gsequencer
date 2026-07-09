@@ -55,7 +55,7 @@ typedef struct _AgsDialClass AgsDialClass;
  * AgsDialFlags: 
  * @AGS_DIAL_WITH_BUTTONS: with buttons
  * @AGS_DIAL_SEEMLESS_MODE: seemless mode
- * @AGS_DIAL_INVERSE_LIGTH: inverse light
+ * @AGS_DIAL_INVERSE_LIGHT: inverse light
  * @AGS_DIAL_NO_UPDATE: no update
  * 
  * Enum values to specify particular flags.
