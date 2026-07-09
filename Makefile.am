@@ -704,6 +704,7 @@ libags_audio_la_SOURCES = \
 	$(libags_plugin_c_sources)
 libags_audio_la_HEADERS_0 = \
 	ags/libags-audio.h \
+	ags/libags-audio-globals.h \
 	$(libags_audio_h_sources) \
 	$(libags_audio_thread_h_sources) \
 	$(libags_audio_file_h_sources) \

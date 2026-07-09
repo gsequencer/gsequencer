@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2021 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,11 +45,26 @@ static void ags_fluid_util_free(gpointer ptr);
 
 void ags_fluid_conversion_config();
 
+#if defined(__has_attribute)
+#if __has_attribute(visibility)
+#define AGS_HAVE_ATTRIBUTE_VISIBILITY 1
+#endif
+#endif
+
+#if defined(AGS_HAVE_ATTRIBUTE_VISIBILITY)
+__attribute__((visibility("default"))) gboolean ags_fluid_ct2hz_tab_initialized = FALSE;
+
+__attribute__((visibility("default"))) gdouble ags_fluid_ct2hz_tab[AGS_FLUID_CENTS_HZ_SIZE];
+
+__attribute__((visibility("default"))) GMutex ags_fluid_ct2hz_tab_mutex;
+#else
 gboolean ags_fluid_ct2hz_tab_initialized = FALSE;
 
 gdouble ags_fluid_ct2hz_tab[AGS_FLUID_CENTS_HZ_SIZE];
 
 GMutex ags_fluid_ct2hz_tab_mutex;
+#endif
+
 
 /**
  * SECTION:ags_fluid_util

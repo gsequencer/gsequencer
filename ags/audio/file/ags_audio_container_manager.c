@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,8 +19,9 @@
 
 #include <ags/audio/file/ags_audio_container_manager.h>
 
+#include <ags/audio/file/ags_audio_container.h>
+
 #include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdlib.h>
 
