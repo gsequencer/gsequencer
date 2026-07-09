@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -520,5 +520,8 @@
 #include <ags/audio/task/ags_apply_sequencer_length.h>
 #include <ags/audio/task/ags_apply_tact.h>
 #include <ags/audio/task/ags_set_muted.h>
+
+/* framework */
+#include <ags/libags-audio-globals.h>
 
 #endif /*__LIBAGS_AUDIO_H__*/

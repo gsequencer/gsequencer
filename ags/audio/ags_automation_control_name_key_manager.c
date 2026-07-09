@@ -20,7 +20,6 @@
 #include <ags/audio/ags_automation_control_name_key_manager.h>
 
 #include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdlib.h>
 
