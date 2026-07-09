@@ -1,3 +1,9 @@
+ags (9.0.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags/audio/ags_recall_util.h
+	* fixed conflicting macro name and enum flag in ags/audio/ags_recall.h
+
 ags (9.0.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

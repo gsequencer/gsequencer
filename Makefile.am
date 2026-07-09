@@ -1444,6 +1444,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall.h \
 	ags/audio/ags_recall_id.h \
 	ags/audio/ags_recall_recycling.h \
+	ags/audio/ags_recall_util.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_resample_util.h \

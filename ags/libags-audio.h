@@ -125,6 +125,7 @@
 #include <ags/audio/ags_recall_dependency.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_util.h>
 #include <ags/audio/ags_generic_recall_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recycling_context.h>

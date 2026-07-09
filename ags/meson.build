@@ -1645,6 +1645,7 @@ libags_audio_audio_headers = [
   'audio/ags_recall_dependency.h',
   'audio/ags_recall_id.h',
   'audio/ags_recall_recycling.h',
+  'audio/ags_recall_util.h',
   'audio/ags_recycling.h',
   'audio/ags_recycling_context.h',
   'audio/ags_resample_util.h',
