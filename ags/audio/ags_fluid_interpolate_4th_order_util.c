@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,11 +43,26 @@
 void ags_fluid_interpolate_4th_order_util_config();
 
 /* 4th Order interpolation table (2 coefficients centered on 1st) */
+
+#if defined(__has_attribute)
+#if __has_attribute(visibility)
+#define AGS_HAVE_ATTRIBUTE_VISIBILITY 1
+#endif
+#endif
+
+#if defined(AGS_HAVE_ATTRIBUTE_VISIBILITY)
+__attribute__((visibility("default"))) gboolean ags_fluid_interp_coeff_4th_order_initialized = FALSE;
+
+__attribute__((visibility("default"))) gdouble ags_fluid_interp_coeff_4th_order[AGS_FLUID_INTERP_MAX][4];
+
+__attribute__((visibility("default"))) GMutex ags_fluid_interp_coeff_4th_order_mutex;
+#else
 gboolean ags_fluid_interp_coeff_4th_order_initialized = FALSE;
 
 gdouble ags_fluid_interp_coeff_4th_order[AGS_FLUID_INTERP_MAX][4];
 
 GMutex ags_fluid_interp_coeff_4th_order_mutex;
+#endif
 
 /**
  * SECTION:ags_fluid_interpolate_4th_order_util

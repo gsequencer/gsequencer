@@ -24,7 +24,6 @@
 #include <glib-object.h>
 
 #include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 G_BEGIN_DECLS
 

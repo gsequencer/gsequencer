@@ -26,6 +26,7 @@
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_sfz_sample.h>
+#include <ags/audio/file/ags_sound_resource.h>
 
 #include <math.h>
 
