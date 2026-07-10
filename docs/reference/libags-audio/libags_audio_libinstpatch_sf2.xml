@@ -1,0 +1,2 @@
+      <xi:include href="xml/ags_sf2_synth_generator.xml"/>
+      <xi:include href="xml/ags_sf2_synth_util.xml"/>

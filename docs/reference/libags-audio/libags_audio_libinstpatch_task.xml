@@ -1,0 +1,4 @@
+      <xi:include href="xml/ags_apply_sf2_synth.xml"/>
+      <xi:include href="xml/ags_apply_sf2_midi_locale.xml"/>
+      <xi:include href="xml/ags_open_sf2_instrument.xml"/>
+      <xi:include href="xml/ags_open_sf2_sample.xml"/>
