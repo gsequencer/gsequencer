@@ -1038,6 +1038,8 @@ ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator
 
   g_rec_mutex_lock(sfz_synth_generator_mutex);
 
+  g_free(sfz_synth_generator->pitch_type);
+  
   sfz_synth_generator->pitch_type = g_strdup(pitch_type);
 
   g_rec_mutex_unlock(sfz_synth_generator_mutex);
@@ -1251,7 +1253,7 @@ ags_sfz_synth_generator_get_base_key(AgsSFZSynthGenerator *sfz_synth_generator)
   }
 
   g_object_get(sfz_synth_generator,
-	       "base_key", &base_key,
+	       "base-key", &base_key,
 	       NULL);
 
   return(base_key);
