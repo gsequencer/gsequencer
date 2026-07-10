@@ -1,0 +1,7 @@
+    <chapter id="plugin-vst3">
+      <title>VST3 plugins</title>
+      <para>The VST3 plugin objects.</para>
+      <xi:include href="xml/ags_vst3_conversion.xml"/>
+      <xi:include href="xml/ags_vst3_plugin.xml"/>
+      <xi:include href="xml/ags_vst3_manager.xml"/>
+    </chapter>

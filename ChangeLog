@@ -1,3 +1,9 @@
+ags (9.0.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved automake build
+	* fixed gtk-doc missing synths in libgsequencer.xml.in
+
 ags (9.0.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
