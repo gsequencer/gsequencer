@@ -1,7 +1,7 @@
 ags (9.0.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved automake build
+	* improved configure.ac to make use of AC_SUBST_FILE applying to gtk-doc
 	* fixed gtk-doc missing synths in libgsequencer.xml.in
 
 ags (9.0.18)
