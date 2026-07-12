@@ -40,10 +40,10 @@
 
 #include <ags/config.h>
 
-void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
-void ags_ladspa_manager_init (AgsLadspaManager *ladspa_manager);
-void ags_ladspa_manager_dispose(GObject *gobject);
-void ags_ladspa_manager_finalize(GObject *gobject);
+static void ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager);
+static void ags_ladspa_manager_init (AgsLadspaManager *ladspa_manager);
+static void ags_ladspa_manager_dispose(GObject *gobject);
+static void ags_ladspa_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_ladspa_manager
@@ -63,8 +63,8 @@ enum{
 
 static gpointer ags_ladspa_manager_parent_class = NULL;
 
-AgsLadspaManager *ags_ladspa_manager = NULL;
-gchar **ags_ladspa_default_path = NULL;
+static AgsLadspaManager *ags_ladspa_manager = NULL;
+static gchar **ags_ladspa_default_path = NULL;
 
 GType
 ags_ladspa_manager_get_type (void)

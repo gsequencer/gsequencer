@@ -35,16 +35,16 @@
 
 #include <ags/i18n.h>
 
-void ags_synth_class_init(AgsSynthClass *synth);
-void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_synth_init(AgsSynth *synth);
-void ags_synth_finalize(GObject *gobject);
+static void ags_synth_class_init(AgsSynthClass *synth);
+static void ags_synth_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_synth_init(AgsSynth *synth);
+static void ags_synth_finalize(GObject *gobject);
 
-void ags_synth_connect(AgsConnectable *connectable);
-void ags_synth_disconnect(AgsConnectable *connectable);
+static void ags_synth_connect(AgsConnectable *connectable);
+static void ags_synth_disconnect(AgsConnectable *connectable);
 
-void ags_synth_show(GtkWidget *widget);
-void ags_synth_map_recall(AgsMachine *machine);
+static void ags_synth_show(GtkWidget *widget);
+static void ags_synth_map_recall(AgsMachine *machine);
 
 /**
  * SECTION:ags_synth

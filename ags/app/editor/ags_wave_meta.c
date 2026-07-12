@@ -26,12 +26,12 @@
 
 #include <ags/i18n.h>
 
-void ags_wave_meta_class_init(AgsWaveMetaClass *wave_meta);
-void ags_wave_meta_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_wave_meta_init(AgsWaveMeta *wave_meta);
+static void ags_wave_meta_class_init(AgsWaveMetaClass *wave_meta);
+static void ags_wave_meta_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_wave_meta_init(AgsWaveMeta *wave_meta);
 
-void ags_wave_meta_connect(AgsConnectable *connectable);
-void ags_wave_meta_disconnect(AgsConnectable *connectable);
+static void ags_wave_meta_connect(AgsConnectable *connectable);
+static void ags_wave_meta_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_wave_meta

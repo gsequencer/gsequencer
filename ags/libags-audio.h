@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -125,6 +125,7 @@
 #include <ags/audio/ags_recall_dependency.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_util.h>
 #include <ags/audio/ags_generic_recall_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recycling_context.h>
@@ -520,5 +521,8 @@
 #include <ags/audio/task/ags_apply_sequencer_length.h>
 #include <ags/audio/task/ags_apply_tact.h>
 #include <ags/audio/task/ags_set_muted.h>
+
+/* framework */
+#include <ags/libags-audio-globals.h>
 
 #endif /*__LIBAGS_AUDIO_H__*/

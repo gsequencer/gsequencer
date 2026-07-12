@@ -26,20 +26,20 @@
 
 #include <ags/i18n.h>
 
-void ags_wave_loader_class_init(AgsWaveLoaderClass *wave_loader);
-void ags_wave_loader_init(AgsWaveLoader *wave_loader);
-void ags_wave_loader_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_wave_loader_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_wave_loader_dispose(GObject *gobject);
-void ags_wave_loader_finalize(GObject *gobject);
+static void ags_wave_loader_class_init(AgsWaveLoaderClass *wave_loader);
+static void ags_wave_loader_init(AgsWaveLoader *wave_loader);
+static void ags_wave_loader_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_wave_loader_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_wave_loader_dispose(GObject *gobject);
+static void ags_wave_loader_finalize(GObject *gobject);
 
-void* ags_wave_loader_run(void *ptr);
+static void* ags_wave_loader_run(void *ptr);
 
 /**
  * SECTION:ags_wave_loader

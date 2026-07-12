@@ -32,52 +32,52 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
-void ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run);
-void ags_recall_channel_run_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_recall_channel_run_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_recall_channel_run_dispose(GObject *gobject);
-void ags_recall_channel_run_finalize(GObject *gobject);
+static void ags_recall_channel_run_class_init(AgsRecallChannelRunClass *recall_channel_run);
+static void ags_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_channel_run_init(AgsRecallChannelRun *recall_channel_run);
+static void ags_recall_channel_run_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_recall_channel_run_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_recall_channel_run_dispose(GObject *gobject);
+static void ags_recall_channel_run_finalize(GObject *gobject);
 
-void ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
-							     GParamSpec *pspec,
-							     gpointer user_data);
+static void ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
+								    GParamSpec *pspec,
+								    gpointer user_data);
 
-void ags_recall_channel_run_connect(AgsConnectable *connectable);
-void ags_recall_channel_run_disconnect(AgsConnectable *connectable);
+static void ags_recall_channel_run_connect(AgsConnectable *connectable);
+static void ags_recall_channel_run_disconnect(AgsConnectable *connectable);
 
-AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
-					    AgsRecallID *recall_id,
-					    guint *n_params, gchar **parameter_name, GValue *value);
+static AgsRecall* ags_recall_channel_run_duplicate(AgsRecall *recall,
+						   AgsRecallID *recall_id,
+						   guint *n_params, gchar **parameter_name, GValue *value);
 
-void ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_run);
+static void ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_run);
 
-void ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_run,
-					       AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-					       AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
-void ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_channel_run,
-						    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-						    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
-void ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
-							      AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-							      AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-							      AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-							      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
-							      AgsRecallChannelRun *recall_channel_run);
+static void ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_run,
+						      AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+						      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+static void ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_channel_run,
+							   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+							   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
+static void ags_recall_channel_run_source_recycling_changed_callback(AgsChannel *channel,
+								     AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+								     AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+								     AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+								     AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
+								     AgsRecallChannelRun *recall_channel_run);
 
-void ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channel,
-								   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
-								   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
-								   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
-								   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
-								   AgsRecallChannelRun *recall_channel_run);
+static void ags_recall_channel_run_destination_recycling_changed_callback(AgsChannel *channel,
+									  AgsRecycling *old_start_region, AgsRecycling *old_end_region,
+									  AgsRecycling *new_start_region, AgsRecycling *new_end_region,
+									  AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
+									  AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
+									  AgsRecallChannelRun *recall_channel_run);
 
 /**
  * SECTION:ags_recall_channel_run

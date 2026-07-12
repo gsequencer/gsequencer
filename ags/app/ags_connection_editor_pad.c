@@ -26,25 +26,25 @@
 
 #include <ags/i18n.h>
 
-void ags_connection_editor_pad_class_init(AgsConnectionEditorPadClass *connection_editor_pad);
-void ags_connection_editor_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_connection_editor_pad_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_connection_editor_pad_init(AgsConnectionEditorPad *connection_editor_pad);
-void ags_connection_editor_pad_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec);
-void ags_connection_editor_pad_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec);
+static void ags_connection_editor_pad_class_init(AgsConnectionEditorPadClass *connection_editor_pad);
+static void ags_connection_editor_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_connection_editor_pad_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_connection_editor_pad_init(AgsConnectionEditorPad *connection_editor_pad);
+static void ags_connection_editor_pad_set_property(GObject *gobject,
+						   guint prop_id,
+						   const GValue *value,
+						   GParamSpec *param_spec);
+static void ags_connection_editor_pad_get_property(GObject *gobject,
+						   guint prop_id,
+						   GValue *value,
+						   GParamSpec *param_spec);
 
-void ags_connection_editor_pad_connect(AgsConnectable *connectable);
-void ags_connection_editor_pad_disconnect(AgsConnectable *connectable);
+static void ags_connection_editor_pad_connect(AgsConnectable *connectable);
+static void ags_connection_editor_pad_disconnect(AgsConnectable *connectable);
 
-void ags_connection_editor_pad_set_update(AgsApplicable *applicable, gboolean update);
-void ags_connection_editor_pad_apply(AgsApplicable *applicable);
-void ags_connection_editor_pad_reset(AgsApplicable *applicable);
+static void ags_connection_editor_pad_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_connection_editor_pad_apply(AgsApplicable *applicable);
+static void ags_connection_editor_pad_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_connection_editor_pad

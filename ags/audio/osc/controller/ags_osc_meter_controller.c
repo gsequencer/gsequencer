@@ -43,84 +43,84 @@
 #include <sys/types.h>
 #include <regex.h>
 
-void ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_controller);
-void ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller);
-void ags_osc_meter_controller_set_property(GObject *gobject,
-					   guint prop_id,
-					   const GValue *value,
-					   GParamSpec *param_spec);
-void ags_osc_meter_controller_get_property(GObject *gobject,
-					   guint prop_id,
-					   GValue *value,
-					   GParamSpec *param_spec);
-void ags_osc_meter_controller_dispose(GObject *gobject);
-void ags_osc_meter_controller_finalize(GObject *gobject);
+static void ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_controller);
+static void ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller);
+static void ags_osc_meter_controller_set_property(GObject *gobject,
+						  guint prop_id,
+						  const GValue *value,
+						  GParamSpec *param_spec);
+static void ags_osc_meter_controller_get_property(GObject *gobject,
+						  guint prop_id,
+						  GValue *value,
+						  GParamSpec *param_spec);
+static void ags_osc_meter_controller_dispose(GObject *gobject);
+static void ags_osc_meter_controller_finalize(GObject *gobject);
 
-gboolean ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_controller);
+static gboolean ags_osc_meter_controller_monitor_timeout(AgsOscMeterController *osc_meter_controller);
 
-void ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_controller);
-void ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_controller);
+static void ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_controller);
+static void ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_controller);
 
-gpointer ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_controller,
-						      AgsOscConnection *osc_connection,
-						      AgsAudio *audio,
-						      guchar *message, guint message_size,
-						      gchar *type_tag,
-						      gchar *path, guint path_offset);
-gpointer ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_controller,
-							AgsOscConnection *osc_connection,
-							AgsChannel *channel,
-							guchar *message, guint message_size,
-							gchar *type_tag,
-							gchar *path, guint path_offset);
+static gpointer ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_controller,
+							     AgsOscConnection *osc_connection,
+							     AgsAudio *audio,
+							     guchar *message, guint message_size,
+							     gchar *type_tag,
+							     gchar *path, guint path_offset);
+static gpointer ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_controller,
+							       AgsOscConnection *osc_connection,
+							       AgsChannel *channel,
+							       guchar *message, guint message_size,
+							       gchar *type_tag,
+							       gchar *path, guint path_offset);
 
-gpointer ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_controller,
-						       AgsOscConnection *osc_connection,
-						       AgsRecall *recall,
-						       guchar *message, guint message_size,
-						       gchar *type_tag,
-						       gchar *path, guint path_offset);
+static gpointer ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_controller,
+							      AgsOscConnection *osc_connection,
+							      AgsRecall *recall,
+							      guchar *message, guint message_size,
+							      gchar *type_tag,
+							      gchar *path, guint path_offset);
 
-gpointer ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_controller,
-						     AgsOscConnection *osc_connection,
-						     AgsRecall *parent,
-						     AgsPort *port,
-						     guchar *message, guint message_size,
-						     gchar *type_tag,
-						     gchar *path, guint path_offset);
+static gpointer ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_controller,
+							    AgsOscConnection *osc_connection,
+							    AgsRecall *parent,
+							    AgsPort *port,
+							    guchar *message, guint message_size,
+							    gchar *type_tag,
+							    gchar *path, guint path_offset);
 
-void ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
-						gchar *path,
-						gchar ***strv);
-void ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
-						  gchar *path,
-						  gchar ***strv);
+static void ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
+						       gchar *path,
+						       gchar ***strv);
+static void ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
+							 gchar *path,
+							 gchar ***strv);
 
-void ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
-						 gchar *path,
+static void ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
+							gchar *path,
+							gchar ***strv);
+
+static void ags_osc_meter_controller_expand_path_port(AgsPort *port,
+						      gchar *path,
+						      gchar ***strv);
+
+static void ags_osc_meter_controller_expand_path(gchar *path,
 						 gchar ***strv);
 
-void ags_osc_meter_controller_expand_path_port(AgsPort *port,
-					       gchar *path,
-					       gchar ***strv);
+static gpointer ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_controller,
+							      AgsOscConnection *osc_connection,
+							      guchar *message, guint message_size,
+							      gchar *type_tag,
+							      gchar *path);
+static gpointer ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_controller,
+							       AgsOscConnection *osc_connection,
+							       guchar *message, guint message_size,
+							       gchar *type_tag,
+							       gchar *path);
 
-void ags_osc_meter_controller_expand_path(gchar *path,
-					  gchar ***strv);
-
-gpointer ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_controller,
-						       AgsOscConnection *osc_connection,
-						       guchar *message, guint message_size,
-						       gchar *type_tag,
-						       gchar *path);
-gpointer ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_controller,
-							AgsOscConnection *osc_connection,
-							guchar *message, guint message_size,
-							gchar *type_tag,
-							gchar *path);
-
-gpointer ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
-						     AgsOscConnection *osc_connection,
-						     guchar *message, guint message_size);
+static gpointer ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
+							    AgsOscConnection *osc_connection,
+							    guchar *message, guint message_size);
 
 /**
  * SECTION:ags_osc_meter_controller

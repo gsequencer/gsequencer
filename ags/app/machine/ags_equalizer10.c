@@ -28,24 +28,24 @@
 
 #include <ags/i18n.h>
 
-void ags_equalizer10_class_init(AgsEqualizer10Class *equalizer10);
-void ags_equalizer10_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_equalizer10_init(AgsEqualizer10 *equalizer10);
-void ags_equalizer10_finalize(GObject *gobject);
+static void ags_equalizer10_class_init(AgsEqualizer10Class *equalizer10);
+static void ags_equalizer10_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_equalizer10_init(AgsEqualizer10 *equalizer10);
+static void ags_equalizer10_finalize(GObject *gobject);
 
-void ags_equalizer10_connect(AgsConnectable *connectable);
-void ags_equalizer10_disconnect(AgsConnectable *connectable);
+static void ags_equalizer10_connect(AgsConnectable *connectable);
+static void ags_equalizer10_disconnect(AgsConnectable *connectable);
 
-void ags_equalizer10_resize_audio_channels(AgsMachine *machine,
-					   guint audio_channels, guint audio_channels_old,
-					   gpointer data);
-void ags_equalizer10_resize_pads(AgsMachine *machine, GType channel_type,
-				 guint pads, guint pads_old,
-				 gpointer data);
+static void ags_equalizer10_resize_audio_channels(AgsMachine *machine,
+						  guint audio_channels, guint audio_channels_old,
+						  gpointer data);
+static void ags_equalizer10_resize_pads(AgsMachine *machine, GType channel_type,
+					guint pads, guint pads_old,
+					gpointer data);
 
-void ags_equalizer10_map_recall(AgsMachine *machine);
+static void ags_equalizer10_map_recall(AgsMachine *machine);
 
-void ags_equalizer10_refresh_port(AgsMachine *machine);
+static void ags_equalizer10_refresh_port(AgsMachine *machine);
 
 /**
  * SECTION:ags_equalizer10

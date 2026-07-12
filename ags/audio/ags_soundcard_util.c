@@ -46,8 +46,8 @@
 
 #include <math.h>
 
-gpointer ags_soundcard_util_copy(gpointer ptr);
-void ags_soundcard_util_free(gpointer ptr);
+static gpointer ags_soundcard_util_copy(gpointer ptr);
+static void ags_soundcard_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_soundcard_util

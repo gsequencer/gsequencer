@@ -1645,6 +1645,7 @@ libags_audio_audio_headers = [
   'audio/ags_recall_dependency.h',
   'audio/ags_recall_id.h',
   'audio/ags_recall_recycling.h',
+  'audio/ags_recall_util.h',
   'audio/ags_recycling.h',
   'audio/ags_recycling_context.h',
   'audio/ags_resample_util.h',
@@ -2255,7 +2256,7 @@ endif
 
 install_headers(libags_gui_widget_headers, install_dir: gsequencer_includedir / 'ags/widget')
 
-install_headers('libags.h', 'libags-globals.h', 'libags-audio.h', 'libags-gui.h', install_dir: gsequencer_includedir / 'ags')
+install_headers('libags.h', 'libags-globals.h', 'libags-audio.h', 'libags-audio-globals.h', 'libags-gui.h', install_dir: gsequencer_includedir / 'ags')
 
 libags_dep_sources = []
 libags_audio_dep_sources = []

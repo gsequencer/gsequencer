@@ -30,48 +30,48 @@
 
 #include <ags/i18n.h>
 
-void ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog);
-void ags_envelope_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_envelope_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog);
-void ags_envelope_dialog_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_envelope_dialog_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_envelope_dialog_dispose(GObject *gobject);
-void ags_envelope_dialog_finalize(GObject *gobject);
+static void ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog);
+static void ags_envelope_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_envelope_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog);
+static void ags_envelope_dialog_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_envelope_dialog_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_envelope_dialog_dispose(GObject *gobject);
+static void ags_envelope_dialog_finalize(GObject *gobject);
 
-gboolean ags_envelope_dialog_is_connected(AgsConnectable *connectable);
-void ags_envelope_dialog_connect(AgsConnectable *connectable);
-void ags_envelope_dialog_disconnect(AgsConnectable *connectable);
+static gboolean ags_envelope_dialog_is_connected(AgsConnectable *connectable);
+static void ags_envelope_dialog_connect(AgsConnectable *connectable);
+static void ags_envelope_dialog_disconnect(AgsConnectable *connectable);
 
-void ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update);
-void ags_envelope_dialog_apply(AgsApplicable *applicable);
-void ags_envelope_dialog_reset(AgsApplicable *applicable);
+static void ags_envelope_dialog_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_envelope_dialog_apply(AgsApplicable *applicable);
+static void ags_envelope_dialog_reset(AgsApplicable *applicable);
 
-void ags_envelope_dialog_activate_button_callback(GtkButton *activate_button,
-						  AgsEnvelopeDialog *envelope_dialog);
+static void ags_envelope_dialog_activate_button_callback(GtkButton *activate_button,
+							 AgsEnvelopeDialog *envelope_dialog);
 
-gboolean ags_envelope_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
-						  guint keyval,
-						  guint keycode,
-						  GdkModifierType state,
-						  AgsEnvelopeDialog *envelope_dialog);
-void ags_envelope_dialog_key_released_callback(GtkEventControllerKey *event_controller,
-					       guint keyval,
-					       guint keycode,
-					       GdkModifierType state,
-					       AgsEnvelopeDialog *envelope_dialog);
-gboolean ags_envelope_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
-						GdkModifierType keyval,
-						AgsEnvelopeDialog *envelope_dialog);
+static gboolean ags_envelope_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+							 guint keyval,
+							 guint keycode,
+							 GdkModifierType state,
+							 AgsEnvelopeDialog *envelope_dialog);
+static void ags_envelope_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+						      guint keyval,
+						      guint keycode,
+						      GdkModifierType state,
+						      AgsEnvelopeDialog *envelope_dialog);
+static gboolean ags_envelope_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						       GdkModifierType keyval,
+						       AgsEnvelopeDialog *envelope_dialog);
 
-void ags_envelope_dialog_real_response(AgsEnvelopeDialog *envelope_dialog,
-				       gint response_id);
+static void ags_envelope_dialog_real_response(AgsEnvelopeDialog *envelope_dialog,
+					      gint response_id);
 
 /**
  * SECTION:ags_envelope_dialog

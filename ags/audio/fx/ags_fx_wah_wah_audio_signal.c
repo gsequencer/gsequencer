@@ -35,18 +35,18 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_wah_wah_audio_signal_class_init(AgsFxWahWahAudioSignalClass *fx_wah_wah_audio_signal);
-void ags_fx_wah_wah_audio_signal_init(AgsFxWahWahAudioSignal *fx_wah_wah_audio_signal);
-void ags_fx_wah_wah_audio_signal_dispose(GObject *gobject);
-void ags_fx_wah_wah_audio_signal_finalize(GObject *gobject);
+static void ags_fx_wah_wah_audio_signal_class_init(AgsFxWahWahAudioSignalClass *fx_wah_wah_audio_signal);
+static void ags_fx_wah_wah_audio_signal_init(AgsFxWahWahAudioSignal *fx_wah_wah_audio_signal);
+static void ags_fx_wah_wah_audio_signal_dispose(GObject *gobject);
+static void ags_fx_wah_wah_audio_signal_finalize(GObject *gobject);
 
-gdouble ags_fx_wah_wah_audio_signal_get_ratio(guint x0, gdouble y0,
-					      guint x1, gdouble y1);
-gdouble ags_fx_wah_wah_audio_signal_get_volume(gdouble volume, gdouble ratio,
-					       guint start_x, guint current_x,
-					       guint length);
+static gdouble ags_fx_wah_wah_audio_signal_get_ratio(guint x0, gdouble y0,
+						     guint x1, gdouble y1);
+static gdouble ags_fx_wah_wah_audio_signal_get_volume(gdouble volume, gdouble ratio,
+						      guint start_x, guint current_x,
+						      guint length);
 
-void ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall);
+static void ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_wah_wah_audio_signal
@@ -60,7 +60,7 @@ void ags_fx_wah_wah_audio_signal_real_run_inter(AgsRecall *recall);
 
 static gpointer ags_fx_wah_wah_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_wah_wah_audio_signal_plugin_name = "ags-fx-wah_wah";
+static const gchar *ags_fx_wah_wah_audio_signal_plugin_name = "ags-fx-wah_wah";
 
 GType
 ags_fx_wah_wah_audio_signal_get_type()

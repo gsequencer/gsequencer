@@ -1,21 +1,21 @@
 /* GSequencer - Advanced GTK Sequencer
-  * Copyright (C) 2005-2020 Joël Krähemann
-  *
-  * This file is part of GSequencer.
-  *
-  * GSequencer is free software: you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-  * the Free Software Foundation, either version 3 of the License, or
-  * (at your option) any later version.
-  *
-  * GSequencer is distributed in the hope that it will be useful,
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-  *
-  * You should have received a copy of the GNU General Public License
-  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
-  */
+ * Copyright (C) 2005-2020 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <ags/audio/task/ags_remove_note.h>
 
@@ -23,20 +23,20 @@
 
 #include <ags/i18n.h>
 
-void ags_remove_note_class_init(AgsRemoveNoteClass *remove_note);
-void ags_remove_note_init(AgsRemoveNote *remove_note);
-void ags_remove_note_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_remove_note_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_remove_note_dispose(GObject *gobject);
-void ags_remove_note_finalize(GObject *gobject);
+static void ags_remove_note_class_init(AgsRemoveNoteClass *remove_note);
+static void ags_remove_note_init(AgsRemoveNote *remove_note);
+static void ags_remove_note_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_remove_note_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_remove_note_dispose(GObject *gobject);
+static void ags_remove_note_finalize(GObject *gobject);
 
-void ags_remove_note_launch(AgsTask *task);
+static void ags_remove_note_launch(AgsTask *task);
 
 /**
  * SECTION:ags_remove_note

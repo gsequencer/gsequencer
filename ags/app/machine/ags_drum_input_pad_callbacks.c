@@ -32,7 +32,7 @@
 
 #include <ags/i18n.h>
 
-void ags_drum_input_pad_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
+static void ags_drum_input_pad_open_response_callback(AgsPCMFileDialog *pcm_file_dialog, gint response,
 					       AgsDrumInputPad *pad);
 
 #define AGS_DRUM_INPUT_PAD_OPEN_AUDIO_FILE_NAME "AgsDrumInputPadOpenAudioFileName"

@@ -23,20 +23,20 @@
 
 #include <math.h>
 
-void ags_move_note_class_init(AgsMoveNoteClass *move_note);
-void ags_move_note_init(AgsMoveNote *move_note);
-void ags_move_note_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec);
-void ags_move_note_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec);
-void ags_move_note_dispose(GObject *gobject);
-void ags_move_note_finalize(GObject *gobject);
+static void ags_move_note_class_init(AgsMoveNoteClass *move_note);
+static void ags_move_note_init(AgsMoveNote *move_note);
+static void ags_move_note_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec);
+static void ags_move_note_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec);
+static void ags_move_note_dispose(GObject *gobject);
+static void ags_move_note_finalize(GObject *gobject);
 
-void ags_move_note_launch(AgsTask *task);
+static void ags_move_note_launch(AgsTask *task);
 
 /**
  * SECTION:ags_move_note

@@ -26,25 +26,25 @@
 
 #include <ags/i18n.h>
 
-void ags_connection_editor_collection_class_init(AgsConnectionEditorCollectionClass *connection_editor_collection);
-void ags_connection_editor_collection_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_connection_editor_collection_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_connection_editor_collection_init(AgsConnectionEditorCollection *connection_editor_collection);
-void ags_connection_editor_collection_set_property(GObject *gobject,
-						   guint prop_id,
-						   const GValue *value,
-						   GParamSpec *param_spec);
-void ags_connection_editor_collection_get_property(GObject *gobject,
-						   guint prop_id,
-						   GValue *value,
-						   GParamSpec *param_spec);
+static void ags_connection_editor_collection_class_init(AgsConnectionEditorCollectionClass *connection_editor_collection);
+static void ags_connection_editor_collection_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_connection_editor_collection_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_connection_editor_collection_init(AgsConnectionEditorCollection *connection_editor_collection);
+static void ags_connection_editor_collection_set_property(GObject *gobject,
+							  guint prop_id,
+							  const GValue *value,
+							  GParamSpec *param_spec);
+static void ags_connection_editor_collection_get_property(GObject *gobject,
+							  guint prop_id,
+							  GValue *value,
+							  GParamSpec *param_spec);
 
-void ags_connection_editor_collection_connect(AgsConnectable *connectable);
-void ags_connection_editor_collection_disconnect(AgsConnectable *connectable);
+static void ags_connection_editor_collection_connect(AgsConnectable *connectable);
+static void ags_connection_editor_collection_disconnect(AgsConnectable *connectable);
 
-void ags_connection_editor_collection_set_update(AgsApplicable *applicable, gboolean update);
-void ags_connection_editor_collection_apply(AgsApplicable *applicable);
-void ags_connection_editor_collection_reset(AgsApplicable *applicable);
+static void ags_connection_editor_collection_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_connection_editor_collection_apply(AgsApplicable *applicable);
+static void ags_connection_editor_collection_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_connection_editor_collection
@@ -412,7 +412,7 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 			     BAD_CAST "direction");
 
       if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_OUTPUT) &&
-	 !g_strcmp0(direction, "output")){
+	 !g_strcmp0(AGS_BAD_CAST direction, "output")){
 	bulk = ags_connection_editor_bulk_new();
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
@@ -430,7 +430,7 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 
 	ags_connectable_connect(AGS_CONNECTABLE(bulk));
       }else if(g_type_is_a(connection_editor_collection->channel_type, AGS_TYPE_INPUT) &&
-	       !g_strcmp0(direction, "input")){
+	       !g_strcmp0(AGS_BAD_CAST direction, "input")){
 	bulk = ags_connection_editor_bulk_new();
 
 	if((AGS_CONNECTION_EDITOR_SHOW_SOUNDCARD_OUTPUT & (connection_editor->flags)) != 0){
@@ -448,6 +448,8 @@ ags_connection_editor_collection_reset(AgsApplicable *applicable)
 
 	ags_connectable_connect(AGS_CONNECTABLE(bulk));
       }
+
+      xmlFree(direction);
     }
     
     /* iterate */

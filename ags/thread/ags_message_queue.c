@@ -27,18 +27,18 @@
 
 #include <ags/i18n.h>
 
-void ags_message_queue_class_init(AgsMessageQueueClass *message_queue);
-void ags_message_queue_init(AgsMessageQueue *message_queue);
-void ags_message_queue_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_message_queue_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_message_queue_dispose(GObject *gobject);
-void ags_message_queue_finalize(GObject *gobject);
+static void ags_message_queue_class_init(AgsMessageQueueClass *message_queue);
+static void ags_message_queue_init(AgsMessageQueue *message_queue);
+static void ags_message_queue_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_message_queue_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_message_queue_dispose(GObject *gobject);
+static void ags_message_queue_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_message_queue

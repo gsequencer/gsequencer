@@ -26,22 +26,23 @@
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_container_manager.h>
 #include <ags/audio/file/ags_sfz_sample.h>
+#include <ags/audio/file/ags_sound_resource.h>
 
 #include <math.h>
 
 #include <ags/i18n.h>
 
-void ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generator);
-void ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator);
-void ags_sfz_synth_generator_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_sfz_synth_generator_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_sfz_synth_generator_finalize(GObject *gobject);
+static void ags_sfz_synth_generator_class_init(AgsSFZSynthGeneratorClass *sfz_synth_generator);
+static void ags_sfz_synth_generator_init(AgsSFZSynthGenerator *sfz_synth_generator);
+static void ags_sfz_synth_generator_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_sfz_synth_generator_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_sfz_synth_generator_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_sfz_synth_generator
@@ -1037,6 +1038,8 @@ ags_sfz_synth_generator_set_pitch_type(AgsSFZSynthGenerator *sfz_synth_generator
 
   g_rec_mutex_lock(sfz_synth_generator_mutex);
 
+  g_free(sfz_synth_generator->pitch_type);
+  
   sfz_synth_generator->pitch_type = g_strdup(pitch_type);
 
   g_rec_mutex_unlock(sfz_synth_generator_mutex);
@@ -1250,7 +1253,7 @@ ags_sfz_synth_generator_get_base_key(AgsSFZSynthGenerator *sfz_synth_generator)
   }
 
   g_object_get(sfz_synth_generator,
-	       "base_key", &base_key,
+	       "base-key", &base_key,
 	       NULL);
 
   return(base_key);

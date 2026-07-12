@@ -26,22 +26,22 @@
 
 #include <ags/i18n.h>
 
-void ags_set_backlog_class_init(AgsSetBacklogClass *set_backlog);
-void ags_set_backlog_init(AgsSetBacklog *set_backlog);
-void ags_set_backlog_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_set_backlog_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_set_backlog_dispose(GObject *gobject);
-void ags_set_backlog_finalize(GObject *gobject);
+static void ags_set_backlog_class_init(AgsSetBacklogClass *set_backlog);
+static void ags_set_backlog_init(AgsSetBacklog *set_backlog);
+static void ags_set_backlog_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_set_backlog_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_set_backlog_dispose(GObject *gobject);
+static void ags_set_backlog_finalize(GObject *gobject);
 
-void ags_set_backlog_launch(AgsTask *task);
+static void ags_set_backlog_launch(AgsTask *task);
 
-void ags_set_backlog_audio_signal(AgsSetBacklog *set_backlog, AgsAudioSignal *audio_signal);
+static void ags_set_backlog_audio_signal(AgsSetBacklog *set_backlog, AgsAudioSignal *audio_signal);
 
 /**
  * SECTION:ags_set_backlog
@@ -54,7 +54,7 @@ void ags_set_backlog_audio_signal(AgsSetBacklog *set_backlog, AgsAudioSignal *au
  */
 
 static gpointer ags_set_backlog_parent_class = NULL;
-AgsSetBacklog *ags_set_backlog = NULL;
+static AgsSetBacklog *ags_set_backlog = NULL;
 
 enum{
   PROP_0,

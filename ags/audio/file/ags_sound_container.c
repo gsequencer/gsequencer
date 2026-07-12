@@ -19,7 +19,7 @@
 
 #include <ags/audio/file/ags_sound_container.h>
 
-void ags_sound_container_base_init(AgsSoundContainerInterface *ginterface);
+static void ags_sound_container_base_init(AgsSoundContainerInterface *ginterface);
 
 /**
  * SECTION:ags_sound_container

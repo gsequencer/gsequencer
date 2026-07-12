@@ -23,16 +23,16 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_buffer_audio_processor_class_init(AgsFxBufferAudioProcessorClass *fx_buffer_audio_processor);
-void ags_fx_buffer_audio_processor_init(AgsFxBufferAudioProcessor *fx_buffer_audio_processor);
-void ags_fx_buffer_audio_processor_dispose(GObject *gobject);
-void ags_fx_buffer_audio_processor_finalize(GObject *gobject);
+static void ags_fx_buffer_audio_processor_class_init(AgsFxBufferAudioProcessorClass *fx_buffer_audio_processor);
+static void ags_fx_buffer_audio_processor_init(AgsFxBufferAudioProcessor *fx_buffer_audio_processor);
+static void ags_fx_buffer_audio_processor_dispose(GObject *gobject);
+static void ags_fx_buffer_audio_processor_finalize(GObject *gobject);
 
-void ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall);
+static void ags_fx_buffer_audio_processor_run_init_pre(AgsRecall *recall);
 
-void ags_fx_buffer_audio_scope_data_destination_remove(AgsRecycling *key, AgsAudioSignal *value, AgsFxBufferAudioScopeData *scope_data);
+static void ags_fx_buffer_audio_scope_data_destination_remove(AgsRecycling *key, AgsAudioSignal *value, AgsFxBufferAudioScopeData *scope_data);
 
-void ags_fx_buffer_audio_processor_done(AgsRecall *recall);
+static void ags_fx_buffer_audio_processor_done(AgsRecall *recall);
 
 /**
  * SECTION:ags_fx_buffer_audio_processor

@@ -41,10 +41,10 @@ G_BEGIN_DECLS
 
 #define AGS_MIDI_CI_UTIL_VERSION_MIDI_1_0 (0x00)
 
-#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_SIZE_OF_PACKET(p) (((1 < 6) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
-#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_SIZE_OF_PACKET(p) (((1 << 6) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_1_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 << 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
 
-#define AGS_MIDI_CI_UTIL_PROTOCOL_2_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 < 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
+#define AGS_MIDI_CI_UTIL_PROTOCOL_2_0_EXTENSIONS_JITTER_REDUCTION_TIMESTAMP(p) (((1 << 7) & ((guchar *) p)[0]) != 0 ? TRUE: FALSE)
 
 typedef struct _AgsMidiCIUtil AgsMidiCIUtil;
 typedef guint32 AgsMUID;
@@ -486,6 +486,9 @@ guint ags_midi_ci_util_get_profile_specific_data(AgsMidiCIUtil *midi_ci_util,
 						 guint32 *profile_specific_data_length,
 						 guchar **profile_specific_data);
 
+gboolean ags_midi_ci_util_is_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
+							    guchar *buffer);
+
 void ags_midi_ci_util_put_property_exchange_capabilities(AgsMidiCIUtil *midi_ci_util,
 							 guchar *buffer,
 							 guchar device_id,
@@ -504,6 +507,9 @@ guint ags_midi_ci_util_get_property_exchange_capabilities(AgsMidiCIUtil *midi_ci
 							  guchar *supported_property_exchange_count,
 							  guchar *property_exchange_major,
 							  guchar *property_exchange_minor);
+
+gboolean ags_midi_ci_util_is_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
+								  guchar *buffer);
 
 void ags_midi_ci_util_put_property_exchange_capabilities_reply(AgsMidiCIUtil *midi_ci_util,
 							       guchar *buffer,

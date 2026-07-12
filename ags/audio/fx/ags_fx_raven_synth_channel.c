@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_raven_synth_channel_class_init(AgsFxRavenSynthChannelClass *fx_raven_synth_channel);
-void ags_fx_raven_synth_channel_init(AgsFxRavenSynthChannel *fx_raven_synth_channel);
-void ags_fx_raven_synth_channel_dispose(GObject *gobject);
-void ags_fx_raven_synth_channel_finalize(GObject *gobject);
+static void ags_fx_raven_synth_channel_class_init(AgsFxRavenSynthChannelClass *fx_raven_synth_channel);
+static void ags_fx_raven_synth_channel_init(AgsFxRavenSynthChannel *fx_raven_synth_channel);
+static void ags_fx_raven_synth_channel_dispose(GObject *gobject);
+static void ags_fx_raven_synth_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_raven_synth_channel

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2020 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,24 +19,25 @@
 
 #include <ags/audio/file/ags_audio_file_manager.h>
 
+#include <ags/audio/file/ags_audio_file.h>
+
 #include <ags/libags.h>
-#include <ags/libags-audio.h>
 
 #include <stdlib.h>
 
 #include <ags/i18n.h>
 
-void ags_audio_file_manager_class_init(AgsAudioFileManagerClass *audio_file_manager);
-void ags_audio_file_manager_init(AgsAudioFileManager *audio_file_manager);
-void ags_audio_file_manager_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_audio_file_manager_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_audio_file_manager_finalize(GObject *gobject);
+static void ags_audio_file_manager_class_init(AgsAudioFileManagerClass *audio_file_manager);
+static void ags_audio_file_manager_init(AgsAudioFileManager *audio_file_manager);
+static void ags_audio_file_manager_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_audio_file_manager_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_audio_file_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_audio_file_manager
@@ -55,7 +56,7 @@ enum{
 
 static gpointer ags_audio_file_manager_parent_class = NULL;
 
-AgsAudioFileManager *ags_audio_file_manager = NULL;
+static AgsAudioFileManager *ags_audio_file_manager = NULL;
 
 GType
 ags_audio_file_manager_get_type()

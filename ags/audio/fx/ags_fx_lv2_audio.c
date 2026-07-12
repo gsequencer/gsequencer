@@ -41,46 +41,46 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_lv2_audio_class_init(AgsFxLv2AudioClass *fx_lv2_audio);
-void ags_fx_lv2_audio_init(AgsFxLv2Audio *fx_lv2_audio);
-void ags_fx_lv2_audio_dispose(GObject *gobject);
-void ags_fx_lv2_audio_finalize(GObject *gobject);
+static void ags_fx_lv2_audio_class_init(AgsFxLv2AudioClass *fx_lv2_audio);
+static void ags_fx_lv2_audio_init(AgsFxLv2Audio *fx_lv2_audio);
+static void ags_fx_lv2_audio_dispose(GObject *gobject);
+static void ags_fx_lv2_audio_finalize(GObject *gobject);
 
-void ags_fx_lv2_audio_notify_audio_callback(GObject *gobject,
-					    GParamSpec *pspec,
-					    gpointer user_data);
-void ags_fx_lv2_audio_notify_filename_callback(GObject *gobject,
-					       GParamSpec *pspec,
-					       gpointer user_data);
-void ags_fx_lv2_audio_notify_effect_callback(GObject *gobject,
-					     GParamSpec *pspec,
-					     gpointer user_data);
-void ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
-						  GParamSpec *pspec,
-						  gpointer user_data);
-void ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
-						 GParamSpec *pspec,
-						 gpointer user_data);
+static void ags_fx_lv2_audio_notify_audio_callback(GObject *gobject,
+						   GParamSpec *pspec,
+						   gpointer user_data);
+static void ags_fx_lv2_audio_notify_filename_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      gpointer user_data);
+static void ags_fx_lv2_audio_notify_effect_callback(GObject *gobject,
+						    GParamSpec *pspec,
+						    gpointer user_data);
+static void ags_fx_lv2_audio_notify_buffer_size_callback(GObject *gobject,
+							 GParamSpec *pspec,
+							 gpointer user_data);
+static void ags_fx_lv2_audio_notify_samplerate_callback(GObject *gobject,
+							GParamSpec *pspec,
+							gpointer user_data);
 
-void ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
-						  guint audio_channels, guint audio_channels_old,
-						  AgsFxLv2Audio *fx_lv2_audio);
-void ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
-					GType channel_type,
-					guint pads, guint pads_old,
-					AgsFxLv2Audio *fx_lv2_audio);
+static void ags_fx_lv2_audio_set_audio_channels_callback(AgsAudio *audio,
+							 guint audio_channels, guint audio_channels_old,
+							 AgsFxLv2Audio *fx_lv2_audio);
+static void ags_fx_lv2_audio_set_pads_callback(AgsAudio *audio,
+					       GType channel_type,
+					       guint pads, guint pads_old,
+					       AgsFxLv2Audio *fx_lv2_audio);
 
-void ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
-					     AgsFxLv2AudioInputData *input_data);
-void ags_fx_lv2_audio_channel_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
-					       AgsFxLv2AudioChannelData *channel_data);
-void ags_fx_lv2_audio_scope_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
-					     AgsFxLv2AudioScopeData *scope_data);
+static void ags_fx_lv2_audio_input_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
+						    AgsFxLv2AudioInputData *input_data);
+static void ags_fx_lv2_audio_channel_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
+						      AgsFxLv2AudioChannelData *channel_data);
+static void ags_fx_lv2_audio_scope_data_load_plugin(AgsFxLv2Audio *fx_lv2_audio,
+						    AgsFxLv2AudioScopeData *scope_data);
 
-void ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
-					     AgsFxLv2AudioChannelData *channel_data);
-void ags_fx_lv2_audio_scope_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
-					   AgsFxLv2AudioScopeData *scope_data);
+static void ags_fx_lv2_audio_channel_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
+						    AgsFxLv2AudioChannelData *channel_data);
+static void ags_fx_lv2_audio_scope_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
+						  AgsFxLv2AudioScopeData *scope_data);
 
 /**
  * SECTION:ags_fx_lv2_audio
@@ -94,13 +94,13 @@ void ags_fx_lv2_audio_scope_data_load_port(AgsFxLv2Audio *fx_lv2_audio,
 
 static gpointer ags_fx_lv2_audio_parent_class = NULL;
 
-const gchar *ags_fx_lv2_audio_plugin_name = "ags-fx-lv2";
+static const gchar *ags_fx_lv2_audio_plugin_name = "ags-fx-lv2";
 
-const gchar *ags_fx_lv2_audio_specifier[] = {
+static const gchar *ags_fx_lv2_audio_specifier[] = {
   NULL,
 };
 
-const gchar *ags_fx_lv2_audio_control_port[] = {
+static const gchar *ags_fx_lv2_audio_control_port[] = {
   NULL,
 };
 

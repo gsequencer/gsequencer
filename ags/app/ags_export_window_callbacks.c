@@ -28,9 +28,9 @@
 
 #include <ags/i18n.h>
 
-void ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
-						       gint response,
-						       AgsExportWindow *export_window);
+static void ags_export_window_replace_files_response_callback(AgsInputDialog *input_dialog,
+							      gint response,
+							      AgsExportWindow *export_window);
 
 gboolean
 ags_export_window_close_request_callback(GtkWindow *window, gpointer user_data)
@@ -212,11 +212,11 @@ ags_export_window_export_callback(GObject *gobject,
 
 	  tmp = text;
 	  
-	  text = g_strdup_printf("%s\n%s", text, remove_filename->data);
+	  text = g_strdup_printf("%s\n%s", text, (gchar *) remove_filename->data);
 
 	  g_free(tmp);
 	}else{
-	  text = g_strdup_printf("%s", remove_filename->data);
+	  text = g_strdup_printf("%s", (gchar *) remove_filename->data);
 	}
 
 	remove_filename = remove_filename->next;

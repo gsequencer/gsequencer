@@ -10,8 +10,15 @@
 
 #include <complex.h>
 
+static void ags_samplerate_process_sinc_reset(AgsResampleUtil *resample_util);
+static gint ags_samplerate_process_prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len);
+
+static inline double ags_samplerate_process_calc_output_single (AgsResampleUtil *resample_util, increment_t increment, increment_t start_filter_index);
+
+static gint ags_samplerate_process_sinc_mono_vari_process(AgsResampleUtil *resample_util);
+
 void
-sinc_reset(AgsResampleUtil *resample_util)
+ags_samplerate_process_sinc_reset(AgsResampleUtil *resample_util)
 {
   resample_util->b_current =
     resample_util->b_end = 0;
@@ -20,10 +27,10 @@ sinc_reset(AgsResampleUtil *resample_util)
   resample_util->src_ratio =
     resample_util->input_index = 0.0;
 
-} /* sinc_reset */
+} /* ags_samplerate_process_sinc_reset */
 
 gint
-prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
+ags_samplerate_process_prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
 {
   gint len = 0 ;
   gint offset;
@@ -208,10 +215,10 @@ prepare_data(AgsResampleUtil *resample_util, int half_filter_chan_len)
   }
 
   return 0;
-} /* prepare_data */
+} /* ags_samplerate_process_prepare_data */
 
 static inline double
-calc_output_single (AgsResampleUtil *resample_util, increment_t increment, increment_t start_filter_index)
+ags_samplerate_process_calc_output_single (AgsResampleUtil *resample_util, increment_t increment, increment_t start_filter_index)
 {
   double fraction, left, right, icoeff ;
   increment_t filter_index, max_filter_index ;
@@ -362,10 +369,10 @@ calc_output_single (AgsResampleUtil *resample_util, increment_t increment, incre
   while (filter_index > MAKE_INCREMENT_T (0)) ;
 
   return (left + right) ;
-} /* calc_output_single */
+} /* ags_samplerate_process_calc_output_single */
 
 gint
-sinc_mono_vari_process (AgsResampleUtil *resample_util)
+ags_samplerate_process_sinc_mono_vari_process (AgsResampleUtil *resample_util)
 {
   double out_val;
   gdouble input_index, src_ratio, count, float_increment, terminate, rem ;
@@ -407,7 +414,7 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
       samples_in_hand = (resample_util->b_end - resample_util->b_current + resample_util->b_len) % resample_util->b_len ;
 
       if(samples_in_hand <= half_filter_chan_len){
-	if ((error = prepare_data (resample_util, half_filter_chan_len)) != 0){
+	if ((error = ags_samplerate_process_prepare_data (resample_util, half_filter_chan_len)) != 0){
 	  return error ;
 	}
 	
@@ -434,7 +441,7 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
 
       start_filter_index = double_to_fp (input_index * float_increment) ;
 
-      out_val = ((float_increment / resample_util->index_inc) * calc_output_single(resample_util, increment, start_filter_index));
+      out_val = ((float_increment / resample_util->index_inc) * ags_samplerate_process_calc_output_single(resample_util, increment, start_filter_index));
 
       switch(resample_util->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -499,7 +506,7 @@ sinc_mono_vari_process (AgsResampleUtil *resample_util)
   resample_util->output_frames_gen = resample_util->out_gen;
 
   return 0 ;
-} /* sinc_mono_vari_process */
+} /* ags_samplerate_process_sinc_mono_vari_process */
 
 int
 ags_samplerate_process_resample_util(AgsResampleUtil *resample_util)
@@ -552,7 +559,7 @@ ags_samplerate_process_resample_util(AgsResampleUtil *resample_util)
 					      length, copy_mode);
   
   /* Now process. */
-  sinc_mono_vari_process(resample_util);
+  ags_samplerate_process_sinc_mono_vari_process(resample_util);
 
   return 0;
 } /* src_process */

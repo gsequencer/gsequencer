@@ -36,29 +36,29 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_audio_unit_audio_signal_class_init(AgsFxAudioUnitAudioSignalClass *fx_audio_unit_audio_signal);
-void ags_fx_audio_unit_audio_signal_init(AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal);
-void ags_fx_audio_unit_audio_signal_dispose(GObject *gobject);
-void ags_fx_audio_unit_audio_signal_finalize(GObject *gobject);
+static void ags_fx_audio_unit_audio_signal_class_init(AgsFxAudioUnitAudioSignalClass *fx_audio_unit_audio_signal);
+static void ags_fx_audio_unit_audio_signal_init(AgsFxAudioUnitAudioSignal *fx_audio_unit_audio_signal);
+static void ags_fx_audio_unit_audio_signal_dispose(GObject *gobject);
+static void ags_fx_audio_unit_audio_signal_finalize(GObject *gobject);
 
-void ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall);
-void ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall);
-void ags_fx_audio_unit_audio_signal_done(AgsRecall *recall);
+static void ags_fx_audio_unit_audio_signal_run_init_pre(AgsRecall *recall);
+static void ags_fx_audio_unit_audio_signal_run_inter(AgsRecall *recall);
+static void ags_fx_audio_unit_audio_signal_done(AgsRecall *recall);
 
-void ags_fx_audio_unit_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
-						AgsAudioSignal *source,
-						AgsNote *note,
-						gboolean pattern_mode,
-						guint x0, guint x1,
-						guint y,
-						gdouble delay_counter, guint64 offset_counter,
-						guint frame_count,
-						gdouble delay, guint buffer_size);
-void ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
-						  AgsAudioSignal *source,
-						  AgsNote *note,
-						  guint x0, guint x1,
-						  guint y);
+static void ags_fx_audio_unit_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+						       AgsAudioSignal *source,
+						       AgsNote *note,
+						       gboolean pattern_mode,
+						       guint x0, guint x1,
+						       guint y,
+						       gdouble delay_counter, guint64 offset_counter,
+						       guint frame_count,
+						       gdouble delay, guint buffer_size);
+static void ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_notation_audio_signal,
+							 AgsAudioSignal *source,
+							 AgsNote *note,
+							 guint x0, guint x1,
+							 guint y);
 
 /**
  * SECTION:ags_fx_audio_unit_audio_signal
@@ -73,7 +73,7 @@ void ags_fx_audio_unit_audio_signal_notify_remove(AgsFxNotationAudioSignal *fx_n
 static gpointer ags_fx_audio_unit_audio_signal_recall_audio_signal_class = NULL;
 static gpointer ags_fx_audio_unit_audio_signal_parent_class = NULL;
 
-const gchar *ags_fx_audio_unit_audio_signal_plugin_name = "ags-fx-audio-unit";
+static const gchar *ags_fx_audio_unit_audio_signal_plugin_name = "ags-fx-audio-unit";
 
 GType
 ags_fx_audio_unit_audio_signal_get_type()

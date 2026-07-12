@@ -25,21 +25,21 @@
 
 #include <ags/i18n.h>
 
-void ags_conversion_class_init(AgsConversionClass *conversion);
-void ags_conversion_init (AgsConversion *conversion);
-void ags_conversion_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_conversion_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_conversion_finalize(GObject *gobject);
+static void ags_conversion_class_init(AgsConversionClass *conversion);
+static void ags_conversion_init (AgsConversion *conversion);
+static void ags_conversion_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+static void ags_conversion_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+static void ags_conversion_finalize(GObject *gobject);
 
-gdouble ags_conversion_real_convert(AgsConversion *conversion,
-				    gdouble x,
-				    gboolean reverse);
+static gdouble ags_conversion_real_convert(AgsConversion *conversion,
+					   gdouble x,
+					   gboolean reverse);
 
 /**
  * SECTION:ags_conversion

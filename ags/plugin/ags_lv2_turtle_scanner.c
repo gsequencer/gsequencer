@@ -31,100 +31,100 @@
 
 #include <ags/i18n.h>
 
-void ags_lv2_turtle_scanner_class_init(AgsLv2TurtleScannerClass *lv2_turtle_scanner);
-void ags_lv2_turtle_scanner_init (AgsLv2TurtleScanner *lv2_turtle_scanner);
-void ags_lv2_turtle_scanner_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_lv2_turtle_scanner_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_lv2_turtle_scanner_dispose(GObject *gobject);
-void ags_lv2_turtle_scanner_finalize(GObject *gobject);
+static void ags_lv2_turtle_scanner_class_init(AgsLv2TurtleScannerClass *lv2_turtle_scanner);
+static void ags_lv2_turtle_scanner_init (AgsLv2TurtleScanner *lv2_turtle_scanner);
+static void ags_lv2_turtle_scanner_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_lv2_turtle_scanner_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_lv2_turtle_scanner_dispose(GObject *gobject);
+static void ags_lv2_turtle_scanner_finalize(GObject *gobject);
 
-gchar* ags_lv2_turtle_scanner_load_skip_comments_and_blanks(AgsLv2TurtleScanner *lv2_turtle_scanner,
-							    gchar *buffer, gsize buffer_length,
-							    gchar **iter);
-void ags_lv2_turtle_scanner_load_read_iriref(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					     gchar *buffer, gsize buffer_length,
-					     gchar **iter);
-void ags_lv2_turtle_scanner_load_read_anon(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					   gchar *buffer, gsize buffer_length,
-					   gchar **iter);
-void ags_lv2_turtle_scanner_load_read_pname_ns(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					       gchar *buffer, gsize buffer_length,
-					       gchar **iter);
-void ags_lv2_turtle_scanner_load_read_pname_ln(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					       gchar *buffer, gsize buffer_length,
-					       gchar **iter);
-void ags_lv2_turtle_scanner_load_read_numeric(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					      gchar *buffer, gsize buffer_length,
-					      gchar **iter);
-void ags_lv2_turtle_scanner_load_read_string(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					     gchar *buffer, gsize buffer_length,
-					     gchar **iter);
-void ags_lv2_turtle_scanner_load_read_langtag(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					      gchar *buffer, gsize buffer_length,
-					      gchar **iter);
-void ags_lv2_turtle_scanner_load_read_literal(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					      gchar *buffer, gsize buffer_length,
-					      gchar **iter);
-void ags_lv2_turtle_scanner_load_read_iri(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					  gchar *buffer, gsize buffer_length,
-					  gchar **iter);
-void ags_lv2_turtle_scanner_load_read_prefix_id(AgsLv2TurtleScanner *lv2_turtle_scanner,
-						gchar *buffer, gsize buffer_length,
-						gchar **iter);
-void ags_lv2_turtle_scanner_load_read_base(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					   gchar *buffer, gsize buffer_length,
-					   gchar **iter);
-void ags_lv2_turtle_scanner_load_read_sparql_prefix(AgsLv2TurtleScanner *lv2_turtle_scanner,
+static gchar* ags_lv2_turtle_scanner_load_skip_comments_and_blanks(AgsLv2TurtleScanner *lv2_turtle_scanner,
+								   gchar *buffer, gsize buffer_length,
+								   gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_iriref(AgsLv2TurtleScanner *lv2_turtle_scanner,
 						    gchar *buffer, gsize buffer_length,
 						    gchar **iter);
-void ags_lv2_turtle_scanner_load_read_sparql_base(AgsLv2TurtleScanner *lv2_turtle_scanner,
+static void ags_lv2_turtle_scanner_load_read_anon(AgsLv2TurtleScanner *lv2_turtle_scanner,
 						  gchar *buffer, gsize buffer_length,
 						  gchar **iter);
-void ags_lv2_turtle_scanner_load_read_prefixed_name(AgsLv2TurtleScanner *lv2_turtle_scanner,
+static void ags_lv2_turtle_scanner_load_read_pname_ns(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						      gchar *buffer, gsize buffer_length,
+						      gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_pname_ln(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						      gchar *buffer, gsize buffer_length,
+						      gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_numeric(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						     gchar *buffer, gsize buffer_length,
+						     gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_string(AgsLv2TurtleScanner *lv2_turtle_scanner,
 						    gchar *buffer, gsize buffer_length,
 						    gchar **iter);
-void ags_lv2_turtle_scanner_load_read_blank_node(AgsLv2TurtleScanner *lv2_turtle_scanner,
+static void ags_lv2_turtle_scanner_load_read_langtag(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						     gchar *buffer, gsize buffer_length,
+						     gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_literal(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						     gchar *buffer, gsize buffer_length,
+						     gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_iri(AgsLv2TurtleScanner *lv2_turtle_scanner,
 						 gchar *buffer, gsize buffer_length,
 						 gchar **iter);
-void ags_lv2_turtle_scanner_load_read_statement(AgsLv2TurtleScanner *lv2_turtle_scanner,
-						gchar *buffer, gsize buffer_length,
-						gchar **iter);
-void ags_lv2_turtle_scanner_load_read_verb(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					   gchar *buffer, gsize buffer_length,
-					   gchar **iter);
-void ags_lv2_turtle_scanner_load_read_predicate(AgsLv2TurtleScanner *lv2_turtle_scanner,
-						gchar *buffer, gsize buffer_length,
-						gchar **iter);
-void ags_lv2_turtle_scanner_load_read_object(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					     gchar *buffer, gsize buffer_length,
-					     gchar **iter);
-void ags_lv2_turtle_scanner_load_read_directive(AgsLv2TurtleScanner *lv2_turtle_scanner,
-						gchar *buffer, gsize buffer_length,
-						gchar **iter);
-void ags_lv2_turtle_scanner_load_read_triple(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					     gchar *buffer, gsize buffer_length,
-					     gchar **iter);
-void ags_lv2_turtle_scanner_load_read_subject(AgsLv2TurtleScanner *lv2_turtle_scanner,
-					      gchar *buffer, gsize buffer_length,
-					      gchar **iter);
-void ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_scanner,
+static void ags_lv2_turtle_scanner_load_read_prefix_id(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						       gchar *buffer, gsize buffer_length,
+						       gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_base(AgsLv2TurtleScanner *lv2_turtle_scanner,
 						  gchar *buffer, gsize buffer_length,
 						  gchar **iter);
-void ags_lv2_turtle_scanner_load_read_collection(AgsLv2TurtleScanner *lv2_turtle_scanner,
-						 gchar *buffer, gsize buffer_length,
-						 gchar **iter);
-void ags_lv2_turtle_scanner_load_read_blank_node_property_list(AgsLv2TurtleScanner *lv2_turtle_scanner,
-							       gchar *buffer, gsize buffer_length,
-							       gchar **iter);
-void ags_lv2_turtle_scanner_load_read_predicate_object_list(AgsLv2TurtleScanner *lv2_turtle_scanner,
-							    gchar *buffer, gsize buffer_length,
-							    gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_sparql_prefix(AgsLv2TurtleScanner *lv2_turtle_scanner,
+							   gchar *buffer, gsize buffer_length,
+							   gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_sparql_base(AgsLv2TurtleScanner *lv2_turtle_scanner,
+							 gchar *buffer, gsize buffer_length,
+							 gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_prefixed_name(AgsLv2TurtleScanner *lv2_turtle_scanner,
+							   gchar *buffer, gsize buffer_length,
+							   gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_blank_node(AgsLv2TurtleScanner *lv2_turtle_scanner,
+							gchar *buffer, gsize buffer_length,
+							gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_statement(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						       gchar *buffer, gsize buffer_length,
+						       gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_verb(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						  gchar *buffer, gsize buffer_length,
+						  gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_predicate(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						       gchar *buffer, gsize buffer_length,
+						       gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_object(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						    gchar *buffer, gsize buffer_length,
+						    gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_directive(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						       gchar *buffer, gsize buffer_length,
+						       gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_triple(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						    gchar *buffer, gsize buffer_length,
+						    gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_subject(AgsLv2TurtleScanner *lv2_turtle_scanner,
+						     gchar *buffer, gsize buffer_length,
+						     gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_object_list(AgsLv2TurtleScanner *lv2_turtle_scanner,
+							 gchar *buffer, gsize buffer_length,
+							 gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_collection(AgsLv2TurtleScanner *lv2_turtle_scanner,
+							gchar *buffer, gsize buffer_length,
+							gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_blank_node_property_list(AgsLv2TurtleScanner *lv2_turtle_scanner,
+								      gchar *buffer, gsize buffer_length,
+								      gchar **iter);
+static void ags_lv2_turtle_scanner_load_read_predicate_object_list(AgsLv2TurtleScanner *lv2_turtle_scanner,
+								   gchar *buffer, gsize buffer_length,
+								   gchar **iter);
 
 /**
  * SECTION:ags_lv2_turtle_scanner

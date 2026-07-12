@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_tremolo_channel_processor_class_init(AgsFxTremoloChannelProcessorClass *fx_tremolo_channel_processor);
-void ags_fx_tremolo_channel_processor_init(AgsFxTremoloChannelProcessor *fx_tremolo_channel_processor);
-void ags_fx_tremolo_channel_processor_dispose(GObject *gobject);
-void ags_fx_tremolo_channel_processor_finalize(GObject *gobject);
+static void ags_fx_tremolo_channel_processor_class_init(AgsFxTremoloChannelProcessorClass *fx_tremolo_channel_processor);
+static void ags_fx_tremolo_channel_processor_init(AgsFxTremoloChannelProcessor *fx_tremolo_channel_processor);
+static void ags_fx_tremolo_channel_processor_dispose(GObject *gobject);
+static void ags_fx_tremolo_channel_processor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_tremolo_channel_processor
@@ -40,7 +40,7 @@ void ags_fx_tremolo_channel_processor_finalize(GObject *gobject);
 
 static gpointer ags_fx_tremolo_channel_processor_parent_class = NULL;
 
-const gchar *ags_fx_tremolo_channel_processor_plugin_name = "ags-fx-tremolo";
+static const gchar *ags_fx_tremolo_channel_processor_plugin_name = "ags-fx-tremolo";
 
 GType
 ags_fx_tremolo_channel_processor_get_type()

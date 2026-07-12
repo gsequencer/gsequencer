@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_sound_server.h>
 
-void ags_sound_server_class_init(AgsSoundServerInterface *ginterface);
+static void ags_sound_server_class_init(AgsSoundServerInterface *ginterface);
 
 /**
  * SECTION:ags_sound_server

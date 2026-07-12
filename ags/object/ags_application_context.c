@@ -39,41 +39,41 @@
 
 #include <ags/i18n.h>
 
-void ags_application_context_class_init(AgsApplicationContextClass *application_context);
-void ags_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_application_context_init(AgsApplicationContext *application_context);
-void ags_application_context_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_application_context_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_application_context_dispose(GObject *gobject);
-void ags_application_context_finalize(GObject *gobject);
+static void ags_application_context_class_init(AgsApplicationContextClass *application_context);
+static void ags_application_context_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_application_context_init(AgsApplicationContext *application_context);
+static void ags_application_context_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_application_context_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_application_context_dispose(GObject *gobject);
+static void ags_application_context_finalize(GObject *gobject);
 
-AgsUUID* ags_application_context_get_uuid(AgsConnectable *connectable);
-gboolean ags_application_context_has_resource(AgsConnectable *connectable);
-gboolean ags_application_context_is_ready(AgsConnectable *connectable);
-void ags_application_context_add_to_registry(AgsConnectable *connectable);
-void ags_application_context_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_application_context_list_resource(AgsConnectable *connectable);
-xmlNode* ags_application_context_xml_compose(AgsConnectable *connectable);
-void ags_application_context_xml_parse(AgsConnectable *connectable,
-				       xmlNode *node);
-gboolean ags_application_context_is_connected(AgsConnectable *connectable);
-void ags_application_context_connect(AgsConnectable *connectable);
-void ags_application_context_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_application_context_get_uuid(AgsConnectable *connectable);
+static gboolean ags_application_context_has_resource(AgsConnectable *connectable);
+static gboolean ags_application_context_is_ready(AgsConnectable *connectable);
+static void ags_application_context_add_to_registry(AgsConnectable *connectable);
+static void ags_application_context_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_application_context_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_application_context_xml_compose(AgsConnectable *connectable);
+static void ags_application_context_xml_parse(AgsConnectable *connectable,
+					      xmlNode *node);
+static gboolean ags_application_context_is_connected(AgsConnectable *connectable);
+static void ags_application_context_connect(AgsConnectable *connectable);
+static void ags_application_context_disconnect(AgsConnectable *connectable);
 
-void ags_application_context_real_load_config(AgsApplicationContext *application_context);
+static void ags_application_context_real_load_config(AgsApplicationContext *application_context);
 
-void ags_application_context_real_prepare(AgsApplicationContext *application_context);
-void ags_application_context_real_setup(AgsApplicationContext *application_context);
+static void ags_application_context_real_prepare(AgsApplicationContext *application_context);
+static void ags_application_context_real_setup(AgsApplicationContext *application_context);
 
-void ags_application_context_real_register_types(AgsApplicationContext *application_context);
+static void ags_application_context_real_register_types(AgsApplicationContext *application_context);
 
-void ags_application_context_real_quit(AgsApplicationContext *application_context);
+static void ags_application_context_real_quit(AgsApplicationContext *application_context);
 
 /**
  * SECTION:ags_application_context
@@ -131,12 +131,17 @@ enum{
 static gpointer ags_application_context_parent_class = NULL;
 static guint application_context_signals[LAST_SIGNAL];
 
-#if defined(__clang__)
-AgsApplicationContext *ags_application_context = NULL;
-#elif defined(__GNUC__)
-__attribute__((visibility("default"))) AgsApplicationContext *ags_application_context = NULL;
+#if defined(__has_attribute)
+#if __has_attribute(visibility)
+#define AGS_HAVE_ATTRIBUTE_VISIBILITY 1
+#endif
 #endif
 
+#if defined(AGS_HAVE_ATTRIBUTE_VISIBILITY)
+__attribute__((visibility("default"))) AgsApplicationContext *ags_application_context = NULL;
+#else
+AgsApplicationContext *ags_application_context = NULL;
+#endif
 
 GType
 ags_application_context_get_type()

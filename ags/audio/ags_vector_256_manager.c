@@ -19,10 +19,10 @@
 
 #include <ags/audio/ags_vector_256_manager.h>
 
-void ags_vector_256_manager_class_init(AgsVector256ManagerClass *vector_256_manager);
-void ags_vector_256_manager_init (AgsVector256Manager *vector_256_manager);
-void ags_vector_256_manager_dispose(GObject *gobject);
-void ags_vector_256_manager_finalize(GObject *gobject);
+static void ags_vector_256_manager_class_init(AgsVector256ManagerClass *vector_256_manager);
+static void ags_vector_256_manager_init (AgsVector256Manager *vector_256_manager);
+static void ags_vector_256_manager_dispose(GObject *gobject);
+static void ags_vector_256_manager_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_vector_256_manager
@@ -36,7 +36,7 @@ void ags_vector_256_manager_finalize(GObject *gobject);
 
 static gpointer ags_vector_256_manager_parent_class = NULL;
 
-AgsVector256Manager *ags_vector_256_manager = NULL;
+static AgsVector256Manager *ags_vector_256_manager = NULL;
 
 GType
 ags_vector_256_manager_get_type (void)

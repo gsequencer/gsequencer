@@ -25,49 +25,49 @@
 
 #include <ags/i18n.h>
 
-void ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog);
-void ags_midi_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_midi_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_midi_dialog_init(AgsMidiDialog *midi_dialog);
-void ags_midi_dialog_set_property(GObject *gobject,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *param_spec);
-void ags_midi_dialog_get_property(GObject *gobject,
-				  guint prop_id,
-				  GValue *value,
-				  GParamSpec *param_spec);
-void ags_midi_dialog_dispose(GObject *gobject);
+static void ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog);
+static void ags_midi_dialog_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_midi_dialog_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_midi_dialog_init(AgsMidiDialog *midi_dialog);
+static void ags_midi_dialog_set_property(GObject *gobject,
+					 guint prop_id,
+					 const GValue *value,
+					 GParamSpec *param_spec);
+static void ags_midi_dialog_get_property(GObject *gobject,
+					 guint prop_id,
+					 GValue *value,
+					 GParamSpec *param_spec);
+static void ags_midi_dialog_dispose(GObject *gobject);
 
-gboolean ags_midi_dialog_is_connected(AgsConnectable *connectable);
-void ags_midi_dialog_connect(AgsConnectable *connectable);
-void ags_midi_dialog_disconnect(AgsConnectable *connectable);
+static gboolean ags_midi_dialog_is_connected(AgsConnectable *connectable);
+static void ags_midi_dialog_connect(AgsConnectable *connectable);
+static void ags_midi_dialog_disconnect(AgsConnectable *connectable);
 
-void ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update);
-void ags_midi_dialog_apply(AgsApplicable *applicable);
-void ags_midi_dialog_reset(AgsApplicable *applicable);
+static void ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_midi_dialog_apply(AgsApplicable *applicable);
+static void ags_midi_dialog_reset(AgsApplicable *applicable);
 
-void ags_midi_dialog_show(GtkWidget *widget);
+static void ags_midi_dialog_show(GtkWidget *widget);
 
-void ags_midi_dialog_activate_button_callback(GtkButton *activate_button,
-					      AgsMidiDialog *midi_dialog);
+static void ags_midi_dialog_activate_button_callback(GtkButton *activate_button,
+						     AgsMidiDialog *midi_dialog);
 
-gboolean ags_midi_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
-					      guint keyval,
-					      guint keycode,
-					      GdkModifierType state,
-					      AgsMidiDialog *midi_dialog);
-void ags_midi_dialog_key_released_callback(GtkEventControllerKey *event_controller,
-					   guint keyval,
-					   guint keycode,
-					   GdkModifierType state,
-					   AgsMidiDialog *midi_dialog);
-gboolean ags_midi_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
-					    GdkModifierType keyval,
-					    AgsMidiDialog *midi_dialog);
+static gboolean ags_midi_dialog_key_pressed_callback(GtkEventControllerKey *event_controller,
+						     guint keyval,
+						     guint keycode,
+						     GdkModifierType state,
+						     AgsMidiDialog *midi_dialog);
+static void ags_midi_dialog_key_released_callback(GtkEventControllerKey *event_controller,
+						  guint keyval,
+						  guint keycode,
+						  GdkModifierType state,
+						  AgsMidiDialog *midi_dialog);
+static gboolean ags_midi_dialog_modifiers_callback(GtkEventControllerKey *event_controller,
+						   GdkModifierType keyval,
+						   AgsMidiDialog *midi_dialog);
 
-void ags_midi_dialog_real_response(AgsMidiDialog *midi_dialog,
-				   gint response_id);
+static void ags_midi_dialog_real_response(AgsMidiDialog *midi_dialog,
+					  gint response_id);
 
 /**
  * SECTION:ags_midi_dialog

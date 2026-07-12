@@ -32,23 +32,23 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_lv2_channel_class_init(AgsFxLv2ChannelClass *fx_lv2_channel);
-void ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel);
-void ags_fx_lv2_channel_dispose(GObject *gobject);
-void ags_fx_lv2_channel_finalize(GObject *gobject);
+static void ags_fx_lv2_channel_class_init(AgsFxLv2ChannelClass *fx_lv2_channel);
+static void ags_fx_lv2_channel_init(AgsFxLv2Channel *fx_lv2_channel);
+static void ags_fx_lv2_channel_dispose(GObject *gobject);
+static void ags_fx_lv2_channel_finalize(GObject *gobject);
 
-void ags_fx_lv2_channel_notify_filename_callback(GObject *gobject,
-						 GParamSpec *pspec,
-						 gpointer user_data);
-void ags_fx_lv2_channel_notify_effect_callback(GObject *gobject,
-					       GParamSpec *pspec,
-					       gpointer user_data);
-void ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
-						    GParamSpec *pspec,
-						    gpointer user_data);
-void ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
-						   GParamSpec *pspec,
-						   gpointer user_data);
+static void ags_fx_lv2_channel_notify_filename_callback(GObject *gobject,
+							GParamSpec *pspec,
+							gpointer user_data);
+static void ags_fx_lv2_channel_notify_effect_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      gpointer user_data);
+static void ags_fx_lv2_channel_notify_buffer_size_callback(GObject *gobject,
+							   GParamSpec *pspec,
+							   gpointer user_data);
+static void ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
+							  GParamSpec *pspec,
+							  gpointer user_data);
 
 /**
  * SECTION:ags_fx_lv2_channel
@@ -62,7 +62,7 @@ void ags_fx_lv2_channel_notify_samplerate_callback(GObject *gobject,
 
 static gpointer ags_fx_lv2_channel_parent_class = NULL;
 
-const gchar *ags_fx_lv2_channel_plugin_name = "ags-fx-lv2";
+static const gchar *ags_fx_lv2_channel_plugin_name = "ags-fx-lv2";
 
 GType
 ags_fx_lv2_channel_get_type()

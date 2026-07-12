@@ -26,14 +26,14 @@
 #include <ags/app/editor/ags_composite_edit.h>
 #include <ags/app/editor/ags_automation_edit.h>
 
-void ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *scrolled_automation_edit_box);
-void ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
-void ags_scrolled_automation_edit_box_finalize(GObject *gobject);
+static void ags_scrolled_automation_edit_box_class_init(AgsScrolledAutomationEditBoxClass *scrolled_automation_edit_box);
+static void ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
+static void ags_scrolled_automation_edit_box_finalize(GObject *gobject);
 
-void ags_scrolled_automation_edit_box_hadjustment_callback(GtkAdjustment *adjustment,
-							   AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
-void ags_scrolled_automation_edit_box_vadjustment_callback(GtkAdjustment *adjustment,
-							   AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
+static void ags_scrolled_automation_edit_box_hadjustment_callback(GtkAdjustment *adjustment,
+								  AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
+static void ags_scrolled_automation_edit_box_vadjustment_callback(GtkAdjustment *adjustment,
+								  AgsScrolledAutomationEditBox *scrolled_automation_edit_box);
 
 /**
  * SECTION:ags_scrolled_automation_edit_box

@@ -32,36 +32,36 @@
 
 #include <errno.h>
 
-void ags_notation_class_init(AgsNotationClass *notation);
-void ags_notation_init(AgsNotation *notation);
-void ags_notation_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec);
-void ags_notation_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec);
-void ags_notation_dispose(GObject *gobject);
-void ags_notation_finalize(GObject *gobject);
+static void ags_notation_class_init(AgsNotationClass *notation);
+static void ags_notation_init(AgsNotation *notation);
+static void ags_notation_set_property(GObject *gobject,
+				      guint prop_id,
+				      const GValue *value,
+				      GParamSpec *param_spec);
+static void ags_notation_get_property(GObject *gobject,
+				      guint prop_id,
+				      GValue *value,
+				      GParamSpec *param_spec);
+static void ags_notation_dispose(GObject *gobject);
+static void ags_notation_finalize(GObject *gobject);
 
-void ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *notation,
-								    xmlNode *root_node, char *version,
-								    char *base_frequency,
-								    char *x_boundary, char *y_boundary,
-								    gboolean reset_x_offset, guint x_offset,
-								    gboolean reset_y_offset, guint y_offset,
-								    gboolean match_channel, gboolean no_duplicates,
-								    guint current_audio_channel,
-								    gboolean match_timestamp);
+static void ags_notation_insert_native_piano_from_clipboard_version_0_3_12(AgsNotation *notation,
+									   xmlNode *root_node, char *version,
+									   char *base_frequency,
+									   char *x_boundary, char *y_boundary,
+									   gboolean reset_x_offset, guint x_offset,
+									   gboolean reset_y_offset, guint y_offset,
+									   gboolean match_channel, gboolean no_duplicates,
+									   guint current_audio_channel,
+									   gboolean match_timestamp);
 
-void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
-						     xmlNode *root_node, char *version,
-						     char *base_frequency,
-						     char *x_boundary, char *y_boundary,
-						     gboolean from_x_offset, guint x_offset,
-						     gboolean from_y_offset, guint y_offset,
-						     gboolean match_channel, gboolean no_duplicates);
+static void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
+							    xmlNode *root_node, char *version,
+							    char *base_frequency,
+							    char *x_boundary, char *y_boundary,
+							    gboolean from_x_offset, guint x_offset,
+							    gboolean from_y_offset, guint y_offset,
+							    gboolean match_channel, gboolean no_duplicates);
 
 /**
  * SECTION:ags_notation
@@ -1676,10 +1676,11 @@ ags_notation_find_point(AgsNotation *notation,
 
   return(retval);
 }
+
 /**
  * ags_notation_find_exact_note_256th_point:
  * @notation: the #AgsNotation
- * @x: offset
+ * @x_256th: offset
  * @y: note
  * @use_selection_list: if %TRUE selection is searched
  *

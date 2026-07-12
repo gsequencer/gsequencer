@@ -19,9 +19,9 @@
 
 #include <ags/app/ags_effect_bulk_entry.h>
 
-void ags_effect_bulk_entry_class_init(AgsEffectBulkEntryClass *effect_bulk_entry);
-void ags_effect_bulk_entry_init(AgsEffectBulkEntry *effect_bulk_entry);
-void ags_effect_bulk_entry_finalize(GObject *gobject);
+static void ags_effect_bulk_entry_class_init(AgsEffectBulkEntryClass *effect_bulk_entry);
+static void ags_effect_bulk_entry_init(AgsEffectBulkEntry *effect_bulk_entry);
+static void ags_effect_bulk_entry_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_effect_bulk_entry

@@ -21,7 +21,7 @@
 
 #include <ags/audio/ags_program.h>
 
-void ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface);
+static void ags_sound_provider_class_init(AgsSoundProviderInterface *ginterface);
 
 /**
  * SECTION:ags_sound_provider

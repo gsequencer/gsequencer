@@ -50,70 +50,70 @@
 
 #include <ags/i18n.h>
 
-void ags_recall_class_init(AgsRecallClass *recall_class);
-void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_init(AgsRecall *recall);
-void ags_recall_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_recall_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_recall_dispose(GObject *gobject);
-void ags_recall_finalize(GObject *gobject);
+static void ags_recall_class_init(AgsRecallClass *recall_class);
+static void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_recall_init(AgsRecall *recall);
+static void ags_recall_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_recall_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_recall_dispose(GObject *gobject);
+static void ags_recall_finalize(GObject *gobject);
 
-AgsUUID* ags_recall_get_uuid(AgsConnectable *connectable);
-gboolean ags_recall_has_resource(AgsConnectable *connectable);
-gboolean ags_recall_is_ready(AgsConnectable *connectable);
-void ags_recall_add_to_registry(AgsConnectable *connectable);
-void ags_recall_remove_from_registry(AgsConnectable *connectable);
-xmlNode* ags_recall_list_resource(AgsConnectable *connectable);
-xmlNode* ags_recall_xml_compose(AgsConnectable *connectable);
-void ags_recall_xml_parse(AgsConnectable *connectable,
-			  xmlNode *node);
-gboolean ags_recall_is_connected(AgsConnectable *connectable);
-void ags_recall_connect(AgsConnectable *connectable);
-void ags_recall_disconnect(AgsConnectable *connectable);
+static AgsUUID* ags_recall_get_uuid(AgsConnectable *connectable);
+static gboolean ags_recall_has_resource(AgsConnectable *connectable);
+static gboolean ags_recall_is_ready(AgsConnectable *connectable);
+static void ags_recall_add_to_registry(AgsConnectable *connectable);
+static void ags_recall_remove_from_registry(AgsConnectable *connectable);
+static xmlNode* ags_recall_list_resource(AgsConnectable *connectable);
+static xmlNode* ags_recall_xml_compose(AgsConnectable *connectable);
+static void ags_recall_xml_parse(AgsConnectable *connectable,
+				 xmlNode *node);
+static gboolean ags_recall_is_connected(AgsConnectable *connectable);
+static void ags_recall_connect(AgsConnectable *connectable);
+static void ags_recall_disconnect(AgsConnectable *connectable);
 
-void ags_recall_real_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard);
+static void ags_recall_real_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard);
 
-void ags_recall_real_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard);
+static void ags_recall_real_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard);
 
-void ags_recall_real_resolve_dependency(AgsRecall *recall);
-void ags_recall_real_check_rt_data(AgsRecall *recall);
+static void ags_recall_real_resolve_dependency(AgsRecall *recall);
+static void ags_recall_real_check_rt_data(AgsRecall *recall);
 
-void ags_recall_real_run_init_pre(AgsRecall *recall);
-void ags_recall_real_run_init_inter(AgsRecall *recall);
-void ags_recall_real_run_init_post(AgsRecall *recall);
+static void ags_recall_real_run_init_pre(AgsRecall *recall);
+static void ags_recall_real_run_init_inter(AgsRecall *recall);
+static void ags_recall_real_run_init_post(AgsRecall *recall);
 
-void ags_recall_real_feed_input_queue(AgsRecall *recall);
-void ags_recall_real_automate(AgsRecall *recall);
+static void ags_recall_real_feed_input_queue(AgsRecall *recall);
+static void ags_recall_real_automate(AgsRecall *recall);
 
-void ags_recall_real_run_pre(AgsRecall *recall);
-void ags_recall_real_run_inter(AgsRecall *recall);
-void ags_recall_real_run_post(AgsRecall *recall);
+static void ags_recall_real_run_pre(AgsRecall *recall);
+static void ags_recall_real_run_inter(AgsRecall *recall);
+static void ags_recall_real_run_post(AgsRecall *recall);
 
-void ags_recall_real_do_feedback(AgsRecall *recall);
-void ags_recall_real_feed_output_queue(AgsRecall *recall);
+static void ags_recall_real_do_feedback(AgsRecall *recall);
+static void ags_recall_real_feed_output_queue(AgsRecall *recall);
 
-void ags_recall_real_stop_persistent(AgsRecall *recall);
-void ags_recall_real_cancel(AgsRecall *recall);
-void ags_recall_real_done(AgsRecall *recall);
+static void ags_recall_real_stop_persistent(AgsRecall *recall);
+static void ags_recall_real_cancel(AgsRecall *recall);
+static void ags_recall_real_done(AgsRecall *recall);
 
-void ags_recall_real_midi1_control_change(AgsRecall *recall);
+static void ags_recall_real_midi1_control_change(AgsRecall *recall);
 
-void ags_recall_real_midi2_control_change(AgsRecall *recall);
+static void ags_recall_real_midi2_control_change(AgsRecall *recall);
 
-void ags_recall_real_jack_metadata(AgsRecall *recall);
+static void ags_recall_real_jack_metadata(AgsRecall *recall);
 
-AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
-				     AgsRecallID *recall_id,
-				     guint *n_params, gchar **parameter_name, GValue *value);
+static AgsRecall* ags_recall_real_duplicate(AgsRecall *reall,
+					    AgsRecallID *recall_id,
+					    guint *n_params, gchar **parameter_name, GValue *value);
 
-void ags_recall_child_done(AgsRecall *child,
-			   AgsRecall *parent);
+static void ags_recall_child_done(AgsRecall *child,
+				  AgsRecall *parent);
 
 /**
  * SECTION:ags_recall
@@ -6313,14 +6313,14 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	      g_rec_mutex_lock(recall_mutex);
 	      
 	      g_hash_table_insert(midi1_cc_to_value,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)), GUINT_TO_POINTER(value << 7));
+				  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)), GUINT_TO_POINTER(value << 7));
 
 	      g_rec_mutex_unlock(recall_mutex);
 	    }else{
 	      g_rec_mutex_lock(recall_mutex);
 	      
 	      ptr = g_hash_table_lookup(midi1_cc_to_value,
-					GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)));
+					GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)));
 
 	      g_rec_mutex_unlock(recall_mutex);
 	      
@@ -6328,7 +6328,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	      g_rec_mutex_lock(recall_mutex);
 	      
 	      g_hash_table_insert(midi1_cc_to_value,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)), GUINT_TO_POINTER((GPOINTER_TO_UINT(ptr)) | value));
+				  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)), GUINT_TO_POINTER((GPOINTER_TO_UINT(ptr)) | value));
 
 	      g_rec_mutex_unlock(recall_mutex);
 
@@ -6337,7 +6337,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	      g_rec_mutex_lock(recall_mutex);
 	    
 	      port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
-						   GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)));
+						   GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xb0 | channel), control)));
 
 	      g_rec_mutex_unlock(recall_mutex);
 
@@ -6366,7 +6366,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		  g_rec_mutex_lock(recall_mutex);
 		  
 		  ptr = g_hash_table_lookup(midi1_cc_to_value,
-					    GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xb0, control)));
+					    GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xb0, control)));
 
 		  g_rec_mutex_unlock(recall_mutex);
 
@@ -6419,7 +6419,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi1_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xe0 | channel), 0x0)), GUINT_TO_POINTER(transmitter));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xe0 | channel), 0x0)), GUINT_TO_POINTER(transmitter));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -6428,7 +6428,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xe0 | channel), 0x0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xe0 | channel), 0x0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -6457,7 +6457,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xe0 | channel), 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xe0 | channel), 0x0)));
 
 		g_rec_mutex_unlock(recall_mutex);
 
@@ -6509,7 +6509,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi1_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xc0 | channel), 0x0)), GUINT_TO_POINTER(program));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xc0 | channel), 0x0)), GUINT_TO_POINTER(program));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -6518,7 +6518,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xc0 | channel), 0x0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xc0 | channel), 0x0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -6547,7 +6547,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 	    
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xc0 | channel), 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xc0 | channel), 0x0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
 
@@ -6599,7 +6599,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi1_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xd0 | channel), 0x0)), GUINT_TO_POINTER(pressure));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xd0 | channel), 0x0)), GUINT_TO_POINTER(pressure));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -6608,7 +6608,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xd0 | channel), 0x0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xd0 | channel), 0x0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -6637,7 +6637,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 	    
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE((0xd0 | channel), 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE((0xd0 | channel), 0x0)));
 
 		g_rec_mutex_unlock(recall_mutex);	    
 
@@ -6701,7 +6701,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi1_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf2, 0x0)), GUINT_TO_POINTER(song_position));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf2, 0x0)), GUINT_TO_POINTER(song_position));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -6710,7 +6710,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf2, 0x0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf2, 0x0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -6739,7 +6739,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 	    
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf2, 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf2, 0x0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
 	    
@@ -6789,7 +6789,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi1_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)), GUINT_TO_POINTER(song_select));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)), GUINT_TO_POINTER(song_select));
 	    
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -6798,7 +6798,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -6827,7 +6827,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 	    
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf3, 0x0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
 
@@ -6869,7 +6869,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi1_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)), GUINT_TO_POINTER(TRUE));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)), GUINT_TO_POINTER(TRUE));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -6878,7 +6878,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi1_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -6907,7 +6907,7 @@ ags_recall_real_midi1_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi1_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI1_CONTROL_CHANGE(0xf6, 0x0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
 	      
@@ -7146,14 +7146,14 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	      g_rec_mutex_lock(recall_mutex);
 	    
 	      g_hash_table_insert(midi2_cc_to_value,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)), GUINT_TO_POINTER(data << 7));
+				  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)), GUINT_TO_POINTER(data << 7));
 
 	      g_rec_mutex_unlock(recall_mutex);	    
 	    }else{
 	      g_rec_mutex_lock(recall_mutex);
 	    
 	      ptr = g_hash_table_lookup(midi2_cc_to_value,
-					GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)));
+					GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)));
 	      
 	      g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7161,7 +7161,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	      g_rec_mutex_lock(recall_mutex);
 	    
 	      g_hash_table_insert(midi2_cc_to_value,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)), GUINT_TO_POINTER((GPOINTER_TO_UINT(ptr)) | data));
+				  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)), GUINT_TO_POINTER((GPOINTER_TO_UINT(ptr)) | data));
 
 	      g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7170,7 +7170,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	      g_rec_mutex_lock(recall_mutex);
 	    
 	      port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						   GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)));
+						   GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)));
 
 	      g_rec_mutex_unlock(recall_mutex);
 
@@ -7199,7 +7199,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		  g_rec_mutex_lock(recall_mutex);
 	    
 		  ptr = g_hash_table_lookup(midi2_cc_to_value,
-					    GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)));
+					    GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), index_key, 0x0, 0)));
 
 		  value = g_value_get_float(lower) + (((gfloat) (GPOINTER_TO_UINT(ptr))) * ((g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(14.0) - 1.0)));
 		  
@@ -7256,7 +7256,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_PITCH_BEND(group, channel, 0)), GUINT_TO_POINTER(data));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_PITCH_BEND(group, channel, 0)), GUINT_TO_POINTER(data));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7265,7 +7265,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_PITCH_BEND(group, channel, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_PITCH_BEND(group, channel, 0)));
 	    
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7294,7 +7294,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_PITCH_BEND(group, channel, 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_PITCH_BEND(group, channel, 0x0)));
 
 		value = g_value_get_float(lower) + (((gfloat) GPOINTER_TO_UINT(ptr)) * (g_value_get_float(upper) - g_value_get_float(lower)) / (exp2(7.0) - 1.0));
 		
@@ -7352,7 +7352,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)), (gpointer) GUINT_TO_POINTER(program));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)), (gpointer) GUINT_TO_POINTER(program));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7361,7 +7361,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)));
 	    
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7390,7 +7390,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0x0)));
 
 		g_rec_mutex_unlock(recall_mutex);
 		
@@ -7448,7 +7448,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(group, channel, 0)), GUINT_TO_POINTER(pressure));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(group, channel, 0)), GUINT_TO_POINTER(pressure));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7457,7 +7457,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(group, channel, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(group, channel, 0)));
 	    
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7486,7 +7486,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(group, channel, 0x0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(group, channel, 0x0)));
 
 		g_rec_mutex_unlock(recall_mutex);
 
@@ -7569,7 +7569,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)), GUINT_TO_POINTER(data_val));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)), GUINT_TO_POINTER(data_val));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7578,7 +7578,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7607,7 +7607,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xb0 | channel), 0, index_key)));
 
 		g_rec_mutex_unlock(recall_mutex);
 
@@ -7691,7 +7691,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)), GUINT_TO_POINTER(program));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)), GUINT_TO_POINTER(program));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7700,11 +7700,11 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	      
 	      /* MSB */
 	      g_hash_table_insert(midi2_cc_to_value,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x0, 0x0, 0)), GUINT_TO_POINTER(bank >> 7));
+				  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x0, 0x0, 0)), GUINT_TO_POINTER(bank >> 7));
 	      
 	      /* LSB */
 	      g_hash_table_insert(midi2_cc_to_value,
-				  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x20, 0x0, 0)), GUINT_TO_POINTER(0x7f & bank));
+				  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x20, 0x0, 0)), GUINT_TO_POINTER(0x7f & bank));
 
 	      g_rec_mutex_unlock(recall_mutex);
 	    }
@@ -7715,7 +7715,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7744,7 +7744,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(group, channel, 0)));
 
 		g_rec_mutex_unlock(recall_mutex);
 		
@@ -7772,7 +7772,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x0, 0x0, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x0, 0x0, 0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7801,9 +7801,9 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr_0 = g_hash_table_lookup(midi2_cc_to_value,
-					    GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x0, 0x0, 0)));
+					    GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x0, 0x0, 0)));
 		ptr_1 = g_hash_table_lookup(midi2_cc_to_value,
-					    GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x20, 0x0, 0)));
+					    GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xb0 | channel), 0x20, 0x0, 0)));
 
 		g_rec_mutex_unlock(recall_mutex);
 
@@ -7861,7 +7861,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xd0 | channel), 0, 0)), GUINT_TO_POINTER(data));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xd0 | channel), 0, 0)), GUINT_TO_POINTER(data));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7870,7 +7870,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xd0 | channel), 0, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xd0 | channel), 0, 0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7899,7 +7899,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xd0 | channel), 0, 0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xd0 | channel), 0, 0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
 		
@@ -7956,7 +7956,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xe0 | channel), 0, 0)), GUINT_TO_POINTER(data));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xe0 | channel), 0, 0)), GUINT_TO_POINTER(data));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -7965,7 +7965,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xe0 | channel), 0, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xe0 | channel), 0, 0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -7994,7 +7994,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xe0 | channel), 0, 0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0x40 | group), (0xe0 | channel), 0, 0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
 		
@@ -8054,7 +8054,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 
 	    g_hash_table_insert(midi2_cc_to_value,
-				GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xf0 | group), (0xb0 | channel), key, 0)), GUINT_TO_POINTER(data));
+				GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xf0 | group), (0xb0 | channel), key, 0)), GUINT_TO_POINTER(data));
 
 	    g_rec_mutex_unlock(recall_mutex);
 	    
@@ -8063,7 +8063,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 	    g_rec_mutex_lock(recall_mutex);
 	    
 	    port_specifier = g_hash_table_lookup(midi2_cc_to_port_specifier,
-						 GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xf0 | group), (0xb0 | channel), key, 0)));
+						 GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xf0 | group), (0xb0 | channel), key, 0)));
 
 	    g_rec_mutex_unlock(recall_mutex);
 
@@ -8092,7 +8092,7 @@ ags_recall_real_midi2_control_change(AgsRecall *recall)
 		g_rec_mutex_lock(recall_mutex);
 		
 		ptr = g_hash_table_lookup(midi2_cc_to_value,
-					  GUINT_TO_POINTER(AGS_RECALL_MIDI2_CONTROL_CHANGE((0xf0 | group), (0xb0 | channel), key, 0)));
+					  GUINT_TO_POINTER(AGS_RECALL_UTIL_MIDI2_CONTROL_CHANGE((0xf0 | group), (0xb0 | channel), key, 0)));
 		
 		g_rec_mutex_unlock(recall_mutex);
 		

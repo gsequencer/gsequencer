@@ -20386,6 +20386,39 @@ ags_audio_buffer_util_fill_v8float_from_s64(AgsAudioBufferUtil *audio_buffer_uti
 }
 
 /**
+ * ags_audio_buffer_util_fill_v8float_from_float:
+ * @audio_buffer_util: the #AgsAudioBufferUtil-struct
+ * @destination: destination vector
+ * @destination_stride: destination vector's count of channels
+ * @source: source buffer
+ * @source_stride: source buffer's count of channels
+ * @count: number of frames to copy
+ *
+ * Fill vector with float precision floating point data from float.
+ * 
+ * Since: 7.0.0
+ */
+void
+ags_audio_buffer_util_fill_v8float_from_float(AgsAudioBufferUtil *audio_buffer_util,
+					      ags_v8float *destination, guint destination_stride,
+					      gfloat *source, guint source_stride,
+					      guint count)
+{
+  guint i;
+
+  for(i = 0; i < count / 8; i++){
+    destination[i * destination_stride] = (ags_v8float) {source[i * 8 * source_stride],
+							 source[(i * 8 + 1) * source_stride],
+							 source[(i * 8 + 2) * source_stride],
+							 source[(i * 8 + 3) * source_stride],
+							 source[(i * 8 + 4) * source_stride],
+							 source[(i * 8 + 5) * source_stride],
+							 source[(i * 8 + 6) * source_stride],
+							 source[(i * 8 + 7) * source_stride]};
+  }
+}
+
+/**
  * ags_audio_buffer_util_fill_v8float_from_double:
  * @audio_buffer_util: the #AgsAudioBufferUtil-struct
  * @destination: destination vector
@@ -20565,7 +20598,7 @@ ags_audio_buffer_util_fetch_v8float_as_s64(AgsAudioBufferUtil *audio_buffer_util
  */
 void
 ags_audio_buffer_util_fetch_v8float_as_float(AgsAudioBufferUtil *audio_buffer_util,
-					     gdouble *destination, guint destination_stride,
+					     gfloat *destination, guint destination_stride,
 					     ags_v8float *source, guint source_stride,
 					     guint count)
 {

@@ -234,6 +234,17 @@ EXTRA_DIST += \
 	docs/reference/libags-audio/version.xml.in \
 	docs/reference/libags-audio/libags_audio.types.in \
 	docs/reference/libags-audio/libags_audio.interfaces.in \
+	docs/reference/libags-audio/libags_audio_libinstpatch_file.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_sf2.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_thread.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_fx.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_task.xml \
+	docs/reference/libags-audio/libags_audio_vst3_plugin.xml \
+	docs/reference/libags-audio/libags_audio_vst3_fx.xml \
+	docs/reference/libags-audio/libags_audio_vst3_task.xml \
+	docs/reference/libags-audio/libags_audio_audio_unit_plugin.xml \
+	docs/reference/libags-audio/libags_audio_audio_unit_fx.xml \
+	docs/reference/libags-audio/libags_audio_audio_unit_task.xml \
 	docs/reference/libags-gui/AgsGui.conf.in \
 	docs/reference/libags-gui/version.xml.in \
 	docs/reference/libags-gui/libags_gui.types.in \
@@ -241,6 +252,11 @@ EXTRA_DIST += \
 	docs/reference/libgsequencer/version.xml.in \
 	docs/reference/libgsequencer/libgsequencer.types.in \
 	docs/reference/libgsequencer/libgsequencer.interfaces.in \
+	docs/reference/libgsequencer/libgsequencer_libinstpatch_machine.xml \
+	docs/reference/libgsequencer/libgsequencer_vst3_browser.xml \
+	docs/reference/libgsequencer/libgsequencer_vst3_machine.xml \
+	docs/reference/libgsequencer/libgsequencer_audio_unit_browser.xml \
+	docs/reference/libgsequencer/libgsequencer_audio_unit_machine.xml \
 	clean-gtk-doc.sh
 
 EXTRA_DIST += \
@@ -409,14 +425,6 @@ CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
 
 # extra
 EXTRA_DIST += Doxyfile.in
-
-EXTRA_DIST += \
-	libags.sym \
-	libags_thread.sym \
-	libags_server.sym \
-	libags_audio.sym \
-	libags_vst.sym \
-	libags_gui.sym
 
 EXTRA_DIST += \
 	docs/reference/libags/git.mk \
@@ -712,6 +720,7 @@ libags_audio_la_SOURCES = \
 	$(libags_plugin_c_sources)
 libags_audio_la_HEADERS_0 = \
 	ags/libags-audio.h \
+	ags/libags-audio-globals.h \
 	$(libags_audio_h_sources) \
 	$(libags_audio_thread_h_sources) \
 	$(libags_audio_file_h_sources) \
@@ -989,9 +998,9 @@ if WITH_W32API
 libags_vst_la_LDFLAGS += -Wl,--export-all-symbols,--out-implib=libags_vst.dll.a
 else
 if WITH_OSXAPI
-libags_vst_la_LDFLAGS += -export-symbols libags_vst.sym -Wl,-install_name,libags_vst.dylib
+libags_vst_la_LDFLAGS += -Wl,-install_name,libags_vst.dylib
 else
-libags_vst_la_LDFLAGS += -export-symbols libags_vst.sym -Wl,-soname,libags_vst.so
+libags_vst_la_LDFLAGS += -Wl,-soname,libags_vst.so
 libags_vst_la_LIBADD += -ldl
 endif
 endif
@@ -1451,6 +1460,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall.h \
 	ags/audio/ags_recall_id.h \
 	ags/audio/ags_recall_recycling.h \
+	ags/audio/ags_recall_util.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_resample_util.h \

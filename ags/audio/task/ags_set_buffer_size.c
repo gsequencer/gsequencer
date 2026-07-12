@@ -27,26 +27,26 @@
 
 #include <ags/i18n.h>
 
-void ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size);
-void ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size);
-void ags_set_buffer_size_set_property(GObject *gobject,
-				      guint prop_id,
-				      const GValue *value,
-				      GParamSpec *param_spec);
-void ags_set_buffer_size_get_property(GObject *gobject,
-				      guint prop_id,
-				      GValue *value,
-				      GParamSpec *param_spec);
-void ags_set_buffer_size_dispose(GObject *gobject);
-void ags_set_buffer_size_finalize(GObject *gobject);
+static void ags_set_buffer_size_class_init(AgsSetBufferSizeClass *set_buffer_size);
+static void ags_set_buffer_size_init(AgsSetBufferSize *set_buffer_size);
+static void ags_set_buffer_size_set_property(GObject *gobject,
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *param_spec);
+static void ags_set_buffer_size_get_property(GObject *gobject,
+					     guint prop_id,
+					     GValue *value,
+					     GParamSpec *param_spec);
+static void ags_set_buffer_size_dispose(GObject *gobject);
+static void ags_set_buffer_size_finalize(GObject *gobject);
 
-void ags_set_buffer_size_launch(AgsTask *task);
+static void ags_set_buffer_size_launch(AgsTask *task);
 
-void ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSignal *audio_signal);
-void ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling);
-void ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *channel);
-void ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio);
-void ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundcard);
+static void ags_set_buffer_size_audio_signal(AgsSetBufferSize *set_buffer_size, AgsAudioSignal *audio_signal);
+static void ags_set_buffer_size_recycling(AgsSetBufferSize *set_buffer_size, AgsRecycling *recycling);
+static void ags_set_buffer_size_channel(AgsSetBufferSize *set_buffer_size, AgsChannel *channel);
+static void ags_set_buffer_size_audio(AgsSetBufferSize *set_buffer_size, AgsAudio *audio);
+static void ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundcard);
 
 /**
  * SECTION:ags_set_buffer_size

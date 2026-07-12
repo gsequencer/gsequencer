@@ -26,18 +26,18 @@
 
 #include <ags/i18n.h>
 
-void ags_osc_server_preferences_class_init(AgsOscServerPreferencesClass *osc_server_preferences);
-void ags_osc_server_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_osc_server_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
-void ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences);
-void ags_osc_server_preferences_finalize(GObject *gobject);
+static void ags_osc_server_preferences_class_init(AgsOscServerPreferencesClass *osc_server_preferences);
+static void ags_osc_server_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_osc_server_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
+static void ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences);
+static void ags_osc_server_preferences_finalize(GObject *gobject);
 
-void ags_osc_server_preferences_connect(AgsConnectable *connectable);
-void ags_osc_server_preferences_disconnect(AgsConnectable *connectable);
+static void ags_osc_server_preferences_connect(AgsConnectable *connectable);
+static void ags_osc_server_preferences_disconnect(AgsConnectable *connectable);
 
-void ags_osc_server_preferences_set_update(AgsApplicable *applicable, gboolean update);
-void ags_osc_server_preferences_apply(AgsApplicable *applicable);
-void ags_osc_server_preferences_reset(AgsApplicable *applicable);
+static void ags_osc_server_preferences_set_update(AgsApplicable *applicable, gboolean update);
+static void ags_osc_server_preferences_apply(AgsApplicable *applicable);
+static void ags_osc_server_preferences_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_osc_server_preferences

@@ -34,28 +34,28 @@
 
 #include <math.h>
 
-void ags_input_class_init (AgsInputClass *input_class);
-void ags_input_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec);
-void ags_input_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec);
-void ags_input_init (AgsInput *input);
-void ags_input_dispose(GObject *gobject);
-void ags_input_finalize(GObject *gobject);
+static void ags_input_class_init (AgsInputClass *input_class);
+static void ags_input_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+static void ags_input_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+static void ags_input_init (AgsInput *input);
+static void ags_input_dispose(GObject *gobject);
+static void ags_input_finalize(GObject *gobject);
 
-void ags_input_notify_samplerate_callback(GObject *gobject,
-					  GParamSpec *pspec,
-					  gpointer user_data);
-void ags_input_notify_buffer_size_callback(GObject *gobject,
-					   GParamSpec *pspec,
-					   gpointer user_data);
-void ags_input_notify_format_callback(GObject *gobject,
-				      GParamSpec *pspec,
-				      gpointer user_data);
+static void ags_input_notify_samplerate_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 gpointer user_data);
+static void ags_input_notify_buffer_size_callback(GObject *gobject,
+						  GParamSpec *pspec,
+						  gpointer user_data);
+static void ags_input_notify_format_callback(GObject *gobject,
+					     GParamSpec *pspec,
+					     gpointer user_data);
 
 /**
  * SECTION:ags_input

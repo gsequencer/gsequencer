@@ -30,72 +30,72 @@
 #include <stdlib.h>
 #include <math.h>
 
-void ags_button_class_init(AgsButtonClass *button);
-void ags_button_init(AgsButton *button);
-void ags_button_set_property(GObject *gobject,
-			     guint prop_id,
-			     const GValue *value,
-			     GParamSpec *param_spec);
-void ags_button_get_property(GObject *gobject,
-			     guint prop_id,
-			     GValue *value,
-			     GParamSpec *param_spec);
-void ags_button_dispose(GObject *gobject);
+static void ags_button_class_init(AgsButtonClass *button);
+static void ags_button_init(AgsButton *button);
+static void ags_button_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+static void ags_button_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
+static void ags_button_dispose(GObject *gobject);
 
-void ags_button_realize(GtkWidget *widget);
-void ags_button_unrealize(GtkWidget *widget);
+static void ags_button_realize(GtkWidget *widget);
+static void ags_button_unrealize(GtkWidget *widget);
 
-void ags_button_measure(GtkWidget *widget,
-			GtkOrientation orientation,
-			int for_size,
-			int *minimum,
-			int *natural,
-			int *minimum_baseline,
-			int *natural_baseline);
-void ags_button_size_allocate(GtkWidget *widget,
-			      int width,
-			      int height,
-			      int baseline);
+static void ags_button_measure(GtkWidget *widget,
+			       GtkOrientation orientation,
+			       int for_size,
+			       int *minimum,
+			       int *natural,
+			       int *minimum_baseline,
+			       int *natural_baseline);
+static void ags_button_size_allocate(GtkWidget *widget,
+				     int width,
+				     int height,
+				     int baseline);
 
-void ags_button_frame_clock_update_callback(GdkFrameClock *frame_clock,
-					    AgsButton *button);
+static void ags_button_frame_clock_update_callback(GdkFrameClock *frame_clock,
+						   AgsButton *button);
 
-void ags_button_snapshot(GtkWidget *widget,
-			 GtkSnapshot *snapshot);
+static void ags_button_snapshot(GtkWidget *widget,
+				GtkSnapshot *snapshot);
 
-void ags_button_gesture_click_pressed_callback(GtkGestureClick *event_controller,
-					       gint n_press,
-					       gdouble x,
-					       gdouble y,
-					       AgsButton *button);
-void ags_button_gesture_click_released_callback(GtkGestureClick *event_controller,
-						gint n_press,
-						gdouble x,
-						gdouble y,
+static void ags_button_gesture_click_pressed_callback(GtkGestureClick *event_controller,
+						      gint n_press,
+						      gdouble x,
+						      gdouble y,
+						      AgsButton *button);
+static void ags_button_gesture_click_released_callback(GtkGestureClick *event_controller,
+						       gint n_press,
+						       gdouble x,
+						       gdouble y,
+						       AgsButton *button);
+
+static gboolean ags_button_key_pressed_callback(GtkEventControllerKey *event_controller,
+						guint keyval,
+						guint keycode,
+						GdkModifierType state,
 						AgsButton *button);
+static void ags_button_key_released_callback(GtkEventControllerKey *event_controller,
+					     guint keyval,
+					     guint keycode,
+					     GdkModifierType state,
+					     AgsButton *button);
+static gboolean ags_button_modifiers_callback(GtkEventControllerKey *event_controller,
+					      GdkModifierType keyval,
+					      AgsButton *button);
 
-gboolean ags_button_key_pressed_callback(GtkEventControllerKey *event_controller,
-					 guint keyval,
-					 guint keycode,
-					 GdkModifierType state,
-					 AgsButton *button);
-void ags_button_key_released_callback(GtkEventControllerKey *event_controller,
-				      guint keyval,
-				      guint keycode,
-				      GdkModifierType state,
-				      AgsButton *button);
-gboolean ags_button_modifiers_callback(GtkEventControllerKey *event_controller,
-				       GdkModifierType keyval,
+static void ags_button_motion_callback(GtkEventControllerMotion *event_controller,
+				       gdouble x,
+				       gdouble y,
 				       AgsButton *button);
 
-void ags_button_motion_callback(GtkEventControllerMotion *event_controller,
-				gdouble x,
-				gdouble y,
-				AgsButton *button);
-
-void ags_button_draw(AgsButton *button,
-		     cairo_t *cr,
-		     gboolean is_animation);
+static void ags_button_draw(AgsButton *button,
+			    cairo_t *cr,
+			    gboolean is_animation);
 
 /**
  * SECTION:ags_button

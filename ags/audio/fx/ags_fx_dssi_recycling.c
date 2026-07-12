@@ -23,10 +23,10 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_dssi_recycling_class_init(AgsFxDssiRecyclingClass *fx_dssi_recycling);
-void ags_fx_dssi_recycling_init(AgsFxDssiRecycling *fx_dssi_recycling);
-void ags_fx_dssi_recycling_dispose(GObject *gobject);
-void ags_fx_dssi_recycling_finalize(GObject *gobject);
+static void ags_fx_dssi_recycling_class_init(AgsFxDssiRecyclingClass *fx_dssi_recycling);
+static void ags_fx_dssi_recycling_init(AgsFxDssiRecycling *fx_dssi_recycling);
+static void ags_fx_dssi_recycling_dispose(GObject *gobject);
+static void ags_fx_dssi_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_dssi_recycling
@@ -40,7 +40,7 @@ void ags_fx_dssi_recycling_finalize(GObject *gobject);
 
 static gpointer ags_fx_dssi_recycling_parent_class = NULL;
 
-const gchar *ags_fx_dssi_recycling_plugin_name = "ags-fx-dssi";
+static const gchar *ags_fx_dssi_recycling_plugin_name = "ags-fx-dssi";
 
 GType
 ags_fx_dssi_recycling_get_type()

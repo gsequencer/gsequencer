@@ -19,8 +19,8 @@
 
 #include <ags/util/ags_list_util.h>
 
-gpointer ags_list_util_copy(gpointer ptr);
-void ags_list_util_free(gpointer ptr);
+static gpointer ags_list_util_copy(gpointer ptr);
+static void ags_list_util_free(gpointer ptr);
 
 /**
  * SECTION:ags_list_util

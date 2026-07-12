@@ -33,7 +33,7 @@
 
 #include <ags/config.h>
 
-void ags_ffplayer_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
+static void ags_ffplayer_open_dialog_response_callback(AgsFileDialog *file_dialog, gint response,
 						AgsMachine *machine);
 
 void

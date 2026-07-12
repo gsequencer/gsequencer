@@ -26,32 +26,32 @@
 
 #include <ags/i18n.h>
 
-void ags_pad_class_init(AgsPadClass *pad);
-void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pad_init(AgsPad *pad);
-void ags_pad_set_property(GObject *gobject,
-			  guint prop_id,
-			  const GValue *value,
-			  GParamSpec *param_spec);
-void ags_pad_get_property(GObject *gobject,
-			  guint prop_id,
-			  GValue *value,
-			  GParamSpec *param_spec);
+static void ags_pad_class_init(AgsPadClass *pad);
+static void ags_pad_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_pad_init(AgsPad *pad);
+static void ags_pad_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec);
+static void ags_pad_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec);
 
-gboolean ags_pad_is_connected(AgsConnectable *connectable);
-void ags_pad_connect(AgsConnectable *connectable);
-void ags_pad_disconnect(AgsConnectable *connectable);
+static gboolean ags_pad_is_connected(AgsConnectable *connectable);
+static void ags_pad_connect(AgsConnectable *connectable);
+static void ags_pad_disconnect(AgsConnectable *connectable);
 
-void ags_pad_reset_flags(AgsPad *pad);
+static void ags_pad_reset_flags(AgsPad *pad);
 
-void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
-void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
-			       guint audio_channels, guint audio_channels_old);
-void ags_pad_real_map_recall(AgsPad *pad,
-			     guint output_pad_start);
-GList* ags_pad_real_find_port(AgsPad *pad);
+static void ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel);
+static void ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
+				      guint audio_channels, guint audio_channels_old);
+static void ags_pad_real_map_recall(AgsPad *pad,
+				    guint output_pad_start);
+static GList* ags_pad_real_find_port(AgsPad *pad);
 
-void ags_pad_real_refresh_port(AgsPad *pad);
+static void ags_pad_real_refresh_port(AgsPad *pad);
 
 /**
  * SECTION:ags_pad

@@ -27,38 +27,38 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_synth_audio_class_init(AgsFxSynthAudioClass *fx_synth_audio);
-void ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio);
-void ags_fx_synth_audio_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_fx_synth_audio_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_fx_synth_audio_dispose(GObject *gobject);
-void ags_fx_synth_audio_finalize(GObject *gobject);
+static void ags_fx_synth_audio_class_init(AgsFxSynthAudioClass *fx_synth_audio);
+static void ags_fx_synth_audio_init(AgsFxSynthAudio *fx_synth_audio);
+static void ags_fx_synth_audio_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_fx_synth_audio_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_fx_synth_audio_dispose(GObject *gobject);
+static void ags_fx_synth_audio_finalize(GObject *gobject);
 
-void ags_fx_synth_audio_notify_audio_callback(GObject *gobject,
-					      GParamSpec *pspec,
-					      gpointer user_data);
-void ags_fx_synth_audio_notify_buffer_size_callback(GObject *gobject,
-						    GParamSpec *pspec,
-						    gpointer user_data);
-void ags_fx_synth_audio_notify_format_callback(GObject *gobject,
-					       GParamSpec *pspec,
-					       gpointer user_data);
-void ags_fx_synth_audio_notify_samplerate_callback(GObject *gobject,
-						   GParamSpec *pspec,
-						   gpointer user_data);
+static void ags_fx_synth_audio_notify_audio_callback(GObject *gobject,
+						     GParamSpec *pspec,
+						     gpointer user_data);
+static void ags_fx_synth_audio_notify_buffer_size_callback(GObject *gobject,
+							   GParamSpec *pspec,
+							   gpointer user_data);
+static void ags_fx_synth_audio_notify_format_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      gpointer user_data);
+static void ags_fx_synth_audio_notify_samplerate_callback(GObject *gobject,
+							  GParamSpec *pspec,
+							  gpointer user_data);
 
-void ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
-						    guint audio_channels, guint audio_channels_old,
-						    AgsFxSynthAudio *fx_synth_audio);
+static void ags_fx_synth_audio_set_audio_channels_callback(AgsAudio *audio,
+							   guint audio_channels, guint audio_channels_old,
+							   AgsFxSynthAudio *fx_synth_audio);
 
-void ags_fx_synth_audio_pitch_type_callback(AgsPort *port, GValue *value,
-					    AgsFxSynthAudio *fx_synth_audio);
+static void ags_fx_synth_audio_pitch_type_callback(AgsPort *port, GValue *value,
+						   AgsFxSynthAudio *fx_synth_audio);
 
 static AgsPluginPort* ags_fx_synth_audio_get_synth_0_oscillator_plugin_port();
 static AgsPluginPort* ags_fx_synth_audio_get_synth_0_octave_plugin_port();
@@ -130,9 +130,9 @@ static AgsPluginPort* ags_fx_synth_audio_get_high_pass_filter_gain_plugin_port()
 
 static gpointer ags_fx_synth_audio_parent_class = NULL;
 
-const gchar *ags_fx_synth_audio_plugin_name = "ags-fx-synth";
+static const gchar *ags_fx_synth_audio_plugin_name = "ags-fx-synth";
 
-const gchar* ags_fx_synth_audio_specifier[] = {
+static const gchar* ags_fx_synth_audio_specifier[] = {
   "./synth-0-oscillator[0]",
   "./synth-0-octave[0]",
   "./synth-0-key[0]",
@@ -186,7 +186,7 @@ const gchar* ags_fx_synth_audio_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_synth_audio_control_port[] = {
+static const gchar* ags_fx_synth_audio_control_port[] = {
   "1/50",
   "2/50",
   "3/50",

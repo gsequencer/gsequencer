@@ -19,7 +19,7 @@
 
 #include <ags/object/ags_portlet.h>
 
-void ags_portlet_base_init(AgsPortletInterface *ginterface);
+static void ags_portlet_base_init(AgsPortletInterface *ginterface);
 
 /**
  * SECTION:ags_portlet

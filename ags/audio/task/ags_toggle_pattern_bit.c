@@ -21,20 +21,20 @@
 
 #include <ags/i18n.h>
 
-void ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit);
-void ags_toggle_pattern_bit_init(AgsTogglePatternBit *toggle_pattern_bit);
-void ags_toggle_pattern_bit_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_toggle_pattern_bit_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
-void ags_toggle_pattern_bit_dispose(GObject *gobject);
-void ags_toggle_pattern_bit_finalize(GObject *gobject);
+static void ags_toggle_pattern_bit_class_init(AgsTogglePatternBitClass *toggle_pattern_bit);
+static void ags_toggle_pattern_bit_init(AgsTogglePatternBit *toggle_pattern_bit);
+static void ags_toggle_pattern_bit_set_property(GObject *gobject,
+						guint prop_id,
+						const GValue *value,
+						GParamSpec *param_spec);
+static void ags_toggle_pattern_bit_get_property(GObject *gobject,
+						guint prop_id,
+						GValue *value,
+						GParamSpec *param_spec);
+static void ags_toggle_pattern_bit_dispose(GObject *gobject);
+static void ags_toggle_pattern_bit_finalize(GObject *gobject);
 
-void ags_toggle_pattern_bit_launch(AgsTask *task);
+static void ags_toggle_pattern_bit_launch(AgsTask *task);
 
 /**
  * SECTION:ags_toggle_pattern_bit

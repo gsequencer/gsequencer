@@ -28,26 +28,26 @@
 
 #include <ags/i18n.h>
 
-void ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map_class);
-void ags_frequency_map_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_frequency_map_init(AgsFrequencyMap *frequency_map);
-void ags_frequency_map_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_frequency_map_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_frequency_map_dispose(GObject *gobject);
-void ags_frequency_map_finalize(GObject *gobject);
+static void ags_frequency_map_class_init(AgsFrequencyMapClass *frequency_map_class);
+static void ags_frequency_map_connectable_interface_init(AgsConnectableInterface *connectable);
+static void ags_frequency_map_init(AgsFrequencyMap *frequency_map);
+static void ags_frequency_map_set_property(GObject *gobject,
+					   guint prop_id,
+					   const GValue *value,
+					   GParamSpec *param_spec);
+static void ags_frequency_map_get_property(GObject *gobject,
+					   guint prop_id,
+					   GValue *value,
+					   GParamSpec *param_spec);
+static void ags_frequency_map_dispose(GObject *gobject);
+static void ags_frequency_map_finalize(GObject *gobject);
 
-void ags_frequency_map_real_process(AgsFrequencyMap *frequency_map);
-void ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
-				      AgsFrequencyMap *factorized_frequency_map);
-void ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
-						   AgsComplex *source,
-						   AgsComplex **retval);
+static void ags_frequency_map_real_process(AgsFrequencyMap *frequency_map);
+static void ags_frequency_map_real_factorize(AgsFrequencyMap *frequency_map,
+					     AgsFrequencyMap *factorized_frequency_map);
+static void ags_frequency_map_real_compute_max_likelihood(AgsFrequencyMap *frequency_map,
+							  AgsComplex *source,
+							  AgsComplex **retval);
 
 
 /**

@@ -19,11 +19,11 @@
 
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
 
-void ags_lv2_uri_map_manager_class_init(AgsLv2UriMapManagerClass *lv2_uri_map_manager);
-void ags_lv2_uri_map_manager_init(AgsLv2UriMapManager *lv2_uri_map_manager);
-void ags_lv2_uri_map_manager_finalize(GObject *gobject);
+static void ags_lv2_uri_map_manager_class_init(AgsLv2UriMapManagerClass *lv2_uri_map_manager);
+static void ags_lv2_uri_map_manager_init(AgsLv2UriMapManager *lv2_uri_map_manager);
+static void ags_lv2_uri_map_manager_finalize(GObject *gobject);
 
-void ags_lv2_uri_map_manager_destroy_data(gpointer data);
+static void ags_lv2_uri_map_manager_destroy_data(gpointer data);
 
 /**
  * SECTION:ags_lv2_uri_map_manager
@@ -38,7 +38,7 @@ void ags_lv2_uri_map_manager_destroy_data(gpointer data);
 
 static gpointer ags_lv2_uri_map_manager_parent_class = NULL;
 
-AgsLv2UriMapManager *ags_lv2_uri_map_manager = NULL;
+static AgsLv2UriMapManager *ags_lv2_uri_map_manager = NULL;
 
 GType
 ags_lv2_uri_map_manager_get_type()

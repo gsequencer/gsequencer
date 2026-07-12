@@ -21,20 +21,20 @@
 
 #include <ags/i18n.h>
 
-void ags_free_selection_class_init(AgsFreeSelectionClass *free_selection);
-void ags_free_selection_init(AgsFreeSelection *free_selection);
-void ags_free_selection_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_free_selection_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_free_selection_dispose(GObject *gobject);
-void ags_free_selection_finalize(GObject *gobject);
+static void ags_free_selection_class_init(AgsFreeSelectionClass *free_selection);
+static void ags_free_selection_init(AgsFreeSelection *free_selection);
+static void ags_free_selection_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+static void ags_free_selection_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
+static void ags_free_selection_dispose(GObject *gobject);
+static void ags_free_selection_finalize(GObject *gobject);
 
-void ags_free_selection_launch(AgsTask *task);
+static void ags_free_selection_launch(AgsTask *task);
 
 /**
  * SECTION:ags_free_selection

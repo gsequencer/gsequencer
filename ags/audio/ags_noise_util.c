@@ -478,7 +478,7 @@ ags_noise_util_set_samplerate(AgsNoiseUtil *noise_util,
  * 
  * Since: 3.15.0
  */
-guint
+AgsNoiseUtilMode
 ags_noise_util_get_mode(AgsNoiseUtil *noise_util)
 {
   if(noise_util == NULL){
@@ -499,7 +499,7 @@ ags_noise_util_get_mode(AgsNoiseUtil *noise_util)
  */
 void
 ags_noise_util_set_mode(AgsNoiseUtil *noise_util,
-			guint mode)
+			AgsNoiseUtilMode mode)
 {
   if(noise_util == NULL){
     return;

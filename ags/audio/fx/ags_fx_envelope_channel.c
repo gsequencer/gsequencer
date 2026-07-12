@@ -23,18 +23,18 @@
 
 #include <ags/i18n.h>
 
-void ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channel);
-void ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel);
-void ags_fx_envelope_channel_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec);
-void ags_fx_envelope_channel_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec);
-void ags_fx_envelope_channel_dispose(GObject *gobject);
-void ags_fx_envelope_channel_finalize(GObject *gobject);
+static void ags_fx_envelope_channel_class_init(AgsFxEnvelopeChannelClass *fx_envelope_channel);
+static void ags_fx_envelope_channel_init(AgsFxEnvelopeChannel *fx_envelope_channel);
+static void ags_fx_envelope_channel_set_property(GObject *gobject,
+						 guint prop_id,
+						 const GValue *value,
+						 GParamSpec *param_spec);
+static void ags_fx_envelope_channel_get_property(GObject *gobject,
+						 guint prop_id,
+						 GValue *value,
+						 GParamSpec *param_spec);
+static void ags_fx_envelope_channel_dispose(GObject *gobject);
+static void ags_fx_envelope_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_fx_envelope_channel
@@ -48,9 +48,9 @@ void ags_fx_envelope_channel_finalize(GObject *gobject);
 
 static gpointer ags_fx_envelope_channel_parent_class = NULL;
 
-const gchar *ags_fx_envelope_channel_plugin_name = "ags-fx-envelope";
+static const gchar *ags_fx_envelope_channel_plugin_name = "ags-fx-envelope";
 
-const gchar* ags_fx_envelope_channel_specifier[] = {
+static const gchar* ags_fx_envelope_channel_specifier[] = {
   "./fixed-length[0]",
   "./attack[0]",
   "./decay[0]",
@@ -60,7 +60,7 @@ const gchar* ags_fx_envelope_channel_specifier[] = {
   NULL,
 };
 
-const gchar* ags_fx_envelope_channel_control_port[] = {
+static const gchar* ags_fx_envelope_channel_control_port[] = {
   "1/6",
   "2/6",
   "3/6",
