@@ -69,8 +69,8 @@ typedef enum{
 
 /**
  * AgsAudioSignalStreamMode:
- * @AGS_AUDIO_SIGNAL_CONTINUES_FEED: the audio signal is a continues feed, all streams are available
- * @AGS_AUDIO_SIGNAL_DUAL_BUFFERED: the audio signal is dual buffered, current and next stream only available
+ * @AGS_AUDIO_SIGNAL_STREAM_CONTINUES_FEED: the audio signal is a continues feed, all streams are available
+ * @AGS_AUDIO_SIGNAL_STREAM_DUAL_BUFFERED: the audio signal is dual buffered, current and next stream only available
  * 
  * Enum values to set the mode of #AgsAudioSignal stream behaviour by
  * enable/disable setting mode.
