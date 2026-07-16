@@ -350,13 +350,13 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
       
       if(!g_strcmp0("start",
 		    action)){
-	task = (AgsTask *) ags_start_soundcard_new(application_context);
+	task = (AgsTask *) ags_start_soundcard_new();
 
 	ags_task_launcher_add_task(task_launcher,
 				   task);
       }else if(!g_strcmp0("stop",
 			  action)){
-	task = (AgsTask *) ags_stop_soundcard_new(application_context);
+	task = (AgsTask *) ags_stop_soundcard_new();
 
 	ags_task_launcher_add_task(task_launcher,
 				   task);
@@ -385,13 +385,13 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 
       if(!g_strcmp0("start",
 		    action)){
-	task = (AgsTask *) ags_start_sequencer_new(application_context);
+	task = (AgsTask *) ags_start_sequencer_new();
 
 	ags_task_launcher_add_task(task_launcher,
 				   task);
       }else if(!g_strcmp0("stop",
 			  action)){
-	task = (AgsTask *) ags_stop_sequencer_new(application_context);
+	task = (AgsTask *) ags_stop_sequencer_new();
 
 	ags_task_launcher_add_task(task_launcher,
 				   task);

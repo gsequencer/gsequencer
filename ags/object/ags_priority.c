@@ -625,7 +625,7 @@ ags_priority_get_instance()
   g_mutex_lock(&mutex);
 
   if(ags_priority == NULL){
-    ags_priority = ags_priority_new(NULL);
+    ags_priority = ags_priority_new();
   }
 
   g_mutex_unlock(&mutex);

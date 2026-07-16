@@ -1654,7 +1654,7 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
   }
 
   
-  jack_midiin = ags_jack_midiin_new(application_context);
+  jack_midiin = ags_jack_midiin_new();
   
   str = g_strdup_printf("ags-jack-midiin-%d",
 			n_sequencers);
