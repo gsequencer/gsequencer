@@ -402,7 +402,7 @@ ags_ipatch_gig_reader_add_to_registry(AgsConnectable *connectable)
   registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
-    entry = ags_registry_entry_alloc(registry);
+    entry = ags_registry_entry_alloc();
     g_value_set_object(entry->entry,
 		       (gpointer) ipatch_gig_reader);
     ags_registry_add_entry(registry,
