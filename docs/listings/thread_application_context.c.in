@@ -9,35 +9,18 @@
 
 #include <glib.h>
 #include <glib-object.h>
+#include <gio/gio.h>
 
 #include <ags/libags.h>
+
+void thread_application_on_activate(GApplication *app, gpointer user_data);
 
 void setup_callback(AgsApplicationContext *application_context, gpointer user_data);
 gboolean loader_timeout(AgsApplicationContext *application_context);
 
 #define DEFAULT_LOADER_INTERVAL (1000 / 25)
 
-AgsApplicationContext *application_context;
-gboolean start_loader;
-
-application_context = (AgsApplicationContext *) ags_thread_application_context_new();
-g_object_ref(application_context);
-
-g_signal_connect_after(application_context, "setup",
-		       G_CALLBACK(setup_callback), NULL);
-
-start_loader = FALSE;
-
-g_timeout_add(DEFAULT_LOADER_INTERVAL,
-	      loader_timeout,
-	      application_context);
-
-ags_application_context_prepare(application_context);
-ags_application_context_setup(application_context);
-  
-/* main loop run */
-g_main_loop_run(g_main_loop_new(g_main_context_default(),
-				TRUE));
+static gboolean start_loader = FALSE;
 
 void
 setup_callback(AgsApplicationContext *application_context, gpointer user_data)
@@ -54,9 +37,50 @@ loader_timeout(AgsApplicationContext *application_context)
     return(TRUE);
   }
   
+  application_context = ags_application_context_get_instance();
+  
   task_launcher = ags_concurrency_provider_get_task_launcher(AGS_CONCURRENCY_PROVIDER(application_context));
 
   //TODO: add some tasks to task_launcher
 
   return(FALSE);
+}
+
+void
+thread_application_on_activate(GApplication *app, gpointer user_data)
+{
+  AgsApplicationContext *application_context;
+
+  application_context = (AgsApplicationContext *) ags_thread_application_context_new();
+  g_object_ref(application_context);
+
+  g_signal_connect_after(application_context, "setup",
+			 G_CALLBACK(setup_callback), NULL);
+
+  start_loader = FALSE;
+
+  g_timeout_add(DEFAULT_LOADER_INTERVAL,
+		loader_timeout,
+		application_context);
+
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
+}
+
+int
+main(int argc, char **argv)
+{
+  GApplication *app;
+  int status;
+
+  app = g_application_new("org.nongnu.gsequencer.thread-application-context", G_APPLICATION_DEFAULT_FLAGS);
+
+  g_signal_connect(app, "activate",
+		   G_CALLBACK(thread_application_on_activate), NULL);
+
+  status = g_application_run(app, argc, argv);
+
+  g_object_unref(app);
+
+  return(status);
 }
