@@ -2385,7 +2385,7 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
   registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
-    entry = ags_registry_entry_alloc(registry);
+    entry = ags_registry_entry_alloc();
     g_value_set_object(entry->entry,
 		       (gpointer) recall);
     ags_registry_add_entry(registry,
