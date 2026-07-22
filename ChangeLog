@@ -1,3 +1,9 @@
+ags (9.0.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed conf bug with audio preferences see
+	AgsSoundServer::register-soundcard-with-params() implementations
+
 ags (9.0.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
