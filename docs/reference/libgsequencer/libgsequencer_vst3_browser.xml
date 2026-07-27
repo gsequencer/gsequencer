@@ -1,0 +1,2 @@
+      <xi:include href="xml/ags_vst3_browser.xml"/>
+      <xi:include href="xml/ags_vst3_browser_callbacks.xml"/>

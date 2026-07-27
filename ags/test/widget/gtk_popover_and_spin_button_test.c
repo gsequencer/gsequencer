@@ -62,7 +62,7 @@ activate(GtkApplication *app,
 			(GtkWidget *) popover_grid);
 
   spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100.0, 1.0);
-  gtk_grid_attach(grid,
+  gtk_grid_attach(popover_grid,
 		  (GtkWidget *) spin_button,
 		  0, 0,
 		  1, 1);

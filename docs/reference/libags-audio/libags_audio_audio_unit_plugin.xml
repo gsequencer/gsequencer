@@ -1,0 +1,9 @@
+    <chapter id="plugin-audio_unit">
+      <title>AUDIO_UNIT plugins</title>
+      <para>The AUDIO_UNIT plugin objects.</para>
+      <xi:include href="xml/ags_audio_unit_conversion.xml"/>
+      <xi:include href="xml/ags_audio_unit_plugin.xml"/>
+      <xi:include href="xml/ags_audio_unit_manager.xml"/>
+      <xi:include href="xml/ags_audio_unit_new_queue.xml"/>
+      <xi:include href="xml/ags_audio_unit_new_queue_manager.xml"/>
+    </chapter>

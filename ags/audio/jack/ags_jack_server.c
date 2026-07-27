@@ -1257,6 +1257,8 @@ ags_jack_server_register_soundcard_with_params(AgsSoundServer *sound_server,
     gchar *backend;
     gchar *device;
 
+    gboolean is_output;
+
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       if(i == 0){
@@ -1654,7 +1656,7 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
   }
 
   
-  jack_midiin = ags_jack_midiin_new(application_context);
+  jack_midiin = ags_jack_midiin_new();
   
   str = g_strdup_printf("ags-jack-midiin-%d",
 			n_sequencers);

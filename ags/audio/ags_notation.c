@@ -3781,7 +3781,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
 	      midi_end_of_track_node);
 #endif
   
-  midi_builder = ags_midi_builder_new(NULL);
+  midi_builder = ags_midi_builder_new();
 
   ags_midi_builder_from_xml_doc(midi_builder,
 				midi_doc);
@@ -3863,7 +3863,7 @@ ags_notation_from_raw_midi(guchar *raw_midi,
   
   division = AGS_NOTATION_DEFAULT_DIVISION;
 
-  midi_parser = ags_midi_parser_new(NULL);
+  midi_parser = ags_midi_parser_new();
 
   ags_midi_parser_set_buffer(midi_parser,
 			     raw_midi);

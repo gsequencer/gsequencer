@@ -1,3 +1,31 @@
+ags (9.0.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* pot
+
+ags (9.0.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed conf bug with audio preferences see AgsSoundServer::register-soundcard-with-params() implementations
+	* updated docs/listings to use gio/gio.h and g_application_new()
+
+ags (9.0.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong parameter count to functions
+
+ags (9.0.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved configure.ac to make use of AC_SUBST_FILE applying to gtk-doc
+	* fixed gtk-doc missing synths in libgsequencer.xml.in
+
+ags (9.0.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags/audio/ags_recall_util.h
+	* fixed conflicting macro name and enum flag in ags/audio/ags_recall.h
+
 ags (9.0.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
