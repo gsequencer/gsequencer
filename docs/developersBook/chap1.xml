@@ -57,7 +57,7 @@
   </para>
 
   <para>
-    Since AgsApplicationContext is a singleton you create only 1 instance of your
+    Since AgsApplicationContext is a singleton you create only one instance of your
     desired implementation. The application context is usually obtained by calling
     <code language="C">AgsApplicationContext* ags_application_context_get_instance()</code>.
     Make sure to instantiate an application context before using this function.
