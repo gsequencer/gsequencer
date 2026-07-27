@@ -3858,7 +3858,7 @@ ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_au
  * @audio_signal: the #AgsAudioSignal
  * @pad: the pad
  * @audio_channel: the audio channel
- * @scope: the sound scope
+ * @sound_scope: the sound scope
  * 
  * Run iteration of @fx_audio_unit_audio with @audio_signal.
  * 

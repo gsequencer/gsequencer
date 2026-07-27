@@ -234,6 +234,17 @@ EXTRA_DIST += \
 	docs/reference/libags-audio/version.xml.in \
 	docs/reference/libags-audio/libags_audio.types.in \
 	docs/reference/libags-audio/libags_audio.interfaces.in \
+	docs/reference/libags-audio/libags_audio_libinstpatch_file.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_sf2.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_thread.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_fx.xml \
+	docs/reference/libags-audio/libags_audio_libinstpatch_task.xml \
+	docs/reference/libags-audio/libags_audio_vst3_plugin.xml \
+	docs/reference/libags-audio/libags_audio_vst3_fx.xml \
+	docs/reference/libags-audio/libags_audio_vst3_task.xml \
+	docs/reference/libags-audio/libags_audio_audio_unit_plugin.xml \
+	docs/reference/libags-audio/libags_audio_audio_unit_fx.xml \
+	docs/reference/libags-audio/libags_audio_audio_unit_task.xml \
 	docs/reference/libags-gui/AgsGui.conf.in \
 	docs/reference/libags-gui/version.xml.in \
 	docs/reference/libags-gui/libags_gui.types.in \
@@ -241,6 +252,11 @@ EXTRA_DIST += \
 	docs/reference/libgsequencer/version.xml.in \
 	docs/reference/libgsequencer/libgsequencer.types.in \
 	docs/reference/libgsequencer/libgsequencer.interfaces.in \
+	docs/reference/libgsequencer/libgsequencer_libinstpatch_machine.xml \
+	docs/reference/libgsequencer/libgsequencer_vst3_browser.xml \
+	docs/reference/libgsequencer/libgsequencer_vst3_machine.xml \
+	docs/reference/libgsequencer/libgsequencer_audio_unit_browser.xml \
+	docs/reference/libgsequencer/libgsequencer_audio_unit_machine.xml \
 	clean-gtk-doc.sh
 
 EXTRA_DIST += \
@@ -1444,6 +1460,7 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall.h \
 	ags/audio/ags_recall_id.h \
 	ags/audio/ags_recall_recycling.h \
+	ags/audio/ags_recall_util.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_resample_util.h \

@@ -1183,7 +1183,7 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   if(is_output){
-    audio_unit_devout = ags_audio_unit_devout_new(application_context);
+    audio_unit_devout = ags_audio_unit_devout_new();
     soundcard = (GObject *) audio_unit_devout;
 
     str = g_strdup_printf("ags-audio-unit-devout-%d",
@@ -1233,7 +1233,7 @@ ags_audio_unit_server_register_soundcard(AgsSoundServer *sound_server,
 
     g_rec_mutex_unlock(audio_unit_server_mutex);
   }else{
-    audio_unit_devin = ags_audio_unit_devin_new(application_context);
+    audio_unit_devin = ags_audio_unit_devin_new();
     soundcard = (GObject *) audio_unit_devin;
 
     str = g_strdup_printf("ags-audio-unit-devin-%d",
@@ -1465,7 +1465,7 @@ ags_audio_unit_server_register_default_soundcard(AgsAudioUnitServer *audio_unit_
   audio_unit_client_mutex = AGS_AUDIO_UNIT_CLIENT_GET_OBJ_MUTEX(default_client);
 
   /* the soundcard */
-  audio_unit_devout = ags_audio_unit_devout_new(application_context);
+  audio_unit_devout = ags_audio_unit_devout_new();
   g_object_set(AGS_AUDIO_UNIT_DEVOUT(audio_unit_devout),
 	       "audio-unit-client", default_client,
 	       "device", "ags-default-devout",

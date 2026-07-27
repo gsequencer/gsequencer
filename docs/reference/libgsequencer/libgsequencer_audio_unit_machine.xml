@@ -1,0 +1,4 @@
+      <xi:include href="xml/ags_live_audio_unit_bridge.xml"/>
+      <xi:include href="xml/ags_live_audio_unit_bridge_callbacks.xml"/>
+      <xi:include href="xml/ags_audio_unit_bridge.xml"/>
+      <xi:include href="xml/ags_audio_unit_bridge_callbacks.xml"/>
