@@ -129,6 +129,99 @@
 
     <varlistentry>
       <term>
+	<code>ags-fx-synth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with
+	  hybrid synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-fm-synth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with
+	  hybrid FM synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-star-synth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with
+	  stargazer synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-seq-synth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with quantum synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term>
+	<code>ags-fx-raven-synth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with raven synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-modular-syth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with modular synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term>
+	<code>ags-fx-sf2-synth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with
+	  Soundfont2 synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-fx-sfz-synth</code>
+      </term>
+      <listitem>
+	<para>
+	  Play, capture and feed audio data based on notation with SFZ
+	  synthesizer.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
 	<code>ags-fx-ladspa</code>
       </term>
       <listitem>
@@ -167,6 +260,17 @@
       <listitem>
 	<para>
 	  Interface VST3 plugins - requires libags-vst.so to be available.
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term>
+	<code>ags-fx-audio-unit</code>
+      </term>
+      <listitem>
+	<para>
+	  Interface Audio Unit plugins - macOS only.
 	</para>
       </listitem>
     </varlistentry>
