@@ -132,6 +132,8 @@ enum{
 static gpointer ags_midi_parser_parent_class = NULL;
 static guint midi_parser_signals[LAST_SIGNAL];
 
+#define AGS_DEBUG (1)
+
 GType
 ags_midi_parser_get_type(void)
 {
@@ -225,7 +227,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   midi_parser->sequencer_meta_event = ags_midi_parser_real_sequencer_meta_event;
   midi_parser->text_event = ags_midi_parser_real_text_event;
 
-  midi_parser->meta_misc = ags_midi_parser_meta_misc;
+  midi_parser->meta_misc = ags_midi_parser_real_meta_misc;
 
   midi_parser->midi_channel_prefix = ags_midi_parser_midi_channel_prefix;
 
@@ -1106,14 +1108,14 @@ ags_midi_parser_read_varlength(AgsMidiParser *midi_parser)
   value = c;
   i = 1;
   
-  if(0x80 & c){
-    value &= 0x7F;
+  if((0x80 & c) != 0){
+    value = (0x7F & value);
    
     do{
       c = ags_midi_parser_midi_getc(midi_parser);
       value = (value << 7) + (0x7F & (c));
       i++;
-    }while(0x80 & c);
+    }while((0x80 & c) != 0);
   }
 
   return(value);
@@ -1142,30 +1144,23 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
   text = (gchar *) g_malloc(AGS_MIDI_PARSER_MAX_TEXT_LENGTH * sizeof(gchar));
 
   memset(text, 0, AGS_MIDI_PARSER_MAX_TEXT_LENGTH * sizeof(char));
-  
-  i = 0;
-  c = '\0';
-  
-  if(length > 0){
-    while((i < length) &&
-	  (AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0 &&
-	  i < AGS_MIDI_PARSER_MAX_TEXT_LENGTH - 1){
-      c = (gchar) (0xff & (ags_midi_parser_midi_getc(midi_parser)));
-      
-      text[i] = c;
-      i++;
 
-      if(c == '\0'){
-	break;
-      }
+  for(i = 0; i < length; i++){
+    c = (gchar) (0xff & (ags_midi_parser_midi_getc(midi_parser)));
+
+    if(i < AGS_MIDI_PARSER_MAX_TEXT_LENGTH - 1){
+      text[i] = c;
     }
   }
 
+#ifdef AGS_DEBUG
+  g_message("read text - %s", text);
+#endif
   //  c = (gchar) (0xff & (ags_midi_parser_midi_getc(midi_parser)));
 
-  if(c != '\0'){
-    g_critical("expected nul byte");
-  }
+  //  if(c != '\0'){
+    //    g_critical("expected nul byte");
+  //  }
 
   if(i != length){
     g_critical("text length mismatch");
@@ -1418,7 +1413,8 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 		tracks_node);
     
     /* parse tracks */
-    while(((AGS_MIDI_PARSER_EOF & (midi_parser->flags))) == 0 && midi_parser->offset < midi_parser->file_length){
+    while(((AGS_MIDI_PARSER_EOF & (midi_parser->flags))) == 0 &&
+	  midi_parser->offset < midi_parser->file_length){
 #ifdef AGS_DEBUG
       g_message("parse track");
 #endif
@@ -1460,7 +1456,9 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 
       end_of_track = FALSE;
       
-      for(; midi_parser->offset < midi_parser->file_length && !end_of_track /* && midi_parser->current_smf_offset < midi_parser->current_smf_length */; ){
+      for(;((AGS_MIDI_PARSER_EOF & (midi_parser->flags))) == 0 &&
+	    midi_parser->offset < midi_parser->file_length &&
+	    !end_of_track /* && midi_parser->current_smf_offset < midi_parser->current_smf_length */; ){
 	offset = midi_parser->offset;
 	current_smf_offset = midi_parser->current_smf_offset;
 	
@@ -2123,11 +2121,16 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	}
 	
 	if(!success){
+	  gint c1, c2;
+	  
 	  midi_parser->current_node = NULL;
 	  
-	  g_warning("bad byte");
+	  ags_midi_parser_read_varlength(midi_parser); // delta-time
 
-	  ags_midi_parser_midi_getc(midi_parser);
+	  c1 = 0xff & ags_midi_parser_midi_getc(midi_parser);
+	  c2 = 0xff & ags_midi_parser_midi_getc(midi_parser);
+
+	  g_warning("bad bytes 0x%x 0x%x", c1, c2);
 	}
       }
 
@@ -2986,6 +2989,10 @@ ags_midi_parser_real_sysex(AgsMidiParser *midi_parser, guint status)
   gint c;
   guint i;
 
+#ifdef AGS_DEBUG
+  g_message("sysex");
+#endif
+
   ags_midi_parser_read_varlength(midi_parser); // delta-time
   
   ags_midi_parser_midi_getc(midi_parser); // status
@@ -3734,6 +3741,9 @@ ags_midi_parser_real_meta_misc(AgsMidiParser *midi_parser, guint meta_type)
   xmlNode *node;
 
   guchar data[5];
+
+  gint data_length;
+  gint i;
   
 #ifdef AGS_DEBUG
   g_message("meta-misc");
@@ -3747,9 +3757,12 @@ ags_midi_parser_real_meta_misc(AgsMidiParser *midi_parser, guint meta_type)
   ags_midi_parser_midi_getc(midi_parser); // status
   
   ags_midi_parser_midi_getc(midi_parser); // meta misc
-  ags_midi_parser_midi_getc(midi_parser);
-  ags_midi_parser_midi_getc(midi_parser);
-  ags_midi_parser_midi_getc(midi_parser);
+
+  data_length = ags_midi_parser_read_varlength(midi_parser); // data length
+
+  for(i = 0; i < data_length; i++){
+    ags_midi_parser_midi_getc(midi_parser);
+  }
   
   xmlNewProp(node,
 	     AGS_MIDI_EVENT,
@@ -3775,8 +3788,11 @@ ags_midi_parser_meta_misc(AgsMidiParser *midi_parser, guint meta_type)
   xmlNode *node;
   
   g_return_val_if_fail(AGS_IS_MIDI_PARSER(midi_parser), NULL);
-  
+
   g_object_ref((GObject *) midi_parser);
+
+  node = NULL;
+  
   g_signal_emit(G_OBJECT(midi_parser),
 		midi_parser_signals[META_MISC], 0,
 		meta_type,
@@ -3864,6 +3880,10 @@ ags_midi_parser_real_quarter_frame(AgsMidiParser *midi_parser, guint status)
   
   gint quarter_frame;
 
+#ifdef AGS_DEBUG
+  g_message("quarter-frame");
+#endif
+
   ags_midi_parser_read_varlength(midi_parser); // delta-time
   
   ags_midi_parser_midi_getc(midi_parser); // status
@@ -3921,6 +3941,10 @@ ags_midi_parser_real_song_position(AgsMidiParser *midi_parser, guint status)
   gchar *str;
 
   gint song_position;
+
+#ifdef AGS_DEBUG
+  g_message("song position");
+#endif
 
   ags_midi_parser_read_varlength(midi_parser); // delta-time
   
@@ -3981,6 +4005,10 @@ ags_midi_parser_real_song_select(AgsMidiParser *midi_parser, guint status)
 
   gint song_select;
 
+#ifdef AGS_DEBUG
+  g_message("song select");
+#endif
+
   ags_midi_parser_read_varlength(midi_parser); // delta-time
   
   ags_midi_parser_midi_getc(midi_parser); // status
@@ -4034,6 +4062,10 @@ xmlNode*
 ags_midi_parser_real_tune_request(AgsMidiParser *midi_parser, guint status)
 {
   xmlNode *node;
+
+#ifdef AGS_DEBUG
+  g_message("tune request");
+#endif
 
   ags_midi_parser_read_varlength(midi_parser); // delta-time
   
