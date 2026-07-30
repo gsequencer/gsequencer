@@ -769,6 +769,8 @@ libags_audio_sources += files(
     'audio/gstreamer/ags_gstreamer_devout.c',
     'audio/gstreamer/ags_gstreamer_port.c',
     'audio/gstreamer/ags_gstreamer_devin.c',
+    'audio/file/ags_gstreamer_pipeline_manager.c',
+    'audio/file/ags_gstreamer_pipeline_helper.c',
     'audio/file/ags_gstreamer_file.c',
   )
 endif
@@ -1711,6 +1713,8 @@ libags_audio_audio_file_headers = [
 
 if get_option('gstreamer')
 libags_audio_audio_file_gstreamer_headers = [
+  'audio/file/ags_gstreamer_pipeline_manager.h',
+  'audio/file/ags_gstreamer_pipeline_helper.h',
   'audio/file/ags_gstreamer_file.h',
 ]
 endif

@@ -173,6 +173,8 @@
 #include <ags/audio/file/ags_audio_file_manager.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #if defined(AGS_WITH_GSTREAMER)
+#include <ags/audio/file/ags_gstreamer_pipeline_manager.h>
+#include <ags/audio/file/ags_gstreamer_pipeline_helper.h>
 #include <ags/audio/file/ags_gstreamer_file.h>
 #endif
 #if defined(AGS_WITH_LIBINSTPATCH)

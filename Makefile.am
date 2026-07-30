@@ -1798,9 +1798,13 @@ endif
 
 if WITH_GSTREAMER
 libags_audio_file_h_sources += \
+	ags/audio/file/ags_gstreamer_pipeline_manager.h \
+	ags/audio/file/ags_gstreamer_pipeline_helper.h \
 	ags/audio/file/ags_gstreamer_file.h
 else
 EXTRA_DIST += \
+	ags/audio/file/ags_gstreamer_pipeline_manager.h \
+	ags/audio/file/ags_gstreamer_pipeline_helper.h \
 	ags/audio/file/ags_gstreamer_file.h
 endif
 
@@ -1845,9 +1849,13 @@ endif
 
 if WITH_GSTREAMER
 libags_audio_file_c_sources += \
+	ags/audio/file/ags_gstreamer_pipeline_manager.c \
+	ags/audio/file/ags_gstreamer_pipeline_helper.c \
 	ags/audio/file/ags_gstreamer_file.c
 else
 EXTRA_DIST += \
+	ags/audio/file/ags_gstreamer_pipeline_manager.c \
+	ags/audio/file/ags_gstreamer_pipeline_helper.c \
 	ags/audio/file/ags_gstreamer_file.c
 endif
 
