@@ -1204,6 +1204,8 @@ ags_pulse_server_register_soundcard_with_params(AgsSoundServer *sound_server,
     gchar *backend;
     gchar *device;
 
+    gboolean is_output;
+    
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
       if(i == 0){

@@ -24,6 +24,7 @@
 
 GtkApplication *app;  
 GMenu *menu;
+int time_i = 0;
 
 gboolean
 update_ui_timeout(gpointer user_data)
@@ -33,9 +34,37 @@ update_ui_timeout(gpointer user_data)
   GVariantBuilder *builder;
 
   gchar *filename, *effect;
+  
+  time_i++;
+  
+  if(time_i < 10){
+    return(TRUE);
+  }
 
-  filename = "cmt.so";
-  effect = "echo delay line (5s)";
+  /* 1s */
+  filename = g_strdup("cmt.so");
+  effect = g_strdup("echo delay line (1s)");
+
+  //TODO:JK: filename and effect
+  
+  item = g_menu_item_new(effect,
+       "app.add_ladspa_bridge");
+
+  builder = g_variant_builder_new(g_variant_type_new("as"));
+    
+  g_variant_builder_add(builder, "s", filename);
+  g_variant_builder_add(builder, "s", effect);
+
+  g_menu_item_set_attribute_value(item,
+          "target",
+          g_variant_new("as", builder));
+    
+  g_menu_append_item(menu,
+         item);
+  
+  /* 5s */
+  filename = g_strdup("cmt.so");
+  effect = g_strdup("echo delay line (5s)");
 
   //TODO:JK: filename and effect
   
@@ -110,18 +139,18 @@ activate(GtkApplication *app,
 
   menubar = (GMenu *) g_menu_new();
   
+  menubar_widget = gtk_popover_menu_bar_new_from_model(G_MENU_MODEL(menubar));
+  gtk_window_set_child(window,
+                       menubar_widget);
+  gtk_application_set_menubar((GtkApplication *) app,
+            G_MENU_MODEL(menubar));
+  
   menu = g_menu_new();
 
   g_menu_insert_submenu(menubar,
 			-1,
 			"add",
 			G_MENU_MODEL(menu));
-
-  menubar_widget = gtk_popover_menu_bar_new_from_model(G_MENU_MODEL(menubar));
-  gtk_window_set_child(window,
-		       menubar_widget);
-  gtk_application_set_menubar((GtkApplication *) app,
-			      G_MENU_MODEL(menubar));
 
   g_timeout_add(1000 / 4, (GSourceFunc) update_ui_timeout, NULL);
     

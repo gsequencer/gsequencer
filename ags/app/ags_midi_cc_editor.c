@@ -413,203 +413,203 @@ ags_midi_cc_editor_midi1_apply_recall(AgsMidiCCEditor *midi_cc_editor,
   case AGS_RECALL_MIDI1_BANK_SELECT:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_BANK_SELECT(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_BANK_SELECT(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_MODULATION_WHEEL:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_MODULATION_WHEEL(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_MODULATION_WHEEL(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_BREATH_CONTROLLER:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_BREATH_CONTROLLER(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_BREATH_CONTROLLER(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_FOOT_CONTROLLER:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_FOOT_CONTROLLER(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_FOOT_CONTROLLER(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_PORTAMENTO_TIME:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_PORTAMENTO_TIME(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_PORTAMENTO_TIME(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CHANNEL_VOLUME:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_CHANNEL_VOLUME(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_CHANNEL_VOLUME(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_BALANCE:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_BALANCE(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_BALANCE(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_PAN:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_PAN(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_PAN(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_EXPRESSION_CONTROLLER:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_EXPRESSION_CONTROLLER(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_EXPRESSION_CONTROLLER(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_EFFECT_CONTROL_1:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_EFFECT_CONTROL_1(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_EFFECT_CONTROL_1(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_EFFECT_CONTROL_2:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_EFFECT_CONTROL_2(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_EFFECT_CONTROL_2(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_1:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_1(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_1(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_2:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_2(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_2(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_3:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_3(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_3(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_GENERAL_PURPOSE_CONTROLLER_4:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_4(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_GENERAL_PURPOSE_CONTROLLER_4(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CHANGE_PROGRAM:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_CHANGE_PROGRAM(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_CHANGE_PROGRAM(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CHANGE_PRESSURE:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_CHANGE_PRESSURE(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_CHANGE_PRESSURE(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_PITCH_BEND:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_PITCH_BEND(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_PITCH_BEND(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_SONG_POSITION:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_SONG_POSITION(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_SONG_POSITION(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_SONG_SELECT:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_SONG_SELECT(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_SONG_SELECT(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_TUNE_REQUEST:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_TUNE_REQUEST(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_TUNE_REQUEST(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_24:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_24(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_24(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_25:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_25(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_25(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_26:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_26(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_26(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_27:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_27(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_27(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_28:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_28(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_28(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_29:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_29(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_29(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_30:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_30(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_30(midi1_channel)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI1_CC_31:
     {
       g_hash_table_insert(midi1_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI1_CC_31(midi1_channel)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI1_CC_31(midi1_channel)),
 			  local_specifier);
     }
     break;
@@ -657,203 +657,203 @@ ags_midi_cc_editor_midi2_apply_recall(AgsMidiCCEditor *midi_cc_editor,
   case AGS_RECALL_MIDI2_MIDI1_BANK_SELECT:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_BANK_SELECT(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_BANK_SELECT(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_MODULATION_WHEEL:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_MODULATION_WHEEL(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_MODULATION_WHEEL(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_BREATH_CONTROLLER:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_BREATH_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_BREATH_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_FOOT_CONTROLLER:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_FOOT_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_FOOT_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_PORTAMENTO_TIME:
     {      
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_PORTAMENTO_TIME(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_PORTAMENTO_TIME(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_CHANNEL_VOLUME:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_CHANNEL_VOLUME(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANNEL_VOLUME(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_BALANCE:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_BALANCE(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_BALANCE(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_PAN:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_PAN(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_PAN(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_EXPRESSION_CONTROLLER:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_EXPRESSION_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_EXPRESSION_CONTROLLER(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_1:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_EFFECT_CONTROL_1(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_EFFECT_CONTROL_1(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_EFFECT_CONTROL_2:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_EFFECT_CONTROL_2(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_EFFECT_CONTROL_2(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_1:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_1(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_1(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_2:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_2(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_2(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_3:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_3(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_3(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_GENERAL_PURPOSE_CONTROLLER_4:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_4(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_GENERAL_PURPOSE_CONTROLLER_4(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_CHANGE_PROGRAM:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PROGRAM(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_CHANGE_PRESSURE:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_CHANGE_PRESSURE(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_MIDI1_PITCH_BEND:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_MIDI1_PITCH_BEND(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_MIDI1_PITCH_BEND(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CHANGE_PROGRAM:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_CHANGE_PROGRAM(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_CHANGE_PROGRAM(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CHANGE_PRESSURE:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_CHANGE_PRESSURE(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_CHANGE_PRESSURE(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_PITCH_BEND:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_PITCH_BEND(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_PITCH_BEND(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_24:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_24(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_24(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_25:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_25(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_25(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_26:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_26(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_26(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_27:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_27(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_27(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_28:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_28(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_28(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_29:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_29(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_29(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_30:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_30(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_30(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;
   case AGS_RECALL_MIDI2_CC_31:
     {
       g_hash_table_insert(midi2_cc_to_port_specifier,
-			  GUINT_TO_POINTER((guint) AGS_RECALL_MIDI2_CC_31(midi2_group, midi2_channel, midi2_note)),
+			  GUINT_TO_POINTER((guint) AGS_RECALL_UTIL_MIDI2_CC_31(midi2_group, midi2_channel, midi2_note)),
 			  local_specifier);
     }
     break;

@@ -3789,10 +3789,14 @@ ags_fx_audio_unit_audio_start_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_a
     
   if(ags_fx_audio_unit_audio_test_flags(fx_audio_unit_audio,
 					AGS_FX_AUDIO_UNIT_AUDIO_MONO)){
+    g_message("ags-fx-audio-unit mono");
+    
     fx_audio_unit_audio->render_thread = g_thread_new("Advanced Gtk+ Sequencer - Audio Unit",
 						      (GThreadFunc) ags_fx_audio_unit_audio_render_thread_loop_mono,
 						      (gpointer) fx_audio_unit_audio);
   }else{
+    g_message("ags-fx-audio-unit stereo");
+    
     fx_audio_unit_audio->render_thread = g_thread_new("Advanced Gtk+ Sequencer - Audio Unit",
 						      (GThreadFunc) ags_fx_audio_unit_audio_render_thread_loop_stereo,
 						      (gpointer) fx_audio_unit_audio);
@@ -3858,7 +3862,7 @@ ags_fx_audio_unit_audio_stop_render_thread(AgsFxAudioUnitAudio *fx_audio_unit_au
  * @audio_signal: the #AgsAudioSignal
  * @pad: the pad
  * @audio_channel: the audio channel
- * @scope: the sound scope
+ * @sound_scope: the sound scope
  * 
  * Run iteration of @fx_audio_unit_audio with @audio_signal.
  * 
