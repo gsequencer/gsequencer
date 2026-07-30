@@ -5112,7 +5112,7 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
 
   /* synth 0 */
   g_object_disconnect(raven_synth->synth_0_oscillator,
-		      "any_signal::changed",
+		      "any_signal::notify::selected",
 		      G_CALLBACK(ags_raven_synth_synth_0_oscillator_callback),
 		      raven_synth,
 		      NULL);
@@ -5143,7 +5143,7 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
   
   /* LFO */
   g_object_disconnect(raven_synth->synth_0_lfo_oscillator,
-		      "any_signal::changed",
+		      "any_signal::notify::selected",
 		      G_CALLBACK(ags_raven_synth_synth_0_lfo_oscillator_callback),
 		      raven_synth,
 		      NULL);
@@ -5515,7 +5515,7 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
 
   /* synth 1 */
   g_object_disconnect(raven_synth->synth_1_oscillator,
-		      "any_signal::changed",
+		      "any_signal::notify::selected",
 		      G_CALLBACK(ags_raven_synth_synth_1_oscillator_callback),
 		      raven_synth,
 		      NULL);
@@ -5625,7 +5625,7 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
   
   /* LFO */
   g_object_disconnect(raven_synth->synth_1_lfo_oscillator,
-		      "any_signal::changed",
+		      "any_signal::notify::selected",
 		      G_CALLBACK(ags_raven_synth_synth_1_lfo_oscillator_callback),
 		      raven_synth,
 		      NULL);
@@ -5956,7 +5956,7 @@ ags_raven_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
   
   g_object_disconnect(raven_synth->chorus_lfo_oscillator,
-		      "any_signal::changed",
+		      "any_signal::notify::selected",
 		      G_CALLBACK(ags_raven_synth_chorus_lfo_oscillator_callback),
 		      raven_synth,
 		      NULL);
