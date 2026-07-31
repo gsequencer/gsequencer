@@ -980,15 +980,6 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 {
   AgsGstreamerPipelineManager *gst_pipeline_manager;
   AgsGstreamerFile *gstreamer_file;
-
-  gchar *file_uri;
-  
-  GstState current_state;
-  GstStateChangeReturn state_change_retval;
-
-  guint buffer_size;
-  guint audio_channels;
-  gint flags;
   
   GRecMutex *gstreamer_file_mutex;
 
@@ -1006,24 +997,15 @@ ags_gstreamer_file_open(AgsSoundResource *sound_resource,
 
     return(FALSE);
   }
-
-  audio_channels = gstreamer_file->audio_channels;
   
-  buffer_size = gstreamer_file->buffer_size;
-  
-  g_rec_mutex_unlock(gstreamer_file_mutex);
-
-  /* read file */
-  ags_gstreamer_pipeline_manager_create_ro_pipeline(gst_pipeline_manager,
-						    (GObject *) gstreamer_file);
-  
-  /* apply */  
-  g_rec_mutex_lock(gstreamer_file_mutex);
-
   gstreamer_file->filename = g_strdup(filename);
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
   
+  /* read file */
+  ags_gstreamer_pipeline_manager_create_ro_pipeline(gst_pipeline_manager,
+						    (GObject *) gstreamer_file);
+
   return(TRUE);
 }
 
@@ -1204,6 +1186,7 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 			   guint audio_channels, guint samplerate,
 			   gboolean create)
 {
+  AgsGstreamerPipelineManager *gst_pipeline_manager;
   AgsGstreamerFile *gstreamer_file;
 
   GstBus *bus;
@@ -1216,6 +1199,8 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
   gstreamer_file = AGS_GSTREAMER_FILE(sound_resource);
 
+  gst_pipeline_manager = ags_gstreamer_pipeline_manager_get_instance();
+
   /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
 
@@ -1226,8 +1211,6 @@ ags_gstreamer_file_rw_open(AgsSoundResource *sound_resource,
 
     return(FALSE);
   }
-  
-  buffer_size = gstreamer_file->buffer_size;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 

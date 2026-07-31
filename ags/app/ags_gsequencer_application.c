@@ -46,7 +46,7 @@ static void ags_gsequencer_application_open(GApplication *application,
 					    gint n_files,
 					    const gchar *hint);
 
-static void ags_gsequencer_application_check_message_callback(GObject *application_context, AgsMachine *machine);
+static void ags_gsequencer_application_check_message_callback(GObject *application_context, AgsGSequencerApplication *gsequencer_app);
 
 static gpointer ags_gsequencer_application_parent_class = NULL;
 
@@ -1181,6 +1181,7 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 void
 ags_gsequencer_application_check_message_callback(GObject *application_context, AgsGSequencerApplication *gsequencer_app)
 {
+#ifdef AGS_WITH_GSTREAMER
   AgsGstreamerPipelineManager *gst_pipeline_manager;
   
   AgsMessageDelivery *message_delivery;
@@ -1216,6 +1217,8 @@ ags_gsequencer_application_check_message_callback(GObject *application_context, 
 
 	_Atomic gboolean *create_pipeline_completed;
 	
+	GstState current_state;
+	
 	gint position;
 	
 	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
@@ -1228,6 +1231,15 @@ ags_gsequencer_application_check_message_callback(GObject *application_context, 
 	
 	ags_gstreamer_pipeline_helper_create_ro_pipeline(gstreamer_file);
 
+	current_state = 0;
+	
+	do {
+  gst_element_get_state(GST_ELEMENT(gstreamer_file->read_pipeline),
+    &current_state,
+    NULL,
+    4000000);
+}while(current_state != GST_STATE_PLAYING);
+  
 	ags_atomic_boolean_set(create_pipeline_completed,
 			       TRUE);
       }else if(!xmlStrncmp(method,
@@ -1236,6 +1248,8 @@ ags_gsequencer_application_check_message_callback(GObject *application_context, 
 	AgsGstreamerFile *gstreamer_file;
 	
 	_Atomic gboolean *create_pipeline_completed;
+	
+	GstState current_state;
 	
 	gint position;
 	
@@ -1248,7 +1262,14 @@ ags_gsequencer_application_check_message_callback(GObject *application_context, 
 	create_pipeline_completed = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
 
 	ags_gstreamer_pipeline_helper_create_rw_pipeline(gstreamer_file);
-
+	
+	do {
+  gst_element_get_state(GST_ELEMENT(gstreamer_file->write_pipeline),
+    &current_state,
+    NULL,
+    4000000);
+}while(current_state != GST_STATE_PLAYING);
+  
 	ags_atomic_boolean_set(create_pipeline_completed,
 			       TRUE);	
       }
@@ -1259,6 +1280,7 @@ ags_gsequencer_application_check_message_callback(GObject *application_context, 
       
   g_list_free_full(start_message_envelope,
 		   (GDestroyNotify) g_object_unref);
+#endif
 }
 
 AgsGSequencerApplication*

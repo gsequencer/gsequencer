@@ -23,7 +23,13 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <gst/gst.h>
+
+#include <gst/pbutils/pbutils.h>
+
 #include <ags/libags.h>
+
+#include <ags/audio/file/ags_gstreamer_file.h>
 
 G_BEGIN_DECLS
 

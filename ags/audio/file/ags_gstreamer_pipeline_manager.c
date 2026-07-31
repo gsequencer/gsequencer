@@ -19,6 +19,7 @@
 
 #include <ags/audio/file/ags_gstreamer_pipeline_manager.h>
 
+#include <ags/audio/file/ags_gstreamer_pipeline_helper.h>
 #include <ags/audio/file/ags_gstreamer_file.h>
 
 #include <ags/libags.h>
@@ -51,7 +52,6 @@ static void ags_gstreamer_pipeline_manager_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_GSTREAMER_PIPELINE,
 };
 
 static gpointer ags_gstreamer_pipeline_manager_parent_class = NULL;
@@ -106,22 +106,6 @@ ags_gstreamer_pipeline_manager_class_init(AgsGstreamerPipelineManagerClass *gstr
   gobject->finalize = ags_gstreamer_pipeline_manager_finalize;
 
   /* properties */
-  /**
-   * AgsGstreamerPipelineManager:audio-file:
-   *
-   * The #GList-struct containing #AgsGstreamerPipeline.
-   * 
-   * Since: 9.1.0
-   */
-  param_spec = g_param_spec_pointer("audio-file",
-				    i18n_pspec("containing gstreamer_pipeline"),
-				    i18n_pspec("The gstreamer_pipeline it contains"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_GSTREAMER_PIPELINE,
-				  param_spec);
-
-  /* AgsModel */
 }
 
 void
@@ -144,23 +128,6 @@ ags_gstreamer_pipeline_manager_set_property(GObject *gobject,
 
   /* get audio file manager mutex */
   gstreamer_pipeline_manager_mutex = AGS_GSTREAMER_PIPELINE_MANAGER_GET_OBJ_MUTEX(gstreamer_pipeline_manager);
-
-  switch(prop_id){
-  case PROP_GSTREAMER_PIPELINE:
-    {
-      AgsGstreamerPipeline *gstreamer_pipeline;
-      
-      /*  */
-      gstreamer_pipeline = (AgsGstreamerPipeline *) g_value_get_pointer(value);
-
-      ags_gstreamer_pipeline_manager_add_gstreamer_pipeline(gstreamer_pipeline_manager,
-							    (GObject *) gstreamer_pipeline);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void
@@ -177,24 +144,6 @@ ags_gstreamer_pipeline_manager_get_property(GObject *gobject,
 
   /* get audio file manager mutex */
   gstreamer_pipeline_manager_mutex = AGS_GSTREAMER_PIPELINE_MANAGER_GET_OBJ_MUTEX(gstreamer_pipeline_manager);
-
-  switch(prop_id){
-  case PROP_GSTREAMER_PIPELINE:
-    {      
-      g_rec_mutex_lock(gstreamer_pipeline_manager_mutex);
-
-      g_value_set_pointer(value,
-			  g_list_copy_deep(gstreamer_pipeline_manager->gstreamer_pipeline,
-					   (GCopyFunc) g_object_ref,
-					   NULL));
-
-      g_rec_mutex_unlock(gstreamer_pipeline_manager_mutex);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void

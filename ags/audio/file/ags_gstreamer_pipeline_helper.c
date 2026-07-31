@@ -19,6 +19,19 @@
 
 #include <ags/audio/file/ags_gstreamer_pipeline_helper.h>
 
+#include <gst/gst.h>
+#include <gst/audio/gstaudiosink.h>
+#include <gst/audio/gstaudiosrc.h>
+#include <gst/app/gstappsink.h>
+#include <gst/app/gstappsrc.h>
+
+/* playbin flags */
+typedef enum{
+  GST_PLAY_FLAG_VIDEO         = (1 << 0), /* We want video output */
+  GST_PLAY_FLAG_AUDIO         = (1 << 1), /* We want audio output */
+  GST_PLAY_FLAG_TEXT          = (1 << 2)  /* We want subtitle output */
+}GstPlayFlags;
+
 GObject*
 ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_file)
 {
@@ -28,14 +41,23 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
   GstElement *video_sink;
 
   gchar *caps;
-  
-  GstState current_state;
+  gchar *filename;
+  gchar *file_uri;
+
   GstStateChangeReturn state_change_retval;
+  
+  gint flags;
   
   GRecMutex *gstreamer_file_mutex;
   
   /* get gstreamer file mutex */
   gstreamer_file_mutex = AGS_GSTREAMER_FILE_GET_OBJ_MUTEX(gstreamer_file);
+
+  g_rec_mutex_lock(gstreamer_file_mutex);
+
+  filename = g_strdup(gstreamer_file->filename);
+  
+  g_rec_mutex_unlock(gstreamer_file_mutex);
 
   /* ro-pipeline */
   read_pipeline = gst_pipeline_new("AGS ro-pipeline");
@@ -177,13 +199,15 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
 
   if(state_change_retval == GST_STATE_CHANGE_FAILURE){
     g_critical("unable to start AGS ro-pipeline");
-  }else{
-    current_state = 0;
+
+    g_rec_mutex_lock(gstreamer_file_mutex);
     
-    do{
-      gst_element_get_state(GST_ELEMENT(read_pipeline), &current_state, NULL, 4000000);
-    }while(current_state != GST_STATE_PLAYING);
+    gstreamer_file->read_pipeline_running = FALSE;
+
+    g_rec_mutex_unlock(gstreamer_file_mutex);
   }
+
+  g_free(filename);
   
   return(read_pipeline);
 }
@@ -208,14 +232,13 @@ ags_gstreamer_pipeline_helper_create_rw_pipeline(AgsGstreamerFile *gstreamer_fil
   gchar *caps;
   gchar *filename;
   
-  GstState current_state;
   GstStateChangeReturn state_change_retval;
 
+  gint flags;
   guint audio_channels;
   guint samplerate;
   guint buffer_size;
   gint64 channel_mask;
-  gint flags;
   gboolean success;
   
   GRecMutex *gstreamer_file_mutex;
@@ -410,13 +433,9 @@ ags_gstreamer_pipeline_helper_create_rw_pipeline(AgsGstreamerFile *gstreamer_fil
     success = FALSE;
     
     g_critical("unable to start AGS rw-pipeline (write)");
-  }else{
-#if 0
-    do{
-      gst_element_get_state(GST_ELEMENT(write_pipeline), &current_state, NULL, 4000000);
-    }while(current_state != GST_STATE_PLAYING);
-#endif
   }
+
+  g_free(filename);
   
   return(write_pipeline);
 }
