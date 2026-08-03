@@ -1091,7 +1091,7 @@ ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
  * ags_midi_parser_read_varlength:
  * @midi_parser: the #AgsMidiParser
  * 
- * Read varlength as long.
+ * Read varlength as long, max value from 0 to 2^28 - 1.
  * 
  * Returns: the read varlength
  * 
@@ -2138,16 +2138,13 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	}
 	
 	if(!success){
-	  gint c1, c2;
+	  gint c1;
 	  
 	  midi_parser->current_node = NULL;
 	  
-	  ags_midi_parser_read_varlength(midi_parser); // delta-time
-
 	  c1 = 0xff & ags_midi_parser_midi_getc(midi_parser);
-	  c2 = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
-	  g_warning("bad bytes 0x%x 0x%x", c1, c2);
+	  g_warning("bad byte 0x%x", c1);
 	}
       }
 
@@ -3592,7 +3589,7 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
   node = xmlNewNode(NULL,
 		    "midi-sequencer-meta-event");
 
-  len = ags_midi_parser_midi_getc(midi_parser);
+  len = ags_midi_parser_read_varlength(midi_parser);
   data = 0;
   
   if(len > 0){
@@ -3714,9 +3711,9 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
     break;
   case 0x07:      /* Cue point */
     break;
-  case 0x08:
+  case 0x08:      /* Program name */
     break;
-  case 0x09:
+  case 0x09:      /* Port name */
     break;
   case 0x0a:
     break;
