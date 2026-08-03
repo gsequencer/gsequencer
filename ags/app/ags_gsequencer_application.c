@@ -1234,11 +1234,11 @@ ags_gsequencer_application_check_message_callback(GObject *application_context, 
 	current_state = 0;
 	
 	do {
-  gst_element_get_state(GST_ELEMENT(gstreamer_file->read_pipeline),
-    &current_state,
-    NULL,
-    4000000);
-}while(current_state != GST_STATE_PLAYING);
+	  gst_element_get_state(GST_ELEMENT(gstreamer_file->read_pipeline),
+				&current_state,
+				NULL,
+				4000000);
+	}while(current_state != GST_STATE_PLAYING);
   
 	ags_atomic_boolean_set(create_pipeline_completed,
 			       TRUE);
@@ -1264,11 +1264,11 @@ ags_gsequencer_application_check_message_callback(GObject *application_context, 
 	ags_gstreamer_pipeline_helper_create_rw_pipeline(gstreamer_file);
 	
 	do {
-  gst_element_get_state(GST_ELEMENT(gstreamer_file->write_pipeline),
-    &current_state,
-    NULL,
-    4000000);
-}while(current_state != GST_STATE_PLAYING);
+	  gst_element_get_state(GST_ELEMENT(gstreamer_file->write_pipeline),
+				&current_state,
+				NULL,
+				4000000);
+	}while(current_state != GST_STATE_PLAYING);
   
 	ags_atomic_boolean_set(create_pipeline_completed,
 			       TRUE);	

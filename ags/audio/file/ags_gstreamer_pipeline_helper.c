@@ -40,13 +40,19 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
   GstElement *audio_sink;
   GstElement *video_sink;
 
+  GstAudioInfo info;
+  //  GstCaps *video_caps;
+  GstCaps *audio_caps;
+
   gchar *caps;
   gchar *filename;
   gchar *file_uri;
-
+  
   GstStateChangeReturn state_change_retval;
   
   gint flags;
+  guint samplerate;
+  guint audio_channels;
   
   GRecMutex *gstreamer_file_mutex;
   
@@ -56,6 +62,9 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
   g_rec_mutex_lock(gstreamer_file_mutex);
 
   filename = g_strdup(gstreamer_file->filename);
+
+  samplerate = gstreamer_file->samplerate;
+  audio_channels = gstreamer_file->audio_channels;
   
   g_rec_mutex_unlock(gstreamer_file_mutex);
 
@@ -70,9 +79,9 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
   audio_sink = gst_element_factory_make("appsink", "AGS audio sink");
   
   g_object_set(audio_sink,
-	       "sync", FALSE,
-	       NULL);
-  
+  	       "sync", FALSE,
+  	       NULL);
+
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   caps = g_strdup_printf("audio/x-raw, format = (string) { S16LE }, layout = (string) { interleaved }, channels = %s, rate = %s",
 			 GST_AUDIO_CHANNELS_RANGE,
@@ -87,16 +96,37 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
 			 GST_AUDIO_RATE_RANGE);
 #endif
 
+  audio_caps = gst_caps_from_string(caps);
+  
+  //  gst_audio_info_set_format(&info,
+  //			    GST_AUDIO_FORMAT_S16,
+  //			    samplerate,
+  //			    1,
+  //			    NULL);
+
+  // audio_caps = gst_audio_info_to_caps(&info);
+  
   g_object_set(audio_sink,
-	       "caps", gst_caps_from_string(caps),
+	       "caps", audio_caps,
 	       NULL);
 
   g_free(caps);
 
-  video_sink = gst_element_factory_make("fakesink", "AGS video sink");
+  video_sink = gst_element_factory_make("fakevideosink", "AGS video sink");
+
+#if 0
+  caps = g_strdup("video/x-raw");
+
   g_object_set(video_sink,
-	       "sync", FALSE,
+	       "caps", gst_caps_from_string(caps),
 	       NULL);
+
+  g_free(caps);
+#endif
+  
+  g_object_set(video_sink,
+  	       "sync", FALSE,
+  	       NULL);
 
   file_uri = NULL;
   
@@ -113,10 +143,12 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
     g_strfreev(w32_split);
     
     if(g_path_is_absolute(filename)){
-      file_uri = g_strdup_printf("file:///%s",
-				 w32_filename);
+      file_uri = g_filename_to_uri(w32_filename,
+				   NULL,
+				   NULL);
     }else{
       gchar *current_dir;
+      gchar *current_filename;
       gchar *w32_current_dir;
       gchar **w32_dir_split;
 
@@ -127,14 +159,19 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
       w32_current_dir = g_strjoinv("/",
 				   w32_dir_split);
       
-      file_uri = g_strdup_printf("file:///%s/%s",
-				 w32_current_dir,
-				 w32_filename);
+      current_filename = g_strdup_printf("%s/%s",
+					 w32_current_dir,
+					 w32_filename);
+
+      file_uri = g_filename_to_uri(current_filename,
+				   NULL,
+				   NULL);
 
       g_strfreev(w32_dir_split);
 
       g_free(w32_current_dir);
       g_free(current_dir);
+      g_free(current_filename);
     }
 
     g_free(w32_filename);
@@ -142,18 +179,25 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
 #else
   if(filename != NULL){
     if(g_path_is_absolute(filename)){
-      file_uri = g_strdup_printf("file://%s",
-				 filename);
+      file_uri = g_filename_to_uri(filename,
+				   NULL,
+				   NULL);
     }else{
       gchar *current_dir;
+      gchar *current_filename;
 
       current_dir = g_get_current_dir();
 
-      file_uri = g_strdup_printf("file://%s/%s",
-				 current_dir,
-				 filename);
+      current_filename = g_strdup_printf("%s/%s",
+					 current_dir,
+					 filename);
 
+      file_uri = g_filename_to_uri(current_filename,
+				   NULL,
+				   NULL);
+      
       g_free(current_dir);
+      g_free(current_filename);
     }
   }
 #endif
@@ -178,6 +222,10 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
 	       "flags", flags,
 	       NULL);
 
+  g_object_set(playbin,
+	       "connection-speed", 56,
+	       NULL);
+  
   gst_bin_add_many(GST_BIN(read_pipeline),
 		   playbin,
 		   NULL);

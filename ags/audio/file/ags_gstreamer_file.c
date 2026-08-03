@@ -1608,6 +1608,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 {
   AgsGstreamerFile *gstreamer_file;
 
+  GstElement *video_sink;
   GstElement *audio_sink;
   
   guint saudio_channels;
@@ -1640,6 +1641,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
   /* get some fields */
   g_rec_mutex_lock(gstreamer_file_mutex);
 
+  video_sink = gstreamer_file->video_sink;
   audio_sink = gstreamer_file->audio_sink;
 
   offset = gstreamer_file->offset;
@@ -1660,6 +1662,7 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
 													  source_format));
 
   for(read_frame_count = 0; read_frame_count < frame_count && offset + read_frame_count < total_frame_count;){
+    GstSample *vsample;
     GstSample *sample;
     GstBuffer *buffer;
 
@@ -1721,6 +1724,14 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
       g_rec_mutex_unlock(gstreamer_file_mutex);
     }else{
       /* attempt #0 */
+#if 0
+      vsample = gst_app_sink_pull_sample((GstAppSink *) video_sink);
+
+      if(vsample != NULL){
+	gst_sample_unref(vsample);
+      }
+#endif
+      
       sample = gst_app_sink_pull_sample((GstAppSink *) audio_sink);
 
       if(sample != NULL){
@@ -1767,6 +1778,10 @@ ags_gstreamer_file_read(AgsSoundResource *sound_resource,
       }else{
 	break;
       }
+
+      if(gst_app_sink_is_eos((GstAppSink *) audio_sink)){
+      break;
+    }
     }
   }
   
@@ -2173,9 +2188,11 @@ ags_gstreamer_file_seek(AgsSoundResource *sound_resource,
 
   time_nanoseconds = GST_FRAMES_TO_CLOCK_TIME(frame_count, GST_AUDIO_INFO_RATE(&info));
   
-  gst_element_seek(read_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
-		   GST_SEEK_TYPE_SET, time_nanoseconds,
-		   GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+  if(read_pipeline != NULL){
+    gst_element_seek(read_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
+		     GST_SEEK_TYPE_SET, time_nanoseconds,
+		     GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+  }
 
   if(write_pipeline != NULL){
     gst_element_seek(write_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,

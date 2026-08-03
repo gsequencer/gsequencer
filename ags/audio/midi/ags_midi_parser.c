@@ -2093,6 +2093,23 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	}
 
 	if(!success &&
+	   offset + retval + 1 < midi_parser->file_length /* &&
+							     current_smf_offset + retval + 4 < current_smf_length */){
+	  
+	  if(ags_midi_util_is_sequencer_meta_event(midi_util,
+						   buffer + offset + delta_time_varlength_size)){
+	    current_message = ags_midi_parser_sequencer_meta_event(midi_parser, 0x7f);
+
+	    xmlAddChild(current,
+			current_message);	    
+	    
+	    midi_parser->current_node = current_message;
+	      
+	    success = TRUE;
+	  }
+	}
+
+	if(!success &&
 	   offset + retval + 7 < midi_parser->file_length /* &&
 							     current_smf_offset + retval + 5 < current_smf_length */){
 	   
@@ -3559,8 +3576,9 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
 
   gchar *str;
 
-  guint len, id, data;
-
+  guint len, data, first_data;
+  guint i;
+  
 #ifdef AGS_DEBUG
   g_message("sequencer meta event");
 #endif
@@ -3572,23 +3590,34 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
   ags_midi_parser_midi_getc(midi_parser); // meta type
 
   node = xmlNewNode(NULL,
-		    "midi-meta-event");
+		    "midi-sequencer-meta-event");
 
   len = ags_midi_parser_midi_getc(midi_parser);
-  id = ags_midi_parser_midi_getc(midi_parser);
-  data = ags_midi_parser_midi_getc(midi_parser);
+  
+  if(len > 0){
+    data =
+      first_data = ags_midi_parser_midi_getc(midi_parser);
 
+    for(i = 1; i < len; i++){
+      if(first_data == 0 &&
+	 i < 4){
+	guint tmp_data;
+	
+	tmp_data = ags_midi_parser_midi_getc(midi_parser);
+	data = data | (tmp_data << i);
+      }else{
+	ags_midi_parser_midi_getc(midi_parser);
+      }
+    }
+  }
+  
   xmlNewProp(node,
 	     "length",
-	     g_strdup_printf("%d", len));
-
-  xmlNewProp(node,
-	     "id",
-	     g_strdup_printf("%d", id));
+	     g_strdup_printf("%u", len));
 
   xmlNewProp(node,
 	     "data",
-	     g_strdup_printf("%d", data));
+	     g_strdup_printf("%u", data));
 
   return(node);
 }
@@ -3602,7 +3631,7 @@ ags_midi_parser_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type
   
   g_object_ref((GObject *) midi_parser);
   g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[META_EVENT], 0,
+		midi_parser_signals[SEQUENCER_META_EVENT], 0,
 		meta_type,
 		&node);
   g_object_unref((GObject *) midi_parser);
