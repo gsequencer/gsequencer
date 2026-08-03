@@ -229,7 +229,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   midi_parser->meta_misc = ags_midi_parser_real_meta_misc;
 
-  midi_parser->midi_channel_prefix = ags_midi_parser_midi_channel_prefix;
+  midi_parser->midi_channel_prefix = ags_midi_parser_real_midi_channel_prefix;
 
   midi_parser->quarter_frame = ags_midi_parser_real_quarter_frame;
   midi_parser->song_position = ags_midi_parser_real_song_position;
@@ -3602,7 +3602,7 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
 	guint tmp_data;
 	
 	tmp_data = ags_midi_parser_midi_getc(midi_parser);
-	data = data | (tmp_data << i);
+	data = data | (tmp_data << (i * 8));
       }else{
 	ags_midi_parser_midi_getc(midi_parser);
       }

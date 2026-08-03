@@ -1,3 +1,10 @@
+ags (9.1.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_midi_smf_util_put_sequencer_meta_event_fixed()
+	* implemented ags_midi_smf_util_get_sequencer_meta_event_fixed()
+	* fixed AgsMidiParser::midi-channel-prefix() signal
+
 ags (9.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

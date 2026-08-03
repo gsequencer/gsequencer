@@ -2400,7 +2400,10 @@ ags_midi_smf_util_put_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
 					   gint delta_time,
 					   gint len, gint id, gint data)
 {
+  guint first_data;
+  guint len_varlength_size;
   guint delta_time_size;
+  guint i;
 
   if(buffer == NULL){
     return;
@@ -2418,27 +2421,88 @@ ags_midi_smf_util_put_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
   buffer[delta_time_size + 1] = 0x7f;
 
   /* length */
-  buffer[delta_time_size + 2] = 0xff & len;
+  len_varlength_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, len);
 
-  /* id */
-  buffer[delta_time_size + 3] = 0xff & id;
-  
-  /* data */
-  switch(len){
-  case 3:
-    {
-      buffer[delta_time_size + 6] = ((0xff << 16) & data) >> 16;
-    }
-  case 2:
-    {
-      buffer[delta_time_size + 4] = 0xff & data;
-      buffer[delta_time_size + 5] = ((0xff << 8) & data) >> 8;
+  ags_midi_smf_util_put_varlength(midi_smf_util, (buffer + delta_time_size + 2),
+				  len);
+
+  if(len > 0){
+    buffer[delta_time_size + 2 + len_varlength_size] = 
+      first_data = 0xff & (id);
+    
+    for(i = 1; i < len; i++){
+      if(first_data == 0 &&
+	 i < 4){
+	buffer[delta_time_size + 2 + len_varlength_size + i] = 0xff & (id >> 8);
+      }else{
+	//actual data goes here
+      }
     }
   }
 }
 
 /**
- * ags_midi_smf_util_get_sequencer_meta_event:
+ * ags_midi_smf_util_put_sequencer_meta_event_fixed:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
+ * @delta_time: timing information
+ * @len: the length of data
+ * @id: the manufacturer id
+ * @data: the data including manufacturer id
+ * 
+ * Put sequencer meta event.
+ * 
+ * Since: 9.1.1
+ */
+void
+ags_midi_smf_util_put_sequencer_meta_event_fixed(AgsMidiSmfUtil *midi_smf_util,
+						 guchar *buffer,
+						 gint delta_time,
+						 gint len, gint id, guchar *data)
+{ 
+  guint first_data;
+  guint len_varlength_size;
+  guint delta_time_size;
+  guint i;
+
+  if(buffer == NULL){
+    return;
+  }
+  
+  /* delta time */
+  delta_time_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, delta_time);
+  ags_midi_smf_util_put_varlength(midi_smf_util, buffer,
+				  delta_time);
+
+  /* status byte */
+  buffer[delta_time_size] = 0xff;
+
+  /* type */
+  buffer[delta_time_size + 1] = 0x7f;
+
+  /* length */
+  len_varlength_size = ags_midi_smf_util_get_varlength_size(midi_smf_util, len);
+
+  ags_midi_smf_util_put_varlength(midi_smf_util, (buffer + delta_time_size + 2),
+				  len);
+
+  if(len > 0){
+    buffer[delta_time_size + 2 + len_varlength_size] = 
+      first_data = 0xff & (id);
+    
+    for(i = 1; i < len; i++){
+      if(first_data == 0 &&
+	 i < 4){
+	buffer[delta_time_size + 2 + len_varlength_size + i] = 0xff & (id >> 8);
+      }else{
+	buffer[delta_time_size + 2 + len_varlength_size + i] = data[i];
+      }
+    }
+  }
+}
+
+/**
+ * ags_midi_smf_util_get_sequencer_meta_event_fixed:
  * @midi_smf_util: the #AgsMidiSmfUtil-struct
  * @buffer: the MIDI buffer
  * @delta_time: (out): the return location of timing information
@@ -2450,16 +2514,22 @@ ags_midi_smf_util_put_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
  * 
  * Returns: the number of bytes read.
  * 
- * Since: 6.0.0
+ * Since: 9.1.1
  */
 guint
-ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
-					   guchar *buffer,
-					   gint *delta_time,
-					   gint *len, gint *id, gint *data)
+ags_midi_smf_util_get_sequencer_meta_event_fixed(AgsMidiSmfUtil *midi_smf_util,
+						 guchar *buffer,
+						 gint *delta_time,
+						 gint *len, gint *id, guchar **data)
 {
+  guchar *local_data;
+  
   gint local_delta_time;
   guint delta_time_size;
+  gint local_len;
+  guint local_len_varlength_size;
+  gint local_id;
+  guint i;
   
   if(buffer == NULL){
     if(delta_time != NULL){
@@ -2482,6 +2552,8 @@ ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
   }
   
   /* delta time */
+  local_delta_time = 0;
+  
   delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
 						    &local_delta_time);
   
@@ -2489,31 +2561,50 @@ ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
     *delta_time = local_delta_time;
   }
 
-  if(len != NULL){
-    len[0] = buffer[delta_time_size + 2];
-  }
-
-  if(id != NULL){
-    *id = buffer[delta_time_size + 3];
-  }
-
-  if(data != NULL){
-    *data = 0;
+  local_len = 0;
+  
+  local_len_varlength_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer + delta_time_size + 2,
+							     &local_len);
     
-    switch(buffer[delta_time_size + 2]){
-    case 3:
-      {
-	*data |= (buffer[delta_time_size + 6] << 16);
-      }
-    case 2:
-      {
-	*data |= buffer[delta_time_size + 4];
-	*data |= (buffer[delta_time_size + 5] << 8);
+  if(len != NULL){
+    len[0] = local_len;
+  }
+
+  local_data = g_malloc(local_len * sizeof(guchar));
+  
+  local_id = 0;
+
+  if(local_len > 0){
+    local_id =
+      local_data[0] = buffer[delta_time_size + 2 + local_len_varlength_size];
+    
+    if(id != NULL){
+      id[0] = local_id;
+    }
+
+    for(i = 1; i < local_len; i++){
+      if(buffer[delta_time_size + 2 + local_len_varlength_size] == 0 &&
+	 i < 4){
+	local_data[0] = buffer[delta_time_size + 2 + local_len_varlength_size + i];
+	
+	local_id = local_id | ((buffer[delta_time_size + 2 + local_len_varlength_size + i]) << 8);
+
+	if(id != NULL){
+	  id[0] = local_id;
+	}
+      }else{
+	local_data[0] = buffer[delta_time_size + 2 + local_len_varlength_size + i];
       }
     }
   }
 
-  return(delta_time_size + buffer[delta_time_size + 2] + 3);
+  if(data != NULL){
+    data[0] = local_data;
+  }else{
+    g_free(local_data);
+  }
+  
+  return(delta_time_size + 2 + local_len_varlength_size + local_len);
 }
 
 /**
