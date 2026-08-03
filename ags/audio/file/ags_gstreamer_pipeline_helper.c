@@ -257,7 +257,7 @@ ags_gstreamer_pipeline_helper_create_ro_pipeline(AgsGstreamerFile *gstreamer_fil
 
   g_free(filename);
   
-  return(read_pipeline);
+  return((GObject *) read_pipeline);
 }
 
 GObject*
@@ -485,5 +485,5 @@ ags_gstreamer_pipeline_helper_create_rw_pipeline(AgsGstreamerFile *gstreamer_fil
 
   g_free(filename);
   
-  return(write_pipeline);
+  return((GObject *) write_pipeline);
 }

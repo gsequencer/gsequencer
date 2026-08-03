@@ -3593,6 +3593,7 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
 		    "midi-sequencer-meta-event");
 
   len = ags_midi_parser_midi_getc(midi_parser);
+  data = 0;
   
   if(len > 0){
     data =

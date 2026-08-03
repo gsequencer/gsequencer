@@ -173,6 +173,8 @@ ags_gstreamer_pipeline_manager_create_ro_pipeline(AgsGstreamerPipelineManager *g
   
   _Atomic gboolean create_pipeline_completed;
 
+  g_return_if_fail(AGS_IS_GSTREAMER_FILE(gstreamer_file));
+  
   ags_atomic_boolean_set(&create_pipeline_completed,
 			 FALSE);	
   
@@ -235,7 +237,7 @@ ags_gstreamer_pipeline_manager_create_ro_pipeline(AgsGstreamerPipelineManager *g
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
   }else{
-    ags_gstreamer_pipeline_helper_create_ro_pipeline(gstreamer_file);
+    ags_gstreamer_pipeline_helper_create_ro_pipeline((AgsGstreamerFile *) gstreamer_file);
     
     ags_atomic_boolean_set(&create_pipeline_completed,
 			   TRUE);
@@ -256,6 +258,8 @@ ags_gstreamer_pipeline_manager_create_rw_pipeline(AgsGstreamerPipelineManager *g
   
   _Atomic gboolean create_pipeline_completed;
 
+  g_return_if_fail(AGS_IS_GSTREAMER_FILE(gstreamer_file));
+  
   ags_atomic_boolean_set(&create_pipeline_completed,
 			 FALSE);	
   
@@ -318,7 +322,7 @@ ags_gstreamer_pipeline_manager_create_rw_pipeline(AgsGstreamerPipelineManager *g
     g_list_free_full(start_message_queue,
 		     (GDestroyNotify) g_object_unref);
   }else{
-    ags_gstreamer_pipeline_helper_create_rw_pipeline(gstreamer_file);
+    ags_gstreamer_pipeline_helper_create_rw_pipeline((AgsGstreamerFile *) gstreamer_file);
     
     ags_atomic_boolean_set(&create_pipeline_completed,
 			   TRUE);
