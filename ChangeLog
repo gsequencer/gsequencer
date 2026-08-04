@@ -1,3 +1,16 @@
+ags (9.0.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_raven_synth_disconnect() signal details of oscillator controls
+
+ags (9.0.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiParser::meta-misc() class function pointer
+	* fixed ags_midi_parser_meta_misc() to use varlength data length
+	* fixed ags_midi_parser_parse_full() to check EOF
+	* added content to chap10.xml of developers book, additional synthesizers of ags-fx
+
 ags (9.0.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

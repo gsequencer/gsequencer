@@ -398,8 +398,8 @@ main(int argc, char **argv)
   putenv(g_strdup_printf("GTK_PATH=%s/Contents/Resources", app_dir));
   putenv(g_strdup_printf("GTK_IM_MODULE_FILE=%s/Contents/Resourcess/lib/gtk-3.0/3.0.0/immodules.cache", app_dir));
 
-  putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s/lib/gstreamer-1.0", app_dir));
-  putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s/libexec/gstreamer-1.0/gst-plugin-scanner", app_dir));
+  putenv(g_strdup_printf("GST_PLUGIN_SYSTEM_PATH=%s/Contents/Resources/lib/gstreamer-1.0", app_dir));
+  putenv(g_strdup_printf("GST_PLUGIN_SCANNER=%s/Contents/MacOS/%s.gst-plugin-scanner", app_dir, AGS_DEFAULT_BUNDLE_ID));
 
   putenv(g_strdup_printf("AGS_ANIMATION_FILENAME=%s/Contents/Resources/gsequencer-800x450.png", app_dir));
   
