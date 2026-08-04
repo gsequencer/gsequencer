@@ -8,10 +8,10 @@
 # Process this file with autoconf to produce a configure script.
 
 LT_CURRENT=9
-LT_REVISION=0
-LT_AGE=17
+LT_REVISION=1
+LT_AGE=1
 
-m4_define([ags_version], [9.0.17])
+m4_define([ags_version], [9.1.1])
 
 AC_PREREQ([2.69])
 AC_INIT([gsequencer],m4_defn([ags_version]),[jkraehemann@gmail.com])
@@ -631,53 +631,45 @@ AS_IF([test "x$enable_single_docdir" != xno],
       [AC_MSG_NOTICE([single documentation directory disabled])])
 AM_CONDITIONAL([AGS_WITH_SINGLE_DOCDIR], [test "x$enable_single_docdir" == xyes])
 
+LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE="/dev/null"
+
+LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE="/dev/null"
+      
+LIBAGS_AUDIO_LIBINSTPATCH_THREAD_XINCLUDE="/dev/null"
+
+LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE="/dev/null"
+
+LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE="/dev/null"
+
+LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE="/dev/null"
+
 AS_IF([test "x$enable_libinstpatch" != xno],
       [PKG_CHECK_MODULES([LIBINSTPATCH], [libinstpatch-1.0 >= 1.0])
       AC_SUBST(LIBINSTPATCH_CFLAGS)
       AC_SUBST(LIBINSTPATCH_LIBS)
 
-LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE="      <xi:include href=\"xml/ags_ipatch.xml\"/>\\
-      <xi:include href=\"xml/ags_ipatch_gig_reader.xml\"/>\\
-      <xi:include href=\"xml/ags_ipatch_sf2_reader.xml\"/>\\
-      <xi:include href=\"xml/ags_ipatch_dls2_reader.xml\"/>\\
-      <xi:include href=\"xml/ags_ipatch_sample.xml\"/>"
+LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_libinstpatch_file.xml"
 
-LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE="      <xi:include href=\"xml/ags_sf2_synth_generator.xml\"/>\\
-      <xi:include href=\"xml/ags_sf2_synth_util.xml\"/>"
+LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_libinstpatch_sf2.xml"
       
-LIBAGS_AUDIO_LIBINSTPATCH_THREAD_XINCLUDE="      <xi:include href=\"xml/ags_sf2_loader.xml\"/>\\
-      <xi:include href=\"xml/ags_sf2_midi_locale_loader.xml\"/>"
+LIBAGS_AUDIO_LIBINSTPATCH_THREAD_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_libinstpatch_thread.xml"
 
-LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE="      <xi:include href=\"xml/ags_fx_sf2_synth_audio.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_sf2_synth_audio_processor.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_sf2_synth_audio_signal.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_sf2_synth_channel.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_sf2_synth_channel_processor.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_sf2_synth_recycling.xml\"/>"
+LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_libinstpatch_fx.xml"
 
-LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE="      <xi:include href=\"xml/ags_apply_sf2_synth.xml\"/>\\
-      <xi:include href=\"xml/ags_apply_sf2_midi_locale.xml\"/>\\
-      <xi:include href=\"xml/ags_open_sf2_instrument.xml\"/>\\
-      <xi:include href=\"xml/ags_open_sf2_sample.xml\"/>"
+LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_libinstpatch_task.xml"
 
-LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_ffplayer.xml\"/>\\
-      <xi:include href=\"xml/ags_ffplayer_bridge.xml\"/>\\
-      <xi:include href=\"xml/ags_ffplayer_bulk_input.xml\"/>\\
-      <xi:include href=\"xml/ags_ffplayer_callbacks.xml\"/>\\
-      <xi:include href=\"xml/ags_ffplayer_input_line.xml\"/>\\
-      <xi:include href=\"xml/ags_ffplayer_input_line_callbacks.xml\"/>\\
-      <xi:include href=\"xml/ags_ffplayer_input_pad.xml\"/>\\
-      <xi:include href=\"xml/ags_sf2_synth.xml\"/>\\
-      <xi:include href=\"xml/ags_sf2_synth_callbacks.xml\"/>"
+LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE="$srcdir/docs/reference/libgsequencer/libgsequencer_libinstpatch_machine.xml"
 
-      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_TRHEAD_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE)
-      AC_SUBST(LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE)
       AC_DEFINE([AGS_WITH_LIBINSTPATCH], [1], [Disable if you don't want libinstpatch])],
       [AC_MSG_NOTICE([libinstpatch disabled])])
+
+AC_SUBST_FILE(LIBAGS_AUDIO_LIBINSTPATCH_FILE_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_LIBINSTPATCH_SF2_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_LIBINSTPATCH_THREAD_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_LIBINSTPATCH_FX_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_LIBINSTPATCH_TASK_XINCLUDE)
+AC_SUBST_FILE(LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE)
+
 AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 
 WITH_VST3=0
@@ -697,39 +689,28 @@ LIBAGS_VST3_LIBS="-lbase -lpluginterfaces -lsdk -lsdk_common -lsdk_hosting"
 echo "variable \$LIBAGS_VST3_LIBS is set to: $LIBAGS_VST3_LIBS"
 fi
 
+LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE="/dev/null"
+
+LIBAGS_AUDIO_VST3_FX_XINCLUDE="/dev/null"
+
+LIBAGS_AUDIO_VST3_TASK_XINCLUDE="/dev/null"
+
+LIBGSEQUENCER_VST3_BROWSER_XINCLUDE="/dev/null"
+
+LIBGSEQUENCER_VST3_MACHINE_XINCLUDE="/dev/null"
+
 AS_IF([test "x$enable_vst3" != xno],
       [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
-LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE="    <chapter id=\"plugin-vst3\">\\
-      <title>VST3 plugins</title>\\
-      <para>The VST3 plugin objects.</para>\\
-      <xi:include href=\"xml/ags_vst3_conversion.xml\"/>\\
-      <xi:include href=\"xml/ags_vst3_plugin.xml\"/>\\
-      <xi:include href=\"xml/ags_vst3_manager.xml\"/>\\
-    </chapter>"
+LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_vst3_plugin.xml"
 
-LIBAGS_AUDIO_VST3_FX_XINCLUDE="      <xi:include href=\"xml/ags_fx_vst3_audio.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_vst3_audio_processor.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_vst3_audio_signal.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_vst3_channel.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_vst3_channel_processor.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_vst3_recycling.xml\"/>"
+LIBAGS_AUDIO_VST3_FX_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_vst3_fx.xml"
 
-LIBAGS_AUDIO_VST3_TASK_XINCLUDE="      <xi:include href=\"xml/ags_instantiate_vst3_plugin.xml\"/>\\
-      <xi:include href=\"xml/ags_write_vst3_port.xml\"/>"
+LIBAGS_AUDIO_VST3_TASK_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_vst3_task.xml"
 
-LIBGSEQUENCER_VST3_BROWSER_XINCLUDE="      <xi:include href=\"xml/ags_vst3_browser.xml\"/>\\
-      <xi:include href=\"xml/ags_vst3_browser_callbacks.xml\"/>"
+LIBGSEQUENCER_VST3_BROWSER_XINCLUDE="$srcdir/docs/reference/libgsequencer/libgsequencer_vst3_browser.xml"
 
-LIBGSEQUENCER_VST3_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live_vst3_bridge.xml\"/>\\
-      <xi:include href=\"xml/ags_live_vst3_bridge_callbacks.xml\"/>\\
-      <xi:include href=\"xml/ags_vst3_bridge.xml\"/>\\
-      <xi:include href=\"xml/ags_vst3_bridge_callbacks.xml\"/>"
+LIBGSEQUENCER_VST3_MACHINE_XINCLUDE="$srcdir/docs/reference/libgsequencer/libgsequencer_vst3_machine.xml"
 
-      AC_SUBST(LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_VST3_FX_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_VST3_TASK_XINCLUDE)
-      AC_SUBST(LIBGSEQUENCER_VST3_BROWSER_XINCLUDE)
-      AC_SUBST(LIBGSEQUENCER_VST3_MACHINE_XINCLUDE)
       AC_SUBST(LIBAGS_VST3_RELEASE_TYPE)
       AC_SUBST(LIBAGS_VST3_CPPFLAGS)
       AC_SUBST(LIBAGS_VST3_CXXFLAGS)
@@ -738,6 +719,13 @@ LIBGSEQUENCER_VST3_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live_vst3_
       AC_SUBST(LIBAGS_VST3_LIBS)
       AC_MSG_NOTICE([VST3 enabled])],
       [AC_MSG_NOTICE([VST3 disabled])])
+
+AC_SUBST_FILE(LIBAGS_AUDIO_VST3_PLUGIN_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_VST3_FX_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_VST3_TASK_XINCLUDE)
+AC_SUBST_FILE(LIBGSEQUENCER_VST3_BROWSER_XINCLUDE)
+AC_SUBST_FILE(LIBGSEQUENCER_VST3_MACHINE_XINCLUDE)
+
 AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
 
 WITH_AUDIO_UNIT_PLUGINS=0
@@ -757,44 +745,31 @@ LIBAGS_AUDIO_UNIT_PLUGINS_LIBS="-framework Foundation -framework CoreFoundation 
 echo "variable \$LIBAGS_AUDIO_UNIT_PLUGINS_LIBS is set to: $LIBAGS_AUDIO_UNIT_PLUGINS_LIBS"
 fi
 
+LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE="/dev/null"
+
+LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE="/dev/null"
+
+LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE="/dev/null"
+
+LIBGSEQUENCER_AUDIO_UNIT_BROWSER_XINCLUDE="/dev/null"
+
+LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE="/dev/null"
+
 AS_IF([test "x$enable_audio_unit_plugins" != xno],
       [AC_DEFINE([AGS_WITH_AUDIO_UNIT_PLUGINS], [1], [AUDIO_UNIT_PLUGINS enabled])
-LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE="    <chapter id=\"plugin-audio_unit\">\\
-      <title>AUDIO_UNIT plugins</title>\\
-      <para>The AUDIO_UNIT plugin objects.</para>\\
-      <xi:include href=\"xml/ags_audio_unit_conversion.xml\"/>\\
-      <xi:include href=\"xml/ags_audio_unit_plugin.xml\"/>\\
-      <xi:include href=\"xml/ags_audio_unit_manager.xml\"/>\\
-      <xi:include href=\"xml/ags_audio_unit_new_queue.xml\"/>\\
-      <xi:include href=\"xml/ags_audio_unit_new_queue_manager.xml\"/>\\
-    </chapter>"
+LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_audio_unit_plugin.xml"
 
-LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE="      <xi:include href=\"xml/ags_fx_audio_unit_audio.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_audio_unit_audio_processor.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_audio_unit_audio_signal.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_audio_unit_channel.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_audio_unit_channel_processor.xml\"/>\\
-      <xi:include href=\"xml/ags_fx_audio_unit_recycling.xml\"/>"
+LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_audio_unit_fx.xml"
 
-LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE="      <xi:include href=\"xml/ags_instantiate_audio_unit_plugin.xml\"/>\\
-      <xi:include href=\"xml/ags_write_audio_unit_port.xml\"/>"
+LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE="$srcdir/docs/reference/libags-audio/libags_audio_audio_unit_task.xml"
 
-LIBGSEQUENCER_AUDIO_UNIT_BROWSER_XINCLUDE="      <xi:include href=\"xml/ags_audio_unit_browser.xml\"/>\\
-      <xi:include href=\"xml/ags_audio_unit_browser_callbacks.xml\"/>"
+LIBGSEQUENCER_AUDIO_UNIT_BROWSER_XINCLUDE="$srcdir/docs/reference/libgsequencer/libgsequencer_audio_unit_browser.xml"
 
-LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live_audio_unit_bridge.xml\"/>\\
-      <xi:include href=\"xml/ags_live_audio_unit_bridge_callbacks.xml\"/>\\
-      <xi:include href=\"xml/ags_audio_unit_bridge.xml\"/>\\
-      <xi:include href=\"xml/ags_audio_unit_bridge_callbacks.xml\"/>"
+LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE="$srcdir/docs/reference/libgsequencer/libgsequencer_audio_unit_machine.xml"
 
       AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CFLAGS])
       AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_CXXFLAGS])
       AC_SUBST([GSEQUENCER_AUDIO_UNIT_TEST_LDFLAGS])
-      AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE)
-      AC_SUBST(LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE)
-      AC_SUBST(LIBGSEQUENCER_AUDIO_UNIT_BROWSER_XINCLUDE)
-      AC_SUBST(LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE)
       AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_CPPFLAGS)
       AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_OBJCFLAGS)
       AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_LDFLAGS)
@@ -802,6 +777,13 @@ LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE="      <xi:include href=\"xml/ags_live
       AC_SUBST(LIBAGS_AUDIO_UNIT_PLUGINS_LIBS)
       AC_MSG_NOTICE([AUDIO_UNIT_PLUGINS enabled])],
       [AC_MSG_NOTICE([AUDIO_UNIT_PLUGINS disabled])])
+
+AC_SUBST_FILE(LIBAGS_AUDIO_AUDIO_UNIT_PLUGIN_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_AUDIO_UNIT_FX_XINCLUDE)
+AC_SUBST_FILE(LIBAGS_AUDIO_AUDIO_UNIT_TASK_XINCLUDE)
+AC_SUBST_FILE(LIBGSEQUENCER_AUDIO_UNIT_BROWSER_XINCLUDE)
+AC_SUBST_FILE(LIBGSEQUENCER_AUDIO_UNIT_MACHINE_XINCLUDE)
+
 AM_CONDITIONAL([WITH_AUDIO_UNIT_PLUGINS], [test "x$enable_audio_unit_plugins" == xyes])
 
 AM_CONDITIONAL([WITH_MIDI2], [test "x$enable_midi2" == xyes])

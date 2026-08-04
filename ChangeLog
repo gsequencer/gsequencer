@@ -1,7 +1,57 @@
+ags (9.1.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_midi_smf_util_put_sequencer_meta_event_fixed()
+	* implemented ags_midi_smf_util_get_sequencer_meta_event_fixed()
+	* fixed AgsMidiParser::midi-channel-prefix() signal
+
 ags (9.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented abyss synth
+	* implemented AgsGstreamerPipelineManager
+	* fixed AgsMidiParser::sequencer-meta-event() signal
+	* fixed ags_sound_resource_read_wave() premature end of file
+
+ags (9.0.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_raven_synth_disconnect() signal details of oscillator controls
+
+ags (9.0.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiParser::meta-misc() class function pointer
+	* fixed ags_midi_parser_meta_misc() to use varlength data length
+	* fixed ags_midi_parser_parse_full() to check EOF
+	* added content to chap10.xml of developers book, additional synthesizers of ags-fx
+
+ags (9.0.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* pot
+
+ags (9.0.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed conf bug with audio preferences see AgsSoundServer::register-soundcard-with-params() implementations
+	* updated docs/listings to use gio/gio.h and g_application_new()
+
+ags (9.0.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong parameter count to functions
+
+ags (9.0.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved configure.ac to make use of AC_SUBST_FILE applying to gtk-doc
+	* fixed gtk-doc missing synths in libgsequencer.xml.in
+
+ags (9.0.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags/audio/ags_recall_util.h
+	* fixed conflicting macro name and enum flag in ags/audio/ags_recall.h
 
 ags (9.0.17)
 

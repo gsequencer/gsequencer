@@ -1,0 +1,9 @@
+      <xi:include href="xml/ags_ffplayer.xml"/>
+      <xi:include href="xml/ags_ffplayer_bridge.xml"/>
+      <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
+      <xi:include href="xml/ags_ffplayer_callbacks.xml"/>
+      <xi:include href="xml/ags_ffplayer_input_line.xml"/>
+      <xi:include href="xml/ags_ffplayer_input_line_callbacks.xml"/>
+      <xi:include href="xml/ags_ffplayer_input_pad.xml"/>
+      <xi:include href="xml/ags_sf2_synth.xml"/>
+      <xi:include href="xml/ags_sf2_synth_callbacks.xml"/>

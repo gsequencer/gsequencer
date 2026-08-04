@@ -13,40 +13,41 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+void my_application_on_activate(GApplication *app, gpointer user_data);
 void setup_callback(AgsApplicationContext *application_context, gpointer data);
 
-AgsAudio* setup_master(AgsApplicationContext *application_context);
-AgsAudio* setup_slave(AgsApplicationContext *application_context);
+AgsAudio* setup_main_mix(AgsApplicationContext *application_context);
+AgsAudio* setup_sequencer_source(AgsApplicationContext *application_context);
 
-#define DEFAULT_CONFIG "[generic]\n"			\
-  "autosave-thread=false\n"				\
-  "simple-file=true\n"					\
-  "disable-feature=experimental\n"			\
-  "segmentation=4/4\n"					\
-  "\n"							\
-  "[thread]\n"						\
-  "model=super-threaded\n"				\
-  "super-threaded-scope=channel\n"			\
-  "lock-global=ags-thread\n"				\
-  "lock-parent=ags-recycling-thread\n"			\
-  "\n"							\
-  "[soundcard]\n"					\
-  "backend=alsa\n"					\
-  "device=default\n"					\
-  "samplerate=48000\n"					\
-  "buffer-size=1024\n"					\
-  "pcm-channels=2\n"					\
-  "dsp-channels=2\n"					\
-  "format=16\n"						\
-  "\n"							\
-  "[recall]\n"						\
-  "auto-sense=true\n"					\
+#define DEFAULT_CONFIG "[generic]\n"		\
+  "autosave-thread=false\n"			\
+  "simple-file=true\n"				\
+  "disable-feature=experimental\n"		\
+  "segmentation=4/4\n"				\
+  "\n"						\
+  "[thread]\n"					\
+  "model=super-threaded\n"			\
+  "super-threaded-scope=channel\n"		\
+  "lock-global=ags-thread\n"			\
+  "lock-parent=ags-recycling-thread\n"		\
+  "\n"						\
+  "[soundcard]\n"				\
+  "backend=alsa\n"				\
+  "device=default\n"				\
+  "samplerate=48000\n"				\
+  "buffer-size=1024\n"				\
+  "pcm-channels=2\n"				\
+  "dsp-channels=2\n"				\
+  "format=16\n"					\
+  "\n"						\
+  "[recall]\n"					\
+  "auto-sense=true\n"				\
   "\n"
 
 
 void setup_callback(AgsApplicationContext *application_context, gpointer data)
 {
-  AgsAudio *master, *slave;
+  AgsAudio *main_mix, *sequencer_source;
   AgsChannel *start_output, *output;
   AgsChannel *start_input, *input;
 
@@ -63,18 +64,18 @@ void setup_callback(AgsApplicationContext *application_context, gpointer data)
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* setup audio tree */
-  master = setup_master(application_context);
-  slave = setup_slave(application_context);
+  main_mix = setup_main_mix(application_context);
+  sequencer_source = setup_sequencer_source(application_context);
 
   /* set link */
   start_input = NULL;
   start_output = NULL;
   
-  g_object_get(master,
+  g_object_get(main_mix,
 	       "input", &start_input,
 	       NULL);
 
-  g_object_get(slave,
+  g_object_get(sequencer_source,
 	       "input", &start_output,
 	       NULL);
   
@@ -118,7 +119,7 @@ void setup_callback(AgsApplicationContext *application_context, gpointer data)
     input = next;
   }
 
-  start_audio = ags_start_audio_new(slave,
+  start_audio = ags_start_audio_new(sequencer_source,
 				    AGS_SOUND_SCOPE_SEQUENCER);
 
   /* launch task */
@@ -143,7 +144,7 @@ void setup_callback(AgsApplicationContext *application_context, gpointer data)
 }
 
 AgsAudio*
-setup_master(AgsApplicationContext *application_context)
+setup_main_mix(AgsApplicationContext *application_context)
 {
   AgsAudio *audio;
   AgsChannel *channel;
@@ -164,7 +165,7 @@ setup_master(AgsApplicationContext *application_context)
 
   soundcard = start_list->data;
 
-  /* create master playback */
+  /* create main mix playback */
   audio = ags_audio_new(soundcard);
 
   n_audio_channels = 2;
@@ -263,7 +264,7 @@ setup_master(AgsApplicationContext *application_context)
 }
 
 AgsAudio*
-setup_slave(AgsApplicationContext *application_context)
+setup_sequencer_source(AgsApplicationContext *application_context)
 {
   AgsAudio *audio;
   AgsPlaybackDomain *playback_domain;
@@ -301,7 +302,7 @@ setup_slave(AgsApplicationContext *application_context)
 
   soundcard = start_list->data;
 
-  /* create master playback */
+  /* create main mix playback */
   audio = ags_audio_new(soundcard);
   ags_audio_set_flags(audio,
 		      (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
@@ -488,8 +489,8 @@ setup_slave(AgsApplicationContext *application_context)
   return(audio);
 }
 
-int
-main(int argc, char **argv)
+void
+my_application_on_activate(GApplication *app, gpointer user_data)
 {
   AgsApplicationContext *application_context;
   AgsConfig *config;
@@ -499,19 +500,29 @@ main(int argc, char **argv)
 			    DEFAULT_CONFIG,
 			    strlen(DEFAULT_CONFIG));
 
-  /* create application context */
-  application_context = ags_audio_application_context_new();
-  g_object_ref(application_context);
-  
+  application_context = (AgsApplicationContext *) ags_audio_application_context_new();
   g_signal_connect_after(application_context, "setup",
 			 G_CALLBACK(setup_callback), NULL);
   
   ags_application_context_prepare(application_context);
   ags_application_context_setup(application_context);
-  
-  /* main loop run */
-  g_main_loop_run(g_main_loop_new(g_main_context_default(),
-				  TRUE));
+}
 
-  return(0);
+int
+main(int argc, char **argv)
+{
+  GApplication *app;
+  int status;
+
+  app = g_application_new("org.nongnu.gsequencer.my-application",
+			  G_APPLICATION_DEFAULT_FLAGS);
+
+  g_signal_connect(app, "activate",
+		   G_CALLBACK(my_application_on_activate), NULL);
+
+  status = g_application_run(app, argc, argv);
+
+  g_object_unref(app);
+
+  return(status);
 }

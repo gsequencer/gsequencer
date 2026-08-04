@@ -295,6 +295,7 @@
       <xi:include href="xml/ags_pattern_box.xml"/>
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
       <xi:include href="xml/ags_pitch_sampler.xml"/>
+      <xi:include href="xml/ags_sfz_synth.xml"/>
       <xi:include href="xml/ags_spectrometer.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
@@ -312,7 +313,15 @@
       <xi:include href="xml/ags_hybrid_synth_callbacks.xml"/>
       <xi:include href="xml/ags_hybrid_fm_synth.xml"/>
       <xi:include href="xml/ags_hybrid_fm_synth_callbacks.xml"/>
-
+      <xi:include href="xml/ags_stargazer_synth.xml"/>
+      <xi:include href="xml/ags_stargazer_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_quantum_synth.xml"/>
+      <xi:include href="xml/ags_quantum_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_raven_synth.xml"/>
+      <xi:include href="xml/ags_raven_synth_callbacks.xml"/>
+      <xi:include href="xml/ags_modular_synth.xml"/>
+      <xi:include href="xml/ags_modular_synth_callbacks.xml"/>
+      
 @LIBGSEQUENCER_LIBINSTPATCH_MACHINE_XINCLUDE@
 
 @LIBGSEQUENCER_VST3_MACHINE_XINCLUDE@

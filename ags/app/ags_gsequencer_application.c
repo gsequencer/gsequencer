@@ -46,6 +46,8 @@ static void ags_gsequencer_application_open(GApplication *application,
 					    gint n_files,
 					    const gchar *hint);
 
+static void ags_gsequencer_application_check_message_callback(GObject *application_context, AgsGSequencerApplication *gsequencer_app);
+
 static gpointer ags_gsequencer_application_parent_class = NULL;
 
 GType
@@ -185,6 +187,9 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   application_context = 
     ags_application_context = (AgsApplicationContext *) ags_gsequencer_application_context_new();
   g_object_ref(application_context);
+  
+  g_signal_connect(application_context, "check-message",
+		   G_CALLBACK(ags_gsequencer_application_check_message_callback), gsequencer_app);
   
   /* check /etc/papersize */
   paper_conf = g_getenv("PAPERCONF");
@@ -1170,6 +1175,111 @@ ags_gsequencer_application_refresh_window_menu(AgsGSequencerApplication *app)
 		       -1,
 		       item);
   }
+#endif
+}
+
+void
+ags_gsequencer_application_check_message_callback(GObject *application_context, AgsGSequencerApplication *gsequencer_app)
+{
+#ifdef AGS_WITH_GSTREAMER
+  AgsGstreamerPipelineManager *gst_pipeline_manager;
+  
+  AgsMessageDelivery *message_delivery;
+
+  GList *start_message_envelope, *message_envelope;
+
+  message_delivery = ags_message_delivery_get_instance();
+  
+  gst_pipeline_manager = ags_gstreamer_pipeline_manager_get_instance();
+  
+  message_envelope =
+    start_message_envelope = ags_message_delivery_find_sender(message_delivery,
+							      "libgsequencer",
+							      (GObject *) gst_pipeline_manager);
+  
+  while(message_envelope != NULL){
+    xmlNode *root_node;
+
+    xmlChar *method;
+
+    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message_envelope->data)->doc);
+      
+    if(!xmlStrncmp(root_node->name,
+		   BAD_CAST "ags-command",
+		   12)){
+      method = xmlGetProp(root_node,
+			  BAD_CAST "method");
+      
+      if(!xmlStrncmp(method,
+		     BAD_CAST "AgsGstreamerPipelineManager::create-ro-pipeline",
+		     48)){
+	AgsGstreamerFile *gstreamer_file;
+
+	_Atomic gboolean *create_pipeline_completed;
+	
+	GstState current_state;
+	
+	gint position;
+	
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "gstreamer-file");
+	gstreamer_file = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "create-pipeline-completed");
+	create_pipeline_completed = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	
+	ags_gstreamer_pipeline_helper_create_ro_pipeline(gstreamer_file);
+
+	current_state = 0;
+	
+	do {
+	  gst_element_get_state(GST_ELEMENT(gstreamer_file->read_pipeline),
+				&current_state,
+				NULL,
+				4000000);
+	}while(current_state != GST_STATE_PLAYING);
+  
+	ags_atomic_boolean_set(create_pipeline_completed,
+			       TRUE);
+      }else if(!xmlStrncmp(method,
+			   BAD_CAST "AgsGstreamerPipelineManager::create-rw-pipeline",
+			   48)){
+	AgsGstreamerFile *gstreamer_file;
+	
+	_Atomic gboolean *create_pipeline_completed;
+	
+	GstState current_state;
+	
+	gint position;
+	
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "gstreamer-file");
+	gstreamer_file = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+	
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message_envelope->data)->parameter_name,
+				  "create-pipeline-completed");
+	create_pipeline_completed = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message_envelope->data)->value[position]));
+
+	ags_gstreamer_pipeline_helper_create_rw_pipeline(gstreamer_file);
+	
+	do {
+	  gst_element_get_state(GST_ELEMENT(gstreamer_file->write_pipeline),
+				&current_state,
+				NULL,
+				4000000);
+	}while(current_state != GST_STATE_PLAYING);
+  
+	ags_atomic_boolean_set(create_pipeline_completed,
+			       TRUE);	
+      }
+    }
+    
+    message_envelope = message_envelope->next;
+  }
+      
+  g_list_free_full(start_message_envelope,
+		   (GDestroyNotify) g_object_unref);
 #endif
 }
 

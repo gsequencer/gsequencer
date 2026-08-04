@@ -125,6 +125,7 @@
 #include <ags/audio/ags_recall_dependency.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_id.h>
+#include <ags/audio/ags_recall_util.h>
 #include <ags/audio/ags_generic_recall_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recycling_context.h>
@@ -172,6 +173,8 @@
 #include <ags/audio/file/ags_audio_file_manager.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #if defined(AGS_WITH_GSTREAMER)
+#include <ags/audio/file/ags_gstreamer_pipeline_manager.h>
+#include <ags/audio/file/ags_gstreamer_pipeline_helper.h>
 #include <ags/audio/file/ags_gstreamer_file.h>
 #endif
 #if defined(AGS_WITH_LIBINSTPATCH)
