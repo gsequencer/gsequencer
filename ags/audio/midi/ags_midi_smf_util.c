@@ -2442,6 +2442,103 @@ ags_midi_smf_util_put_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
 }
 
 /**
+ * ags_midi_smf_util_get_sequencer_meta_event:
+ * @midi_smf_util: the #AgsMidiSmfUtil-struct
+ * @buffer: the MIDI buffer
+ * @delta_time: (out): the return location of timing information
+ * @len: (out): the return location of the length of data
+ * @id: (out): the return location of the manufacturer id
+ * @data: (out): the return location of the data
+ * 
+ * Get sequencer meta event.
+ * 
+ * Returns: the number of bytes read.
+ * 
+ * Since: 6.0.0
+ */
+guint
+ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
+					   guchar *buffer,
+					   gint *delta_time,
+					   gint *len, gint *id, gint *data)
+{
+  gint local_delta_time;
+  guint delta_time_size;
+  gint local_len;
+  guint len_size;
+  gint local_id;
+  guint i;
+  
+  if(buffer == NULL){
+    if(delta_time != NULL){
+      *delta_time = 0;
+    }
+
+    if(len != NULL){
+      *len = 0;
+    }
+
+    if(id != NULL){
+      *id = 0;
+    }
+
+    if(data != NULL){
+      *data = 0;
+    }
+
+    return(0);
+  }
+  
+  /* delta time */
+  local_delta_time = 0;
+  
+  delta_time_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer,
+						    &local_delta_time);
+  
+  if(delta_time != NULL){
+    *delta_time = local_delta_time;
+  }
+
+  local_len = 0;
+  
+  len_size = ags_midi_smf_util_get_varlength(midi_smf_util, buffer + 2,
+					     &local_len);
+
+  if(len != NULL){
+    len[0] = local_len;
+  }
+
+  if(id != NULL){
+    *id = buffer[delta_time_size + 3];
+  }
+
+  local_id = 0;
+
+  if(local_len > 0){
+    local_id = buffer[delta_time_size + 2 + len_size];
+    
+    if(id != NULL){
+      id[0] = local_id;
+    }
+
+    for(i = 1; i < local_len; i++){
+      if(buffer[delta_time_size + 2 + len_size] == 0 &&
+	 i < 4){
+	local_id = local_id | ((buffer[delta_time_size + 2 + len_size + i]) << 8);
+
+	if(id != NULL){
+	  id[0] = local_id;
+	}
+      }else{
+	//actual data goes here
+      }
+    }
+  }
+
+  return(delta_time_size + 2 + len_size + local_len);
+}
+
+/**
  * ags_midi_smf_util_put_sequencer_meta_event_fixed:
  * @midi_smf_util: the #AgsMidiSmfUtil-struct
  * @buffer: the MIDI buffer

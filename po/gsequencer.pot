@@ -18,7 +18,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 9.1.0\n"
+"Project-Id-Version: gsequencer 9.1.1\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
 "POT-Creation-Date: 2026-08-03 09:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
