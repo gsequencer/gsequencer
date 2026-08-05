@@ -2055,7 +2055,7 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	   
 	  if(ags_midi_util_is_misc_event(midi_util,
 					 buffer + offset + delta_time_varlength_size)){
-	    current_message = ags_midi_parser_meta_misc(midi_parser, 0x0);	    
+	    current_message = ags_midi_parser_meta_misc(midi_parser, buffer[offset + delta_time_varlength_size + 1]);
 
 	    xmlAddChild(current,
 			current_message);	    
@@ -2065,7 +2065,7 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	    success = TRUE;
 	  }else if(ags_midi_util_is_key_signature(midi_util,
 						  buffer + offset + delta_time_varlength_size)){
-	    current_message = ags_midi_parser_key_signature(midi_parser, 0x0);	    
+	    current_message = ags_midi_parser_key_signature(midi_parser, 0x59);	    
 
 	    xmlAddChild(current,
 			current_message);	    
@@ -4058,7 +4058,7 @@ ags_midi_parser_real_song_select(AgsMidiParser *midi_parser, guint status)
   
   ags_midi_parser_midi_getc(midi_parser); // status
 
-  song_select = 0x7f & (ags_midi_parser_midi_getc(midi_parser)) << 7;
+  song_select = 0x7f & (ags_midi_parser_midi_getc(midi_parser));
       
   node = xmlNewNode(NULL,
 		    "midi-system-common");

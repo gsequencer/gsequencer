@@ -1,3 +1,9 @@
+ags (9.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiParser missing parse of quarter frame
+	* added ags_midi_parser_test.c
+
 ags (9.1.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

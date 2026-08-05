@@ -104,6 +104,21 @@ static gint midi_key_signature_000_offset = 0;
 
 static gint midi_sequencer_meta_event_000_offset = 0;
 
+static gint midi_quarter_frame_000_offset = 0;
+static gint midi_quarter_frame_001_offset = 0;
+static gint midi_quarter_frame_002_offset = 0;
+static gint midi_quarter_frame_003_offset = 0;
+static gint midi_quarter_frame_004_offset = 0;
+static gint midi_quarter_frame_005_offset = 0;
+static gint midi_quarter_frame_006_offset = 0;
+static gint midi_quarter_frame_007_offset = 0;
+
+static gint midi_song_position_000_offset = 0;
+
+static gint midi_song_select_000_offset = 0;
+
+static gint midi_tune_request_000_offset = 0;
+
 static gint midi_end_of_track_000_offset = 0;
 static gint midi_end_of_track_001_offset = 0;
 
@@ -342,6 +357,123 @@ ags_midi_parser_test_init_suite()
   
   position += 8;
   
+  /* quarter frame 000 */
+  midi_quarter_frame_000_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x00,
+				      0x0c);
+  
+  position += 3;
+  
+  /* quarter frame 001 */
+  midi_quarter_frame_001_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x10,
+				      0x00);
+  
+  position += 3;
+  
+  /* quarter frame 002 */
+  midi_quarter_frame_002_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x20,
+				      0x00);
+  
+  position += 3;
+  
+  /* quarter frame 003 */
+  midi_quarter_frame_003_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x30,
+				      0x03);
+  
+  position += 3;
+  
+  /* quarter frame 004 */
+  midi_quarter_frame_004_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x40,
+				      0x05);
+  
+  position += 3;
+  
+  /* quarter frame 005 */
+  midi_quarter_frame_005_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x50,
+				      0x01);
+  
+  position += 3;
+  
+  /* quarter frame 006 */
+  midi_quarter_frame_006_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x60,
+				      0x01);
+  
+  position += 3;
+  
+  /* quarter frame 007 */
+  midi_quarter_frame_007_offset = position;
+  
+  ags_midi_smf_util_put_quarter_frame(NULL,
+				      midi_buffer + position,
+				      124,
+				      0x70,
+				      0x02);
+  
+  position += 3;
+  
+  /* song position 000 */
+  midi_song_position_000_offset = position;
+  
+  ags_midi_smf_util_put_song_position(NULL,
+				      midi_buffer + position,
+				      140,
+				      64);
+  
+  position += 5;
+  
+  /* song select 000 */
+  midi_song_select_000_offset = position;
+  
+  ags_midi_smf_util_put_song_select(NULL,
+				    midi_buffer + position,
+				    156,
+				    9);
+  
+  position += 4;
+
+  /* tune request 000 */
+  midi_tune_request_000_offset = position;
+  
+  ags_midi_smf_util_put_tune_request(NULL,
+				     midi_buffer + position,
+				     172);
+  
+  position += 3;
+
   /* end of track */
   midi_end_of_track_001_offset = position;
   
@@ -690,7 +822,7 @@ ags_midi_parser_test_change_program()
   node = ags_midi_parser_change_program(midi_parser, 0xc0);
 
   CU_ASSERT(node != NULL);
-  CU_ASSERT(midi_parser->offset == midi_change_program_000_offset + 5);
+  CU_ASSERT(midi_parser->offset == midi_change_program_000_offset + 4);
 }
 
 void
@@ -712,7 +844,7 @@ ags_midi_parser_test_change_channel_pressure()
   node = ags_midi_parser_change_channel_pressure(midi_parser, 0xd0);
 
   CU_ASSERT(node != NULL);
-  CU_ASSERT(midi_parser->offset == midi_change_pressure_000_offset + 5);
+  CU_ASSERT(midi_parser->offset == midi_change_pressure_000_offset + 4);
 }
 
 void
@@ -786,7 +918,7 @@ ags_midi_parser_test_smtpe()
   node = ags_midi_parser_smtpe(midi_parser, 0x54);
 
   CU_ASSERT(node != NULL);
-  CU_ASSERT(midi_parser->offset == midi_smtpe_000_offset + 8);
+  CU_ASSERT(midi_parser->offset == midi_smtpe_000_offset + 9);
 }
 
 void
@@ -830,7 +962,7 @@ ags_midi_parser_test_time_signature()
   node = ags_midi_parser_time_signature(midi_parser, 0x58);
 
   CU_ASSERT(node != NULL);
-  CU_ASSERT(midi_parser->offset == midi_time_signature_000_offset + 7);
+  CU_ASSERT(midi_parser->offset == midi_time_signature_000_offset + 8);
 }
 
 void
@@ -874,7 +1006,7 @@ ags_midi_parser_test_sequencer_meta_event()
   node = ags_midi_parser_sequencer_meta_event(midi_parser, 0x7f);
 
   CU_ASSERT(node != NULL);
-  CU_ASSERT(midi_parser->offset == midi_sequencer_meta_event_000_offset + 9);
+  CU_ASSERT(midi_parser->offset == midi_sequencer_meta_event_000_offset + 8);
 }
 
 void
@@ -898,30 +1030,157 @@ ags_midi_parser_test_midi_channel_prefix()
 void
 ags_midi_parser_test_quarter_frame()
 {
-  //TODO:JK: implement me
+  AgsMidiParser *midi_parser;
+
+  xmlNode *node;
+
+  midi_parser = ags_midi_parser_new();
+
+  midi_parser->buffer = midi_buffer;
+
+  midi_parser->file_length = midi_file_length;
+  
+  /* parse quarter frame 000 */
+  midi_parser->offset = midi_quarter_frame_000_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_000_offset + 3);
+
+  /* parse quarter frame 001 */
+  midi_parser->offset = midi_quarter_frame_001_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_001_offset + 3);
+
+  /* parse quarter frame 002 */
+  midi_parser->offset = midi_quarter_frame_002_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_002_offset + 3);
+
+  /* parse quarter frame 003 */
+  midi_parser->offset = midi_quarter_frame_003_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_003_offset + 3);
+
+  /* parse quarter frame 004 */
+  midi_parser->offset = midi_quarter_frame_004_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_004_offset + 3);
+
+  /* parse quarter frame 005 */
+  midi_parser->offset = midi_quarter_frame_005_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_005_offset + 3);
+
+  /* parse quarter frame 006 */
+  midi_parser->offset = midi_quarter_frame_006_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_006_offset + 3);
+
+  /* parse quarter frame 007 */
+  midi_parser->offset = midi_quarter_frame_007_offset;
+  
+  node = ags_midi_parser_quarter_frame(midi_parser, 0xf1);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_quarter_frame_007_offset + 3);
 }
 
 void
 ags_midi_parser_test_song_position()
 {
-  //TODO:JK: implement me
+  AgsMidiParser *midi_parser;
+
+  xmlNode *node;
+
+  midi_parser = ags_midi_parser_new();
+
+  midi_parser->buffer = midi_buffer;
+
+  midi_parser->file_length = midi_file_length;
+  
+  /* parse song position */
+  midi_parser->offset = midi_song_position_000_offset;
+  
+  node = ags_midi_parser_song_position(midi_parser, 0xf2);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_song_position_000_offset + 5);
 }
 
 void
 ags_midi_parser_test_song_select()
 {
-  //TODO:JK: implement me
+  AgsMidiParser *midi_parser;
+
+  xmlNode *node;
+
+  midi_parser = ags_midi_parser_new();
+
+  midi_parser->buffer = midi_buffer;
+
+  midi_parser->file_length = midi_file_length;
+  
+  /* parse song select */
+  midi_parser->offset = midi_song_select_000_offset;
+  
+  node = ags_midi_parser_song_select(midi_parser, 0xf3);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_song_select_000_offset + 4);
 }
 
 void
 ags_midi_parser_test_tune_request()
 {
-  //TODO:JK: implement me
+  AgsMidiParser *midi_parser;
+
+  xmlNode *node;
+
+  midi_parser = ags_midi_parser_new();
+
+  midi_parser->buffer = midi_buffer;
+
+  midi_parser->file_length = midi_file_length;
+  
+  /* parse tune request */
+  midi_parser->offset = midi_tune_request_000_offset;
+  
+  node = ags_midi_parser_tune_request(midi_parser, 0xf6);
+
+  CU_ASSERT(node != NULL);
+  CU_ASSERT(midi_parser->offset == midi_tune_request_000_offset + 3);
 }
 
 void
 ags_midi_parser_test_open_filename()
 {
+  AgsMidiParser *midi_parser;
+
+  midi_parser = ags_midi_parser_new();
+
+  ags_midi_parser_open_filename(midi_parser,
+				"/dev/null");
+  
   //TODO:JK: implement me
 }
 
