@@ -988,6 +988,7 @@ ags_midi_parser_get_property(GObject *gobject,
 
       g_rec_mutex_unlock(midi_parser_mutex);
     }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -2076,6 +2077,23 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	}
 
 	if(!success &&
+	   offset + retval + 8 < midi_parser->file_length /* &&
+							     current_smf_offset + retval + 5 < current_smf_length */){
+	   
+	  if(ags_midi_util_is_smtpe(midi_util,
+				    buffer + offset + delta_time_varlength_size)){
+	    current_message = ags_midi_parser_smtpe(midi_parser, 0x54);
+
+	    xmlAddChild(current,
+			current_message); 
+	    
+	    midi_parser->current_node = current_message;
+	      
+	    success = TRUE;
+	  }
+	}
+
+	if(!success &&
 	   offset + retval + 6 < midi_parser->file_length /* &&
 							     current_smf_offset + retval + 5 < current_smf_length */){
 	   
@@ -2093,7 +2111,7 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	}
 
 	if(!success &&
-	   offset + retval + 1 < midi_parser->file_length /* &&
+	   offset + retval + 8 < midi_parser->file_length /* &&
 							     current_smf_offset + retval + 4 < current_smf_length */){
 	  
 	  if(ags_midi_util_is_sequencer_meta_event(midi_util,
