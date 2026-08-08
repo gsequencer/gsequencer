@@ -117,6 +117,7 @@
 ./ags_check_system_alsa_devin_test
 ./ags_check_system_midi_smf_util_test
 ./ags_check_system_midi_builder_test
+./ags_check_system_midi_parser_test
 ./ags_check_system_midi_ci_util_test
 ./ags_check_system_midi_ump_util_test
 ./ags_check_system_osc_buffer_util_test

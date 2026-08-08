@@ -494,6 +494,14 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   gdouble gui_scale_factor;
 
   application_context = ags_application_context_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+  gtk_widget_set_margin_end((GtkWidget *) bulk_member,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) bulk_member,
+			       6);
 
   bulk_member->flags = (AGS_BULK_MEMBER_RESET_BY_ATOMIC |
 			AGS_BULK_MEMBER_APPLY_RECALL);
@@ -501,10 +509,17 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   
   bulk_member->widget_type = AGS_TYPE_DIAL;
   bulk_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
+
   dial = (AgsDial *) ags_dial_new();
-  
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+  gtk_widget_set_margin_start((GtkWidget *) dial,
+			    6);
+  gtk_widget_set_margin_end((GtkWidget *) dial,
+			    6);
+  gtk_widget_set_margin_top((GtkWidget *) dial,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) dial,
+			       6);
 
   g_object_set(dial,
 	       "radius", (guint) (gui_scale_factor * 12.0),
@@ -626,6 +641,15 @@ ags_bulk_member_set_property(GObject *gobject,
 		       NULL);
 	}
       }
+
+      gtk_widget_set_margin_start(new_child,
+				  6);
+      gtk_widget_set_margin_end(new_child,
+				6);
+      gtk_widget_set_margin_top(new_child,
+				6);
+      gtk_widget_set_margin_bottom(new_child,
+				   6);
       
       /* scale factor */
       gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));

@@ -227,6 +227,10 @@ ags_position_notation_cursor_popover_init(AgsPositionNotationCursorPopover *posi
   position_notation_cursor_popover->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 												  AGS_POSITION_NOTATION_CURSOR_MAX_BEATS,
 												  1.0);
+  gtk_spin_button_set_digits(position_notation_cursor_popover->position_x,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_x),
+			       9);
   gtk_spin_button_set_value(position_notation_cursor_popover->position_x,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,

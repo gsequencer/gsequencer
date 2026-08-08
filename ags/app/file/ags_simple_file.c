@@ -2076,13 +2076,32 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 {
   AgsSimpleFile *simple_file;
   
+  xmlChar *version;
   xmlChar *str;
-  
+      
+  guint major, minor, micro;
   gdouble bpm;
   gdouble loop_start, loop_end;
   gboolean loop;
-
+  
   simple_file = (AgsSimpleFile *) file_launch->file;
+      
+  /* fixup 9.1.3 */
+  version = xmlGetProp(simple_file->root_node,
+		       "version");
+  
+  major = 0;
+  minor = 0;
+  micro = 0;
+  
+  if(version != NULL){
+    sscanf(AGS_BAD_CAST version, "%d.%d.%d",
+	   &major,
+	   &minor,
+	   &micro);
+    
+    xmlFree(version);
+  }
   
   /* bpm */
   str = xmlGetProp(file_launch->node,
@@ -2121,8 +2140,19 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
   if(str != NULL){
     loop_start = ags_file_util_get_double(simple_file->file_util,
 					  AGS_BAD_CAST str);
-    gtk_spin_button_set_value(window->navigation->loop_left_tact,
-			      loop_start);
+
+    if((major < 9) ||
+       (major == 9 &&
+	minor < 1) ||
+       (major == 9 &&
+	minor == 1 &&
+	micro < 3)){
+      gtk_spin_button_set_value(window->navigation->loop_left_tact,
+				16.0 * loop_start);
+    }else{
+      gtk_spin_button_set_value(window->navigation->loop_left_tact,
+				loop_start);
+    }
 
     xmlFree(str);
   }
@@ -2134,8 +2164,19 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
   if(str != NULL){
     loop_end = ags_file_util_get_double(simple_file->file_util,
 					AGS_BAD_CAST str);
-    gtk_spin_button_set_value(window->navigation->loop_right_tact,
-			      loop_end);
+
+    if((major < 9) ||
+       (major == 9 &&
+	minor < 1) ||
+       (major == 9 &&
+	minor == 1 &&
+	micro < 3)){
+      gtk_spin_button_set_value(window->navigation->loop_right_tact,
+				16.0 * loop_end);
+    }else{
+      gtk_spin_button_set_value(window->navigation->loop_right_tact,
+				loop_end);
+    }
 
     xmlFree(str);
   }

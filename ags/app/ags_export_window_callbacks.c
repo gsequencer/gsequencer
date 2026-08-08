@@ -101,7 +101,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   delay = frame_clock->absolute_delay;
 
   /* update duration */
-  str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact) * 16.0,
+  str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact),
 					gtk_spin_button_get_value(window->navigation->bpm),
 					delay,
 					delay_factor);

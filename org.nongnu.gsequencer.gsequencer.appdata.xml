@@ -50,6 +50,23 @@
   <url type="homepage">https://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="9.1.3" date="2026-08-08">
+      <description>
+	<p>
+	  Improved uniform position unit as a 16th pulse. Export window duration and navigation loop left and right and position are fixed.
+	</p>
+	<p>
+	  Improved precision of position input with 3 digits. Export window, navigation and menu tool popovers are fixed.
+	</p>
+	<p>
+	  Improved BPM precision input with 3 digits. See navigation and time stretch popover.
+	</p>
+	<p>
+	  Improved UI margin 6px for dialog buttons, toolbar and navigation.
+	</p>
+      </description>
+    </release>
+
     <release version="9.0.0" date="2026-05-18">
       <description>
 	<p>

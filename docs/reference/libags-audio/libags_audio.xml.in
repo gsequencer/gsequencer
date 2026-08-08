@@ -666,10 +666,12 @@
       <xi:include href="xml/ags_clear_audio_signal.xml"/>
       <xi:include href="xml/ags_clear_buffer.xml"/>
       <xi:include href="xml/ags_crop_note.xml"/>
+      <xi:include href="xml/ags_crop_note_256th.xml"/>
       <xi:include href="xml/ags_export_output.xml"/>
       <xi:include href="xml/ags_free_selection.xml"/>
       <xi:include href="xml/ags_link_channel.xml"/>
       <xi:include href="xml/ags_move_note.xml"/>
+      <xi:include href="xml/ags_move_note_256th.xml"/>
       <xi:include href="xml/ags_open_file.xml"/>
       <xi:include href="xml/ags_open_single_file.xml"/>
       <xi:include href="xml/ags_open_sfz_file.xml"/>

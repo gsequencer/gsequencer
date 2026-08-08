@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -250,6 +250,10 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
   import_notation_smf_popover->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											     AGS_IMPORT_NOTATION_SMF_MAX_BEATS,
 											     1.0);
+  gtk_spin_button_set_digits(import_notation_smf_popover->position_x,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(import_notation_smf_popover->position_x),
+			       9);
   gtk_spin_button_set_value(import_notation_smf_popover->position_x,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,
@@ -681,7 +685,7 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   //NOTE:JK: some deco
   //  guint map_height, height;
   guint history;
-  guint x; //, y;
+  gdouble x; //, y;
   
   import_notation_smf_popover = AGS_IMPORT_NOTATION_SMF_POPOVER(applicable);
 
@@ -704,12 +708,12 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   
   zoom = exp2((double) history - 2.0);
   
-  x = gtk_spin_button_get_value_as_int(import_notation_smf_popover->position_x);
+  x = gtk_spin_button_get_value(import_notation_smf_popover->position_x);
 
   notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
   if(notation_edit != NULL){
-    notation_edit->cursor_position_x = 16 * x;
+    notation_edit->cursor_position_x = x;
     notation_edit->cursor_position_y = 0.0;
   }
 
@@ -720,7 +724,7 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
+			     ((x * 64.0 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
   }
 
   filename = ags_file_widget_get_filename(import_notation_smf_popover->file_widget);
@@ -1037,12 +1041,12 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		  if(initial_offset){
 		    initial_offset = FALSE;
 		    
-		    first_offset = x - (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+		    first_offset = x - (guint) (gtk_spin_button_get_value(import_notation_smf_popover->position_x));
     
-		    first_note_256th_offset = x_256th - (guint) (256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+		    first_note_256th_offset = x_256th - (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
 
-		    x = (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
-		    x_256th = (guint) (256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+		    x = (guint) (gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+		    x_256th = (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
 		  }
 		  
 		  /* y */

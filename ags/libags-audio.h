@@ -475,10 +475,12 @@
 #include <ags/audio/task/ags_clear_audio_signal.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_crop_note.h>
+#include <ags/audio/task/ags_crop_note_256th.h>
 #include <ags/audio/task/ags_export_output.h>
 #include <ags/audio/task/ags_free_selection.h>
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_move_note.h>
+#include <ags/audio/task/ags_move_note_256th.h>
 #include <ags/audio/task/ags_open_file.h>
 #include <ags/audio/task/ags_open_sfz_file.h>
 #include <ags/audio/task/ags_open_sf2_instrument.h>

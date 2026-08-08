@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -264,7 +264,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   /* hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_frame_set_child(AGS_MACHINE(audiorec)->frame,
 		      (GtkWidget *) hbox);
 
@@ -274,13 +274,13 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		 (GtkWidget *) frame);
 
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_frame_set_child(frame,
 		      (GtkWidget *) vbox);
 
   /* filename */
   filename_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-					 0);
+					 AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) filename_hbox);
   
@@ -307,7 +307,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   
   /* radio */
   radio_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				      0);
+				      AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) radio_hbox);
 
@@ -344,7 +344,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 		 (GtkWidget *) frame);
 
   audiorec->indicator_vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-						    0);
+						    AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_frame_set_child(frame,
 		      (GtkWidget *) audiorec->indicator_vbox);
 
@@ -505,9 +505,20 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
       hindicator = ags_indicator_new(GTK_ORIENTATION_HORIZONTAL,
 				     gui_scale_factor * AGS_AUDIOREC_DEFAULT_SEGMENT_WIDTH,
 				     gui_scale_factor * AGS_AUDIOREC_DEFAULT_SEGMENT_HEIGHT);
+
       g_object_set(hindicator,
 		   "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
 		   NULL);
+
+      gtk_widget_set_margin_start((GtkWidget *) hindicator,
+				  6);
+      gtk_widget_set_margin_end((GtkWidget *) hindicator,
+				6);
+      gtk_widget_set_margin_top((GtkWidget *) hindicator,
+				6);
+      gtk_widget_set_margin_bottom((GtkWidget *) hindicator,
+				   6);
+      
       ags_audiorec_add_indicator(audiorec,
 				 hindicator);
 

@@ -430,6 +430,10 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 		 (GtkWidget *) action_area);
 
   wave_export_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("export"));
+  gtk_widget_set_margin_end((GtkWidget *) wave_export_dialog->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) wave_export_dialog->activate_button,
+			       6);
   gtk_box_append(action_area,
 		 (GtkWidget *) wave_export_dialog->activate_button);
 }

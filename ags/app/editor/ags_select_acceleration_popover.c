@@ -231,7 +231,9 @@ ags_select_acceleration_popover_init(AgsSelectAccelerationPopover *select_accele
 											    AGS_SELECT_ACCELERATION_MAX_BEATS,
 											    0.25);
   gtk_spin_button_set_digits(select_acceleration_popover->select_x0,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x0),
+			       9);
   gtk_spin_button_set_value(select_acceleration_popover->select_x0,
 			    0.0);
   gtk_box_append(hbox,
@@ -253,7 +255,9 @@ ags_select_acceleration_popover_init(AgsSelectAccelerationPopover *select_accele
 											    AGS_SELECT_ACCELERATION_MAX_BEATS,
 											    0.25);
   gtk_spin_button_set_digits(select_acceleration_popover->select_x1,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x1),
+			       9);
   gtk_spin_button_set_value(select_acceleration_popover->select_x1,
 			    0.0);
   gtk_box_append(hbox,
@@ -397,7 +401,7 @@ ags_select_acceleration_popover_apply(AgsApplicable *applicable)
   gdouble c_upper, c_lower, c_range;
 
   int size;
-  guint x0, x1;
+  gdouble x0, x1;
   guint i;
   gint line;
   
@@ -437,9 +441,9 @@ ags_select_acceleration_popover_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_acceleration_popover->copy_selection);
 
-  x0 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(select_acceleration_popover->select_x0);
+  x0 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value(select_acceleration_popover->select_x0);
 
-  x1 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(select_acceleration_popover->select_x1);
+  x1 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value(select_acceleration_popover->select_x1);
   
   /* select acceleration */
   clipboard = NULL;
@@ -544,8 +548,8 @@ ags_select_acceleration_popover_apply(AgsApplicable *applicable)
 		    
       /* select */
       ags_automation_add_region_to_selection(current_automation,
-					     x0, lower,
-					     x1, upper,
+					     (guint) x0, lower,
+					     (guint) x1, upper,
 					     TRUE);
 
 

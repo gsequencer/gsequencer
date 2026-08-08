@@ -223,7 +223,9 @@ ags_ramp_acceleration_popover_init(AgsRampAccelerationPopover *ramp_acceleration
 											AGS_RAMP_ACCELERATION_MAX_BEATS,
 											0.25);
   gtk_spin_button_set_digits(ramp_acceleration_popover->ramp_x0,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_acceleration_popover->ramp_x0),
+			       9);
   gtk_spin_button_set_value(ramp_acceleration_popover->ramp_x0,
 			    0.0);
   gtk_box_append(hbox,
@@ -244,6 +246,10 @@ ags_ramp_acceleration_popover_init(AgsRampAccelerationPopover *ramp_acceleration
   ramp_acceleration_popover->ramp_y0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											1.0,
 											0.001);
+  gtk_spin_button_set_digits(ramp_acceleration_popover->ramp_y0,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_acceleration_popover->ramp_y0),
+			       9);
   gtk_spin_button_set_value(ramp_acceleration_popover->ramp_y0,
 			    0.0);
   gtk_box_append(hbox,
@@ -265,7 +271,9 @@ ags_ramp_acceleration_popover_init(AgsRampAccelerationPopover *ramp_acceleration
 											AGS_RAMP_ACCELERATION_MAX_BEATS,
 											0.25);
   gtk_spin_button_set_digits(ramp_acceleration_popover->ramp_x1,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_acceleration_popover->ramp_x1),
+			       9);
   gtk_spin_button_set_value(ramp_acceleration_popover->ramp_x1,
 			    0.0);
   gtk_box_append(hbox,
@@ -286,6 +294,10 @@ ags_ramp_acceleration_popover_init(AgsRampAccelerationPopover *ramp_acceleration
   ramp_acceleration_popover->ramp_y1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 											1.0,
 											0.001);
+  gtk_spin_button_set_digits(ramp_acceleration_popover->ramp_y1,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_acceleration_popover->ramp_y1),
+			       9);
   gtk_spin_button_set_value(ramp_acceleration_popover->ramp_y1,
 			    0.0);
   gtk_box_append(hbox,
@@ -306,6 +318,8 @@ ags_ramp_acceleration_popover_init(AgsRampAccelerationPopover *ramp_acceleration
   ramp_acceleration_popover->ramp_step_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 												AGS_RAMP_ACCELERATION_MAX_STEPS,
 												1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_acceleration_popover->ramp_step_count),
+			       3);
   gtk_spin_button_set_value(ramp_acceleration_popover->ramp_step_count,
 			    0.0);
   gtk_box_append(hbox,

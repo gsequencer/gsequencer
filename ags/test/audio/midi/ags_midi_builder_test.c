@@ -53,7 +53,7 @@ void ags_midi_builder_test_append_key_signature();
 void ags_midi_builder_test_append_sequencer_meta_event();
 void ags_midi_builder_test_append_text_event();
 
-#define AGS_MIDI_BUILDER_TEST_DEFAULT_SEQUENCE_PREFIX "ags-sequence-\0"
+#define AGS_MIDI_BUILDER_TEST_DEFAULT_SEQUENCE_PREFIX "ags-sequence-"
 
 #define AGS_MIDI_BUILDER_TEST_DEFAULT_FORMAT (1)
 #define AGS_MIDI_BUILDER_TEST_DEFAULT_TRACK_COUNT (0)
@@ -69,8 +69,8 @@ void ags_midi_builder_test_append_text_event();
 #define AGS_MIDI_BUILDER_TEST_APPEND_HEADER_BPM (120)
 #define AGS_MIDI_BUILDER_TEST_APPEND_HEADER_CLICKS (4)
 
-#define AGS_MIDI_BUILDER_TEST_APPEND_TRACK_SEQUENCE_0 "ags-sequence-0\0"
-#define AGS_MIDI_BUILDER_TEST_APPEND_TRACK_SEQUENCE_1 "ags-sequence-1\0"
+#define AGS_MIDI_BUILDER_TEST_APPEND_TRACK_SEQUENCE_0 "ags-sequence-0"
+#define AGS_MIDI_BUILDER_TEST_APPEND_TRACK_SEQUENCE_1 "ags-sequence-1"
 
 #define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_TRACK_COUNT (7)
 #define AGS_MIDI_BUILDER_TEST_APPEND_KEY_ON_NOTE_COUNT (64)
@@ -156,7 +156,7 @@ ags_midi_builder_test_create_default(guint n_tracks)
 				 AGS_MIDI_BUILDER_TEST_DEFAULT_CLICKS);
 
   for(i = 0; i < n_tracks; i++){
-    str = g_strdup_printf("%s%d\0",
+    str = g_strdup_printf("%s%d",
 			  AGS_MIDI_BUILDER_TEST_DEFAULT_SEQUENCE_PREFIX,
 			  i);
     
@@ -966,8 +966,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -975,7 +975,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsMidiBuilderTest\0", ags_midi_builder_test_init_suite, ags_midi_builder_test_clean_suite);
+  pSuite = CU_add_suite("AgsMidiBuilderTest", ags_midi_builder_test_init_suite, ags_midi_builder_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -984,26 +984,26 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsMidiBuilder to append header\0", ags_midi_builder_test_append_header) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append track\0", ags_midi_builder_test_append_track) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key on\0", ags_midi_builder_test_append_key_on) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key off\0", ags_midi_builder_test_append_key_off) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key pressure\0", ags_midi_builder_test_append_key_pressure) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change parameter\0", ags_midi_builder_test_append_change_parameter) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change pitch bend\0", ags_midi_builder_test_append_change_pitch_bend) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change program\0", ags_midi_builder_test_append_change_program) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change pressure\0", ags_midi_builder_test_append_change_pressure) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append sysex\0", ags_midi_builder_test_append_sysex) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append quarter frame\0", ags_midi_builder_test_append_quarter_frame) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append song position\0", ags_midi_builder_test_append_song_position) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append song select\0", ags_midi_builder_test_append_song_select) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append tune request\0", ags_midi_builder_test_append_tune_request) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append sequence number\0", ags_midi_builder_test_append_sequence_number) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append smtpe\0", ags_midi_builder_test_append_smtpe) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append time signature\0", ags_midi_builder_test_append_time_signature) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key signature\0", ags_midi_builder_test_append_key_signature) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append sequencer meta event\0", ags_midi_builder_test_append_sequencer_meta_event) == NULL) || 
-     (CU_add_test(pSuite, "test of AgsMidiBuilder to append text event\0", ags_midi_builder_test_append_text_event) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsMidiBuilder to append header", ags_midi_builder_test_append_header) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append track", ags_midi_builder_test_append_track) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key on", ags_midi_builder_test_append_key_on) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key off", ags_midi_builder_test_append_key_off) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key pressure", ags_midi_builder_test_append_key_pressure) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change parameter", ags_midi_builder_test_append_change_parameter) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change pitch bend", ags_midi_builder_test_append_change_pitch_bend) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change program", ags_midi_builder_test_append_change_program) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append change pressure", ags_midi_builder_test_append_change_pressure) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append sysex", ags_midi_builder_test_append_sysex) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append quarter frame", ags_midi_builder_test_append_quarter_frame) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append song position", ags_midi_builder_test_append_song_position) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append song select", ags_midi_builder_test_append_song_select) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append tune request", ags_midi_builder_test_append_tune_request) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append sequence number", ags_midi_builder_test_append_sequence_number) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append smtpe", ags_midi_builder_test_append_smtpe) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append time signature", ags_midi_builder_test_append_time_signature) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append key signature", ags_midi_builder_test_append_key_signature) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append sequencer meta event", ags_midi_builder_test_append_sequencer_meta_event) == NULL) || 
+     (CU_add_test(pSuite, "test of AgsMidiBuilder to append text event", ags_midi_builder_test_append_text_event) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

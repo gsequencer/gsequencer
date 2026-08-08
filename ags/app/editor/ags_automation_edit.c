@@ -1598,7 +1598,7 @@ ags_automation_edit_drawing_area_motion_notify_select_acceleration(GtkWidget *ed
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
   
   if(zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)) >= 0.0){
-    automation_edit->selection_x1 = (gint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
+    automation_edit->selection_x1 = (gint) (zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)));
   }else{
     automation_edit->selection_x1 = 0.0;
   }
@@ -1999,7 +1999,7 @@ ags_automation_edit_drawing_area_button_press_select_acceleration(GtkWidget *edi
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
   
-  automation_edit->selection_x0 = (gint) zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar));
+  automation_edit->selection_x0 = (gint) (zoom_factor * x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->hscrollbar)));
   automation_edit->selection_x1 = automation_edit->selection_x0;
     
   automation_edit->selection_y0 = (gint) y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(automation_edit->vscrollbar));
@@ -2569,7 +2569,7 @@ ags_automation_edit_drawing_area_button_release_select_acceleration(GtkWidget *e
     }
   }
   
-  x1 = (gint) zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment));
+  x1 = (gint) (zoom_factor * (x + gtk_adjustment_get_value(hscrollbar_adjustment)));
     
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
     step_count = ((gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
