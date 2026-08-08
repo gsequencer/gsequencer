@@ -224,7 +224,9 @@ ags_select_buffer_popover_init(AgsSelectBufferPopover *select_buffer_popover)
 										      AGS_SELECT_BUFFER_MAX_BEATS,
 										      0.25);
   gtk_spin_button_set_digits(select_buffer_popover->select_x0,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x0),
+			       9);
   gtk_spin_button_set_value(select_buffer_popover->select_x0,
 			    0.0);
   gtk_box_append(hbox,
@@ -246,7 +248,9 @@ ags_select_buffer_popover_init(AgsSelectBufferPopover *select_buffer_popover)
 										      AGS_SELECT_BUFFER_MAX_BEATS,
 										      0.25);
   gtk_spin_button_set_digits(select_buffer_popover->select_x1,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x1),
+			       9);
   gtk_spin_button_set_value(select_buffer_popover->select_x1,
 			    0.0);
   gtk_box_append(hbox,
@@ -366,8 +370,8 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
   gdouble delay;
   guint64 relative_offset;
   int size;
-  guint x0, y0;
-  guint x1, y1;
+  gdouble x0, y0;
+  gdouble x1, y1;
   gint i;
   
   gboolean copy_selection;
@@ -411,11 +415,11 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_buffer_popover->copy_selection);
 
-  x0 = gtk_spin_button_get_value_as_int(select_buffer_popover->select_x0);
-  x0 = delay * buffer_size * x0;
+  x0 = gtk_spin_button_get_value(select_buffer_popover->select_x0);
+  x0 = delay * (gdouble) buffer_size * x0;
   
-  x1 = gtk_spin_button_get_value_as_int(select_buffer_popover->select_x1);
-  x1 = delay * buffer_size * x1;
+  x1 = gtk_spin_button_get_value(select_buffer_popover->select_x1);
+  x1 = delay * (gdouble) buffer_size * x1;
   
   timestamp = ags_timestamp_new();
 
@@ -444,7 +448,7 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
     while((list_wave = ags_wave_find_near_timestamp(list_wave, i,
 						    timestamp)) != NULL){
       ags_wave_add_region_to_selection(AGS_WAVE(list_wave->data),
-				       x0, x1,
+				       (guint) x0, (guint) x1,
 				       TRUE);
       
       if(copy_selection){

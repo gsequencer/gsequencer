@@ -293,6 +293,10 @@ ags_pcm_file_dialog_init(AgsPCMFileDialog *pcm_file_dialog)
   pcm_file_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
   gtk_widget_set_halign((GtkWidget *) pcm_file_dialog->activate_button,
 			GTK_ALIGN_END);
+  gtk_widget_set_margin_end((GtkWidget *) pcm_file_dialog->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) pcm_file_dialog->activate_button,
+			       6);  
   gtk_box_append(content_area,
 		 (GtkWidget *) pcm_file_dialog->activate_button);
 

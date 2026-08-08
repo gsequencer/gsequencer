@@ -357,15 +357,16 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   /* buttons */
   envelope_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 							AGS_UI_PROVIDER_DEFAULT_SPACING);
-  
   gtk_widget_set_halign((GtkWidget *) envelope_dialog->action_area,
 			GTK_ALIGN_END);
-
   gtk_box_append(vbox,
 		 (GtkWidget *) envelope_dialog->action_area);
 
   envelope_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
-
+  gtk_widget_set_margin_end((GtkWidget *) envelope_dialog->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) envelope_dialog->activate_button,
+			       6);
   gtk_box_append(envelope_dialog->action_area,
 		 (GtkWidget *) envelope_dialog->activate_button);
 

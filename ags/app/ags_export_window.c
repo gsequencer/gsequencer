@@ -298,8 +298,10 @@ ags_export_window_init(AgsExportWindow *export_window)
 		  1, 1);
 
   export_window->tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
+  gtk_editable_set_width_chars(GTK_EDITABLE(export_window->tact),
+			       9);
   gtk_spin_button_set_digits(export_window->tact,
-			     2);
+			     3);
 
   gtk_widget_set_halign((GtkWidget *) export_window->tact,
 			GTK_ALIGN_FILL);
@@ -406,14 +408,18 @@ ags_export_window_init(AgsExportWindow *export_window)
   /* export */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
-
+  gtk_widget_set_halign((GtkWidget *) hbox,
+			GTK_ALIGN_END);
   gtk_box_set_spacing(vbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
-
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
   export_window->export = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("export"));
+  gtk_widget_set_margin_end((GtkWidget *) export_window->export,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) export_window->export,
+			       6);
   gtk_box_append(hbox,
 		 (GtkWidget *) export_window->export);
 
@@ -1019,7 +1025,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
     delay = frame_clock->absolute_delay;
 
     /*  */
-    tic = (gtk_spin_button_get_value(export_window->tact) + 1) * (16.0 * delay);
+    tic = gtk_spin_button_get_value(export_window->tact) * (delay);
       
     export_soundcard = start_export_soundcard;
       

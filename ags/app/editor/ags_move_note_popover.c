@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -233,6 +233,10 @@ ags_move_note_popover_init(AgsMoveNotePopover *move_note_popover)
   move_note_popover->move_x = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_MOVE_NOTE_POPOVER_MAX_X,
 									       AGS_MOVE_NOTE_POPOVER_MAX_X,
 									       1.0);
+  gtk_spin_button_set_digits(move_note_popover->move_x,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(move_note_popover->move_x),
+			       9);
   gtk_spin_button_set_value(move_note_popover->move_x,
 			    0.0);
   gtk_box_append(hbox,
@@ -473,7 +477,7 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
   AgsMachine *machine;
   AgsCompositeEditor *composite_editor;
 
-  AgsMoveNote *move_note;
+  AgsMoveNote256th *move_note_256th;
   
   AgsAudio *audio;
   
@@ -482,9 +486,9 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
   GList *start_notation, *notation;
   GList *task;
 
-  guint first_x;
+  guint first_x_256th;
   guint first_y;
-  guint move_x;
+  guint move_x_256th;
   guint move_y;
   
   gboolean relative;
@@ -508,7 +512,7 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
   audio = machine->audio;
 
   /* get some values */
-  move_x = gtk_spin_button_get_value_as_int(move_note_popover->move_x);
+  move_x_256th = (guint) (16.0 * gtk_spin_button_get_value(move_note_popover->move_x));
   move_y = gtk_spin_button_get_value_as_int(move_note_popover->move_y);
 
   relative = gtk_check_button_get_active(move_note_popover->relative);
@@ -519,13 +523,13 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
 	       "notation", &start_notation,
 	       NULL);
 
-  first_x = 0;
+  first_x_256th = 0;
   first_y = 0;
   
   if(absolute){
     notation = start_notation;
 
-    first_x = G_MAXUINT;
+    first_x_256th = G_MAXUINT;
     first_y = G_MAXUINT;
   
     while(notation != NULL){
@@ -546,15 +550,18 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
       g_rec_mutex_unlock(notation_mutex);
 
       while(selection != NULL){
-	guint x0, y;
+	guint x0_256th, y;
 
+	x0_256th = 0;
+	y = 0;
+	
 	g_object_get(selection->data,
-		     "x0", &x0,
+		     "x0-256th", &x0_256th,
 		     "y", &y,
 		     NULL);
 	
-	if(x0 < first_x){
-	  first_x = AGS_NOTE(selection->data)->x[0];
+	if(x0_256th < first_x_256th){
+	  first_x_256th = x0_256th;
 	}
 
 	if(y < first_y){
@@ -593,15 +600,15 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
     g_rec_mutex_unlock(notation_mutex);
 
     if(start_selection != NULL){
-      move_note = ags_move_note_new(audio,
-				    notation->data,
-				    start_selection,
-				    first_x, first_y,
-				    move_x, move_y,
-				    relative, absolute);
+      move_note_256th = ags_move_note_256th_new(audio,
+						notation->data,
+						start_selection,
+						first_x_256th, first_y,
+						move_x_256th, move_y,
+						relative, absolute);
 
       task = g_list_prepend(task,
-			    move_note);
+			    move_note_256th);
 
       g_list_free_full(start_selection,
 		       g_object_unref);

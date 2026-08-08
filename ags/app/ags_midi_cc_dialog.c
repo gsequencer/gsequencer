@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -446,7 +446,10 @@ ags_midi_cc_dialog_init(AgsMidiCCDialog *midi_cc_dialog)
 
   /* activate */
   midi_cc_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
-
+  gtk_widget_set_margin_end((GtkWidget *) midi_cc_dialog->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) midi_cc_dialog->activate_button,
+			       6);  
   gtk_box_append(midi_cc_dialog->action_area,
 		 (GtkWidget *) midi_cc_dialog->activate_button);
 

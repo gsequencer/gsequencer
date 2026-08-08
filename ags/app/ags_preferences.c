@@ -280,7 +280,10 @@ ags_preferences_init(AgsPreferences *preferences)
 		 (GtkWidget *) preferences->action_area);
 
   preferences->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
-
+  gtk_widget_set_margin_end((GtkWidget *) preferences->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) preferences->activate_button,
+			       6);
   gtk_box_append(preferences->action_area,
 		 (GtkWidget *) preferences->activate_button);
 

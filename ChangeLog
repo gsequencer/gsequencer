@@ -1,3 +1,29 @@
+ags (9.1.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_find_region_256th()
+	* implemented ags_notation_add_region_256th_to_selection()
+	* implement AgsCropNote256th
+	* implement AgsMoveNote256th
+	* improved all dialogs margin end and bottom 6px
+	* improved notation editor to select note 256th
+	* improved AgsExportWindow duration as 16th pulse
+	* improved AgsNavigation bpm with 3 digits
+	* improved AgsNavigation loop L and R with 3 digits and as 16th pulse
+	* improved AgsNavigation position with 3 digits and as 16th pulse
+	* improved AgsPositionNotationCursorPopover spin button size
+	* improved AgsSelectNotePopover spin button size and with 3 digits
+	* improved AgsMoveNotePopover spin button size and with 3 digits
+	* improved AgsCropNotePopover spin button size and with 3 digits
+	* improved AgsImportSMFNotationPopover spin button size and with 3 digits
+	* improved AgsPositionAutomationCursorPopover spin button size and with 3 digits
+	* improved AgsSelectAccelerationPopover spin button size and with 3 digits
+	* improved AgsRampAccelerationPopover spin button size and with 3 digits
+	* improved AgsPositionWaveCursorPopover spin button size and with 3 digits
+	* improved AgsSelectBufferPopover spin button size and with 3 digits
+	* improved AgsTimeStretchBufferPopover spin button size and with 3 digits
+	* improved AgsRampMarkerPopover spin button size and with 3 digits
+
 ags (9.1.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

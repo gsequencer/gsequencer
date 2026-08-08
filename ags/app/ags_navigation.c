@@ -217,6 +217,8 @@ ags_navigation_init(AgsNavigation *navigation)
   /* GtkWidget */  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_widget_set_margin_bottom((GtkWidget *) hbox,
+			       8);
   gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) hbox);
 
@@ -238,6 +240,10 @@ ags_navigation_init(AgsNavigation *navigation)
 								     1000.0,
 								     1.0);
 
+  gtk_spin_button_set_digits(navigation->bpm,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(navigation->bpm),
+			       7);
   gtk_spin_button_set_value(navigation->bpm,
 			    AGS_NAVIGATION_DEFAULT_BPM);
 
@@ -344,6 +350,10 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									       (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT,
 									       1.0);
+  gtk_spin_button_set_digits(navigation->position_tact,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(navigation->position_tact),
+			       9);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->position_tact);
 
@@ -367,6 +377,8 @@ ags_navigation_init(AgsNavigation *navigation)
   /* expansion */
   navigation->expansion_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  gtk_widget_set_margin_bottom((GtkWidget *) navigation->expansion_box,
+			       8);
   gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) navigation->expansion_box);
 
@@ -377,6 +389,12 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->loop_left_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										65000.0,
 										1.0);
+  gtk_spin_button_set_digits(navigation->loop_left_tact,
+			     3);  
+  gtk_editable_set_width_chars(GTK_EDITABLE(navigation->loop_left_tact),
+			       9);
+  gtk_spin_button_set_value(navigation->loop_left_tact,
+			    0.0);
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->loop_left_tact);
 
@@ -387,8 +405,12 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										 65000.0,
 										 1.0);
+  gtk_spin_button_set_digits(navigation->loop_right_tact,
+			     3);  
+  gtk_editable_set_width_chars(GTK_EDITABLE(navigation->loop_right_tact),
+			       9);
   gtk_spin_button_set_value(navigation->loop_right_tact,
-			    4.0);
+			    64.0);
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->loop_right_tact);
 
@@ -673,7 +695,7 @@ ags_navigation_disconnect(AgsConnectable *connectable)
 
 void
 ags_navigation_real_change_position(AgsNavigation *navigation,
-				    gdouble tact_counter)
+				    gdouble pulse_counter)
 {
   AgsSeekSoundcard *seek_soundcard;
 
@@ -705,7 +727,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   absolute_delay = frame_clock->absolute_delay;
   
-  new_offset = (16 * tact_counter);
+  new_offset = pulse_counter;
   
   /* soundcard - start offset */
   list = 
@@ -746,7 +768,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   //TODO:JK: implement me
   
   /* update */
-  timestr = ags_time_get_uptime_from_offset(16.0 * tact_counter,
+  timestr = ags_time_get_uptime_from_offset(pulse_counter,
 					    bpm,
 					    absolute_delay,
 					    delay_factor);

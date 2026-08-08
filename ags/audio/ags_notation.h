@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -167,6 +167,10 @@ GList* ags_notation_find_region(AgsNotation *notation,
 				guint x0, guint y0,
 				guint x1, guint y1,
 				gboolean use_selection_list);
+GList* ags_notation_find_region_256th(AgsNotation *notation,
+				      guint x0_256th, guint y0,
+				      guint x1_256th, guint y1,
+				      gboolean use_selection_list);
 
 GList* ags_notation_find_offset(AgsNotation *notation,
 				guint x,
@@ -188,6 +192,10 @@ void ags_notation_add_region_to_selection(AgsNotation *notation,
 					  guint x0, guint y0,
 					  guint x1, guint y1,
 					  gboolean replace_current_selection);
+void ags_notation_add_region_256th_to_selection(AgsNotation *notation,
+						guint x0_256th, guint y0,
+						guint x1_256th, guint y1,
+						gboolean replace_current_selection);
 void ags_notation_remove_region_from_selection(AgsNotation *notation,
 					       guint x0, guint y0,
 					       guint x1, guint y1);

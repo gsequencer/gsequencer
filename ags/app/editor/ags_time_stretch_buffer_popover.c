@@ -239,7 +239,9 @@ ags_time_stretch_buffer_popover_init(AgsTimeStretchBufferPopover *time_stretch_b
 											   AGS_TIME_STRETCH_BUFFER_MAX_BPM,
 											   1.0);
   gtk_spin_button_set_digits(time_stretch_buffer_popover->orig_bpm,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(time_stretch_buffer_popover->orig_bpm),
+			       7);
   gtk_spin_button_set_value(time_stretch_buffer_popover->orig_bpm,
 			    AGS_TIME_STRETCH_BUFFER_DEFAULT_BPM);
   gtk_box_append(hbox,
@@ -261,7 +263,9 @@ ags_time_stretch_buffer_popover_init(AgsTimeStretchBufferPopover *time_stretch_b
 											  AGS_TIME_STRETCH_BUFFER_MAX_BPM,
 											  1.0);
   gtk_spin_button_set_digits(time_stretch_buffer_popover->new_bpm,
-			     2);
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(time_stretch_buffer_popover->new_bpm),
+			       7);
   gtk_spin_button_set_value(time_stretch_buffer_popover->new_bpm,
 			    AGS_TIME_STRETCH_BUFFER_DEFAULT_BPM);
   gtk_box_append(hbox,

@@ -238,6 +238,10 @@ ags_crop_note_popover_init(AgsCropNotePopover *crop_note_popover)
   crop_note_popover->crop_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
 										  AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
 										  1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->crop_note),
+			       9);
+  gtk_spin_button_set_digits(crop_note_popover->crop_note,
+			     3);
   gtk_spin_button_set_value(crop_note_popover->crop_note,
 			    0.0);
   gtk_box_append(hbox,
@@ -258,6 +262,10 @@ ags_crop_note_popover_init(AgsCropNotePopover *crop_note_popover)
   crop_note_popover->padding_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
 										     AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
 										     1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->padding_note),
+			       9);
+  gtk_spin_button_set_digits(crop_note_popover->padding_note,
+			     3);
   gtk_spin_button_set_value(crop_note_popover->padding_note,
 			    0.0);
   gtk_box_append(hbox,
@@ -491,7 +499,7 @@ ags_crop_note_popover_apply(AgsApplicable *applicable)
   AgsMachine *machine;
   AgsCompositeEditor *composite_editor;
 
-  AgsCropNote *crop_note;  
+  AgsCropNote256th *crop_note_256th;  
 
   AgsAudio *audio;
 
@@ -500,8 +508,8 @@ ags_crop_note_popover_apply(AgsApplicable *applicable)
   GList *start_notation, *notation;
   GList *task;
   
-  guint x_padding;
-  guint x_crop;
+  guint x_256th_padding;
+  guint x_256th_crop;
   
   gboolean absolute;
   gboolean in_place;
@@ -525,8 +533,8 @@ ags_crop_note_popover_apply(AgsApplicable *applicable)
   audio = machine->audio;
 
   /* get some values */
-  x_crop = gtk_spin_button_get_value_as_int(crop_note_popover->crop_note);
-  x_padding = gtk_spin_button_get_value_as_int(crop_note_popover->padding_note);
+  x_256th_crop = (guint) (16.0 * gtk_spin_button_get_value(crop_note_popover->crop_note));
+  x_256th_padding = (guint) (16.0 * gtk_spin_button_get_value(crop_note_popover->padding_note));
 
   absolute = gtk_check_button_get_active(crop_note_popover->absolute);
 
@@ -558,14 +566,14 @@ ags_crop_note_popover_apply(AgsApplicable *applicable)
     g_rec_mutex_unlock(notation_mutex);
 
     if(start_selection != NULL){
-      crop_note = ags_crop_note_new(audio,
-				    notation->data,
-				    start_selection,
-				    x_padding, x_crop,
-				    absolute,
-				    in_place, do_resize);
+      crop_note_256th = ags_crop_note_256th_new(audio,
+						notation->data,
+						start_selection,
+						x_256th_padding, x_256th_crop,
+						absolute,
+						in_place, do_resize);
       task = g_list_prepend(task,
-			    crop_note);
+			    crop_note_256th);
 
       g_list_free_full(start_selection,
 		       g_object_unref);

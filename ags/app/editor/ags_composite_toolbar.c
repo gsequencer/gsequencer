@@ -171,6 +171,11 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   
   gtk_box_set_spacing((GtkBox *) composite_toolbar,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+
+  gtk_widget_set_margin_top((GtkWidget *) composite_toolbar,
+			    8);
+  gtk_widget_set_margin_bottom((GtkWidget *) composite_toolbar,
+			       8);
   
   /* action group */
   action_group = g_simple_action_group_new();

@@ -509,6 +509,14 @@ ags_line_member_init(AgsLineMember *line_member)
 
   application_context = ags_application_context_get_instance();
 
+  /* scale factor */
+  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+  gtk_widget_set_margin_end((GtkWidget *) line_member,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) line_member,
+			       6);
+
   line_member->flags = (AGS_LINE_MEMBER_RESET_BY_ATOMIC |
 			AGS_LINE_MEMBER_APPLY_RECALL);
   line_member->port_flags = 0;
@@ -519,8 +527,14 @@ ags_line_member_init(AgsLineMember *line_member)
   line_member->widget_orientation = GTK_ORIENTATION_VERTICAL;
   dial = (AgsDial *) ags_dial_new();
 
-  /* scale factor */
-  gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+  gtk_widget_set_margin_start((GtkWidget *) dial,
+			    6);
+  gtk_widget_set_margin_end((GtkWidget *) dial,
+			    6);
+  gtk_widget_set_margin_top((GtkWidget *) dial,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) dial,
+			       6);
 
   g_object_set(dial,
 	       "radius", (guint) (gui_scale_factor * 12.0),
@@ -596,6 +610,9 @@ ags_line_member_set_property(GObject *gobject,
       }
 
       application_context = ags_application_context_get_instance();
+      
+      /* scale factor */
+      gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
 
       child = ags_line_member_get_widget(line_member);
 
@@ -648,9 +665,15 @@ ags_line_member_set_property(GObject *gobject,
 		       NULL);
 	}
       }
-      
-      /* scale factor */
-      gui_scale_factor = ags_ui_provider_get_gui_scale_factor(AGS_UI_PROVIDER(application_context));
+
+      gtk_widget_set_margin_start(new_child,
+				  6);
+      gtk_widget_set_margin_end(new_child,
+				6);
+      gtk_widget_set_margin_top(new_child,
+				6);
+      gtk_widget_set_margin_bottom(new_child,
+				   6);
 
       if(AGS_IS_DIAL(new_child)){
 	g_object_set(new_child,

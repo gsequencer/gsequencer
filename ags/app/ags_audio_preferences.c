@@ -332,6 +332,10 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
 
   /*  */
   audio_preferences->add_menu_button = (GtkMenuButton *) gtk_menu_button_new();
+  gtk_widget_set_margin_end((GtkWidget *) audio_preferences->add_menu_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) audio_preferences->add_menu_button,
+			       6);
   gtk_box_prepend(preferences->action_area,
 		  (GtkWidget *) audio_preferences->add_menu_button);
   

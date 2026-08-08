@@ -456,6 +456,10 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 		 (GtkWidget *) action_area);
 
   midi_import_wizard->prev_button = (GtkButton *) gtk_button_new_with_label(i18n("previous"));
+  gtk_widget_set_margin_end((GtkWidget *) midi_import_wizard->prev_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) midi_import_wizard->prev_button,
+			       6);  
   gtk_box_append(action_area,
 		 (GtkWidget *) midi_import_wizard->prev_button);
 
@@ -463,6 +467,10 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 		   G_CALLBACK(ags_midi_import_wizard_previous_button_callback), midi_import_wizard);
 
   midi_import_wizard->next_button = (GtkButton *) gtk_button_new_with_label(i18n("next"));
+  gtk_widget_set_margin_end((GtkWidget *) midi_import_wizard->next_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) midi_import_wizard->next_button,
+			       6);  
   gtk_box_append(action_area,
 		 (GtkWidget *) midi_import_wizard->next_button);
   
@@ -470,6 +478,10 @@ ags_midi_import_wizard_init(AgsMidiImportWizard *midi_import_wizard)
 		   G_CALLBACK(ags_midi_import_wizard_next_button_callback), midi_import_wizard);
 
   midi_import_wizard->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("open"));
+  gtk_widget_set_margin_end((GtkWidget *) midi_import_wizard->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) midi_import_wizard->activate_button,
+			       6);  
   gtk_box_append(action_area,
 		 (GtkWidget *) midi_import_wizard->activate_button);
 
