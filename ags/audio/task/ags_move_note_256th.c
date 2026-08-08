@@ -634,7 +634,7 @@ ags_move_note_256th_launch(AgsTask *task)
 /**
  * ags_move_note_256th_set_selection:
  * @move_note_256th: the #AgsMoveNote256th
- * @selection: (element-type AgsAudio.Note256th) (transfer none): the selection as #GList-struct
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
  * 
  * Set @selection of @move_note_256th.
  * 
@@ -663,7 +663,7 @@ ags_move_note_256th_set_selection(AgsMoveNote256th *move_note_256th,
  * ags_move_note_256th_new:
  * @audio: the #AgsAudio
  * @notation: the #AgsNotation
- * @selection: (element-type AgsAudio.Note256th) (transfer none): the selection as #GList-struct
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
  * @first_x: the x offset to move from 
  * @first_y: the x padding to use
  * @move_x: the amout to move in x direction

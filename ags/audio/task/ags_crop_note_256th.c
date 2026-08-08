@@ -640,11 +640,11 @@ ags_crop_note_256th_launch(AgsTask *task)
 /**
  * ags_crop_note_256th_set_selection:
  * @crop_note_256th: the #AgsCropNote256th
- * @selection: (element-type AgsAudio.Note256th) (transfer none): the selection as #GList-struct
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
  * 
  * Set @selection of @crop_note_256th.
  * 
- * Since: 3.2.3
+ * Since: 9.1.3
  */
 void
 ags_crop_note_256th_set_selection(AgsCropNote256th *crop_note_256th,
@@ -669,7 +669,7 @@ ags_crop_note_256th_set_selection(AgsCropNote256th *crop_note_256th,
  * ags_crop_note_256th_new:
  * @audio: the #AgsAudio
  * @notation: the #AgsNotation
- * @selection: (element-type AgsAudio.Note256th) (transfer none): the selection as #GList-struct
+ * @selection: (element-type AgsAudio.Note) (transfer none): the selection as #GList-struct
  * @x_256th_padding: the x padding to use
  * @x_256th_crop: the amout to crop
  * @absolute: if %TRUE from absolute position, otherwise relative

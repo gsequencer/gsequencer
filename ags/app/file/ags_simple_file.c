@@ -2083,6 +2083,8 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
   gdouble bpm;
   gdouble loop_start, loop_end;
   gboolean loop;
+  
+  simple_file = (AgsSimpleFile *) file_launch->file;
       
   /* fixup 9.1.3 */
   version = xmlGetProp(simple_file->root_node,
@@ -2100,8 +2102,6 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
     
     xmlFree(version);
   }
-  
-  simple_file = (AgsSimpleFile *) file_launch->file;
   
   /* bpm */
   str = xmlGetProp(file_launch->node,
