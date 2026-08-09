@@ -5744,15 +5744,15 @@ ags_composite_editor_select_region(AgsCompositeEditor *composite_editor,
       notation = start_notation;
       
       ags_timestamp_set_ags_offset(timestamp,
-				   (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET));
+				   (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor(((double) x0 / 16.0) / (double) AGS_NOTATION_DEFAULT_OFFSET));
 
       while((notation = ags_notation_find_near_timestamp(notation, i,
 							 timestamp)) != NULL &&
-	    ags_timestamp_get_ags_offset(timestamp) < (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor((double) x1 / (double) AGS_NOTATION_DEFAULT_OFFSET)) + AGS_NOTATION_DEFAULT_OFFSET){
-	ags_notation_add_region_to_selection(notation->data,
-					     x0, (guint) y0,
-					     x1, (guint) y1,
-					     TRUE);
+	    ags_timestamp_get_ags_offset(timestamp) < (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor(((double) x1 / 16.0) / (double) AGS_NOTATION_DEFAULT_OFFSET)) + AGS_NOTATION_DEFAULT_OFFSET){
+	ags_notation_add_region_256th_to_selection(notation->data,
+						   x0, (guint) y0,
+						   x1, (guint) y1,
+						   TRUE);
 	
 	/* iterate */
 	timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
