@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 9.2.0\n"
+"Project-Id-Version: gsequencer 9.2.1\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-08-10 17:28+0200\n"
+"POT-Creation-Date: 2026-08-10 20:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,11 +73,11 @@ msgstr ""
 msgid "password"
 msgstr ""
 
-#: ags/app/ags_export_window_callbacks.c:200
+#: ags/app/ags_export_window_callbacks.c:241
 msgid "Replace existing file(s)?"
 msgstr ""
 
-#: ags/app/ags_export_window_callbacks.c:203
+#: ags/app/ags_export_window_callbacks.c:244
 msgid "Following files exist, do you want to remove in order to export?"
 msgstr ""
 
@@ -358,7 +358,7 @@ msgstr ""
 msgid "file"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:418
+#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:442
 msgid "export"
 msgstr ""
 
@@ -2172,7 +2172,7 @@ msgstr ""
 msgid "tact"
 msgstr ""
 
-#: ags/app/ags_export_window.c:317
+#: ags/app/ags_export_window.c:341
 msgid "time"
 msgstr ""
 

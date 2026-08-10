@@ -70,8 +70,8 @@ ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 }
 
 void
-ags_export_window_tact_callback(GtkWidget *spin_button,
-				AgsExportWindow *export_window)
+ags_export_window_duration_tact_callback(GtkWidget *spin_button,
+					 AgsExportWindow *export_window)
 {
   AgsWindow *window;
 
@@ -101,7 +101,48 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   delay = frame_clock->absolute_delay;
 
   /* update duration */
-  str = ags_time_get_uptime_from_offset(gtk_spin_button_get_value(export_window->tact),
+  str = ags_time_get_uptime_from_offset(((16.0 * gtk_spin_button_get_value(export_window->duration_tact)) + gtk_spin_button_get_value(export_window->duration_16th_pulse)),
+					gtk_spin_button_get_value(window->navigation->bpm),
+					delay,
+					delay_factor);
+  gtk_label_set_text(export_window->duration,
+		     str);
+  g_free(str);
+}
+
+void
+ags_export_window_duration_16th_pulse_callback(GtkWidget *spin_button,
+					 AgsExportWindow *export_window)
+{
+  AgsWindow *window;
+
+  AgsFrameClock *frame_clock;
+  
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+  
+  gchar *str;
+  
+  gdouble delay_factor;
+  gdouble delay;
+
+  /* retrieve window */
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+  
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+
+  /* get some properties */
+  delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
+
+  delay = frame_clock->absolute_delay;
+
+  /* update duration */
+  str = ags_time_get_uptime_from_offset(((16.0 * gtk_spin_button_get_value(export_window->duration_tact)) + gtk_spin_button_get_value(export_window->duration_16th_pulse)),
 					gtk_spin_button_get_value(window->navigation->bpm),
 					delay,
 					delay_factor);

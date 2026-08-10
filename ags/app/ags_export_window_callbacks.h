@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,8 +40,10 @@ void ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 void ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 							AgsExportWindow *export_window);
 
-void ags_export_window_tact_callback(GtkWidget *spin_button,
-				     AgsExportWindow *export_window);
+void ags_export_window_duration_tact_callback(GtkWidget *spin_button,
+					      AgsExportWindow *export_window);
+void ags_export_window_duration_16th_pulse_callback(GtkWidget *spin_button,
+						    AgsExportWindow *export_window);
 
 void ags_export_window_export_callback(GObject *gobject,
 				       GParamSpec *pspec,

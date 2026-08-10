@@ -280,7 +280,7 @@ ags_export_window_init(AgsExportWindow *export_window)
 		  1, 1,
 		  1, 1);
 
-  /* tact */
+  /* duration */
   label = (GtkLabel *) gtk_label_new(i18n("tact"));
 
   gtk_widget_set_halign((GtkWidget *) label,
@@ -297,22 +297,46 @@ ags_export_window_init(AgsExportWindow *export_window)
 		  0, 2,
 		  1, 1);
 
-  export_window->tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_DEFAULT_LENGTH, 0.25);
-  gtk_editable_set_width_chars(GTK_EDITABLE(export_window->tact),
-			       9);
-  gtk_spin_button_set_digits(export_window->tact,
-			     3);
+  /* duration tact */
+  export_window->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										  AGS_NOTATION_DEFAULT_LENGTH,
+										  1.0);
+  
+  gtk_editable_set_width_chars(GTK_EDITABLE(export_window->duration_tact),
+			       6);
+  gtk_spin_button_set_digits(export_window->duration_tact,
+			     0);
 
-  gtk_widget_set_halign((GtkWidget *) export_window->tact,
+  gtk_widget_set_halign((GtkWidget *) export_window->duration_tact,
 			GTK_ALIGN_FILL);
-  gtk_widget_set_valign((GtkWidget *) export_window->tact,
+  gtk_widget_set_valign((GtkWidget *) export_window->duration_tact,
 			GTK_ALIGN_FILL);
 
   gtk_grid_attach(grid,
-		  (GtkWidget *) export_window->tact,
+		  (GtkWidget *) export_window->duration_tact,
 		  1, 2,
 		  1, 1);
 
+  /* duration 16th pulse */
+  export_window->duration_16th_pulse = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											15,
+											1.0);
+  
+  gtk_editable_set_width_chars(GTK_EDITABLE(export_window->duration_16th_pulse),
+			       3);
+  gtk_spin_button_set_digits(export_window->duration_16th_pulse,
+			     0);
+
+  gtk_widget_set_halign((GtkWidget *) export_window->duration_16th_pulse,
+			GTK_ALIGN_FILL);
+  gtk_widget_set_valign((GtkWidget *) export_window->duration_16th_pulse,
+			GTK_ALIGN_FILL);
+
+  gtk_grid_attach(grid,
+		  (GtkWidget *) export_window->duration_16th_pulse,
+		  2, 2,
+		  1, 1);
+  
   /* time */
   label = (GtkLabel *) gtk_label_new(i18n("time"));
 
@@ -465,8 +489,11 @@ ags_export_window_connect(AgsConnectable *connectable)
   g_signal_connect(G_OBJECT(export_window->add), "clicked",
 		   G_CALLBACK(ags_export_window_add_export_soundcard_callback), export_window);
 
-  g_signal_connect_after(G_OBJECT(export_window->tact), "value-changed",
-			 G_CALLBACK(ags_export_window_tact_callback), export_window);
+  g_signal_connect_after(G_OBJECT(export_window->duration_tact), "value-changed",
+			 G_CALLBACK(ags_export_window_duration_tact_callback), export_window);
+
+  g_signal_connect_after(G_OBJECT(export_window->duration_16th_pulse), "value-changed",
+			 G_CALLBACK(ags_export_window_duration_16th_pulse_callback), export_window);
 
   g_signal_connect_after(G_OBJECT(export_window->export), "notify::active",
 			 G_CALLBACK(ags_export_window_export_callback), export_window);
@@ -516,9 +543,15 @@ ags_export_window_disconnect(AgsConnectable *connectable)
 		      export_window,
 		      NULL);
 
-  g_object_disconnect(G_OBJECT(export_window->tact),
+  g_object_disconnect(G_OBJECT(export_window->duration_tact),
 		      "any_signal::value-changed",
-		      G_CALLBACK(ags_export_window_tact_callback),
+		      G_CALLBACK(ags_export_window_duration_tact_callback),
+		      export_window,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(export_window->duration_16th_pulse),
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_export_window_duration_16th_pulse_callback),
 		      export_window,
 		      NULL);
 
@@ -1025,7 +1058,7 @@ ags_export_window_start_export(AgsExportWindow *export_window)
     delay = frame_clock->absolute_delay;
 
     /*  */
-    tic = gtk_spin_button_get_value(export_window->tact) * (delay);
+    tic = ((16.0 * gtk_spin_button_get_value(export_window->duration_tact)) + gtk_spin_button_get_value(export_window->duration_16th_pulse)) * (delay);
       
     export_soundcard = start_export_soundcard;
       
