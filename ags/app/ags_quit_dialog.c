@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -334,14 +334,26 @@ ags_quit_dialog_init(AgsQuitDialog *quit_dialog)
 		 (GtkWidget *) hbox);
   
   quit_dialog->accept = (GtkButton *) gtk_button_new_with_label(i18n("yes"));
+  gtk_widget_set_margin_end((GtkWidget *) quit_dialog->accept,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) quit_dialog->accept,
+			       6);  
   gtk_box_append(hbox,
 		 (GtkWidget *) quit_dialog->accept);
 
   quit_dialog->reject = (GtkButton *) gtk_button_new_with_label(i18n("no"));
+  gtk_widget_set_margin_end((GtkWidget *) quit_dialog->reject,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) quit_dialog->reject,
+			       6);  
   gtk_box_append(hbox,
 		 (GtkWidget *) quit_dialog->reject);
 
   quit_dialog->cancel = (GtkButton *) gtk_button_new_with_label(i18n("cancel"));
+  gtk_widget_set_margin_end((GtkWidget *) quit_dialog->cancel,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) quit_dialog->cancel,
+			       6);  
   gtk_box_append(hbox,
 		 (GtkWidget *) quit_dialog->cancel);
 }

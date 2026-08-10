@@ -125,7 +125,7 @@ ags_navigation_rewind_callback(GObject *gobject,
 
   frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
-  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
+  tact = ags_frame_clock_get_note_offset(frame_clock);
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -150,7 +150,7 @@ ags_navigation_prev_callback(GtkWidget *widget,
 
   frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
-  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
+  tact = ags_frame_clock_get_note_offset(frame_clock);
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -390,7 +390,7 @@ ags_navigation_next_callback(GtkWidget *widget,
 
   frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
-  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
+  tact = ags_frame_clock_get_note_offset(frame_clock);
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -416,7 +416,7 @@ ags_navigation_forward_callback(GObject *gobject,
 
   frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
   
-  tact = ags_frame_clock_get_note_offset(frame_clock) / 16.0;
+  tact = ags_frame_clock_get_note_offset(frame_clock);
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -442,7 +442,7 @@ ags_navigation_loop_callback(GObject *gobject,
   GList *machines, *machines_start;
   GList *list, *list_start;
 
-  guint loop_left, loop_right;
+  guint64 loop_left, loop_right;
   
   GValue do_loop_value = {0,};
 
@@ -457,8 +457,8 @@ ags_navigation_loop_callback(GObject *gobject,
   machines =
     machines_start = ags_window_get_machine(window);
 
-  loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
+  loop_left = gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_right = gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_frame_clock_set_loop(frame_clock,
 			   gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject)),
@@ -708,7 +708,7 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   GList *machines, *machines_start;
   GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
-  guint loop_left, loop_right;
+  guint64 loop_left, loop_right;
 
   GValue value = {0,};
 
@@ -723,8 +723,8 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   machines =
     machines_start = ags_window_get_machine(window);
 
-  loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
+  loop_left = gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_right = gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_frame_clock_set_loop(frame_clock,
 			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),
@@ -890,7 +890,7 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   GList *machines, *machines_start;
   GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
-  guint loop_left, loop_right;
+  guint64 loop_left, loop_right;
 
   GValue value = {0,};
 
@@ -905,8 +905,8 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   machines =
     machines_start = ags_window_get_machine(window);
 
-  loop_left = 16 * gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_right = 16 * gtk_spin_button_get_value(navigation->loop_right_tact);
+  loop_left = gtk_spin_button_get_value(navigation->loop_left_tact);
+  loop_right = gtk_spin_button_get_value(navigation->loop_right_tact);
   
   ags_frame_clock_set_loop(frame_clock,
 			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),

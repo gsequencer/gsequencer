@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -192,7 +192,10 @@ ags_machine_editor_dialog_init(AgsMachineEditorDialog *machine_editor_dialog)
 		 (GtkWidget *) machine_editor_dialog->action_area);
 
   machine_editor_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
-
+  gtk_widget_set_margin_end((GtkWidget *) machine_editor_dialog->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) machine_editor_dialog->activate_button,
+			       6);
   gtk_box_append(machine_editor_dialog->action_area,
 		 (GtkWidget *) machine_editor_dialog->activate_button);
 

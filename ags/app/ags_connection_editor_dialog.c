@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -182,7 +182,6 @@ ags_connection_editor_dialog_init(AgsConnectionEditorDialog *connection_editor_d
   /* buttons */
   connection_editor_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 								 AGS_UI_PROVIDER_DEFAULT_SPACING);
-  
   gtk_widget_set_halign((GtkWidget *) connection_editor_dialog->action_area,
 			GTK_ALIGN_END);
 
@@ -190,7 +189,10 @@ ags_connection_editor_dialog_init(AgsConnectionEditorDialog *connection_editor_d
 		 (GtkWidget *) connection_editor_dialog->action_area);
 
   connection_editor_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
-
+  gtk_widget_set_margin_end((GtkWidget *) connection_editor_dialog->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) connection_editor_dialog->activate_button,
+			       6);
   gtk_box_append(connection_editor_dialog->action_area,
 		 (GtkWidget *) connection_editor_dialog->activate_button);
 

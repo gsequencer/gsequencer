@@ -1,3 +1,62 @@
+ags (9.1.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed navigation seek
+	* fixed machine loop L and R
+
+ags (9.1.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation editor selection
+
+ags (9.1.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_find_region_256th()
+	* implemented ags_notation_add_region_256th_to_selection()
+	* implemented AgsCropNote256th
+	* implemented AgsMoveNote256th
+	* improved all dialogs margin end and bottom 6px
+	* improved notation editor to select note 256th
+	* improved AgsExportWindow duration as 16th pulse
+	* improved AgsNavigation bpm with 3 digits
+	* improved AgsNavigation loop L and R with 3 digits and as 16th pulse
+	* improved AgsNavigation position with 3 digits and as 16th pulse
+	* improved AgsPositionNotationCursorPopover spin button size
+	* improved AgsSelectNotePopover spin button size and with 3 digits
+	* improved AgsMoveNotePopover spin button size and with 3 digits
+	* improved AgsCropNotePopover spin button size and with 3 digits
+	* improved AgsImportSMFNotationPopover spin button size and with 3 digits
+	* improved AgsPositionAutomationCursorPopover spin button size and with 3 digits
+	* improved AgsSelectAccelerationPopover spin button size and with 3 digits
+	* improved AgsRampAccelerationPopover spin button size and with 3 digits
+	* improved AgsPositionWaveCursorPopover spin button size and with 3 digits
+	* improved AgsSelectBufferPopover spin button size and with 3 digits
+	* improved AgsTimeStretchBufferPopover spin button size and with 3 digits
+	* improved AgsRampMarkerPopover spin button size and with 3 digits
+	* updated libags_audio.xml.in
+
+ags (9.1.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiParser missing parse of quarter frame
+	* improved developer manual image AGS_recall_lifecycle.png
+	* added ags_midi_parser_test.c
+
+ags (9.1.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_midi_smf_util_put_sequencer_meta_event_fixed()
+	* implemented ags_midi_smf_util_get_sequencer_meta_event_fixed()
+	* fixed AgsMidiParser::midi-channel-prefix() signal
+
+ags (9.1.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsGstreamerPipelineManager
+	* fixed AgsMidiParser::sequencer-meta-event() signal
+	* fixed ags_sound_resource_read_wave() premature end of file
+
 ags (9.0.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

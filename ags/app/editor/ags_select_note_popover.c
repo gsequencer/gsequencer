@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -228,6 +228,10 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
   select_note_popover->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										    AGS_SELECT_NOTE_MAX_BEATS,
 										    1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_x0,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x0),
+			       9);
   gtk_spin_button_set_value(select_note_popover->select_x0,
 			    0.0);
   gtk_box_append(hbox,
@@ -248,6 +252,10 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
   select_note_popover->select_y0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										    AGS_SELECT_NOTE_MAX_KEYS,
 										    1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_y0,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_y0),
+			       9);
   gtk_spin_button_set_value(select_note_popover->select_y0,
 			    0.0);
   gtk_box_append(hbox,
@@ -268,6 +276,10 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
   select_note_popover->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										    AGS_SELECT_NOTE_MAX_BEATS,
 										    1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_x1,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x1),
+			       9);
   gtk_spin_button_set_value(select_note_popover->select_x1,
 			    0.0);
   gtk_box_append(hbox,
@@ -288,6 +300,10 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
   select_note_popover->select_y1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 										    AGS_SELECT_NOTE_MAX_KEYS,
 										    1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_y1,
+			     3);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_y1),
+			       9);
   gtk_spin_button_set_value(select_note_popover->select_y1,
 			    0.0);
   gtk_box_append(hbox,
@@ -526,8 +542,8 @@ ags_select_note_popover_apply(AgsApplicable *applicable)
   xmlChar *buffer;
   
   int size;
-  guint x0, y0;
-  guint x1, y1;
+  gdouble x0_256th, y0;
+  gdouble x1_256th, y1;
   gint i;
   
   gboolean copy_selection;
@@ -558,11 +574,11 @@ ags_select_note_popover_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_note_popover->copy_selection);
 
-  x0 = gtk_spin_button_get_value_as_int(select_note_popover->select_x0);
-  y0 = gtk_spin_button_get_value_as_int(select_note_popover->select_y0);
+  x0_256th = 16.0 * gtk_spin_button_get_value(select_note_popover->select_x0);
+  y0 = gtk_spin_button_get_value(select_note_popover->select_y0);
 
-  x1 = gtk_spin_button_get_value_as_int(select_note_popover->select_x1);
-  y1 = gtk_spin_button_get_value_as_int(select_note_popover->select_y1);
+  x1_256th = 16.0 * gtk_spin_button_get_value(select_note_popover->select_x1);
+  y1 = gtk_spin_button_get_value(select_note_popover->select_y1);
   
   timestamp = ags_timestamp_new();
 
@@ -589,10 +605,10 @@ ags_select_note_popover_apply(AgsApplicable *applicable)
     
     while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
 							    timestamp)) != NULL){
-      ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
-					   x0, y0,
-					   x1, y1,
-					   TRUE);
+      ags_notation_add_region_256th_to_selection(AGS_NOTATION(list_notation->data),
+						 (guint) x0_256th, (guint) y0,
+						 (guint) x1_256th, (guint) y1,
+						 TRUE);
     
       
       if(copy_selection){

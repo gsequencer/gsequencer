@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1858,6 +1858,116 @@ ags_notation_find_region(AgsNotation *notation,
 }
 
 /**
+ * ags_notation_find_region_256th:
+ * @notation: the #AgsNotation
+ * @x0_256th: start offset
+ * @y0: start tone
+ * @x1_256th: end offset
+ * @y1: end tone
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find note by offset and tone region.
+ *
+ * Returns: (element-type AgsAudio.Note) (transfer container): the matching notes as #GList-struct
+ *
+ * Since: 9.1.3
+ */
+GList*
+ags_notation_find_region_256th(AgsNotation *notation,
+			       guint x0_256th, guint y0,
+			       guint x1_256th, guint y1,
+			       gboolean use_selection_list)
+{
+  GList *note;
+  GList *region;
+
+  guint current_x0_256th, current_y;
+  
+  GRecMutex *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  /* get notation mutex */
+  notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation);
+
+  if(x0_256th > x1_256th){
+    guint tmp_x_256th;
+    gdouble tmp_y;
+
+    tmp_x_256th = x0_256th;
+    
+    x0_256th = x1_256th;
+    x1_256th = tmp_x_256th;
+
+    tmp_y = y0;
+
+    y0 = y1;
+    y1 = tmp_y;
+  }
+  
+  /* find note */
+  g_rec_mutex_lock(notation_mutex);
+
+  if(use_selection_list){
+    note = notation->selection;
+  }else{
+    note = notation->note;
+  }
+
+  while(note != NULL){
+    current_x0_256th = 0;
+    
+    g_object_get(note->data,
+		 "x0-256th", &current_x0_256th,
+		 NULL);
+    
+    if(current_x0_256th >= x0_256th){
+      break;
+    }
+    
+    note = note->next;
+  }
+
+  region = NULL;
+
+  while(note != NULL){
+    current_x0_256th = 0;
+    current_y = 0;
+    
+    g_object_get(note->data,
+		 "x0-256th", &current_x0_256th,
+		 "y", &current_y,
+		 NULL);
+
+    if(current_x0_256th > x1_256th){
+      break;
+    }
+
+    if(y0 < y1 && current_y >= y0 && current_y < y1){
+      region = g_list_insert_sorted(region,
+				    note->data,
+				    (GCompareFunc) ags_note_sort_func);
+    }else if(y0 > y1 && current_y < y0 && current_y >= y1){
+      region = g_list_insert_sorted(region,
+				    note->data,
+				    (GCompareFunc) ags_note_sort_func);
+    }else if(y0 == y1 && current_y == y0){
+      region = g_list_insert_sorted(region,
+				    note->data,
+				    (GCompareFunc) ags_note_sort_func);
+    }
+
+    note = note->next;
+  }
+
+  g_rec_mutex_unlock(notation_mutex);
+
+  return(region);
+}
+
+/**
  * ags_notation_find_offset:
  * @notation: the #AgsNotation
  * @x: offset
@@ -2476,6 +2586,81 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
 				    x0, y0,
 				    x1, y1,
 				    FALSE);
+
+  if(replace_current_selection){
+    ags_notation_free_selection(notation);
+
+    list = region;
+
+    while(list != NULL){
+      ags_note_set_flags(list->data,
+			 AGS_NOTE_IS_SELECTED);
+      g_object_ref(list->data);
+
+      list = list->next;
+    }
+
+    /* replace */
+    g_rec_mutex_lock(notation_mutex);
+     
+    notation->selection = region;
+
+    g_rec_mutex_unlock(notation_mutex);
+  }else{
+    list = region;
+    
+    while(list != NULL){
+      if(!ags_notation_is_note_selected(notation, list->data)){
+	/* add */
+	ags_notation_add_note(notation,
+			      list->data,
+			      TRUE);
+      }
+      
+      list = list->next;
+    }
+    
+    g_list_free(region);
+  }
+}
+
+/**
+ * ags_notation_add_region_256th_to_selection:
+ * @notation: the #AgsNotation
+ * @x0_256th: x start offset
+ * @y0: y start tone
+ * @x1_256th: x end offset
+ * @y1: y end tone
+ * @replace_current_selection: if %TRUE selection is replaced
+ *
+ * Add note within region to selection.
+ *
+ * Since: 9.1.3
+ */
+void
+ags_notation_add_region_256th_to_selection(AgsNotation *notation,
+				     guint x0_256th, guint y0,
+				     guint x1_256th, guint y1,
+				     gboolean replace_current_selection)
+{
+  AgsNote *note;
+
+  GList *region, *list;
+
+  GRecMutex *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation);
+
+  /* find region */
+  region = ags_notation_find_region_256th(notation,
+					  x0_256th, y0,
+					  x1_256th, y1,
+					  FALSE);
 
   if(replace_current_selection){
     ags_notation_free_selection(notation);

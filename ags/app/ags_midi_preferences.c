@@ -263,6 +263,10 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
 
   /*  */
   midi_preferences->add_menu_button = (GtkMenuButton *) gtk_menu_button_new();
+  gtk_widget_set_margin_end((GtkWidget *) midi_preferences->add_menu_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) midi_preferences->add_menu_button,
+			       6);
   gtk_box_prepend(preferences->action_area,
 		  (GtkWidget *) midi_preferences->add_menu_button);
   

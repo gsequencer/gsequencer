@@ -187,6 +187,10 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 		 (GtkWidget *) button_box);
   
   input_dialog->ok = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_OK"));
+  gtk_widget_set_margin_end((GtkWidget *) input_dialog->ok,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) input_dialog->ok,
+			       6);
   gtk_box_append(button_box,
 		 (GtkWidget *) input_dialog->ok);
 
@@ -194,6 +198,10 @@ ags_input_dialog_init(AgsInputDialog *input_dialog)
 		   G_CALLBACK(ags_input_dialog_clicked_callback), input_dialog);
   
   input_dialog->cancel = (GtkButton *) gtk_button_new_with_mnemonic(i18n("_Cancel"));
+  gtk_widget_set_margin_end((GtkWidget *) input_dialog->cancel,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) input_dialog->cancel,
+			       6);
   gtk_box_append(button_box,
 		 (GtkWidget *) input_dialog->cancel);
 

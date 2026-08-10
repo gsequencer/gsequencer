@@ -325,16 +325,17 @@ ags_preset_dialog_init(AgsPresetDialog *preset_dialog)
   
   /* buttons */
   preset_dialog->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-						      AGS_UI_PROVIDER_DEFAULT_SPACING);
-  
+						      AGS_UI_PROVIDER_DEFAULT_SPACING);  
   gtk_widget_set_halign((GtkWidget *) preset_dialog->action_area,
 			GTK_ALIGN_END);
-
   gtk_box_append(vbox,
 		 (GtkWidget *) preset_dialog->action_area);
 
   preset_dialog->activate_button = (GtkButton *) gtk_button_new_with_label(i18n("ok"));
-
+  gtk_widget_set_margin_end((GtkWidget *) preset_dialog->activate_button,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) preset_dialog->activate_button,
+			       6);
   gtk_box_append(preset_dialog->action_area,
 		 (GtkWidget *) preset_dialog->activate_button);
 

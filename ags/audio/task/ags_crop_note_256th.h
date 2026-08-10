@@ -1,0 +1,80 @@
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2026 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef __AGS_CROP_NOTE_256TH_H__
+#define __AGS_CROP_NOTE_256TH_H__
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_notation.h>
+
+G_BEGIN_DECLS
+
+#define AGS_TYPE_CROP_NOTE_256TH                (ags_crop_note_256th_get_type())
+#define AGS_CROP_NOTE_256TH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CROP_NOTE_256TH, AgsCropNote256th))
+#define AGS_CROP_NOTE_256TH_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CROP_NOTE_256TH, AgsCropNote256thClass))
+#define AGS_IS_CROP_NOTE_256TH(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_CROP_NOTE_256TH))
+#define AGS_IS_CROP_NOTE_256TH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CROP_NOTE_256TH))
+#define AGS_CROP_NOTE_256TH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CROP_NOTE_256TH, AgsCropNote256thClass))
+
+#define AGS_CROP_NOTE_256TH_DEFAULT_X_LENGTH (16 * 16 * 16 * 1200)
+
+typedef struct _AgsCropNote256th AgsCropNote256th;
+typedef struct _AgsCropNote256thClass AgsCropNote256thClass;
+
+struct _AgsCropNote256th
+{
+  AgsTask task;
+
+  AgsAudio *audio;
+  AgsNotation *notation;
+
+  GList *selection;
+  
+  guint x_256th_padding;
+  gint x_256th_crop;
+  
+  gboolean absolute;
+  gboolean in_place;
+  gboolean do_resize;
+};
+
+struct _AgsCropNote256thClass
+{
+  AgsTaskClass task;
+};
+
+GType ags_crop_note_256th_get_type();
+
+void ags_crop_note_256th_set_selection(AgsCropNote256th *crop_note_256th,
+				       GList *selection);
+
+AgsCropNote256th* ags_crop_note_256th_new(AgsAudio *audio,
+					  AgsNotation *notation,
+					  GList *selection,
+					  guint x_256th_padding, gint x_256th_crop,
+					  gboolean absolute, gboolean in_place, gboolean do_resize);
+
+G_END_DECLS
+
+#endif /*__AGS_CROP_NOTE_256TH_H__*/

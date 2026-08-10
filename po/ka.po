@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 8.3.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-07-16 18:05+0200\n"
+"POT-Creation-Date: 2026-08-10 15:26+0200\n"
 "PO-Revision-Date: 2026-04-12 06:57+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: \n"
@@ -175,7 +175,7 @@ msgid "machine editor"
 msgstr "მანქანის რედაქტორი"
 
 #: ags/app/ags_machine_editor_dialog.c:194
-#: ags/app/editor/ags_envelope_dialog.c:367 ags/app/ags_midi_dialog.c:561
+#: ags/app/editor/ags_envelope_dialog.c:365 ags/app/ags_midi_dialog.c:561
 #: ags/app/ags_plugin_browser.c:364 ags/app/ags_preferences.c:282
 msgid "ok"
 msgstr "დიახ"
@@ -204,11 +204,11 @@ msgstr "ყველას მიღება"
 msgid "yes"
 msgstr "დიახ"
 
-#: ags/app/ags_quit_dialog.c:340
+#: ags/app/ags_quit_dialog.c:344
 msgid "no"
 msgstr "არა"
 
-#: ags/app/ags_quit_dialog.c:344
+#: ags/app/ags_quit_dialog.c:352
 msgid "cancel"
 msgstr "გაუქმება"
 
@@ -284,9 +284,9 @@ msgid "download"
 msgstr "ჩამოტვირთვა"
 
 #: ags/app/ags_pcm_file_dialog.c:293
-#: ags/app/export/ags_midi_export_wizard.c:481
+#: ags/app/export/ags_midi_export_wizard.c:489
 #: ags/app/export/ags_wave_export_dialog.c:418
-#: ags/app/import/ags_midi_import_wizard.c:472
+#: ags/app/import/ags_midi_import_wizard.c:480
 #: ags/app/ags_export_soundcard.c:336
 msgid "open"
 msgstr "ღია"
@@ -315,7 +315,7 @@ msgstr "ნაკადების მაქს. სიზუსტე [ჰც]
 msgid "update UI timeout[s]"
 msgstr "ინტერფეისის განახლების ვადა[წმ]"
 
-#: ags/app/ags_bulk_member.c:899 ags/app/machine/ags_dssi_bridge.c:419
+#: ags/app/ags_bulk_member.c:923 ags/app/machine/ags_dssi_bridge.c:419
 #: ags/app/machine/ags_live_dssi_bridge.c:422
 #: ags/app/machine/ags_live_vst3_bridge.c:479
 #: ags/app/machine/ags_vst3_bridge.c:459
@@ -335,8 +335,8 @@ msgstr "ფაილში გატანა"
 msgid "previous"
 msgstr "წინა"
 
-#: ags/app/export/ags_midi_export_wizard.c:474
-#: ags/app/import/ags_midi_import_wizard.c:465
+#: ags/app/export/ags_midi_export_wizard.c:478
+#: ags/app/import/ags_midi_import_wizard.c:469
 msgid "next"
 msgstr "შემდეგი"
 
@@ -363,7 +363,7 @@ msgstr "გამოტანის ფორმატი"
 msgid "file"
 msgstr "ფაილი"
 
-#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:416
+#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:418
 msgid "export"
 msgstr "გატანა"
 
@@ -495,20 +495,20 @@ msgstr "ფოკუსის დაყენება"
 msgid "position x"
 msgstr "მდებარეობის x"
 
-#: ags/app/editor/ags_position_wave_cursor_popover.c:241
-#: ags/app/editor/ags_position_notation_cursor_popover.c:265
-#: ags/app/editor/ags_ramp_acceleration_popover.c:324
-#: ags/app/editor/ags_time_stretch_buffer_popover.c:280
-#: ags/app/editor/ags_crop_note_popover.c:276
-#: ags/app/editor/ags_position_automation_cursor_popover.c:241
-#: ags/app/editor/ags_select_acceleration_popover.c:272
-#: ags/app/editor/ags_select_buffer_popover.c:265
-#: ags/app/editor/ags_move_note_popover.c:271
-#: ags/app/editor/ags_select_note_popover.c:306
+#: ags/app/editor/ags_position_wave_cursor_popover.c:245
+#: ags/app/editor/ags_position_notation_cursor_popover.c:269
+#: ags/app/editor/ags_ramp_acceleration_popover.c:338
+#: ags/app/editor/ags_time_stretch_buffer_popover.c:284
+#: ags/app/editor/ags_crop_note_popover.c:284
+#: ags/app/editor/ags_position_automation_cursor_popover.c:245
+#: ags/app/editor/ags_select_acceleration_popover.c:276
+#: ags/app/editor/ags_select_buffer_popover.c:269
+#: ags/app/editor/ags_move_note_popover.c:275
+#: ags/app/editor/ags_select_note_popover.c:322
 msgid "apply"
 msgstr "გადატარება"
 
-#: ags/app/editor/ags_position_notation_cursor_popover.c:242
+#: ags/app/editor/ags_position_notation_cursor_popover.c:246
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:191
 msgid "position y"
 msgstr "მდებარეობის y"
@@ -517,24 +517,24 @@ msgstr "მდებარეობის y"
 msgid "ramp x0"
 msgstr "დახრა x0"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:239
+#: ags/app/editor/ags_ramp_acceleration_popover.c:241
 msgid "ramp y0"
 msgstr "დახრა y0"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:259
+#: ags/app/editor/ags_ramp_acceleration_popover.c:265
 msgid "ramp x1"
 msgstr "დახრა x1"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:281
+#: ags/app/editor/ags_ramp_acceleration_popover.c:289
 msgid "ramp y1"
 msgstr "დახრა y1"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:301
+#: ags/app/editor/ags_ramp_acceleration_popover.c:313
 msgid "ramp step count"
 msgstr "დახრის ნაბიჯების რაოდენობა"
 
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:146
-#: ags/app/editor/ags_composite_toolbar.c:1898
+#: ags/app/editor/ags_composite_toolbar.c:1903
 msgid "position sheet cursor"
 msgstr "პოზიციის ფურცლის კურსორი"
 
@@ -574,7 +574,7 @@ msgstr "სიხშირე"
 msgid "orig BPM"
 msgstr "ორიგ BPM"
 
-#: ags/app/editor/ags_time_stretch_buffer_popover.c:255
+#: ags/app/editor/ags_time_stretch_buffer_popover.c:257
 msgid "new BPM"
 msgstr "ახალ BPM"
 
@@ -595,7 +595,7 @@ msgstr "ზომის შეცვლა"
 msgid "crop note"
 msgstr "ნოტის ამოჭრა"
 
-#: ags/app/editor/ags_crop_note_popover.c:253
+#: ags/app/editor/ags_crop_note_popover.c:257
 msgid "padding note"
 msgstr "შევსების ნოტა"
 
@@ -603,193 +603,193 @@ msgstr "შევსების ნოტა"
 msgid "remove sheet page"
 msgstr "ფურცლის გვერდის წაშლა"
 
-#: ags/app/editor/ags_composite_toolbar.c:969
+#: ags/app/editor/ags_composite_toolbar.c:974
 msgid "Position"
 msgstr "პოზიცია"
 
-#: ags/app/editor/ags_composite_toolbar.c:973
+#: ags/app/editor/ags_composite_toolbar.c:978
 msgid "position tool"
 msgstr "მოთავსების ხელსაწყო"
 
-#: ags/app/editor/ags_composite_toolbar.c:990
-#: ags/app/ags_gsequencer_application.c:874
+#: ags/app/editor/ags_composite_toolbar.c:995
+#: ags/app/ags_gsequencer_application.c:879
 msgid "Edit"
 msgstr "ჩასწორება"
 
-#: ags/app/editor/ags_composite_toolbar.c:994
+#: ags/app/editor/ags_composite_toolbar.c:999
 msgid "edit tool"
 msgstr "ჩასწორების ხელსაწყო"
 
-#: ags/app/editor/ags_composite_toolbar.c:1011
+#: ags/app/editor/ags_composite_toolbar.c:1016
 msgid "Clear"
 msgstr "გასუფთავება"
 
-#: ags/app/editor/ags_composite_toolbar.c:1015
+#: ags/app/editor/ags_composite_toolbar.c:1020
 msgid "clear tool"
 msgstr "გასუფთავების ხელსაწყო"
 
-#: ags/app/editor/ags_composite_toolbar.c:1032
+#: ags/app/editor/ags_composite_toolbar.c:1037
 msgid "Select"
 msgstr "არჩევა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1036
+#: ags/app/editor/ags_composite_toolbar.c:1041
 msgid "selection tool"
 msgstr "მონიშვნის ხელსაწყო"
 
-#: ags/app/editor/ags_composite_toolbar.c:1172
+#: ags/app/editor/ags_composite_toolbar.c:1177
 msgid "Invert"
 msgstr "ინვერსია"
 
-#: ags/app/editor/ags_composite_toolbar.c:1176
+#: ags/app/editor/ags_composite_toolbar.c:1181
 msgid "invert action"
 msgstr "ქმედების ინვერსია"
 
-#: ags/app/editor/ags_composite_toolbar.c:1194
+#: ags/app/editor/ags_composite_toolbar.c:1199
 msgid "Copy"
 msgstr "კოპირება"
 
-#: ags/app/editor/ags_composite_toolbar.c:1198
+#: ags/app/editor/ags_composite_toolbar.c:1203
 msgid "copy action"
 msgstr "ქმედების კოპირება"
 
-#: ags/app/editor/ags_composite_toolbar.c:1216
+#: ags/app/editor/ags_composite_toolbar.c:1221
 msgid "Cut"
 msgstr "ამოჭრა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1220
+#: ags/app/editor/ags_composite_toolbar.c:1225
 msgid "cut action"
 msgstr "ქმედების ამოჭრა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1238
+#: ags/app/editor/ags_composite_toolbar.c:1243
 msgid "Paste"
 msgstr "ჩასმა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1242
+#: ags/app/editor/ags_composite_toolbar.c:1247
 msgid "paste menu action"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1377
+#: ags/app/editor/ags_composite_toolbar.c:1382
 msgid "tool"
 msgstr "ხელსაწყო"
 
-#: ags/app/editor/ags_composite_toolbar.c:1380
+#: ags/app/editor/ags_composite_toolbar.c:1385
 msgid "tool popover option"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1409
+#: ags/app/editor/ags_composite_toolbar.c:1414
 #: ags/app/ags_online_help_window.c:211
 msgid "zoom"
 msgstr "გადიდება"
 
-#: ags/app/editor/ags_composite_toolbar.c:1437
+#: ags/app/editor/ags_composite_toolbar.c:1442
 msgid "opacity"
 msgstr "გაუმჭვირვალობა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1468
+#: ags/app/editor/ags_composite_toolbar.c:1473
 msgid "Port"
 msgstr "პორტი"
 
-#: ags/app/editor/ags_composite_toolbar.c:1520
+#: ags/app/editor/ags_composite_toolbar.c:1525
 msgid "beats"
 msgstr "დარტყმები"
 
-#: ags/app/editor/ags_composite_toolbar.c:1566
+#: ags/app/editor/ags_composite_toolbar.c:1571
 msgid "beats type"
 msgstr "დარტყმის ტიპი"
 
-#: ags/app/editor/ags_composite_toolbar.c:1603
+#: ags/app/editor/ags_composite_toolbar.c:1608
 msgid "snap to zoom"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1623
+#: ags/app/editor/ags_composite_toolbar.c:1628
 msgid "trace pointer"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1735
+#: ags/app/editor/ags_composite_toolbar.c:1740
 msgid "match audio channel"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1742
+#: ags/app/editor/ags_composite_toolbar.c:1747
 msgid "match line"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:1749
+#: ags/app/editor/ags_composite_toolbar.c:1754
 msgid "no duplicates"
 msgstr "დუბლიკატების გარეშე"
 
-#: ags/app/editor/ags_composite_toolbar.c:1755
+#: ags/app/editor/ags_composite_toolbar.c:1760
 msgid "paste"
 msgstr "ჩასმა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1797
+#: ags/app/editor/ags_composite_toolbar.c:1802
 msgid "enable all audio channels"
 msgstr "ყველა აუდიოარხის ჩართვა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1808
+#: ags/app/editor/ags_composite_toolbar.c:1813
 msgid "disable all audio channels"
 msgstr "ყველა აუდიოარხის გამორთვა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1819
+#: ags/app/editor/ags_composite_toolbar.c:1824
 msgid "enable all lines"
 msgstr "ყველა ხაზის ჩართვა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1830
+#: ags/app/editor/ags_composite_toolbar.c:1835
 msgid "disable all lines"
 msgstr "ყველა ხაზის გამორთვა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1842
+#: ags/app/editor/ags_composite_toolbar.c:1847
 msgid "move notes"
 msgstr "ნოტების გადაადგილება"
 
-#: ags/app/editor/ags_composite_toolbar.c:1853
+#: ags/app/editor/ags_composite_toolbar.c:1858
 msgid "crop notes"
 msgstr "ნოტების ამოჭრა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1864
+#: ags/app/editor/ags_composite_toolbar.c:1869
 msgid "select notes"
 msgstr "ნოტების მონიშვნა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1875
+#: ags/app/editor/ags_composite_toolbar.c:1880
 msgid "position notation cursor"
 msgstr "მდებარეობის ნოტაციის კურსორი"
 
-#: ags/app/editor/ags_composite_toolbar.c:1886
+#: ags/app/editor/ags_composite_toolbar.c:1891
 msgid "import notation smf"
 msgstr "ნოტაციის SMF-ის შემოტანა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1909
+#: ags/app/editor/ags_composite_toolbar.c:1914
 msgid "add page"
 msgstr "გვერდის დამატება"
 
-#: ags/app/editor/ags_composite_toolbar.c:1920
+#: ags/app/editor/ags_composite_toolbar.c:1925
 msgid "remove page"
 msgstr "გვერდის წაშლა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1932
+#: ags/app/editor/ags_composite_toolbar.c:1937
 msgid "select accelerations"
 msgstr "აირჩიეთ აჩქარებები"
 
-#: ags/app/editor/ags_composite_toolbar.c:1943
+#: ags/app/editor/ags_composite_toolbar.c:1948
 msgid "ramp accelerations"
 msgstr "აჩქარებების დახრა"
 
-#: ags/app/editor/ags_composite_toolbar.c:1954
+#: ags/app/editor/ags_composite_toolbar.c:1959
 msgid "position automation cursor"
 msgstr "პოზიციის ავტომატიზაციის კურსორი"
 
-#: ags/app/editor/ags_composite_toolbar.c:1966
+#: ags/app/editor/ags_composite_toolbar.c:1971
 msgid "select buffers"
 msgstr "აირჩიეთ ბუფერები"
 
-#: ags/app/editor/ags_composite_toolbar.c:1977
+#: ags/app/editor/ags_composite_toolbar.c:1982
 msgid "position wave cursor"
 msgstr "პოზიციის ტალღის კურსორი"
 
-#: ags/app/editor/ags_composite_toolbar.c:1988
+#: ags/app/editor/ags_composite_toolbar.c:1993
 msgid "time stretch buffers"
 msgstr ""
 
-#: ags/app/editor/ags_composite_toolbar.c:2002
+#: ags/app/editor/ags_composite_toolbar.c:2007
 msgid "ramp markers"
 msgstr ""
 
@@ -891,9 +891,9 @@ msgstr "მონიშნულის კოპირება"
 msgid "select x0"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_popover.c:247
-#: ags/app/editor/ags_select_buffer_popover.c:240
-#: ags/app/editor/ags_select_note_popover.c:263
+#: ags/app/editor/ags_select_acceleration_popover.c:249
+#: ags/app/editor/ags_select_buffer_popover.c:242
+#: ags/app/editor/ags_select_note_popover.c:271
 msgid "select x1"
 msgstr ""
 
@@ -984,7 +984,7 @@ msgstr "რედაქტორი"
 msgid "info"
 msgstr "ინფორმაცია"
 
-#: ags/app/editor/ags_envelope_dialog.c:675 ags/app/machine/ags_drum.c:372
+#: ags/app/editor/ags_envelope_dialog.c:676 ags/app/machine/ags_drum.c:372
 msgid "pattern"
 msgstr "შაბლონი"
 
@@ -1016,15 +1016,15 @@ msgstr "ფარდობითი"
 msgid "move x"
 msgstr "x-ის გადაწევა"
 
-#: ags/app/editor/ags_move_note_popover.c:248
+#: ags/app/editor/ags_move_note_popover.c:252
 msgid "move y"
 msgstr "y-ის გადაწევა"
 
-#: ags/app/editor/ags_select_note_popover.c:243
+#: ags/app/editor/ags_select_note_popover.c:247
 msgid "select y0"
 msgstr "y0-ის არჩევა"
 
-#: ags/app/editor/ags_select_note_popover.c:283
+#: ags/app/editor/ags_select_note_popover.c:295
 msgid "select y1"
 msgstr "y1-ის არჩევა"
 
@@ -1074,162 +1074,162 @@ msgstr ""
 msgid "pad"
 msgstr ""
 
-#: ags/app/ags_navigation.c:233
+#: ags/app/ags_navigation.c:235
 msgid "bpm"
 msgstr "დარტყმა/წთ"
 
-#: ags/app/ags_navigation.c:256
+#: ags/app/ags_navigation.c:262
 msgid "skip backward"
 msgstr "უკან გადახტომა"
 
-#: ags/app/ags_navigation.c:270
+#: ags/app/ags_navigation.c:276
 msgid "seek backward"
 msgstr "უკან გადახვევა"
 
-#: ags/app/ags_navigation.c:283
+#: ags/app/ags_navigation.c:289
 msgid "playback"
 msgstr "დაკვრა"
 
-#: ags/app/ags_navigation.c:297 ags/app/ags_audio_preferences.c:511
+#: ags/app/ags_navigation.c:303 ags/app/ags_audio_preferences.c:515
 msgid "stop"
 msgstr "stop"
 
-#: ags/app/ags_navigation.c:311
+#: ags/app/ags_navigation.c:317
 msgid "seek forward"
 msgstr "წინ გადახვევა"
 
-#: ags/app/ags_navigation.c:325
+#: ags/app/ags_navigation.c:331
 msgid "skip forward"
 msgstr "წინ გადახტომა"
 
-#: ags/app/ags_navigation.c:332 ags/app/machine/ags_drum.c:393
+#: ags/app/ags_navigation.c:338 ags/app/machine/ags_drum.c:393
 msgid "loop"
 msgstr "მარყუჟი"
 
-#: ags/app/ags_navigation.c:373
+#: ags/app/ags_navigation.c:385
 msgid "loop L"
 msgstr ""
 
-#: ags/app/ags_navigation.c:383
+#: ags/app/ags_navigation.c:401
 msgid "loop R"
 msgstr ""
 
-#: ags/app/ags_navigation.c:397
+#: ags/app/ags_navigation.c:419
 msgid "auto-scroll"
 msgstr "ავტოგადახვევა"
 
-#: ags/app/ags_navigation.c:403 ags/app/ags_export_window.c:221
+#: ags/app/ags_navigation.c:425 ags/app/ags_export_window.c:221
 msgid "exclude sequencers"
 msgstr "სეკვენსერების გამორიცხვა"
 
-#: ags/app/ags_gsequencer_application.c:782
+#: ags/app/ags_gsequencer_application.c:787
 msgid "Open"
 msgstr "გახსნა"
 
-#: ags/app/ags_gsequencer_application.c:787
+#: ags/app/ags_gsequencer_application.c:792
 msgid "Save"
 msgstr "შენახვა"
 
-#: ags/app/ags_gsequencer_application.c:792
+#: ags/app/ags_gsequencer_application.c:797
 msgid "Save as"
 msgstr "შენახვა, როგორც"
 
-#: ags/app/ags_gsequencer_application.c:797
+#: ags/app/ags_gsequencer_application.c:802
 msgid "Export"
 msgstr "გატანა"
 
-#: ags/app/ags_gsequencer_application.c:802
+#: ags/app/ags_gsequencer_application.c:807
 msgid "Quit"
 msgstr "გასვლა"
 
-#: ags/app/ags_gsequencer_application.c:809
+#: ags/app/ags_gsequencer_application.c:814
 msgid "File"
 msgstr "ფაილი"
 
-#: ags/app/ags_gsequencer_application.c:823
+#: ags/app/ags_gsequencer_application.c:828
 msgid "Add"
 msgstr "დამატება"
 
-#: ags/app/ags_gsequencer_application.c:827
+#: ags/app/ags_gsequencer_application.c:832
 msgid "Notation"
 msgstr "ნოტაცია"
 
-#: ags/app/ags_gsequencer_application.c:832
+#: ags/app/ags_gsequencer_application.c:837
 msgid "Automation"
 msgstr "ავტომატიზაცია"
 
-#: ags/app/ags_gsequencer_application.c:837
+#: ags/app/ags_gsequencer_application.c:842
 msgid "Wave"
 msgstr "ტალღა"
 
-#: ags/app/ags_gsequencer_application.c:844
+#: ags/app/ags_gsequencer_application.c:849
 msgid "Sheet"
 msgstr "ფურცელი"
 
-#: ags/app/ags_gsequencer_application.c:850
+#: ags/app/ags_gsequencer_application.c:855
 msgid "Tempo"
 msgstr "ტემპი"
 
-#: ags/app/ags_gsequencer_application.c:855
+#: ags/app/ags_gsequencer_application.c:860
 msgid "Meta-data"
 msgstr "მეტამონაცემები"
 
-#: ags/app/ags_gsequencer_application.c:860
+#: ags/app/ags_gsequencer_application.c:865
 msgid "Preferences"
 msgstr "მორგება"
 
-#: ags/app/ags_gsequencer_application.c:866
+#: ags/app/ags_gsequencer_application.c:871
 msgid "Downloads"
 msgstr "გადმოწერები"
 
-#: ags/app/ags_gsequencer_application.c:880
-#: ags/app/ags_gsequencer_application.c:1149
+#: ags/app/ags_gsequencer_application.c:885
+#: ags/app/ags_gsequencer_application.c:1154
 msgid "SMF import"
 msgstr "SMF-ის შემოტანა"
 
-#: ags/app/ags_gsequencer_application.c:885
-#: ags/app/ags_gsequencer_application.c:1158
+#: ags/app/ags_gsequencer_application.c:890
+#: ags/app/ags_gsequencer_application.c:1163
 msgid "SMF export"
 msgstr "SMF-ის გატანა"
 
-#: ags/app/ags_gsequencer_application.c:892
+#: ags/app/ags_gsequencer_application.c:897
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ags/app/ags_gsequencer_application.c:903
+#: ags/app/ags_gsequencer_application.c:908
 msgid "Window"
 msgstr "ფანჯარა"
 
-#: ags/app/ags_gsequencer_application.c:910
-#: ags/app/ags_gsequencer_application.c:922
+#: ags/app/ags_gsequencer_application.c:915
+#: ags/app/ags_gsequencer_application.c:927
 msgid "Help"
 msgstr "დახმარება"
 
-#: ags/app/ags_gsequencer_application.c:915
+#: ags/app/ags_gsequencer_application.c:920
 msgid "About"
 msgstr "შესახებ"
 
-#: ags/app/ags_gsequencer_application.c:1103
+#: ags/app/ags_gsequencer_application.c:1108
 msgid "application window"
 msgstr "აპლიკაციის ფანჯარა"
 
-#: ags/app/ags_gsequencer_application.c:1111 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1116 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr "მორგება"
 
-#: ags/app/ags_gsequencer_application.c:1121
+#: ags/app/ags_gsequencer_application.c:1126
 msgid "sample downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1131
+#: ags/app/ags_gsequencer_application.c:1136
 msgid "meta-data"
 msgstr "მეტამონაცემები"
 
-#: ags/app/ags_gsequencer_application.c:1140
+#: ags/app/ags_gsequencer_application.c:1145
 msgid "audio export"
 msgstr "აუდიოს გატანა"
 
-#: ags/app/ags_gsequencer_application.c:1167
+#: ags/app/ags_gsequencer_application.c:1172
 msgid "help"
 msgstr "დახმარება"
 
@@ -1338,63 +1338,63 @@ msgstr ""
 msgid "midi device"
 msgstr "midi მოწყობილობა"
 
-#: ags/app/ags_audio_preferences.c:343
+#: ags/app/ags_audio_preferences.c:347
 msgid "add ALSA output soundcard"
 msgstr "ALSA-ის გამოტანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:348
+#: ags/app/ags_audio_preferences.c:352
 msgid "add ALSA input soundcard"
 msgstr "ALSA-ის შეყვანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:355
+#: ags/app/ags_audio_preferences.c:359
 msgid "add OSSv4 output soundcard"
 msgstr "OSSv4-ის გამოტანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:360
+#: ags/app/ags_audio_preferences.c:364
 msgid "add OSSv4 input soundcard"
 msgstr "OSSv4-ის შეყვანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:367
+#: ags/app/ags_audio_preferences.c:371
 msgid "add JACK output soundcard"
 msgstr "JACK-ის გამოტანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:372
+#: ags/app/ags_audio_preferences.c:376
 msgid "add JACK input soundcard"
 msgstr "JACK-ის შეყვანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:379
+#: ags/app/ags_audio_preferences.c:383
 msgid "add Pulseaudio output soundcard"
 msgstr "Pulseaudio-ის გამოტანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:384
+#: ags/app/ags_audio_preferences.c:388
 msgid "add Pulseaudio input soundcard"
 msgstr "Pulseaudio-ის შეყვანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:391
+#: ags/app/ags_audio_preferences.c:395
 msgid "add Core Audio output soundcard"
 msgstr "Core Audio-ის გამოტანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:396
+#: ags/app/ags_audio_preferences.c:400
 msgid "add Core Audio input soundcard"
 msgstr "Core Audio-ის შეყვანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:403
+#: ags/app/ags_audio_preferences.c:407
 msgid "add WASAPI output soundcard"
 msgstr "WASAPI-ის გამოტანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:408
+#: ags/app/ags_audio_preferences.c:412
 msgid "add WASAPI input soundcard"
 msgstr "WASAPI-ის შეყვანის ხმის ბარათის დამატება"
 
-#: ags/app/ags_audio_preferences.c:448
+#: ags/app/ags_audio_preferences.c:452
 msgid "JACK driver"
 msgstr "JACK დრაივერი"
 
-#: ags/app/ags_audio_preferences.c:473
+#: ags/app/ags_audio_preferences.c:477
 msgid "JACK server"
 msgstr "JACK სერვერი"
 
-#: ags/app/ags_audio_preferences.c:507
+#: ags/app/ags_audio_preferences.c:511
 msgid "start"
 msgstr "დაწყება"
 
@@ -2089,23 +2089,23 @@ msgstr ""
 msgid "plugin type"
 msgstr ""
 
-#: ags/app/ags_midi_preferences.c:274
+#: ags/app/ags_midi_preferences.c:278
 msgid "add ALSA input sequencer"
 msgstr "ALSA-ის შეყვანის სეკვენსერის დამატება"
 
-#: ags/app/ags_midi_preferences.c:281
+#: ags/app/ags_midi_preferences.c:285
 msgid "add OSSv4 input sequencer"
 msgstr "OSSv4-ის შეყვანის სეკვენსერის დამატება"
 
-#: ags/app/ags_midi_preferences.c:288
+#: ags/app/ags_midi_preferences.c:292
 msgid "add JACK input sequencer"
 msgstr "JACK-ის შეყვანის სეკვენსერის დამატება"
 
-#: ags/app/ags_midi_preferences.c:298
+#: ags/app/ags_midi_preferences.c:302
 msgid "add Core Midi input sequencer"
 msgstr "Core Midi-ის შეყვანის სეკვენსერის დამატება"
 
-#: ags/app/ags_midi_preferences.c:305
+#: ags/app/ags_midi_preferences.c:309
 msgid "add WASAPI input sequencer"
 msgstr "WASAPI-ის შეყვანის სეკვენსერის დამატება"
 
@@ -2177,30 +2177,30 @@ msgstr "რეჟიმი"
 msgid "tact"
 msgstr "ტაქტი"
 
-#: ags/app/ags_export_window.c:315
+#: ags/app/ags_export_window.c:317
 msgid "time"
 msgstr "დრო"
 
-#: ags/app/ags_preferences.c:305
+#: ags/app/ags_preferences.c:308
 msgid "generic"
 msgstr "ზოგადი"
 
-#: ags/app/ags_preferences.c:317
+#: ags/app/ags_preferences.c:320
 msgid "audio"
 msgstr "აუდიო"
 
-#: ags/app/ags_preferences.c:326
+#: ags/app/ags_preferences.c:329
 msgid "midi"
 msgstr "midi"
 
-#: ags/app/ags_preferences.c:335
+#: ags/app/ags_preferences.c:338
 msgid "performance"
 msgstr "წარმადობა"
 
-#: ags/app/ags_preferences.c:348
+#: ags/app/ags_preferences.c:351
 msgid "OSC server"
 msgstr "OSC სერვერი"
 
-#: ags/app/ags_preferences.c:359
+#: ags/app/ags_preferences.c:362
 msgid "server"
 msgstr "სერვერი"

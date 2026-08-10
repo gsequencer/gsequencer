@@ -324,6 +324,15 @@ guint ags_midi_smf_util_get_sequencer_meta_event(AgsMidiSmfUtil *midi_smf_util,
 						 gint *delta_time,
 						 gint *len, gint *id, gint *data);
 
+void ags_midi_smf_util_put_sequencer_meta_event_fixed(AgsMidiSmfUtil *midi_smf_util,
+						      guchar *buffer,
+						      gint delta_time,
+						      gint len, gint id, guchar *data);
+guint ags_midi_smf_util_get_sequencer_meta_event_fixed(AgsMidiSmfUtil *midi_smf_util,
+						       guchar *buffer,
+						       gint *delta_time,
+						       gint *len, gint *id, guchar **data);
+
 /* text event */
 void ags_midi_smf_util_put_text_event(AgsMidiSmfUtil *midi_smf_util,
 				      guchar *buffer,

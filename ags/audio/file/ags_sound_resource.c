@@ -929,6 +929,18 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
   audio_buffer_util = ags_audio_buffer_util_alloc();
 
+  frame_count = 0;
+
+  audio_channels = 0;
+
+  samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+
+  target_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  target_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  target_format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
 			  &frame_count,
 			  NULL, NULL);
@@ -1014,7 +1026,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       
     current_offset = 0;
 
-    while(current_offset < frame_count){
+    while(current_offset < frame_count &&
+	  x_point_offset < x_offset + frame_count){
       AgsBuffer *buffer;
 
       gint read_count;
@@ -1131,49 +1144,50 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       }
       //      g_message("read %d[%d-%d]: %d", read_count, i, i_stop, num_read);
 
-      if(num_read == 0){
-	//	break;
-      }
-      
-      ags_timestamp_set_ags_offset(current_timestamp,
-				   (guint64) relative_offset * floor(x_point_offset / relative_offset));
-
-      list = ags_wave_find_near_timestamp(start_list, i,
-					  current_timestamp);
-      
-      if(list == NULL){
-	wave = ags_wave_new(NULL,
-			    i);
-	g_object_set(wave,
-		     "samplerate", target_samplerate,
-		     "buffer-size", target_buffer_size,
-		     "format", target_format,
-		     NULL);
-
-	timestamp = NULL;
-    
-	g_object_get(wave,
-		     "timestamp", &timestamp,
-		     NULL);
-	ags_timestamp_set_ags_offset(timestamp,
+      if(num_read > 0){      
+	ags_timestamp_set_ags_offset(current_timestamp,
 				     (guint64) relative_offset * floor(x_point_offset / relative_offset));
-    
-	g_object_unref(timestamp);
-	
-	start_list = ags_wave_add(start_list,
-				  wave);
-      }else{
-	wave = list->data;
-      }
-      
-      ags_wave_add_buffer(wave,
-			  buffer,
-			  FALSE);
-            
-      /* iterate */
-      x_point_offset += read_count;
 
-      current_offset += num_read;
+	list = ags_wave_find_near_timestamp(start_list, i,
+					    current_timestamp);
+      
+	if(list == NULL){
+	  wave = ags_wave_new(NULL,
+			      i);
+	  g_object_set(wave,
+		       "samplerate", target_samplerate,
+		       "buffer-size", target_buffer_size,
+		       "format", target_format,
+		       NULL);
+
+	  timestamp = NULL;
+    
+	  g_object_get(wave,
+		       "timestamp", &timestamp,
+		       NULL);
+	  ags_timestamp_set_ags_offset(timestamp,
+				       (guint64) relative_offset * floor(x_point_offset / relative_offset));
+    
+	  g_object_unref(timestamp);
+	
+	  start_list = ags_wave_add(start_list,
+				    wave);
+	}else{
+	  wave = list->data;
+	}
+      
+	ags_wave_add_buffer(wave,
+			    buffer,
+			    FALSE);
+            
+	/* iterate */
+	x_point_offset += read_count;
+
+	current_offset += num_read;
+	//	break;
+      }else{
+	break;
+      }
     }
   }
   

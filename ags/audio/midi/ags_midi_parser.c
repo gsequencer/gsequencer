@@ -229,7 +229,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   midi_parser->meta_misc = ags_midi_parser_real_meta_misc;
 
-  midi_parser->midi_channel_prefix = ags_midi_parser_midi_channel_prefix;
+  midi_parser->midi_channel_prefix = ags_midi_parser_real_midi_channel_prefix;
 
   midi_parser->quarter_frame = ags_midi_parser_real_quarter_frame;
   midi_parser->song_position = ags_midi_parser_real_song_position;
@@ -988,6 +988,7 @@ ags_midi_parser_get_property(GObject *gobject,
 
       g_rec_mutex_unlock(midi_parser_mutex);
     }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1091,7 +1092,7 @@ ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
  * ags_midi_parser_read_varlength:
  * @midi_parser: the #AgsMidiParser
  * 
- * Read varlength as long.
+ * Read varlength as long, max value from 0 to 2^28 - 1.
  * 
  * Returns: the read varlength
  * 
@@ -2054,7 +2055,7 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	   
 	  if(ags_midi_util_is_misc_event(midi_util,
 					 buffer + offset + delta_time_varlength_size)){
-	    current_message = ags_midi_parser_meta_misc(midi_parser, 0x0);	    
+	    current_message = ags_midi_parser_meta_misc(midi_parser, buffer[offset + delta_time_varlength_size + 1]);
 
 	    xmlAddChild(current,
 			current_message);	    
@@ -2064,10 +2065,27 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	    success = TRUE;
 	  }else if(ags_midi_util_is_key_signature(midi_util,
 						  buffer + offset + delta_time_varlength_size)){
-	    current_message = ags_midi_parser_key_signature(midi_parser, 0x0);	    
+	    current_message = ags_midi_parser_key_signature(midi_parser, 0x59);	    
 
 	    xmlAddChild(current,
 			current_message);	    
+	    
+	    midi_parser->current_node = current_message;
+	      
+	    success = TRUE;
+	  }
+	}
+
+	if(!success &&
+	   offset + retval + 8 < midi_parser->file_length /* &&
+							     current_smf_offset + retval + 5 < current_smf_length */){
+	   
+	  if(ags_midi_util_is_smtpe(midi_util,
+				    buffer + offset + delta_time_varlength_size)){
+	    current_message = ags_midi_parser_smtpe(midi_parser, 0x54);
+
+	    xmlAddChild(current,
+			current_message); 
 	    
 	    midi_parser->current_node = current_message;
 	      
@@ -2085,6 +2103,23 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 
 	    xmlAddChild(current,
 			current_message); 
+	    
+	    midi_parser->current_node = current_message;
+	      
+	    success = TRUE;
+	  }
+	}
+
+	if(!success &&
+	   offset + retval + 8 < midi_parser->file_length /* &&
+							     current_smf_offset + retval + 4 < current_smf_length */){
+	  
+	  if(ags_midi_util_is_sequencer_meta_event(midi_util,
+						   buffer + offset + delta_time_varlength_size)){
+	    current_message = ags_midi_parser_sequencer_meta_event(midi_parser, 0x7f);
+
+	    xmlAddChild(current,
+			current_message);	    
 	    
 	    midi_parser->current_node = current_message;
 	      
@@ -2121,16 +2156,13 @@ ags_midi_parser_real_parse_full(AgsMidiParser *midi_parser)
 	}
 	
 	if(!success){
-	  gint c1, c2;
+	  gint c1;
 	  
 	  midi_parser->current_node = NULL;
 	  
-	  ags_midi_parser_read_varlength(midi_parser); // delta-time
-
 	  c1 = 0xff & ags_midi_parser_midi_getc(midi_parser);
-	  c2 = 0xff & ags_midi_parser_midi_getc(midi_parser);
 
-	  g_warning("bad bytes 0x%x 0x%x", c1, c2);
+	  g_warning("bad byte 0x%x", c1);
 	}
       }
 
@@ -3559,8 +3591,9 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
 
   gchar *str;
 
-  guint len, id, data;
-
+  guint len, data, first_data;
+  guint i;
+  
 #ifdef AGS_DEBUG
   g_message("sequencer meta event");
 #endif
@@ -3572,23 +3605,35 @@ ags_midi_parser_real_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta
   ags_midi_parser_midi_getc(midi_parser); // meta type
 
   node = xmlNewNode(NULL,
-		    "midi-meta-event");
+		    "midi-sequencer-meta-event");
 
-  len = ags_midi_parser_midi_getc(midi_parser);
-  id = ags_midi_parser_midi_getc(midi_parser);
-  data = ags_midi_parser_midi_getc(midi_parser);
+  len = ags_midi_parser_read_varlength(midi_parser);
+  data = 0;
+  
+  if(len > 0){
+    data =
+      first_data = ags_midi_parser_midi_getc(midi_parser);
 
+    for(i = 1; i < len; i++){
+      if(first_data == 0 &&
+	 i < 4){
+	guint tmp_data;
+	
+	tmp_data = ags_midi_parser_midi_getc(midi_parser);
+	data = data | (tmp_data << (i * 8));
+      }else{
+	ags_midi_parser_midi_getc(midi_parser);
+      }
+    }
+  }
+  
   xmlNewProp(node,
 	     "length",
-	     g_strdup_printf("%d", len));
-
-  xmlNewProp(node,
-	     "id",
-	     g_strdup_printf("%d", id));
+	     g_strdup_printf("%u", len));
 
   xmlNewProp(node,
 	     "data",
-	     g_strdup_printf("%d", data));
+	     g_strdup_printf("%u", data));
 
   return(node);
 }
@@ -3602,7 +3647,7 @@ ags_midi_parser_sequencer_meta_event(AgsMidiParser *midi_parser, guint meta_type
   
   g_object_ref((GObject *) midi_parser);
   g_signal_emit(G_OBJECT(midi_parser),
-		midi_parser_signals[META_EVENT], 0,
+		midi_parser_signals[SEQUENCER_META_EVENT], 0,
 		meta_type,
 		&node);
   g_object_unref((GObject *) midi_parser);
@@ -3684,9 +3729,9 @@ ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_type)
     break;
   case 0x07:      /* Cue point */
     break;
-  case 0x08:
+  case 0x08:      /* Program name */
     break;
-  case 0x09:
+  case 0x09:      /* Port name */
     break;
   case 0x0a:
     break;
@@ -4013,7 +4058,7 @@ ags_midi_parser_real_song_select(AgsMidiParser *midi_parser, guint status)
   
   ags_midi_parser_midi_getc(midi_parser); // status
 
-  song_select = 0x7f & (ags_midi_parser_midi_getc(midi_parser)) << 7;
+  song_select = 0x7f & (ags_midi_parser_midi_getc(midi_parser));
       
   node = xmlNewNode(NULL,
 		    "midi-system-common");

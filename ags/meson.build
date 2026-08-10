@@ -678,10 +678,12 @@ libags_audio_sources = files(
   'audio/task/ags_clear_audio_signal.c',
   'audio/task/ags_clear_buffer.c',
   'audio/task/ags_crop_note.c',
+  'audio/task/ags_crop_note_256th.c',
   'audio/task/ags_export_output.c',
   'audio/task/ags_free_selection.c',
   'audio/task/ags_link_channel.c',
   'audio/task/ags_move_note.c',
+  'audio/task/ags_move_note_256th.c',
   'audio/task/ags_open_file.c',
   'audio/task/ags_open_sf2_instrument.c',
   'audio/task/ags_open_sf2_sample.c',
@@ -769,6 +771,8 @@ libags_audio_sources += files(
     'audio/gstreamer/ags_gstreamer_devout.c',
     'audio/gstreamer/ags_gstreamer_port.c',
     'audio/gstreamer/ags_gstreamer_devin.c',
+    'audio/file/ags_gstreamer_pipeline_manager.c',
+    'audio/file/ags_gstreamer_pipeline_helper.c',
     'audio/file/ags_gstreamer_file.c',
   )
 endif
@@ -1711,6 +1715,8 @@ libags_audio_audio_file_headers = [
 
 if get_option('gstreamer')
 libags_audio_audio_file_gstreamer_headers = [
+  'audio/file/ags_gstreamer_pipeline_manager.h',
+  'audio/file/ags_gstreamer_pipeline_helper.h',
   'audio/file/ags_gstreamer_file.h',
 ]
 endif
@@ -2000,10 +2006,12 @@ libags_audio_audio_task_headers = [
   'audio/task/ags_clear_audio_signal.h',
   'audio/task/ags_clear_buffer.h',
   'audio/task/ags_crop_note.h',
+  'audio/task/ags_crop_note_256th.h',
   'audio/task/ags_export_output.h',
   'audio/task/ags_free_selection.h',
   'audio/task/ags_link_channel.h',
   'audio/task/ags_move_note.h',
+  'audio/task/ags_move_note_256th.h',
   'audio/task/ags_open_file.h',
   'audio/task/ags_open_sf2_instrument.h',
   'audio/task/ags_open_sf2_sample.h',
