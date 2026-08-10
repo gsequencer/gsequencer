@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,7 +62,8 @@ struct _AgsExportWindow
   GtkCheckButton *exclude_sequencer;
 
   GtkComboBoxText *mode;
-  GtkSpinButton *tact;
+  GtkSpinButton *duration_tact;
+  GtkSpinButton *duration_16th_pulse;
   GtkLabel *duration;
 
   GList *export_soundcard;
