@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -442,6 +442,9 @@ ags_pad_init(AgsPad *pad)
   
   pad->line_expander_set = ags_expander_set_new();
 
+  gtk_box_set_spacing((GtkBox *) pad,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  
   gtk_grid_set_column_spacing((GtkGrid *) pad->line_expander_set,
 			      AGS_UI_PROVIDER_DEFAULT_PADDING);
   gtk_grid_set_row_spacing((GtkGrid *) pad->line_expander_set,
@@ -1070,6 +1073,16 @@ ags_pad_add_line(AgsPad *pad,
 
     gtk_widget_set_valign((GtkWidget *) line,
 			  GTK_ALIGN_START);
+
+    gtk_widget_set_margin_top((GtkWidget *) line,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_bottom((GtkWidget *) line,
+				 AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+    gtk_widget_set_margin_start((GtkWidget *) line,
+				AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_end((GtkWidget *) line,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
 
     ags_expander_set_add(pad->line_expander_set,
 			 (GtkWidget *) line,

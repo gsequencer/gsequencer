@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #include <ags/app/ags_effect_pad.h>
 #include <ags/app/ags_effect_pad_callbacks.h>
 
+#include <ags/app/ags_ui_provider.h>
 #include <ags/app/ags_effect_bridge.h>
 
 #include <ags/i18n.h>
@@ -1035,6 +1036,16 @@ ags_effect_pad_add_effect_line(AgsEffectPad *effect_pad,
 					     effect_line);
 
     effect_line->parent_effect_pad = (GtkWidget *) effect_pad;
+
+    gtk_widget_set_margin_top((GtkWidget *) effect_line,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_bottom((GtkWidget *) effect_line,
+				 AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+    gtk_widget_set_margin_start((GtkWidget *) effect_line,
+				AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_end((GtkWidget *) effect_line,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
     
     gtk_grid_attach(effect_pad->effect_line_grid,
 		    (GtkWidget *) effect_line,

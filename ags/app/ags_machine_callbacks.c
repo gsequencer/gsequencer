@@ -108,7 +108,7 @@ ags_machine_recall_set_loop(AgsMachine *machine,
 	       G_TYPE_UINT64);
 
   g_value_set_uint64(&value,
-		     gtk_spin_button_get_value_as_int(navigation->loop_left_tact));
+		     ((16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_left_16th_pulse)));
 
   ags_port_safe_write(port,
 		      &value);
@@ -129,7 +129,7 @@ ags_machine_recall_set_loop(AgsMachine *machine,
 	       G_TYPE_UINT64);
 
   g_value_set_uint64(&value,
-		     gtk_spin_button_get_value_as_int(navigation->loop_right_tact));
+		     ((16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_right_16th_pulse)));
 
   ags_port_safe_write(port,
 		      &value);

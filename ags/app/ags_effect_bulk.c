@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -499,6 +499,13 @@ ags_effect_bulk_init(AgsEffectBulk *effect_bulk)
   effect_bulk->bulk_member = NULL;
   
   effect_bulk->bulk_member_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(effect_bulk->bulk_member_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+
+  gtk_grid_set_row_spacing(effect_bulk->bulk_member_grid,
+			   AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  
   gtk_box_append(hbox,
 		 (GtkWidget *) effect_bulk->bulk_member_grid);
 
