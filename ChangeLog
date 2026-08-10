@@ -1,3 +1,9 @@
+ags (9.1.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed navigation seek
+	* fixed machine loop L and R
+
 ags (9.1.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
