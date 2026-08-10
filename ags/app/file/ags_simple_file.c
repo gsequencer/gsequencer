@@ -2148,10 +2148,16 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 	minor == 1 &&
 	micro < 3)){
       gtk_spin_button_set_value(window->navigation->loop_left_tact,
-				16.0 * loop_start);
+				loop_start);
+
+      gtk_spin_button_set_value(window->navigation->loop_left_16th_pulse,
+				0);
     }else{
       gtk_spin_button_set_value(window->navigation->loop_left_tact,
-				loop_start);
+				floor(loop_start / 16.0));
+
+      gtk_spin_button_set_value(window->navigation->loop_left_16th_pulse,
+				(gdouble) ((guint64) loop_start % 16));
     }
 
     xmlFree(str);
@@ -2172,10 +2178,16 @@ ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 	minor == 1 &&
 	micro < 3)){
       gtk_spin_button_set_value(window->navigation->loop_right_tact,
-				16.0 * loop_end);
+				loop_end);
+
+      gtk_spin_button_set_value(window->navigation->loop_right_16th_pulse,
+				0.0);
     }else{
       gtk_spin_button_set_value(window->navigation->loop_right_tact,
-				loop_end);
+				floor(loop_end / 16.0));
+
+      gtk_spin_button_set_value(window->navigation->loop_right_16th_pulse,
+				(gdouble) ((guint64) loop_end % 16));
     }
 
     xmlFree(str);
@@ -18657,7 +18669,7 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
 	     BAD_CAST ((gtk_check_button_get_active((GtkCheckButton *) window->navigation->loop)) ? AGS_SIMPLE_FILE_TRUE: AGS_SIMPLE_FILE_FALSE));
 
   str = g_strdup_printf(BAD_CAST "%lf",
-			gtk_spin_button_get_value(window->navigation->loop_left_tact));
+			(16.0 * gtk_spin_button_get_value(window->navigation->loop_left_tact) + gtk_spin_button_get_value(window->navigation->loop_left_16th_pulse)));
   
   xmlNewProp(node,
 	     BAD_CAST "loop-start",
@@ -18666,7 +18678,7 @@ ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWin
   g_free(str);
 
   str = g_strdup_printf("%lf",
-			gtk_spin_button_get_value(window->navigation->loop_right_tact));
+			(16.0 * gtk_spin_button_get_value(window->navigation->loop_right_tact) + gtk_spin_button_get_value(window->navigation->loop_right_16th_pulse)));
   
   xmlNewProp(node,
 	     BAD_CAST "loop-end",

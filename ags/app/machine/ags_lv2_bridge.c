@@ -1074,7 +1074,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   G_TYPE_UINT64);
 
       g_value_set_uint64(&value,
-			 16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact));
+			 (16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact) + gtk_spin_button_get_value_as_int(navigation->loop_left_16th_pulse)));
 
       ags_port_safe_write(port,
 			  &value);
@@ -1095,7 +1095,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   G_TYPE_UINT64);
 
       g_value_set_uint64(&value,
-			 16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact));
+			 (16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact) + gtk_spin_button_get_value_as_int(navigation->loop_right_16th_pulse)));
 
       ags_port_safe_write(port,
 			  &value);

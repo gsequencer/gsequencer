@@ -40,8 +40,8 @@ G_BEGIN_DECLS
 
 #define AGS_NAVIGATION_DEFAULT_BPM (120.0)
 #define AGS_NAVIGATION_DEFAULT_TACT_STEP (1.0)
-#define AGS_NAVIGATION_SEEK_STEPS (16.0)
-#define AGS_NAVIGATION_REWIND_STEPS (64.0)
+#define AGS_NAVIGATION_SEEK_STEPS (1.0)
+#define AGS_NAVIGATION_REWIND_STEPS (16.0)
 
 #define AGS_NAVIGATION_DURATION_ZERO "0000:00.000"
 #define AGS_NAVIGATION_MAX_POSITION_TACT (16 * 1200)
@@ -84,6 +84,7 @@ struct _AgsNavigation
 
   GtkLabel *position_time;
   GtkSpinButton *position_tact;
+  GtkSpinButton *position_16th_pulse;
 
   GtkLabel *duration_time;
   GtkSpinButton *duration_tact;
@@ -91,7 +92,9 @@ struct _AgsNavigation
   GtkBox *expansion_box;
   
   GtkSpinButton *loop_left_tact;
+  GtkSpinButton *loop_left_16th_pulse;
   GtkSpinButton *loop_right_tact;
+  GtkSpinButton *loop_right_16th_pulse;
 
   GtkCheckButton *scroll;
   GtkCheckButton *exclude_sequencer;

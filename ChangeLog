@@ -1,3 +1,14 @@
+ags (9.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented 16th pulse position
+	* implemented 16th pulse loop L and R
+	* improved machine margin
+	* improved pad spacing
+	* improved line spacing
+	* improved effect pad spacing
+	* improved effect line spacing
+
 ags (9.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

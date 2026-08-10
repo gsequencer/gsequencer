@@ -128,7 +128,7 @@ ags_navigation_rewind_callback(GObject *gobject,
   tact = ags_frame_clock_get_note_offset(frame_clock);
   
   gtk_spin_button_set_value(navigation->position_tact,
-			    tact +
+			    floor(tact / 16.0) +
 			    (-1.0 * AGS_NAVIGATION_DEFAULT_TACT_STEP));
 }
 
@@ -153,7 +153,7 @@ ags_navigation_prev_callback(GtkWidget *widget,
   tact = ags_frame_clock_get_note_offset(frame_clock);
   
   gtk_spin_button_set_value(navigation->position_tact,
-			    tact +
+			    floor(tact / 16.0) +
 			    (-1.0 * AGS_NAVIGATION_REWIND_STEPS));
 }
 
@@ -393,7 +393,7 @@ ags_navigation_next_callback(GtkWidget *widget,
   tact = ags_frame_clock_get_note_offset(frame_clock);
 
   gtk_spin_button_set_value(navigation->position_tact,
-			    tact +
+			    floor(tact / 16.0) +
 			    AGS_NAVIGATION_REWIND_STEPS);
 }
 
@@ -419,7 +419,7 @@ ags_navigation_forward_callback(GObject *gobject,
   tact = ags_frame_clock_get_note_offset(frame_clock);
 
   gtk_spin_button_set_value(navigation->position_tact,
-			    tact +
+			    floor(tact / 16.0) +
 			    AGS_NAVIGATION_DEFAULT_TACT_STEP);
 }
 
@@ -457,8 +457,8 @@ ags_navigation_loop_callback(GObject *gobject,
   machines =
     machines_start = ags_window_get_machine(window);
 
-  loop_left = gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_right = gtk_spin_button_get_value(navigation->loop_right_tact);
+  loop_left = (16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_left_16th_pulse);
+  loop_right = (16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_right_16th_pulse);
   
   ags_frame_clock_set_loop(frame_clock,
 			   gtk_check_button_get_active(GTK_CHECK_BUTTON(gobject)),
@@ -605,8 +605,24 @@ void
 ags_navigation_position_tact_callback(GtkWidget *widget,
 				      AgsNavigation *navigation)
 {
+  gdouble position;
+
+  position = (gdouble) ((16 * gtk_spin_button_get_value_as_int(navigation->position_tact)) + gtk_spin_button_get_value_as_int(navigation->position_16th_pulse)); 
+
   ags_navigation_change_position(navigation,
-				 gtk_spin_button_get_value((GtkSpinButton *) widget));
+				 position);
+}
+
+void
+ags_navigation_position_16th_pulse_callback(GtkWidget *widget,
+					    AgsNavigation *navigation)
+{
+  gdouble position;
+
+  position = (gdouble) ((16 * gtk_spin_button_get_value_as_int(navigation->position_tact)) + gtk_spin_button_get_value_as_int(navigation->position_16th_pulse)); 
+
+  ags_navigation_change_position(navigation,
+				 position);
 }
 
 void
@@ -723,8 +739,190 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   machines =
     machines_start = ags_window_get_machine(window);
 
-  loop_left = gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_right = gtk_spin_button_get_value(navigation->loop_right_tact);
+  loop_left = (16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_left_16th_pulse);
+  loop_right = (16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_right_16th_pulse);
+  
+  ags_frame_clock_set_loop(frame_clock,
+			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),
+			   loop_left, loop_right);
+
+  g_value_init(&value, G_TYPE_UINT64);
+  g_value_set_uint64(&value,
+		     (guint64) loop_left);
+
+  while(machines != NULL){
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machines->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = current_machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
+
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+	
+	list = list->next;
+      }
+
+      g_list_free_full(list_start,
+		       g_object_unref);
+
+      /* recall context */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+	
+	list = list->next;
+      }
+
+      g_list_free_full(list_start,
+		       g_object_unref);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = current_machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
+      
+      list = list_start;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+
+	list = list->next;
+      }
+      
+      g_list_free_full(list_start,
+		       g_object_unref);
+
+      /* recall context */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      list = list_start;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+
+	list = list->next;
+      }
+      
+      g_list_free_full(list_start,
+		       g_object_unref);
+    }
+
+    machines = machines->next;
+  }
+
+  g_list_free(machines_start);
+}
+
+void
+ags_navigation_loop_left_16th_pulse_callback(GtkWidget *widget,
+					     AgsNavigation *navigation)
+{
+  AgsWindow *window;
+
+  AgsAudio *audio;
+  AgsRecall *recall;
+
+  AgsFrameClock *frame_clock;
+
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
+  GList *machines, *machines_start;
+  GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+
+  guint64 loop_left, loop_right;
+
+  GValue value = {0,};
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
+  machines =
+    machines_start = ags_window_get_machine(window);
+
+  loop_left = (16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_left_16th_pulse);
+  loop_right = (16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_right_16th_pulse);
   
   ags_frame_clock_set_loop(frame_clock,
 			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),
@@ -905,8 +1103,190 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   machines =
     machines_start = ags_window_get_machine(window);
 
-  loop_left = gtk_spin_button_get_value(navigation->loop_left_tact);
-  loop_right = gtk_spin_button_get_value(navigation->loop_right_tact);
+  loop_left = (16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_left_16th_pulse);
+  loop_right = (16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_right_16th_pulse);
+  
+  ags_frame_clock_set_loop(frame_clock,
+			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),
+			   loop_left, loop_right);
+
+  g_value_init(&value, G_TYPE_UINT64);
+  g_value_set_uint64(&value,
+		     (guint64) loop_right);
+
+  while(machines != NULL){
+    AgsMachine *current_machine;
+    
+    current_machine = AGS_MACHINE(machines->data);
+
+    if((AGS_MACHINE_IS_SEQUENCER & (current_machine->flags)) != 0 ||
+       (AGS_MACHINE_IS_SYNTHESIZER & (current_machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = current_machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
+
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-end", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+	
+	list = list->next;
+      }
+
+      g_list_free_full(list_start,
+		       g_object_unref);
+
+      /* recall context */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_NOTATION_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-end", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+	
+	list = list->next;
+      }
+
+      g_list_free_full(list_start,
+		       g_object_unref);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (current_machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = current_machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
+      
+      list = list_start;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-end", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+
+	list = list->next;
+      }
+      
+      g_list_free_full(list_start,
+		       g_object_unref);
+
+      /* recall context */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      list = list_start;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_FX_PLAYBACK_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "loop-end", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_object_unref(port);
+
+	list = list->next;
+      }
+      
+      g_list_free_full(list_start,
+		       g_object_unref);
+    }
+
+    machines = machines->next;
+  }
+
+  g_list_free(machines_start);
+}
+
+void
+ags_navigation_loop_right_16th_pulse_callback(GtkWidget *widget,
+					      AgsNavigation *navigation)
+{
+  AgsWindow *window;
+
+  AgsAudio *audio;
+  AgsRecall *recall;
+
+  AgsFrameClock *frame_clock;
+  
+  AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
+
+  GList *machines, *machines_start;
+  GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+
+  guint64 loop_left, loop_right;
+
+  GValue value = {0,};
+
+  application_context = ags_application_context_get_instance();
+
+  window = (AgsWindow *) ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  frame_clock = (AgsFrameClock *) ags_soundcard_get_frame_clock(AGS_SOUNDCARD(default_soundcard));
+  
+  machines =
+    machines_start = ags_window_get_machine(window);
+
+  loop_left = (16 * gtk_spin_button_get_value_as_int(navigation->loop_left_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_left_16th_pulse);
+  loop_right = (16 * gtk_spin_button_get_value_as_int(navigation->loop_right_tact)) + gtk_spin_button_get_value_as_int(navigation->loop_right_16th_pulse);
   
   ags_frame_clock_set_loop(frame_clock,
 			   gtk_check_button_get_active(GTK_CHECK_BUTTON(navigation->loop)),

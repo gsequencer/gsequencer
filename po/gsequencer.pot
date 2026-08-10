@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 9.1.5\n"
+"Project-Id-Version: gsequencer 9.2.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-08-10 15:26+0200\n"
+"POT-Creation-Date: 2026-08-10 17:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1101,19 +1101,19 @@ msgstr ""
 msgid "loop"
 msgstr ""
 
-#: ags/app/ags_navigation.c:385
+#: ags/app/ags_navigation.c:399
 msgid "loop L"
 msgstr ""
 
-#: ags/app/ags_navigation.c:401
+#: ags/app/ags_navigation.c:430
 msgid "loop R"
 msgstr ""
 
-#: ags/app/ags_navigation.c:419
+#: ags/app/ags_navigation.c:462
 msgid "auto-scroll"
 msgstr ""
 
-#: ags/app/ags_navigation.c:425 ags/app/ags_export_window.c:221
+#: ags/app/ags_navigation.c:468 ags/app/ags_export_window.c:221
 msgid "exclude sequencers"
 msgstr ""
 
@@ -1232,12 +1232,12 @@ msgstr ""
 msgid "help - user manual"
 msgstr ""
 
-#: ags/app/ags_effect_line.c:573 ags/app/ags_line.c:595
+#: ags/app/ags_effect_line.c:573 ags/app/ags_line.c:597
 msgid "group"
 msgstr ""
 
 #: ags/app/ags_effect_line.c:1110 ags/app/ags_effect_line.c:1116
-#: ags/app/ags_line.c:1189 ags/app/ags_line.c:1195
+#: ags/app/ags_line.c:1191 ags/app/ags_line.c:1197
 msgid "channel"
 msgstr ""
 

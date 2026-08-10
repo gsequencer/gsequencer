@@ -65,6 +65,8 @@ void ags_navigation_loop_callback(GObject *gobject,
 
 void ags_navigation_position_tact_callback(GtkWidget *widget,
 					   AgsNavigation *navigation);
+void ags_navigation_position_16th_pulse_callback(GtkWidget *widget,
+						 AgsNavigation *navigation);
 
 void ags_navigation_scroll_callback(GObject *gobject,
 				    GParamSpec *pspec,				    
@@ -75,9 +77,13 @@ void ags_navigation_duration_tact_callback(GtkWidget *widget,
 
 void ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 					    AgsNavigation *navigation);
+void ags_navigation_loop_left_16th_pulse_callback(GtkWidget *widget,
+						  AgsNavigation *navigation);
 
 void ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 					     AgsNavigation *navigation);
+void ags_navigation_loop_right_16th_pulse_callback(GtkWidget *widget,
+						   AgsNavigation *navigation);
 
 void ags_navigation_soundcard_stop_callback(GObject *soundcard,
 					    AgsNavigation *navigation);

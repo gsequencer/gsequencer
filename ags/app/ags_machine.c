@@ -724,6 +724,11 @@ ags_machine_init(AgsMachine *machine)
 
   gtk_widget_set_valign((GtkWidget *) machine,
 			 GTK_ALIGN_START);
+
+  gtk_grid_set_column_spacing((GtkGrid *) machine,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);  
+  gtk_grid_set_row_spacing((GtkGrid *) machine,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);  
   
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				AGS_UI_PROVIDER_DEFAULT_PADDING);
@@ -732,6 +737,16 @@ ags_machine_init(AgsMachine *machine)
 
   gtk_widget_set_hexpand((GtkWidget *) machine->frame,
 			 TRUE);
+
+  gtk_widget_set_margin_top((GtkWidget *) machine->frame,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) machine->frame,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) machine->frame,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) machine->frame,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
 
   gtk_grid_attach((GtkGrid *) machine,
 		  (GtkWidget *) machine->frame,
@@ -791,6 +806,12 @@ ags_machine_init(AgsMachine *machine)
 
   context_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				       AGS_UI_PROVIDER_DEFAULT_PADDING);
+
+  gtk_widget_set_margin_top((GtkWidget *) context_box,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) context_box,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  
   gtk_frame_set_label_widget(machine->frame,
 			     (GtkWidget *) context_box);
 
@@ -1862,6 +1883,16 @@ ags_machine_add_output_pad(AgsMachine *machine,
 					 output_pad);
 
     output_pad->parent_machine = (GtkWidget *) machine;
+
+    gtk_widget_set_margin_top((GtkWidget *) output_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_bottom((GtkWidget *) output_pad,
+				 AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+    gtk_widget_set_margin_start((GtkWidget *) output_pad,
+				AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_end((GtkWidget *) output_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
     
     gtk_grid_attach(machine->output_pad_grid,
 		    (GtkWidget *) output_pad,
@@ -1942,6 +1973,16 @@ ags_machine_add_input_pad(AgsMachine *machine,
 					input_pad);
 
     input_pad->parent_machine = (GtkWidget *) machine;
+
+    gtk_widget_set_margin_top((GtkWidget *) input_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_bottom((GtkWidget *) input_pad,
+				 AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+    gtk_widget_set_margin_start((GtkWidget *) input_pad,
+				AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_end((GtkWidget *) input_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
     
     gtk_grid_attach(machine->input_pad_grid,
 		    (GtkWidget *) input_pad,

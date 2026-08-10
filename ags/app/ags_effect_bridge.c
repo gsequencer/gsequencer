@@ -1157,6 +1157,16 @@ ags_effect_bridge_add_output_effect_pad(AgsEffectBridge *effect_bridge,
 						      effect_pad);
 
     effect_pad->parent_effect_bridge = (GtkWidget *) effect_bridge;
+
+    gtk_widget_set_margin_top((GtkWidget *) effect_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_bottom((GtkWidget *) effect_pad,
+				 AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+    gtk_widget_set_margin_start((GtkWidget *) effect_pad,
+				AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_end((GtkWidget *) effect_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
     
     gtk_box_append(effect_bridge->output,
 		   (GtkWidget *) effect_pad);
@@ -1229,6 +1239,16 @@ ags_effect_bridge_add_input_effect_pad(AgsEffectBridge *effect_bridge,
 						     effect_pad);
 
     effect_pad->parent_effect_bridge = (GtkWidget *) effect_bridge;
+
+    gtk_widget_set_margin_top((GtkWidget *) effect_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_bottom((GtkWidget *) effect_pad,
+				 AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+    gtk_widget_set_margin_start((GtkWidget *) effect_pad,
+				AGS_UI_PROVIDER_DEFAULT_MARGIN);
+    gtk_widget_set_margin_end((GtkWidget *) effect_pad,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
     
     gtk_box_append(effect_bridge->input,
 		   (GtkWidget *) effect_pad);

@@ -587,6 +587,8 @@ ags_line_init(AgsLine *line)
   
   //  gtk_widget_set_can_focus(line,
   //			   TRUE);
+  gtk_box_set_spacing((GtkBox *) line,
+		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   line->label = (GtkLabel *) gtk_label_new(NULL);
   gtk_box_append((GtkBox *) line,
