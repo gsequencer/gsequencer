@@ -1,3 +1,8 @@
+ags (9.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented 16th pulse duration of audio export
+
 ags (9.2.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
