@@ -33,11 +33,11 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_ABYSS_FILTER_SENDS                (ags_abyss_filter_sends_get_type())
-#define AGS_ABYSS_FILTER_SENDS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ABYSS_FILTER_SENDS, AgsAbysssFilterSends))
-#define AGS_ABYSS_FILTER_SENDS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ABYSS_FILTER_SENDS, AgsAbysssFilterSendsClass))
+#define AGS_ABYSS_FILTER_SENDS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ABYSS_FILTER_SENDS, AgsAbyssFilterSends))
+#define AGS_ABYSS_FILTER_SENDS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ABYSS_FILTER_SENDS, AgsAbyssFilterSendsClass))
 #define AGS_IS_ABYSS_FILTER_SENDS(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ABYSS_FILTER_SENDS))
 #define AGS_IS_ABYSS_FILTER_SENDS_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ABYSS_FILTER_SENDS))
-#define AGS_ABYSS_FILTER_SENDS_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ABYSS_FILTER_SENDS, AgsAbysssFilterSendsClass))
+#define AGS_ABYSS_FILTER_SENDS_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ABYSS_FILTER_SENDS, AgsAbyssFilterSendsClass))
 
 #define AGS_ABYSS_FILTER_SENDS_DEFAULT_CONTROL_WIDTH   (96)
 #define AGS_ABYSS_FILTER_SENDS_ROTATED_CONTROL_WIDTH   (128)
@@ -48,17 +48,17 @@ G_BEGIN_DECLS
 #define AGS_ABYSS_FILTER_SENDS_DEFAULT_CONTROLS_HORIZONTALLY (28)
 #define AGS_ABYSS_FILTER_SENDS_DEFAULT_CONTROLS_VERTICALLY (13)
 
-typedef struct _AgsAbysssFilterSends AgsAbysssFilterSends;
-typedef struct _AgsAbysssFilterSendsClass AgsAbysssFilterSendsClass;
+typedef struct _AgsAbyssFilterSends AgsAbyssFilterSends;
+typedef struct _AgsAbyssFilterSendsClass AgsAbyssFilterSendsClass;
 
 typedef enum{
   AGS_ABYSS_FILTER_SENDS_CURSOR_ON    = 1,
-}AgsAbysssFilterSendsFlags;
+}AgsAbyssFilterSendsFlags;
 
 typedef enum{
   AGS_ABYSS_FILTER_SENDS_KEY_L_CONTROL       = 1,
   AGS_ABYSS_FILTER_SENDS_KEY_R_CONTROL       = 1 <<  1,
-}AgsAbysssFilterSendsKeyMask;
+}AgsAbyssFilterSendsKeyMask;
 
 typedef enum{
   AGS_ABYSS_FILTER_SENDS_MOVE_LEFT,
@@ -67,9 +67,9 @@ typedef enum{
   AGS_ABYSS_FILTER_SENDS_MOVE_DOWN,
   AGS_ABYSS_FILTER_SENDS_TOGGLE_PAD,
   AGS_ABYSS_FILTER_SENDS_COPY_MATRIX,
-}AgsAbysssFilterSendsAction;
+}AgsAbyssFilterSendsAction;
 
-struct _AgsAbysssFilterSends
+struct _AgsAbyssFilterSends
 {
   GtkBox box;
   
@@ -102,29 +102,29 @@ struct _AgsAbysssFilterSends
   GtkScrollbar *hscrollbar;
 };
 
-struct _AgsAbysssFilterSendsClass
+struct _AgsAbyssFilterSendsClass
 {
   GtkBoxClass box;
 
-  void (*toggled)(AgsAbysssFilterSends *abyss_filter_sends,
+  void (*toggled)(AgsAbyssFilterSends *abyss_filter_sends,
 		  gint x, gint y);
 };
 
 GType ags_abyss_filter_sends_get_type(void);
 
-void ags_abyss_filter_sends_set_enabled(AgsAbysssFilterSends *abyss_filter_sends,
+void ags_abyss_filter_sends_set_enabled(AgsAbyssFilterSends *abyss_filter_sends,
 					gint x, gint y,
 					gboolean enabled);
-gboolean ags_abyss_filter_sends_get_enabled(AgsAbysssFilterSends *abyss_filter_sends,
+gboolean ags_abyss_filter_sends_get_enabled(AgsAbyssFilterSends *abyss_filter_sends,
 					    gint x, gint y);
 
-void ags_abyss_filter_sends_toggled(AgsAbysssFilterSends *abyss_filter_sends,
+void ags_abyss_filter_sends_toggled(AgsAbyssFilterSends *abyss_filter_sends,
 				    gint x, gint y);
 
-void ags_abyss_filter_sends_draw(AgsAbysssFilterSends *abyss_filter_sends,
+void ags_abyss_filter_sends_draw(AgsAbyssFilterSends *abyss_filter_sends,
 				 cairo_t *cr);
 
-AgsAbysssFilterSends* ags_abyss_filter_sends_new();
+AgsAbyssFilterSends* ags_abyss_filter_sends_new();
 
 G_END_DECLS
 

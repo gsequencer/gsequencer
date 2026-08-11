@@ -65,7 +65,7 @@ static void ags_position_wave_cursor_popover_activate_button_callback(GtkButton 
 
 /**
  * SECTION:ags_position_wave_cursor_popover
- * @short_description: crop tool
+ * @short_description: position wave cursor popover
  * @title: AgsPositionWaveCursorPopover
  * @section_id:
  * @include: ags/app/editor/ags_position_wave_cursor_popover.h

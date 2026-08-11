@@ -32,6 +32,8 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 static void ags_import_notation_smf_popover_class_init(AgsImportNotationSMFPopoverClass *import_notation_smf_popover);
@@ -246,18 +248,31 @@ ags_import_notation_smf_popover_init(AgsImportNotationSMFPopover *import_notatio
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  /* position x - spin button */
-  import_notation_smf_popover->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-											     AGS_IMPORT_NOTATION_SMF_MAX_BEATS,
-											     1.0);
-  gtk_spin_button_set_digits(import_notation_smf_popover->position_x,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(import_notation_smf_popover->position_x),
-			       9);
-  gtk_spin_button_set_value(import_notation_smf_popover->position_x,
+  /* position x - tact */
+  import_notation_smf_popover->position_x_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+												  AGS_IMPORT_NOTATION_SMF_MAX_BEATS,
+												  1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(import_notation_smf_popover->position_x_tact),
+			       6);
+  gtk_spin_button_set_digits(import_notation_smf_popover->position_x_tact,
+			     0);
+  gtk_spin_button_set_value(import_notation_smf_popover->position_x_tact,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,
-		 (GtkWidget *) import_notation_smf_popover->position_x);
+		 (GtkWidget *) import_notation_smf_popover->position_x_tact);
+  
+  /* position x - 256th */
+  import_notation_smf_popover->position_x_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+												   256.0,
+												   1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(import_notation_smf_popover->position_x_256th),
+			       4);
+  gtk_spin_button_set_digits(import_notation_smf_popover->position_x_256th,
+			     0);
+  gtk_spin_button_set_value(import_notation_smf_popover->position_x_256th,
+			    0.0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) import_notation_smf_popover->position_x_256th);
   
   /* position y - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -518,7 +533,7 @@ ags_import_notation_smf_popover_xml_compose(AgsConnectable *connectable)
 
   /* position x */
   str = g_strdup_printf("%f",
-			gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+			((256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x_tact)) + gtk_spin_button_get_value(import_notation_smf_popover->position_x_256th)));
   
   xmlNewProp(node,
 	     BAD_CAST "position-x",
@@ -556,6 +571,8 @@ ags_import_notation_smf_popover_xml_parse(AgsConnectable *connectable,
   AgsImportNotationSMFPopover *import_notation_smf_popover;
 
   xmlChar *str;
+
+  gdouble position_x;
   
   import_notation_smf_popover = AGS_IMPORT_NOTATION_SMF_POPOVER(connectable);
 
@@ -572,9 +589,14 @@ ags_import_notation_smf_popover_xml_parse(AgsConnectable *connectable,
   str = xmlGetProp(node,
 		   "position-x");
 
-  gtk_spin_button_set_value(import_notation_smf_popover->position_x,
-			    g_ascii_strtod(str,
-					   NULL));
+  position_x = g_ascii_strtod(str,
+			      NULL);
+  
+  gtk_spin_button_set_value(import_notation_smf_popover->position_x_tact,
+			    floor(position_x / 256.0));
+
+  gtk_spin_button_set_value(import_notation_smf_popover->position_x_256th,
+			    (gdouble) ((guint) position_x % 256));
   
   xmlFree(str);
 
@@ -685,7 +707,7 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   //NOTE:JK: some deco
   //  guint map_height, height;
   guint history;
-  gdouble x; //, y;
+  guint x_256th; //, y;
   
   import_notation_smf_popover = AGS_IMPORT_NOTATION_SMF_POPOVER(applicable);
 
@@ -708,12 +730,12 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   
   zoom = exp2((double) history - 2.0);
   
-  x = gtk_spin_button_get_value(import_notation_smf_popover->position_x);
+  x_256th = (guint) (256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x_tact)) + gtk_spin_button_get_value(import_notation_smf_popover->position_x_256th);
 
   notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
   if(notation_edit != NULL){
-    notation_edit->cursor_position_x = x;
+    notation_edit->cursor_position_x = (guint) floor((gdouble) x_256th / 16.0);
     notation_edit->cursor_position_y = 0.0;
   }
 
@@ -724,7 +746,7 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 64.0 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
+			     ((((gdouble) x_256th / 16.0) * 64.0 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
   }
 
   filename = ags_file_widget_get_filename(import_notation_smf_popover->file_widget);
@@ -1040,13 +1062,13 @@ ags_import_notation_smf_popover_parse(AgsImportNotationSMFPopover *import_notati
 		  
 		  if(initial_offset){
 		    initial_offset = FALSE;
-		    
-		    first_offset = x - (guint) (gtk_spin_button_get_value(import_notation_smf_popover->position_x));
-    
-		    first_note_256th_offset = x_256th - (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
 
-		    x = (guint) (gtk_spin_button_get_value(import_notation_smf_popover->position_x));
-		    x_256th = (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x));
+		    first_offset = x - (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x_tact));
+    
+		    first_note_256th_offset = x_256th - (guint) (256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x_tact) + gtk_spin_button_get_value(import_notation_smf_popover->position_x_256th));
+
+		    x = (guint) (16.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x_tact));
+		    x_256th = (guint) ((256.0 * gtk_spin_button_get_value(import_notation_smf_popover->position_x_tact)) + gtk_spin_button_get_value(import_notation_smf_popover->position_x_256th));
 		  }
 		  
 		  /* y */

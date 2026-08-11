@@ -52,7 +52,8 @@ struct _AgsImportNotationSMFPopover
 
   GtkCheckButton *set_focus;
 
-  GtkSpinButton *position_x;
+  GtkSpinButton *position_x_tact;
+  GtkSpinButton *position_x_256th;
   GtkSpinButton *position_y;
 
   GtkSpinButton *midi_channel;

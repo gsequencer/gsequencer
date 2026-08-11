@@ -1,3 +1,13 @@
+ags (9.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented 256th pulse of AgsPositionNotationCursorPopover
+	* implemented 256th pulse of AgsMoveNotePopover
+	* implemented 256th pulse of AgsCropNotePopover
+	* implemented 256th pulse of AgsImportNotationSmfPopover
+	* added missing build of ags_check_system_midi_parser_test
+	* minor improvements
+
 ags (9.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

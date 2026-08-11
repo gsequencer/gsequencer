@@ -33,11 +33,11 @@
 G_BEGIN_DECLS
 
 #define AGS_TYPE_ABYSS_GENERATOR_SENDS                (ags_abyss_generator_sends_get_type())
-#define AGS_ABYSS_GENERATOR_SENDS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ABYSS_GENERATOR_SENDS, AgsAbysssGeneratorSends))
-#define AGS_ABYSS_GENERATOR_SENDS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ABYSS_GENERATOR_SENDS, AgsAbysssGeneratorSendsClass))
+#define AGS_ABYSS_GENERATOR_SENDS(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_ABYSS_GENERATOR_SENDS, AgsAbyssGeneratorSends))
+#define AGS_ABYSS_GENERATOR_SENDS_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_ABYSS_GENERATOR_SENDS, AgsAbyssGeneratorSendsClass))
 #define AGS_IS_ABYSS_GENERATOR_SENDS(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ABYSS_GENERATOR_SENDS))
 #define AGS_IS_ABYSS_GENERATOR_SENDS_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ABYSS_GENERATOR_SENDS))
-#define AGS_ABYSS_GENERATOR_SENDS_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ABYSS_GENERATOR_SENDS, AgsAbysssGeneratorSendsClass))
+#define AGS_ABYSS_GENERATOR_SENDS_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ABYSS_GENERATOR_SENDS, AgsAbyssGeneratorSendsClass))
 
 #define AGS_ABYSS_GENERATOR_SENDS_DEFAULT_CONTROL_WIDTH   (96)
 #define AGS_ABYSS_GENERATOR_SENDS_ROTATED_CONTROL_WIDTH   (128)
@@ -48,17 +48,17 @@ G_BEGIN_DECLS
 #define AGS_ABYSS_GENERATOR_SENDS_DEFAULT_CONTROLS_HORIZONTALLY (15)
 #define AGS_ABYSS_GENERATOR_SENDS_DEFAULT_CONTROLS_VERTICALLY (13)
 
-typedef struct _AgsAbysssGeneratorSends AgsAbysssGeneratorSends;
-typedef struct _AgsAbysssGeneratorSendsClass AgsAbysssGeneratorSendsClass;
+typedef struct _AgsAbyssGeneratorSends AgsAbyssGeneratorSends;
+typedef struct _AgsAbyssGeneratorSendsClass AgsAbyssGeneratorSendsClass;
 
 typedef enum{
   AGS_ABYSS_GENERATOR_SENDS_CURSOR_ON    = 1,
-}AgsAbysssGeneratorSendsFlags;
+}AgsAbyssGeneratorSendsFlags;
 
 typedef enum{
   AGS_ABYSS_GENERATOR_SENDS_KEY_L_CONTROL       = 1,
   AGS_ABYSS_GENERATOR_SENDS_KEY_R_CONTROL       = 1 <<  1,
-}AgsAbysssGeneratorSendsKeyMask;
+}AgsAbyssGeneratorSendsKeyMask;
 
 typedef enum{
   AGS_ABYSS_GENERATOR_SENDS_MOVE_LEFT,
@@ -67,9 +67,9 @@ typedef enum{
   AGS_ABYSS_GENERATOR_SENDS_MOVE_DOWN,
   AGS_ABYSS_GENERATOR_SENDS_TOGGLE_PAD,
   AGS_ABYSS_GENERATOR_SENDS_COPY_MATRIX,
-}AgsAbysssGeneratorSendsAction;
+}AgsAbyssGeneratorSendsAction;
 
-struct _AgsAbysssGeneratorSends
+struct _AgsAbyssGeneratorSends
 {
   GtkBox box;
   
@@ -102,29 +102,29 @@ struct _AgsAbysssGeneratorSends
   GtkScrollbar *hscrollbar;
 };
 
-struct _AgsAbysssGeneratorSendsClass
+struct _AgsAbyssGeneratorSendsClass
 {
   GtkBoxClass box;
 
-  void (*toggled)(AgsAbysssGeneratorSends *abyss_generator_sends,
+  void (*toggled)(AgsAbyssGeneratorSends *abyss_generator_sends,
 		  gint x, gint y);
 };
 
 GType ags_abyss_generator_sends_get_type(void);
 
-void ags_abyss_generator_sends_set_enabled(AgsAbysssGeneratorSends *abyss_generator_sends,
+void ags_abyss_generator_sends_set_enabled(AgsAbyssGeneratorSends *abyss_generator_sends,
 					   gint x, gint y,
 					   gboolean enabled);
-gboolean ags_abyss_generator_sends_get_enabled(AgsAbysssGeneratorSends *abyss_generator_sends,
+gboolean ags_abyss_generator_sends_get_enabled(AgsAbyssGeneratorSends *abyss_generator_sends,
 					       gint x, gint y);
 
-void ags_abyss_generator_sends_toggled(AgsAbysssGeneratorSends *abyss_generator_sends,
+void ags_abyss_generator_sends_toggled(AgsAbyssGeneratorSends *abyss_generator_sends,
 				       gint x, gint y);
 
-void ags_abyss_generator_sends_draw(AgsAbysssGeneratorSends *abyss_generator_sends,
+void ags_abyss_generator_sends_draw(AgsAbyssGeneratorSends *abyss_generator_sends,
 				    cairo_t *cr);
 
-AgsAbysssGeneratorSends* ags_abyss_generator_sends_new();
+AgsAbyssGeneratorSends* ags_abyss_generator_sends_new();
 
 G_END_DECLS
 

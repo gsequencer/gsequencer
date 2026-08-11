@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 #define AGS_IS_MOVE_NOTE_POPOVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MOVE_NOTE_POPOVER))
 #define AGS_MOVE_NOTE_POPOVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_MOVE_NOTE_POPOVER, AgsMoveNotePopoverClass))
 
-#define AGS_MOVE_NOTE_POPOVER_MAX_X (16 * 19200)
+#define AGS_MOVE_NOTE_POPOVER_MAX_X (16 * 1200)
 #define AGS_MOVE_NOTE_POPOVER_MAX_Y (1024)
 
 typedef struct _AgsMoveNotePopover AgsMoveNotePopover;
@@ -53,7 +53,8 @@ struct _AgsMoveNotePopover
   GtkCheckButton *relative;
   GtkCheckButton *absolute;
 
-  GtkSpinButton *move_x;
+  GtkSpinButton *move_x_tact;
+  GtkSpinButton *move_x_256th;
   GtkSpinButton *move_y;
 
   GtkBox *action_area;

@@ -360,10 +360,6 @@ ags_position_automation_cursor_popover_apply(AgsApplicable *applicable)
   }
   
   zoom = exp2((double) history - 2.0);
-
-  if(focused_automation_edit == NULL){
-    return;
-  }
   
   x = gtk_spin_button_get_value_as_int(position_automation_cursor_popover->position_x);
   focused_automation_edit->cursor_position_x = 16 * x;

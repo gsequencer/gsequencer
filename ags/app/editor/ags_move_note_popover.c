@@ -31,6 +31,8 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 static void ags_move_note_popover_class_init(AgsMoveNotePopoverClass *move_note_popover);
@@ -229,18 +231,31 @@ ags_move_note_popover_init(AgsMoveNotePopover *move_note_popover)
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* move x - spin button */
-  move_note_popover->move_x = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_MOVE_NOTE_POPOVER_MAX_X,
-									       AGS_MOVE_NOTE_POPOVER_MAX_X,
-									       1.0);
-  gtk_spin_button_set_digits(move_note_popover->move_x,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(move_note_popover->move_x),
-			       9);
-  gtk_spin_button_set_value(move_note_popover->move_x,
+  /* move x - tact */
+  move_note_popover->move_x_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_MOVE_NOTE_POPOVER_MAX_X,
+										    AGS_MOVE_NOTE_POPOVER_MAX_X,
+										    1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(move_note_popover->move_x_tact),
+			       6);
+  gtk_spin_button_set_digits(move_note_popover->move_x_tact,
+			     0);
+  gtk_spin_button_set_value(move_note_popover->move_x_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 (GtkWidget *) move_note_popover->move_x);
+		 (GtkWidget *) move_note_popover->move_x_tact);
+
+  /* move x - 256th */
+  move_note_popover->move_x_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										     255.0,
+										     1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(move_note_popover->move_x_256th),
+			       6);
+  gtk_spin_button_set_digits(move_note_popover->move_x_256th,
+			     0);
+  gtk_spin_button_set_value(move_note_popover->move_x_256th,
+			    0.0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) move_note_popover->move_x_256th);
 
   /* move y - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -320,7 +335,7 @@ ags_move_note_popover_xml_compose(AgsConnectable *connectable)
 
   /* move x */
   str = g_strdup_printf("%f",
-			gtk_spin_button_get_value(move_note_popover->move_x));
+			(256.0 * gtk_spin_button_get_value(move_note_popover->move_x_tact)) + (gtk_spin_button_get_value(move_note_popover->move_x_256th)));
   
   xmlNewProp(node,
 	     BAD_CAST "move-x",
@@ -348,6 +363,8 @@ ags_move_note_popover_xml_parse(AgsConnectable *connectable,
   AgsMoveNotePopover *move_note_popover;
   
   gchar *str;
+
+  gdouble move_x;
   
   move_note_popover = AGS_MOVE_NOTE_POPOVER(connectable);
 
@@ -373,9 +390,14 @@ ags_move_note_popover_xml_parse(AgsConnectable *connectable,
   str = xmlGetProp(node,
 		   "move-x");
 
-  gtk_spin_button_set_value(move_note_popover->move_x,
-			    g_ascii_strtod(str,
-					   NULL));
+  move_x = g_ascii_strtod(str,
+			  NULL);
+  
+  gtk_spin_button_set_value(move_note_popover->move_x_tact,
+			    floor(move_x / 256.0));
+  
+  gtk_spin_button_set_value(move_note_popover->move_x_256th,
+			    (gdouble) ((gint) move_x % 256));
   
   xmlFree(str);
 
@@ -488,6 +510,7 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
 
   guint first_x_256th;
   guint first_y;
+  gdouble move_x_tact;
   guint move_x_256th;
   guint move_y;
   
@@ -512,7 +535,9 @@ ags_move_note_popover_apply(AgsApplicable *applicable)
   audio = machine->audio;
 
   /* get some values */
-  move_x_256th = (guint) (16.0 * gtk_spin_button_get_value(move_note_popover->move_x));
+  move_x_tact = gtk_spin_button_get_value(move_note_popover->move_x_tact);
+  
+  move_x_256th = (guint) ((256.0 * move_x_tact) + (((move_x_tact >= 0.0) ? 1.0: -1.0) * gtk_spin_button_get_value(move_note_popover->move_x_256th)));
   move_y = gtk_spin_button_get_value_as_int(move_note_popover->move_y);
 
   relative = gtk_check_button_get_active(move_note_popover->relative);

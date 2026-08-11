@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,11 +24,11 @@ ags_crop_note_popover_absolute_callback(GtkWidget *button,
 					AgsCropNotePopover *crop_note_popover)
 {
   if(gtk_toggle_button_get_active((GtkToggleButton *) crop_note_popover->absolute)){
-    gtk_spin_button_set_range(crop_note_popover->crop_note,
+    gtk_spin_button_set_range(crop_note_popover->crop_note_tact,
 			      0.0,
 			      AGS_CROP_NOTE_POPOVER_MAX_WIDTH);
   }else{
-    gtk_spin_button_set_range(crop_note_popover->crop_note,
+    gtk_spin_button_set_range(crop_note_popover->crop_note_tact,
 			      -1.0 * AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
 			      AGS_CROP_NOTE_POPOVER_MAX_WIDTH);
   }
