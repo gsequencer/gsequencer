@@ -267,9 +267,9 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
 										    AGS_SELECT_NOTE_MAX_KEYS,
 										    1.0);
   gtk_spin_button_set_digits(select_note_popover->select_y0,
-			     3);
+			     0);
   gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_y0),
-			       9);
+			       4);
   gtk_spin_button_set_value(select_note_popover->select_y0,
 			    0.0);
   gtk_box_append(hbox,
@@ -328,9 +328,9 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
 										    AGS_SELECT_NOTE_MAX_KEYS,
 										    1.0);
   gtk_spin_button_set_digits(select_note_popover->select_y1,
-			     3);
+			     0);
   gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_y1),
-			       9);
+			       4);
   gtk_spin_button_set_value(select_note_popover->select_y1,
 			    0.0);
   gtk_box_append(hbox,

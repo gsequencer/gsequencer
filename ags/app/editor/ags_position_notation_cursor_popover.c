@@ -266,6 +266,10 @@ ags_position_notation_cursor_popover_init(AgsPositionNotationCursorPopover *posi
   position_notation_cursor_popover->position_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 												  AGS_POSITION_NOTATION_CURSOR_MAX_KEYS,
 												  1.0);
+  gtk_spin_button_set_digits(position_notation_cursor_popover->position_y,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_y),
+			       4);
   gtk_spin_button_set_value(position_notation_cursor_popover->position_y,
 			    0.0);
   gtk_box_append(hbox,
@@ -467,7 +471,7 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
   //NOTE:JK: some deco
   //  guint map_height, height;
   guint history;
-  guint x; //, y;
+  guint x, y;
   
   position_notation_cursor_popover = AGS_POSITION_NOTATION_CURSOR_POPOVER(applicable);
 
@@ -492,11 +496,13 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
   
   x = (256 * gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_tact)) + gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_256th);
 
+  y = gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_y);
+  
   notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
   if(notation_edit != NULL){
     notation_edit->cursor_position_x_256th = x;
-    notation_edit->cursor_position_y = 0.0;
+    notation_edit->cursor_position_y = y;
   }
 
   hadjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->hscrollbar));
