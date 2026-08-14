@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -224,18 +224,31 @@ ags_ramp_marker_popover_init(AgsRampMarkerPopover *ramp_marker_popover)
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* ramp x0 - spin button */
-  ramp_marker_popover->ramp_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										  AGS_RAMP_MARKER_MAX_BEATS,
-										  0.25);
-  gtk_spin_button_set_digits(ramp_marker_popover->ramp_x0,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_marker_popover->ramp_x0),
-			       9);
-  gtk_spin_button_set_value(ramp_marker_popover->ramp_x0,
+  /* ramp x0 - tact */
+  ramp_marker_popover->ramp_x0_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										       AGS_RAMP_MARKER_MAX_BEATS,
+										       1.0);
+  gtk_spin_button_set_digits(ramp_marker_popover->ramp_x0_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_marker_popover->ramp_x0_tact),
+			       6);
+  gtk_spin_button_set_value(ramp_marker_popover->ramp_x0_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(ramp_marker_popover->ramp_x0));
+		 GTK_WIDGET(ramp_marker_popover->ramp_x0_tact));
+
+  /* ramp x0 - 1024th */
+  ramp_marker_popover->ramp_x0_1024th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											 1023.0,
+											 1.0);
+  gtk_spin_button_set_digits(ramp_marker_popover->ramp_x0_1024th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_marker_popover->ramp_x0_1024th),
+			       5);
+  gtk_spin_button_set_value(ramp_marker_popover->ramp_x0_1024th,
+			    0.0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(ramp_marker_popover->ramp_x0_1024th));
 
   /* ramp y0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -272,18 +285,31 @@ ags_ramp_marker_popover_init(AgsRampMarkerPopover *ramp_marker_popover)
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* ramp x1 - spin button */
-  ramp_marker_popover->ramp_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										  AGS_RAMP_MARKER_MAX_BEATS,
-										  0.25);
-  gtk_spin_button_set_digits(ramp_marker_popover->ramp_x1,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_marker_popover->ramp_x1),
-			       9);
-  gtk_spin_button_set_value(ramp_marker_popover->ramp_x1,
+  /* ramp x1 - tact */
+  ramp_marker_popover->ramp_x1_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										       AGS_RAMP_MARKER_MAX_BEATS,
+										       1.0);
+  gtk_spin_button_set_digits(ramp_marker_popover->ramp_x1_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_marker_popover->ramp_x1_tact),
+			       6);
+  gtk_spin_button_set_value(ramp_marker_popover->ramp_x1_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(ramp_marker_popover->ramp_x1));
+		 GTK_WIDGET(ramp_marker_popover->ramp_x1_tact));
+
+  /* ramp x1 - 1024th */
+  ramp_marker_popover->ramp_x1_1024th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											 1023.0,
+											 1.0);
+  gtk_spin_button_set_digits(ramp_marker_popover->ramp_x1_1024th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(ramp_marker_popover->ramp_x1_1024th),
+			       5);
+  gtk_spin_button_set_value(ramp_marker_popover->ramp_x1_1024th,
+			    0.0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(ramp_marker_popover->ramp_x1_1024th));
 
   /* ramp y1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -505,10 +531,10 @@ ags_ramp_marker_popover_apply(AgsApplicable *applicable)
   control_name = gtk_combo_box_text_get_active_text(ramp_marker_popover->control_name);
   
   /* get some values */
-  x0 = AGS_TEMPO_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(ramp_marker_popover->ramp_x0);
+  x0 = (1024 * gtk_spin_button_get_value_as_int(ramp_marker_popover->ramp_x0_tact)) + gtk_spin_button_get_value_as_int(ramp_marker_popover->ramp_x0_1024th);
   y0 = gtk_spin_button_get_value(ramp_marker_popover->ramp_y0);
 
-  x1 = AGS_TEMPO_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value_as_int(ramp_marker_popover->ramp_x1);
+  x1 = (1024 * gtk_spin_button_get_value_as_int(ramp_marker_popover->ramp_x1_tact)) + gtk_spin_button_get_value_as_int(ramp_marker_popover->ramp_x1_1024th);
   y1 = gtk_spin_button_get_value(ramp_marker_popover->ramp_y1);
   
   step_count = gtk_spin_button_get_value_as_int(ramp_marker_popover->ramp_step_count);

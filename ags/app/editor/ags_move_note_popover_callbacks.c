@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@ void
 ags_move_note_popover_relative_callback(GtkWidget *button,
 					AgsMoveNotePopover *move_note_popover)
 {
-  gtk_spin_button_set_range(move_note_popover->move_x,
+  gtk_spin_button_set_range(move_note_popover->move_x_tact,
 			    -1 * AGS_MOVE_NOTE_POPOVER_MAX_X,
 			    AGS_MOVE_NOTE_POPOVER_MAX_X);
 
@@ -36,7 +36,7 @@ void
 ags_move_note_popover_absolute_callback(GtkWidget *button,
 					AgsMoveNotePopover *move_note_popover)
 {
-  gtk_spin_button_set_range(move_note_popover->move_x,
+  gtk_spin_button_set_range(move_note_popover->move_x_tact,
 			    0,
 			    AGS_MOVE_NOTE_POPOVER_MAX_X);
 

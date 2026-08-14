@@ -219,18 +219,31 @@ ags_select_buffer_popover_init(AgsSelectBufferPopover *select_buffer_popover)
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* select x0 - spin button */
-  select_buffer_popover->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										      AGS_SELECT_BUFFER_MAX_BEATS,
-										      0.25);
-  gtk_spin_button_set_digits(select_buffer_popover->select_x0,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x0),
-			       9);
-  gtk_spin_button_set_value(select_buffer_popover->select_x0,
+  /* select x0 - tact */
+  select_buffer_popover->select_x0_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											   AGS_SELECT_BUFFER_MAX_BEATS,
+											   1.0);
+  gtk_spin_button_set_digits(select_buffer_popover->select_x0_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x0_tact),
+			       6);
+  gtk_spin_button_set_value(select_buffer_popover->select_x0_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 (GtkWidget *) select_buffer_popover->select_x0);
+		 (GtkWidget *) select_buffer_popover->select_x0_tact);
+
+  /* select x0 - 1024th */
+  select_buffer_popover->select_x0_1024th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											     1023.0,
+											     1.0);
+  gtk_spin_button_set_digits(select_buffer_popover->select_x0_1024th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x0_1024th),
+			       5);
+  gtk_spin_button_set_value(select_buffer_popover->select_x0_1024th,
+			    0.0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) select_buffer_popover->select_x0_1024th);
   
   /* select x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -243,18 +256,31 @@ ags_select_buffer_popover_init(AgsSelectBufferPopover *select_buffer_popover)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  /* select x1 - spin button */
-  select_buffer_popover->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										      AGS_SELECT_BUFFER_MAX_BEATS,
-										      0.25);
-  gtk_spin_button_set_digits(select_buffer_popover->select_x1,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x1),
-			       9);
-  gtk_spin_button_set_value(select_buffer_popover->select_x1,
+  /* select x1 - tact */
+  select_buffer_popover->select_x1_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											   AGS_SELECT_BUFFER_MAX_BEATS,
+											   1.0);
+  gtk_spin_button_set_digits(select_buffer_popover->select_x1_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x1_tact),
+			       6);
+  gtk_spin_button_set_value(select_buffer_popover->select_x1_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 (GtkWidget *) select_buffer_popover->select_x1);
+		 (GtkWidget *) select_buffer_popover->select_x1_tact);
+  
+  /* select x1 - 1024th */
+  select_buffer_popover->select_x1_1024th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											     1023.0,
+											     1.0);
+  gtk_spin_button_set_digits(select_buffer_popover->select_x1_1024th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_buffer_popover->select_x1_1024th),
+			       5);
+  gtk_spin_button_set_value(select_buffer_popover->select_x1_1024th,
+			    0.0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) select_buffer_popover->select_x1_1024th);
   
   /* buttons */
   select_buffer_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -415,10 +441,10 @@ ags_select_buffer_popover_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_buffer_popover->copy_selection);
 
-  x0 = gtk_spin_button_get_value(select_buffer_popover->select_x0);
+  x0 = (16.0 * gtk_spin_button_get_value(select_buffer_popover->select_x0_tact)) + (gtk_spin_button_get_value(select_buffer_popover->select_x0_1024th) / 64.0);
   x0 = delay * (gdouble) buffer_size * x0;
   
-  x1 = gtk_spin_button_get_value(select_buffer_popover->select_x1);
+  x1 = (16.0 * gtk_spin_button_get_value(select_buffer_popover->select_x1_tact)) + (gtk_spin_button_get_value(select_buffer_popover->select_x1_1024th) / 64.0);
   x1 = delay * (gdouble) buffer_size * x1;
   
   timestamp = ags_timestamp_new();

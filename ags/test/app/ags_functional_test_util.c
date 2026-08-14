@@ -2513,7 +2513,7 @@ ags_functional_test_util_export_tact_driver_program(guint n_params,
 
   export_window = ags_ui_provider_get_export_window(AGS_UI_PROVIDER(application_context));
 
-  gtk_spin_button_set_value(export_window->tact,
+  gtk_spin_button_set_value(export_window->duration_tact,
 			    tact);
 
   ags_functional_test_util_reaction_time_long();

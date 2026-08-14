@@ -147,6 +147,7 @@ libags_audio_installcheck_programs += \
 	ags_check_system_track_test \
 	ags_check_system_midi_smf_util_test \
 	ags_check_system_midi_builder_test \
+	ags_check_system_midi_parser_test \
 	ags_check_system_midi_ci_util_test \
 	ags_check_system_midi_ump_util_test
 
@@ -1166,6 +1167,13 @@ ags_check_system_midi_builder_test_CFLAGS = $(CFLAGS) $(UNIT_SYSTEM_TEST_CFLAGS)
 ags_check_system_midi_builder_test_CPPFLAGS = $(AGS_FEATURES)
 ags_check_system_midi_builder_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_midi_builder_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lm  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
+
+# midi parser unit test
+ags_check_system_midi_parser_test_SOURCES = ags/test/audio/midi/ags_midi_parser_test.c
+ags_check_system_midi_parser_test_CFLAGS = $(CFLAGS) $(UNIT_SYSTEM_TEST_CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBDSSIALSACOMPAT_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(JSON_GLIB_CFLAGS) $(GOBJECT_CFLAGS) $(LIBSOUP_CFLAGS) $(JACK_CFLAGS) $(GSTREAMER_CFLAGS)
+ags_check_system_midi_parser_test_CPPFLAGS = $(AGS_FEATURES)
+ags_check_system_midi_parser_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_midi_parser_test_LDADD = -L$(DESTDIR)/$(libdir) -lags -lags_thread -lags_server -lags_audio -lcunit -lm  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(JSON_GLIB_LIBS) $(GOBJECT_LIBS) $(LIBSOUP_LIBS) $(JACK_LIBS) $(GSTREAMER_LIBS)
 
 # midi ci util unit test
 ags_check_system_midi_ci_util_test_SOURCES = ags/test/audio/midi/ags_midi_ci_util_test.c
@@ -2234,6 +2242,7 @@ ags-check-system-unit-test: $(libags_installcheck_programs) $(libags_audio_insta
 	./ags_check_system_track_test
 	./ags_check_system_midi_smf_util_test
 	./ags_check_system_midi_builder_test
+	./ags_check_system_midi_parser_test
 	./ags_check_system_osc_buffer_util_test
 	./ags_check_system_osc_client_test
 	./ags_check_system_osc_connection_test

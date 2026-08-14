@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
+
+#include <math.h>
 
 #include <ags/i18n.h>
 
@@ -234,18 +236,31 @@ ags_crop_note_popover_init(AgsCropNotePopover *crop_note_popover)
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* crop note - spin button */
-  crop_note_popover->crop_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
-										  AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
-										  1.0);
-  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->crop_note),
-			       9);
-  gtk_spin_button_set_digits(crop_note_popover->crop_note,
-			     3);
-  gtk_spin_button_set_value(crop_note_popover->crop_note,
+  /* crop note - tact */
+  crop_note_popover->crop_note_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
+										       AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
+										       1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->crop_note_tact),
+			       6);
+  gtk_spin_button_set_digits(crop_note_popover->crop_note_tact,
+			     0);
+  gtk_spin_button_set_value(crop_note_popover->crop_note_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(crop_note_popover->crop_note));
+		 GTK_WIDGET(crop_note_popover->crop_note_tact));
+
+  /* crop note - 256th */
+  crop_note_popover->crop_note_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											255.0,
+											1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->crop_note_256th),
+			       4);
+  gtk_spin_button_set_digits(crop_note_popover->crop_note_256th,
+			     0);
+  gtk_spin_button_set_value(crop_note_popover->crop_note_256th,
+			    0.0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(crop_note_popover->crop_note_256th));
 
   /* padding note - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -258,18 +273,31 @@ ags_crop_note_popover_init(AgsCropNotePopover *crop_note_popover)
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* padding note - spin button */
-  crop_note_popover->padding_note = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
-										     AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
-										     1.0);
-  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->padding_note),
-			       9);
-  gtk_spin_button_set_digits(crop_note_popover->padding_note,
-			     3);
-  gtk_spin_button_set_value(crop_note_popover->padding_note,
+  /* padding note - tact */
+  crop_note_popover->padding_note_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0 * AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
+											  AGS_CROP_NOTE_POPOVER_MAX_WIDTH,
+											  1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->padding_note_tact),
+			       6);
+  gtk_spin_button_set_digits(crop_note_popover->padding_note_tact,
+			     0);
+  gtk_spin_button_set_value(crop_note_popover->padding_note_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(crop_note_popover->padding_note));
+		 GTK_WIDGET(crop_note_popover->padding_note_tact));
+
+  /* padding note - 256th */
+  crop_note_popover->padding_note_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											   255.0,
+											   1.0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(crop_note_popover->padding_note_256th),
+			       4);
+  gtk_spin_button_set_digits(crop_note_popover->padding_note_256th,
+			     0);
+  gtk_spin_button_set_value(crop_note_popover->padding_note_256th,
+			    0.0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(crop_note_popover->padding_note_256th));
   
   /* buttons */
   crop_note_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -301,6 +329,9 @@ ags_crop_note_popover_xml_compose(AgsConnectable *connectable)
   xmlNode *node;
 
   gchar *str;
+
+  gdouble crop_note;
+  gdouble padding_note;
   
   crop_note_popover = AGS_CROP_NOTE_POPOVER(connectable);
 
@@ -338,8 +369,10 @@ ags_crop_note_popover_xml_compose(AgsConnectable *connectable)
   g_free(str);
 
   /* crop note */
+  crop_note = gtk_spin_button_get_value(crop_note_popover->crop_note_tact);
+  
   str = g_strdup_printf("%f",
-			gtk_spin_button_get_value(crop_note_popover->crop_note));
+			((256.0 * crop_note) + (((crop_note >= 0.0) ? 1.0: -1.0) * gtk_spin_button_get_value(crop_note_popover->crop_note_256th))));
   
   xmlNewProp(node,
 	     BAD_CAST "crop-note",
@@ -348,8 +381,10 @@ ags_crop_note_popover_xml_compose(AgsConnectable *connectable)
   g_free(str);
 
   /* padding note */
+  padding_note = gtk_spin_button_get_value(crop_note_popover->padding_note_tact);
+  
   str = g_strdup_printf("%f",
-			gtk_spin_button_get_value(crop_note_popover->padding_note));
+			((256.0 * padding_note) + (((padding_note >= 0.0) ? 1.0: -1.0) * gtk_spin_button_get_value(crop_note_popover->padding_note_256th))));
   
   xmlNewProp(node,
 	     BAD_CAST "padding-note",
@@ -367,6 +402,9 @@ ags_crop_note_popover_xml_parse(AgsConnectable *connectable,
   AgsCropNotePopover *crop_note_popover;
   
   gchar *str;
+
+  gdouble crop_note;
+  gdouble padding_note;
   
   crop_note_popover = AGS_CROP_NOTE_POPOVER(connectable);
 
@@ -401,9 +439,14 @@ ags_crop_note_popover_xml_parse(AgsConnectable *connectable,
   str = xmlGetProp(node,
 		   "crop-note");
 
-  gtk_spin_button_set_value(crop_note_popover->crop_note,
-			    g_ascii_strtod(str,
-					   NULL));
+  crop_note = g_ascii_strtod(str,
+			     NULL);
+
+  gtk_spin_button_set_value(crop_note_popover->crop_note_tact,
+			    floor(crop_note / 256.0));
+
+  gtk_spin_button_set_value(crop_note_popover->crop_note_256th,
+			    (gdouble) (((crop_note >= 0.0) ? 1: -1) * ((gint) crop_note % 256)));
   
   xmlFree(str);
 
@@ -411,9 +454,14 @@ ags_crop_note_popover_xml_parse(AgsConnectable *connectable,
   str = xmlGetProp(node,
 		   "padding-note");
 
-  gtk_spin_button_set_value(crop_note_popover->padding_note,
-			    g_ascii_strtod(str,
-					   NULL));
+  padding_note = g_ascii_strtod(str,
+				NULL);
+  
+  gtk_spin_button_set_value(crop_note_popover->padding_note_tact,
+			    floor(padding_note / 256.0));
+
+  gtk_spin_button_set_value(crop_note_popover->padding_note_256th,
+			    (gdouble) (((padding_note >= 0.0) ? 1: -1) * ((gint) padding_note % 256)));
   
   xmlFree(str);
 }
@@ -507,8 +555,10 @@ ags_crop_note_popover_apply(AgsApplicable *applicable)
   
   GList *start_notation, *notation;
   GList *task;
-  
-  guint x_256th_padding;
+
+  gdouble crop_note_tact;
+  gdouble padding_note_tact;
+  gint x_256th_padding;
   guint x_256th_crop;
   
   gboolean absolute;
@@ -533,8 +583,13 @@ ags_crop_note_popover_apply(AgsApplicable *applicable)
   audio = machine->audio;
 
   /* get some values */
-  x_256th_crop = (guint) (16.0 * gtk_spin_button_get_value(crop_note_popover->crop_note));
-  x_256th_padding = (guint) (16.0 * gtk_spin_button_get_value(crop_note_popover->padding_note));
+  crop_note_tact = gtk_spin_button_get_value(crop_note_popover->crop_note_tact);
+  
+  x_256th_crop = (guint) ((256.0 * crop_note_tact) + (((crop_note_tact >= 0.0) ? 1.0: -1.0) * gtk_spin_button_get_value(crop_note_popover->crop_note_256th)));
+
+  padding_note_tact = gtk_spin_button_get_value(crop_note_popover->padding_note_tact);
+  
+  x_256th_padding = (guint) ((256.0 * padding_note_tact) + (((padding_note_tact >= 0.0) ? 1.0: -1.0) * gtk_spin_button_get_value(crop_note_popover->padding_note_256th)));
 
   absolute = gtk_check_button_get_active(crop_note_popover->absolute);
 

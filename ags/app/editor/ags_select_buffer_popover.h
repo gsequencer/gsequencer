@@ -52,9 +52,11 @@ struct _AgsSelectBufferPopover
   
   GtkCheckButton *copy_selection;
 
-  GtkSpinButton *select_x0;
+  GtkSpinButton *select_x0_tact;
+  GtkSpinButton *select_x0_1024th;
 
-  GtkSpinButton *select_x1;
+  GtkSpinButton *select_x1_tact;
+  GtkSpinButton *select_x1_1024th;
 
   GtkBox *action_area;
 
