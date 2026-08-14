@@ -238,18 +238,18 @@ ags_position_notation_cursor_popover_init(AgsPositionNotationCursorPopover *posi
   gtk_box_append((GtkBox *) hbox,
 		 (GtkWidget *) position_notation_cursor_popover->position_x_tact);
 
-  /* position x - 16th */
-  position_notation_cursor_popover->position_x_16th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-												       15.0,
-												       1.0);
-  gtk_spin_button_set_digits(position_notation_cursor_popover->position_x_16th,
+  /* position x - 256th */
+  position_notation_cursor_popover->position_x_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+													255.0,
+													1.0);
+  gtk_spin_button_set_digits(position_notation_cursor_popover->position_x_256th,
 			     0);
-  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_x_16th),
-			       6);
-  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_16th,
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_x_256th),
+			       4);
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_256th,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,
-		 (GtkWidget *) position_notation_cursor_popover->position_x_16th);
+		 (GtkWidget *) position_notation_cursor_popover->position_x_256th);
   
   /* position y - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -319,7 +319,7 @@ ags_position_notation_cursor_popover_xml_compose(AgsConnectable *connectable)
 
   /* position x */
   str = g_strdup_printf("%f",
-			(16.0 * gtk_spin_button_get_value(position_notation_cursor_popover->position_x_tact) + gtk_spin_button_get_value(position_notation_cursor_popover->position_x_16th)));
+			(256.0 * gtk_spin_button_get_value(position_notation_cursor_popover->position_x_tact) + gtk_spin_button_get_value(position_notation_cursor_popover->position_x_256th)));
   
   xmlNewProp(node,
 	     BAD_CAST "position-x",
@@ -369,10 +369,10 @@ ags_position_notation_cursor_popover_xml_parse(AgsConnectable *connectable,
 			      NULL);
   
   gtk_spin_button_set_value(position_notation_cursor_popover->position_x_tact,
-			    floor(position_x / 16.0));
+			    floor(position_x / 256.0));
   
-  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_16th,
-			    (gdouble) ((gint) position_x % 16));
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_256th,
+			    (gdouble) ((gint) position_x % 256));
   
   xmlFree(str);
 
@@ -490,12 +490,12 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
   
   zoom = exp2((double) history - 2.0);
   
-  x = (16 * gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_tact)) + gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_16th);
+  x = (256 * gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_tact)) + gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_256th);
 
   notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
   if(notation_edit != NULL){
-    notation_edit->cursor_position_x = x;
+    notation_edit->cursor_position_x_256th = x;
     notation_edit->cursor_position_y = 0.0;
   }
 

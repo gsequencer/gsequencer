@@ -53,7 +53,7 @@ struct _AgsPositionNotationCursorPopover
   GtkCheckButton *set_focus;
 
   GtkSpinButton *position_x_tact;
-  GtkSpinButton *position_x_16th;
+  GtkSpinButton *position_x_256th;
   GtkSpinButton *position_y;
 
   GtkBox *action_area;

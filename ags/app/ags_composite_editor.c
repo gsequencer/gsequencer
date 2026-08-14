@@ -2277,9 +2277,9 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 					xmlNode *notation_node,
 					AgsTimestamp *timestamp,
 					gboolean match_channel, gboolean no_duplicates,
-					guint position_x, guint position_y,
+					guint position_x_256th, guint position_y,
 					gboolean paste_from_position,
-					gint *last_x)
+					gint *last_x_256th)
 {    
   AgsNotation *current_notation;
 		
@@ -2287,11 +2287,11 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 
   xmlChar *prop;
   
-  gint first_x;
-  guint current_x;
+  gint first_x_256th;
+  guint current_x_256th;
   gint i;
 
-  first_x = -1;
+  first_x_256th = -1;
     
   /*  */
   i = 0;
@@ -2321,34 +2321,34 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
     if(paste_from_position){
       xmlNode *child;
 
-      guint x_boundary;
+      guint x_256th_boundary;
       
-      ags_notation_insert_from_clipboard_extended(current_notation,
-						  notation_node,
-						  TRUE, position_x,
-						  TRUE, position_y,
-						  match_channel, no_duplicates);
-		    
+      ags_notation_insert_256th_from_clipboard(current_notation,
+					       notation_node,
+					       TRUE, position_x_256th,
+					       TRUE, position_y,
+					       match_channel, no_duplicates);
+      
       /* get boundaries */
       child = notation_node->children;
-      current_x = 0;
+      current_x_256th = 0;
 	  
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
 			 BAD_CAST "note",
 			 5)){
-	    guint tmp;
+	    guint tmp_256th;
 
 	    prop = xmlGetProp(child,
-			      BAD_CAST "x1");
+			      BAD_CAST "x1-256th");
 	    
-	    tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
-				   NULL,
-				   10);
+	    tmp_256th = g_ascii_strtoull(AGS_BAD_CAST prop,
+					 NULL,
+					 10);
 
-	    if(tmp > current_x){
-	      current_x = tmp;
+	    if(tmp_256th > current_x_256th){
+	      current_x_256th = tmp_256th;
 	    }
 
 	    xmlFree(prop);
@@ -2359,56 +2359,58 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
       }
 
       prop = xmlGetProp(notation_node,
-			BAD_CAST "x_boundary");
+			BAD_CAST "x-256th-boundary");
       
-      x_boundary = g_ascii_strtoull(AGS_BAD_CAST prop,
-				    NULL,
-				    10);
+      x_256th_boundary = g_ascii_strtoull(AGS_BAD_CAST prop,
+					  NULL,
+					  10);
+      
 
-
-      if(first_x == -1 || x_boundary < first_x){
-	first_x = x_boundary;
+      if(first_x_256th == -1 || x_256th_boundary < first_x_256th){
+	first_x_256th = x_256th_boundary;
       }
 	  
-      if(position_x > x_boundary){
-	current_x += (position_x - x_boundary);
+      if(position_x_256th > x_256th_boundary){
+	current_x_256th += (position_x_256th - x_256th_boundary);
       }else{
-	current_x -= (x_boundary - position_x);
+	current_x_256th -= (x_256th_boundary - position_x_256th);
       }
 	  
-      if(current_x > last_x[0]){
-	last_x[0] = current_x;
+      if(last_x_256th != NULL &&
+	 current_x_256th > last_x_256th[0]){
+	last_x_256th[0] = current_x_256th;
       }
 
       xmlFree(prop);
     }else{
       xmlNode *child;
 
-      ags_notation_insert_from_clipboard(current_notation,
-					 notation_node,
-					 FALSE, 0,
-					 FALSE, 0);
+      ags_notation_insert_256th_from_clipboard(current_notation,
+					       notation_node,
+					       FALSE, 0,
+					       FALSE, 0,
+					       match_channel, no_duplicates);
 
       /* get boundaries */
       child = notation_node->children;
-      current_x = 0;
+      current_x_256th = 0;
 	  
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
 			 BAD_CAST "note",
 			 5)){
-	    guint tmp;
+	    guint tmp_256th;
 
 	    prop = xmlGetProp(child,
-			      BAD_CAST "x1");
+			      BAD_CAST "x1-256th");
 	    
-	    tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
-				   NULL,
-				   10);
+	    tmp_256th = g_ascii_strtoull(AGS_BAD_CAST prop,
+					 NULL,
+					 10);
 
-	    if(tmp > current_x){
-	      current_x = tmp;
+	    if(tmp_256th > current_x_256th){
+	      current_x_256th = tmp_256th;
 	    }
 
 	    xmlFree(prop);
@@ -2418,8 +2420,9 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 	child = child->next;
       }
 
-      if(current_x > last_x[0]){
-	last_x[0] = current_x;
+      if(last_x_256th != NULL &&
+	 current_x_256th > last_x_256th[0]){
+	last_x_256th[0] = current_x_256th;
       }
     }
 
@@ -2427,27 +2430,28 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
     i++;
   }
 
-  return(first_x);
+  return(first_x_256th);
 }
 
 gint
 ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 				    AgsMachine *machine,
 				    xmlNode *audio_node,
-				    guint position_x, guint position_y,
+				    guint position_x_256th, guint position_y,
 				    gboolean paste_from_position,
-				    gint *last_x)
+				    gint *last_x_256th)
 {
   AgsTimestamp *timestamp;
 
   xmlNode *notation_list_node, *notation_node;
   xmlNode *timestamp_node;
 
-  gint first_x;
+  gint first_x_256th, current_x_256th;
   gboolean match_channel, no_duplicates;
 
-  first_x = -1;
-    
+  first_x_256th = -1;
+  current_x_256th = -1;
+  
   match_channel = ((AGS_COMPOSITE_EDIT_PASTE_MATCH_AUDIO_CHANNEL & (composite_editor->notation_edit->paste_flags)) != 0) ? TRUE: FALSE;
   no_duplicates = ((AGS_COMPOSITE_EDIT_PASTE_NO_DUPLICATES & (composite_editor->notation_edit->paste_flags)) != 0) ? TRUE: FALSE;
 
@@ -2498,17 +2502,23 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 	      }     
 
 	      /* 1st attempt */
-	      timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_NOTATION_DEFAULT_OFFSET);
+	      timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) position_x_256th / 16.0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
 		
-	      first_x = ags_composite_editor_paste_notation_all(composite_editor,
-								machine,
-								notation_node,
-								timestamp,
-								match_channel, no_duplicates,
-								position_x, position_y,
-								paste_from_position,
-								last_x);
+	      current_x_256th = ags_composite_editor_paste_notation_all(composite_editor,
+									machine,
+									notation_node,
+									timestamp,
+									match_channel, no_duplicates,
+									position_x_256th, position_y,
+									paste_from_position,
+									last_x_256th);
 
+	      if(first_x_256th == -1 ||
+		 (current_x_256th != -1 &&
+		  current_x_256th < first_x_256th)){
+		first_x_256th = current_x_256th;
+	      }
+	      
 	      /* 2nd attempt */
 	      timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
 
@@ -2517,9 +2527,9 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 						      notation_node,
 						      timestamp,
 						      match_channel, no_duplicates,
-						      position_x, position_y,
+						      position_x_256th, position_y,
 						      paste_from_position,
-						      last_x);
+						      last_x_256th);
 	    }
 	  }
 
@@ -2533,7 +2543,7 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 
   g_object_unref(timestamp);
 
-  return(first_x);
+  return(first_x_256th);
 }
 
 gint
@@ -3112,8 +3122,8 @@ ags_composite_editor_paste_notation_async(GObject *source_object,
   
   gchar *buffer;
     
-  guint position_x, position_y;
-  gint first_x, last_x;
+  guint position_x_256th, position_y;
+  gint first_x_256th, last_x_256th;
   gboolean paste_from_position;
 
   GError *error;
@@ -3131,19 +3141,21 @@ ags_composite_editor_paste_notation_async(GObject *source_object,
 
   machine = composite_editor->selected_machine;
   
-  position_x = 0;
+  position_x_256th = 0;
   position_y = 0;
+  
+  first_x_256th = -1;
+  last_x_256th = 0;
 
   /* get position */
   if((GtkWidget *) composite_editor->toolbar->selected_tool == (GtkWidget *) composite_editor->toolbar->position){
-    last_x = 0;
     paste_from_position = TRUE;
 
-    position_x = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x;
+    position_x_256th = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x_256th;
     position_y = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_y;
       
 #ifdef DEBUG
-    printf("pasting at position: [%u,%u]\n", position_x, position_y);
+    printf("pasting at position: [%u,%u]\n", position_x_256th, position_y);
 #endif
   }else{
     paste_from_position = FALSE;
@@ -3155,20 +3167,18 @@ ags_composite_editor_paste_notation_async(GObject *source_object,
 			    0);
   audio_node = xmlDocGetRootElement(clipboard);
 
-  first_x = -1;
-    
   /* iterate xml tree */
   while(audio_node != NULL){
     if(audio_node->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(audio_node->name,
 		     BAD_CAST "audio",
 		     6)){
-	first_x = ags_composite_editor_paste_notation(composite_editor,
-						      machine,
-						      audio_node,
-						      position_x, position_y,
-						      paste_from_position,
-						      &last_x);
+	first_x_256th = ags_composite_editor_paste_notation(composite_editor,
+							    machine,
+							    audio_node,
+							    position_x_256th, position_y,
+							    paste_from_position,
+							    &last_x_256th);
 	
 	break;
       }
@@ -3177,8 +3187,8 @@ ags_composite_editor_paste_notation_async(GObject *source_object,
     audio_node = audio_node->next;
   }
 
-  if(first_x == -1){
-    first_x = 0;
+  if(first_x_256th == -1){
+    first_x_256th = 0;
   }
     
   gtk_widget_queue_draw((GtkWidget *) composite_editor->notation_edit->focused_edit);
@@ -3189,13 +3199,13 @@ ags_composite_editor_paste_notation_async(GObject *source_object,
     gint big_step, small_step;
 
     //TODO:JK: implement me
-    big_step = (guint) ceil((double) last_x / 16.0) * 16.0 + (AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x % (guint) 16);
-    small_step = (guint) big_step - 16;
+    big_step = (guint) ceil((double) last_x_256th / 256.0) * 256.0 + (AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x_256th % (guint) 256);
+    small_step = (guint) big_step - 256;
 	
-    if(small_step < last_x){
-      AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x = big_step;
+    if(small_step < last_x_256th){
+      AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x_256th = big_step;
     }else{
-      AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x = small_step;
+      AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x_256th = small_step;
     }
   }
 
@@ -4044,7 +4054,7 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 	  continue;
 	}
 
-	notation_node = ags_notation_copy_selection(AGS_NOTATION(notation->data));
+	notation_node = ags_notation_copy_256th_selection(AGS_NOTATION(notation->data));
 	xmlAddChild(notation_list_node,
 		    notation_node);
 	
@@ -4414,7 +4424,7 @@ ags_composite_editor_cut(AgsCompositeEditor *composite_editor)
 	  continue;
 	}
 
-	notation_node = ags_notation_cut_selection(AGS_NOTATION(notation->data));
+	notation_node = ags_notation_cut_256th_selection(AGS_NOTATION(notation->data));
 	xmlAddChild(notation_list_node,
 		    notation_node);
 	
@@ -4945,7 +4955,7 @@ ags_composite_editor_do_feedback(AgsCompositeEditor *composite_editor)
   timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
   timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_edit->cursor_position_x / AGS_NOTATION_DEFAULT_OFFSET);
+  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * (guint64) floor((double) notation_edit->cursor_position_x_256th / 16.0 / AGS_NOTATION_DEFAULT_OFFSET);
 
   i = 0;
 
@@ -4972,9 +4982,9 @@ ags_composite_editor_do_feedback(AgsCompositeEditor *composite_editor)
       continue;
     }
 
-    current_note = ags_notation_find_point(list_notation->data,
-					   notation_edit->cursor_position_x, notation_edit->cursor_position_y,
-					   FALSE);
+    current_note = ags_notation_find_exact_note_256th_point(list_notation->data,
+							    notation_edit->cursor_position_x_256th, notation_edit->cursor_position_y,
+							    FALSE);
 
     if(current_note != NULL){
       if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT)){
@@ -5148,7 +5158,7 @@ ags_composite_editor_add_note(AgsCompositeEditor *composite_editor,
 /**
  * ags_composite_editor_delete_note:
  * @composite_editor: the #AgsCompositeEditor
- * @x: the x position
+ * @x_256th: the x 256th position
  * @y: the y position
  * 
  * Delete note at position @x|@y of @composite_editor.
@@ -5157,7 +5167,7 @@ ags_composite_editor_add_note(AgsCompositeEditor *composite_editor,
  */
 void
 ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
-				 guint x, guint y)
+				 guint x_256th, guint y)
 {
   AgsMachine *machine;
   
@@ -5184,7 +5194,7 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
         
     ags_timestamp_set_ags_offset(timestamp,
-				 (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x / (double) AGS_NOTATION_DEFAULT_OFFSET));
+				 (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor(((double) x_256th / 16.0) / (double) AGS_NOTATION_DEFAULT_OFFSET));
 
     i = 0;
 
@@ -5198,8 +5208,8 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
 						  timestamp);
       
       if(notation != NULL){
-	ags_notation_remove_note_at_position(notation->data,
-					     x, y);
+	ags_notation_remove_note_256th_at_position(notation->data,
+						   x_256th, y);
       }
 
       g_list_free_full(start_notation,

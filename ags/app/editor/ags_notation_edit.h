@@ -118,8 +118,8 @@ struct _AgsNotationEdit
 
   guint key_count;
   
-  guint cursor_position_x;
-  guint cursor_position_y;
+  gint cursor_position_x_256th;
+  gint cursor_position_y;
 
   guint selected_note_border;
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -226,18 +226,31 @@ ags_select_acceleration_popover_init(AgsSelectAccelerationPopover *select_accele
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* select x0 - spin button */
-  select_acceleration_popover->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-											    AGS_SELECT_ACCELERATION_MAX_BEATS,
-											    0.25);
-  gtk_spin_button_set_digits(select_acceleration_popover->select_x0,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x0),
-			       9);
-  gtk_spin_button_set_value(select_acceleration_popover->select_x0,
+  /* select x0 - tact */
+  select_acceleration_popover->select_x0_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+												 AGS_SELECT_ACCELERATION_MAX_BEATS,
+												 1.0);
+  gtk_spin_button_set_digits(select_acceleration_popover->select_x0_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x0_tact),
+			       6);
+  gtk_spin_button_set_value(select_acceleration_popover->select_x0_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_acceleration_popover->select_x0));
+		 GTK_WIDGET(select_acceleration_popover->select_x0_tact));
+  
+  /* select x0 - 1024th */
+  select_acceleration_popover->select_x0_1024th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+												   1023.0,
+												   1.0);
+  gtk_spin_button_set_digits(select_acceleration_popover->select_x0_1024th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x0_1024th),
+			       5);
+  gtk_spin_button_set_value(select_acceleration_popover->select_x0_1024th,
+			    0.0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_acceleration_popover->select_x0_1024th));
   
   /* select x1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -250,18 +263,31 @@ ags_select_acceleration_popover_init(AgsSelectAccelerationPopover *select_accele
   gtk_box_append(hbox,
 		 GTK_WIDGET(label));
 
-  /* select x1 - spin button */
-  select_acceleration_popover->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-											    AGS_SELECT_ACCELERATION_MAX_BEATS,
-											    0.25);
-  gtk_spin_button_set_digits(select_acceleration_popover->select_x1,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x1),
-			       9);
-  gtk_spin_button_set_value(select_acceleration_popover->select_x1,
+  /* select x1 - tact */
+  select_acceleration_popover->select_x1_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+												 AGS_SELECT_ACCELERATION_MAX_BEATS,
+												 1.0);
+  gtk_spin_button_set_digits(select_acceleration_popover->select_x1_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x1_tact),
+			       6);
+  gtk_spin_button_set_value(select_acceleration_popover->select_x1_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 GTK_WIDGET(select_acceleration_popover->select_x1));
+		 GTK_WIDGET(select_acceleration_popover->select_x1_tact));
+  
+  /* select x1 - 1024th */
+  select_acceleration_popover->select_x1_1024th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+												   1023.0,
+												   1.0);
+  gtk_spin_button_set_digits(select_acceleration_popover->select_x1_1024th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_acceleration_popover->select_x1_1024th),
+			       5);
+  gtk_spin_button_set_value(select_acceleration_popover->select_x1_1024th,
+			    0.0);
+  gtk_box_append(hbox,
+		 GTK_WIDGET(select_acceleration_popover->select_x1_1024th));
   
   /* buttons */
   select_acceleration_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -441,9 +467,9 @@ ags_select_acceleration_popover_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_acceleration_popover->copy_selection);
 
-  x0 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value(select_acceleration_popover->select_x0);
+  x0 = (1024.0 * gtk_spin_button_get_value(select_acceleration_popover->select_x0_tact)) + gtk_spin_button_get_value(select_acceleration_popover->select_x0_1024th);
 
-  x1 = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH * gtk_spin_button_get_value(select_acceleration_popover->select_x1);
+  x1 = (1024.0 * gtk_spin_button_get_value(select_acceleration_popover->select_x1_tact)) + gtk_spin_button_get_value(select_acceleration_popover->select_x1_1024th);
   
   /* select acceleration */
   clipboard = NULL;

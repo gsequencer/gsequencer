@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -219,18 +219,31 @@ ags_position_automation_cursor_popover_init(AgsPositionAutomationCursorPopover *
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  /* position x - spin button */
-  position_automation_cursor_popover->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-												    AGS_POSITION_AUTOMATION_CURSOR_MAX_BEATS,
-												    1.0);
-  gtk_spin_button_set_digits(position_automation_cursor_popover->position_x,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(position_automation_cursor_popover->position_x),
-			       9);
-  gtk_spin_button_set_value(position_automation_cursor_popover->position_x,
+  /* position x - tact */
+  position_automation_cursor_popover->position_x_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+													 AGS_POSITION_AUTOMATION_CURSOR_MAX_BEATS,
+													 1.0);
+  gtk_spin_button_set_digits(position_automation_cursor_popover->position_x_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_automation_cursor_popover->position_x_tact),
+			       6);
+  gtk_spin_button_set_value(position_automation_cursor_popover->position_x_tact,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,
-		 (GtkWidget *) position_automation_cursor_popover->position_x);
+		 (GtkWidget *) position_automation_cursor_popover->position_x_tact);
+  
+  /* position x - 1024th */
+  position_automation_cursor_popover->position_x_1024th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+													   1023.0,
+													   1.0);
+  gtk_spin_button_set_digits(position_automation_cursor_popover->position_x_1024th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_automation_cursor_popover->position_x_1024th),
+			       5);
+  gtk_spin_button_set_value(position_automation_cursor_popover->position_x_1024th,
+			    0.0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) position_automation_cursor_popover->position_x_1024th);
   
   /* buttons */
   position_automation_cursor_popover->action_area = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -333,6 +346,7 @@ ags_position_automation_cursor_popover_apply(AgsApplicable *applicable)
   gdouble zoom;
   guint history;
   guint x;
+  guint x_1024th;
 
   position_automation_cursor_popover = AGS_POSITION_AUTOMATION_CURSOR_POPOVER(applicable);
 
@@ -361,8 +375,10 @@ ags_position_automation_cursor_popover_apply(AgsApplicable *applicable)
   
   zoom = exp2((double) history - 2.0);
   
-  x = gtk_spin_button_get_value_as_int(position_automation_cursor_popover->position_x);
-  focused_automation_edit->cursor_position_x = 16 * x;
+  x = gtk_spin_button_get_value_as_int(position_automation_cursor_popover->position_x_tact);
+  x_1024th = (1024 * x) + gtk_spin_button_get_value_as_int(position_automation_cursor_popover->position_x_1024th);
+  
+  focused_automation_edit->cursor_position_x = (gint) floor((double) x_1024th / 64.0);
   focused_automation_edit->cursor_position_y = 0.0;
 
   hadjustment = gtk_range_get_adjustment(GTK_RANGE(focused_automation_edit->hscrollbar));
@@ -372,7 +388,7 @@ ags_position_automation_cursor_popover_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_AUTOMATION_DEFAULT_LENGTH / zoom))));
+			     ((floor((double) x_1024th / 64.0) * 64.0 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_AUTOMATION_DEFAULT_LENGTH / zoom))));
   }
   
   if(gtk_check_button_get_active(position_automation_cursor_popover->set_focus)){

@@ -735,7 +735,7 @@ ags_import_notation_smf_popover_apply(AgsApplicable *applicable)
   notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
   if(notation_edit != NULL){
-    notation_edit->cursor_position_x = (guint) floor((gdouble) x_256th / 16.0);
+    notation_edit->cursor_position_x_256th = x_256th;
     notation_edit->cursor_position_y = 0.0;
   }
 

@@ -59,6 +59,10 @@ G_BEGIN_DECLS
 #define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml"
 #define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano"
 
+#define AGS_NOTATION_CLIPBOARD_256TH_VERSION "9.2.2"
+#define AGS_NOTATION_CLIPBOARD_256TH_TYPE "AgsNotationClipboardXml"
+#define AGS_NOTATION_CLIPBOARD_256TH_FORMAT "AgsNotationNative256thPiano"
+
 typedef struct _AgsNotation AgsNotation;
 typedef struct _AgsNotationClass AgsNotationClass;
 
@@ -152,6 +156,8 @@ void ags_notation_remove_note(AgsNotation *notation,
 
 gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
 					      guint x, guint y);
+gboolean ags_notation_remove_note_256th_at_position(AgsNotation *notation,
+						    guint x_256th, guint y);
 
 GList* ags_notation_get_selection(AgsNotation *notation);
 
@@ -203,7 +209,10 @@ void ags_notation_remove_region_from_selection(AgsNotation *notation,
 void ags_notation_add_all_to_selection(AgsNotation *notation);
 
 xmlNode* ags_notation_copy_selection(AgsNotation *notation);
+xmlNode* ags_notation_copy_256th_selection(AgsNotation *notation);
+
 xmlNode* ags_notation_cut_selection(AgsNotation *notation);
+xmlNode* ags_notation_cut_256th_selection(AgsNotation *notation);
 
 void ags_notation_insert_from_clipboard(AgsNotation *notation,
 					xmlNode *notation_node,
@@ -215,6 +224,12 @@ void ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
 						 gboolean reset_x_offset, guint x_offset,
 						 gboolean reset_y_offset, guint y_offset,
 						 gboolean match_channel, gboolean no_duplicates);
+
+void ags_notation_insert_256th_from_clipboard(AgsNotation *notation,
+					      xmlNode *notation_node,
+					      gboolean reset_x_offset, guint x_256th_offset,
+					      gboolean reset_y_offset, guint y_offset,
+					      gboolean match_channel, gboolean no_duplicates);
 
 guchar* ags_notation_to_raw_midi(AgsNotation *notation,
 				 gdouble bpm, gdouble delay_factor,

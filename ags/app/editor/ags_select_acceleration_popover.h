@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,9 +54,11 @@ struct _AgsSelectAccelerationPopover
 
   GtkComboBoxText *port;
 
-  GtkSpinButton *select_x0;
+  GtkSpinButton *select_x0_tact;
+  GtkSpinButton *select_x0_1024th;
 
-  GtkSpinButton *select_x1;
+  GtkSpinButton *select_x1_tact;
+  GtkSpinButton *select_x1_1024th;
 
   GtkBox *action_area;
 
