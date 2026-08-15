@@ -2332,7 +2332,7 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
       /* get boundaries */
       child = notation_node->children;
       current_x_256th = 0;
-	  
+      
       while(child != NULL){
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
@@ -2342,16 +2342,20 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 
 	    prop = xmlGetProp(child,
 			      BAD_CAST "x1-256th");
-	    
-	    tmp_256th = g_ascii_strtoull(AGS_BAD_CAST prop,
-					 NULL,
-					 10);
 
-	    if(tmp_256th > current_x_256th){
-	      current_x_256th = tmp_256th;
+	    tmp_256th = 0;
+
+	    if(prop != NULL){
+	       tmp_256th = g_ascii_strtoull(AGS_BAD_CAST prop,
+					    NULL,
+					    10);
+	       
+	       if(tmp_256th > current_x_256th){
+		 current_x_256th = tmp_256th;
+	       }
+	       
+	       xmlFree(prop);
 	    }
-
-	    xmlFree(prop);
 	  }
 	}
 
@@ -2360,12 +2364,17 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 
       prop = xmlGetProp(notation_node,
 			BAD_CAST "x-256th-boundary");
-      
-      x_256th_boundary = g_ascii_strtoull(AGS_BAD_CAST prop,
-					  NULL,
-					  10);
-      
 
+      x_256th_boundary = 0;
+
+      if(prop != NULL){
+	x_256th_boundary = g_ascii_strtoull(AGS_BAD_CAST prop,
+					    NULL,
+					    10);
+
+	xmlFree(prop);
+      }     
+      
       if(first_x_256th == -1 || x_256th_boundary < first_x_256th){
 	first_x_256th = x_256th_boundary;
       }
@@ -2380,8 +2389,6 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 	 current_x_256th > last_x_256th[0]){
 	last_x_256th[0] = current_x_256th;
       }
-
-      xmlFree(prop);
     }else{
       xmlNode *child;
 
@@ -2404,16 +2411,18 @@ ags_composite_editor_paste_notation_all(AgsCompositeEditor *composite_editor,
 
 	    prop = xmlGetProp(child,
 			      BAD_CAST "x1-256th");
-	    
-	    tmp_256th = g_ascii_strtoull(AGS_BAD_CAST prop,
-					 NULL,
-					 10);
 
-	    if(tmp_256th > current_x_256th){
-	      current_x_256th = tmp_256th;
+	    if(prop != NULL){
+	      tmp_256th = g_ascii_strtoull(AGS_BAD_CAST prop,
+					   NULL,
+					   10);
+
+	      if(tmp_256th > current_x_256th){
+		current_x_256th = tmp_256th;
+	      }
+
+	      xmlFree(prop);
 	    }
-
-	    xmlFree(prop);
 	  }
 	}
 
@@ -2446,6 +2455,8 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
   xmlNode *notation_list_node, *notation_node;
   xmlNode *timestamp_node;
 
+  xmlChar *prop;
+  
   gint first_x_256th, current_x_256th;
   gboolean match_channel, no_duplicates;
 
@@ -2489,11 +2500,17 @@ ags_composite_editor_paste_notation(AgsCompositeEditor *composite_editor,
 		  if(!xmlStrncmp(timestamp_node->name,
 				 BAD_CAST "timestamp",
 				 10)){
-		    offset = g_ascii_strtoull((gchar *) xmlGetProp(timestamp_node,
-								   BAD_CAST "offset"),
-					      NULL,
-					      10);
-		      
+		    prop = xmlGetProp(timestamp_node,
+				      BAD_CAST "offset");
+
+		    if(prop != NULL){
+		      offset = g_ascii_strtoull(AGS_BAD_CAST prop,
+						NULL,
+						10);
+
+		      xmlFree(prop);
+		    }
+		    
 		    break;
 		  }
 		}
@@ -2562,7 +2579,9 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
   AgsAutomation *automation;
   
   GList *start_list_automation, *list_automation;
-    
+
+  xmlChar *prop;
+  
   guint first_x;
   guint current_x;
   gint i;
@@ -2646,17 +2665,23 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   BAD_CAST "note",
-			   5)){
+			   BAD_CAST "acceleration",
+			   13)){
 	      guint tmp;
 
-	      tmp = g_ascii_strtoull((gchar *) xmlGetProp(child,
-							  BAD_CAST "x"),
-				     NULL,
-				     10);
+	      prop =  xmlGetProp(child,
+				 BAD_CAST "x");
 
-	      if(tmp > current_x){
-		current_x = tmp;
+	      if(prop != NULL){
+		tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
+				       NULL,
+				       10);
+		
+		if(tmp > current_x){
+		  current_x = tmp;
+		}
+
+		xmlFree(prop);
 	      }
 	    }
 	  }
@@ -2664,12 +2689,19 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 	  child = child->next;
 	}
 
-	x_boundary = g_ascii_strtoull((gchar *) xmlGetProp(automation_node,
-							   BAD_CAST "x-boundary"),
-				      NULL,
-				      10);
+	prop = xmlGetProp(automation_node,
+			  BAD_CAST "x-boundary");
 
-
+	x_boundary = 0;
+	
+	if(prop != NULL){
+	  x_boundary = g_ascii_strtoull(AGS_BAD_CAST prop,
+					NULL,
+					10);
+	  
+	  xmlFree(prop);
+	}
+	
 	if(first_x == -1 || x_boundary < first_x){
 	  first_x = x_boundary;
 	}
@@ -2698,17 +2730,23 @@ ags_composite_editor_paste_automation_all(AgsCompositeEditor *composite_editor,
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   BAD_CAST "note",
-			   5)){
+			   BAD_CAST "acceleration",
+			   13)){
 	      guint tmp;
 
-	      tmp = g_ascii_strtoull((gchar *) xmlGetProp(child,
-							  BAD_CAST "x"),
-				     NULL,
-				     10);
+	      prop = xmlGetProp(child,
+				BAD_CAST "x");
 
-	      if(tmp > current_x){
-		current_x = tmp;
+	      if(prop != NULL){
+		tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
+				       NULL,
+				       10);
+		
+		if(tmp > current_x){
+		  current_x = tmp;
+		}
+		
+		xmlFree(prop);
 	      }
 	    }
 	  }
@@ -2760,6 +2798,8 @@ ags_composite_editor_paste_automation(AgsCompositeEditor *composite_editor,
   xmlNode *automation_list_node, *automation_node;
   xmlNode *timestamp_node;
 
+  xmlChar *prop;
+  
   guint first_x;
   gboolean match_line, no_duplicates;
 
@@ -2800,11 +2840,17 @@ ags_composite_editor_paste_automation(AgsCompositeEditor *composite_editor,
 		  if(!xmlStrncmp(timestamp_node->name,
 				 BAD_CAST "timestamp",
 				 10)){
-		    offset = g_ascii_strtoull((gchar *) xmlGetProp(timestamp_node,
-								   BAD_CAST "offset"),
-					      NULL,
-					      10);
-		      
+		    prop = xmlGetProp(timestamp_node,
+				      BAD_CAST "offset");
+
+		    if(prop != NULL){
+		      offset = g_ascii_strtoull(AGS_BAD_CAST prop,
+						NULL,
+						10);
+
+		      xmlFree(prop);
+		    }
+		    
 		    break;
 		  }
 		}
@@ -2868,7 +2914,9 @@ ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
   AgsWave *wave;
 		
   GList *start_list_wave, *list_wave;
-    
+
+  xmlChar *prop;
+  
   guint64 first_x;
   guint64 current_x;
   gint i;
@@ -2918,16 +2966,22 @@ ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
 			 BAD_CAST "buffer",
-			 5)){
+			 7)){
 	    guint64 tmp;
 
-	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      BAD_CAST "x"),
-				   NULL,
-				   10);
+	    prop = xmlGetProp(child,
+			      BAD_CAST "x");
 
-	    if(tmp > current_x){
-	      current_x = tmp;
+	    if(prop != NULL){
+	      tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
+				     NULL,
+				     10);
+	      
+	      if(tmp > current_x){
+		current_x = tmp;
+	      }
+
+	      xmlFree(prop);
 	    }
 	  }
 	}
@@ -2935,12 +2989,17 @@ ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
 	child = child->next;
       }
 
-      x_boundary = g_ascii_strtoull(xmlGetProp(wave_node,
-					       BAD_CAST "x-boundary"),
-				    NULL,
-				    10);
+      prop = xmlGetProp(wave_node,
+			BAD_CAST "x-boundary");
 
+      if(prop != NULL){
+	x_boundary = g_ascii_strtoull(AGS_BAD_CAST prop,
+				      NULL,
+				      10);
 
+	xmlFree(prop);
+      }
+      
       if(first_x == -1 || x_boundary < first_x){
 	first_x = x_boundary;
       }
@@ -2971,16 +3030,22 @@ ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
 	if(child->type == XML_ELEMENT_NODE){
 	  if(!xmlStrncmp(child->name,
 			 BAD_CAST "buffer",
-			 5)){
+			 7)){
 	    guint64 tmp;
 
-	    tmp = g_ascii_strtoull(xmlGetProp(child,
-					      BAD_CAST "x"),
-				   NULL,
-				   10);
+	    prop = xmlGetProp(child,
+			      BAD_CAST "x");
 
-	    if(tmp > current_x){
-	      current_x = tmp;
+	    if(prop != NULL){
+	      tmp = g_ascii_strtoull(AGS_BAD_CAST prop,
+				     NULL,
+				     10);
+
+	      if(tmp > current_x){
+		current_x = tmp;
+	      }
+
+	      xmlFree(prop);
 	    }
 	  }
 	}
@@ -3016,6 +3081,8 @@ ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
   xmlNode *wave_list_node, *wave_node;
   xmlNode *timestamp_node;
 
+  xmlChar *prop;
+  
   gint64 first_x, last_x;
   gboolean match_line;
 
@@ -3055,11 +3122,17 @@ ags_composite_editor_paste_wave(AgsCompositeEditor *composite_editor,
 		  if(!xmlStrncmp(timestamp_node->name,
 				 BAD_CAST "timestamp",
 				 10)){
-		    offset = g_ascii_strtoull(xmlGetProp(timestamp_node,
-							 BAD_CAST "offset"),
-					      NULL,
-					      10);
-		      
+		    prop = xmlGetProp(timestamp_node,
+				      BAD_CAST "offset");
+
+		    if(prop != NULL){
+		      offset = g_ascii_strtoull(AGS_BAD_CAST prop,
+						NULL,
+						10);
+
+		      xmlFree(prop);
+		    }
+		    
 		    break;
 		  }
 		}
@@ -4112,6 +4185,8 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 		automation_list_node);
 
     /* create automation nodes */
+    start_automation = NULL;
+    
     g_object_get(machine->audio,
 		 "automation", &start_automation,
 		 NULL);
@@ -4137,6 +4212,8 @@ ags_composite_editor_copy(AgsCompositeEditor *composite_editor)
 					    i)) != -1){
     ags_composite_editor_copy_LOOP:
       automation = start_automation;
+      
+      timestamp->timer.ags_offset.offset = 0;
 
       /* copy */
       while((automation = ags_automation_find_near_timestamp_extended(automation, i,

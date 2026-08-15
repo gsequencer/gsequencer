@@ -3255,6 +3255,8 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
   GList *selection;
 
+  gchar *str;
+  
   guint current_x;
   gdouble current_y;
   guint x_boundary;
@@ -3316,10 +3318,28 @@ ags_automation_copy_selection(AgsAutomation *automation)
 		 "y", &current_y,
 		 NULL);
 
-    current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration", NULL);
+    current_acceleration = xmlNewChild(automation_node,
+				       NULL,
+				       BAD_CAST "acceleration",
+				       NULL);
 
-    xmlNewProp(current_acceleration, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", current_x));
-    xmlNewProp(current_acceleration, BAD_CAST "y", BAD_CAST g_strdup_printf("%f", current_y));
+    str = g_strdup_printf("%u",
+			  current_x);
+    
+    xmlNewProp(current_acceleration,
+	       BAD_CAST "x",
+	       BAD_CAST str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%f",
+			  current_y);
+    
+    xmlNewProp(current_acceleration,
+	       BAD_CAST "y",
+	       BAD_CAST str);
+
+    g_free(str);
 
     if(y_boundary > current_y){
       y_boundary = current_y;
@@ -3330,8 +3350,23 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
   g_rec_mutex_unlock(automation_mutex);
 
-  xmlNewProp(automation_node, BAD_CAST "x-boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
-  xmlNewProp(automation_node, BAD_CAST "y-boundary", BAD_CAST g_strdup_printf("%f", y_boundary));
+  str = g_strdup_printf("%u",
+			x_boundary);
+  
+  xmlNewProp(automation_node,
+	     BAD_CAST "x-boundary",
+	     BAD_CAST str);
+
+  g_free(str);
+  
+  str = g_strdup_printf("%f",
+			y_boundary);
+  
+  xmlNewProp(automation_node,
+	     BAD_CAST "y-boundary",
+	     BAD_CAST str);
+  
+  g_free(str);
   
   return(automation_node);
 }
@@ -3424,7 +3459,9 @@ ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
   if(from_x_offset){
     if(x_boundary != NULL){
       errno = 0;
-      x_boundary_val = strtoul(x_boundary, &endptr, 10);
+      x_boundary_val = strtoul(x_boundary,
+			       &endptr,
+			       10);
 
       if(errno == ERANGE){
 	goto dont_reset_x_offset;
@@ -3454,7 +3491,9 @@ ags_automation_insert_from_clipboard_version_0_4_3(AgsAutomation *automation,
   if(from_y_offset){
     if(y_boundary != NULL){
       errno = 0;
-      y_boundary_val = strtoul(y_boundary, &endptr, 10);
+      y_boundary_val = strtoul(y_boundary,
+			       &endptr,
+			       10);
 
       if(errno == ERANGE){
 	goto dont_reset_y_offset;

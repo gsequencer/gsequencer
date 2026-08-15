@@ -4038,7 +4038,7 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
   gchar *str;
   
   guint audio_channel;
-  guint x_boundary, y_boundary;
+  guint x_256th_boundary, y_boundary;
   guint bank_0, bank_1, k;
 
   current = start_current;
@@ -4060,9 +4060,9 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
 			     BAD_CAST "notation");
 
   xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
-  xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
-  xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
-  xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+  xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_256TH_TYPE);
+  xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_256TH_VERSION);
+  xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_256TH_FORMAT);
   xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST "0");
 
   str = g_strdup_printf("%u",
@@ -4074,7 +4074,7 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
   bank_0 = machine->bank_0;
   bank_1 = machine->bank_1;
     
-  x_boundary = G_MAXUINT;
+  x_256th_boundary = G_MAXUINT;
   y_boundary = G_MAXUINT;
 
   while(current != NULL){
@@ -4110,19 +4110,67 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
 		   NULL);
 	
       if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
-	current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
-	  
-	xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", k));
-	xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", k + 1));
+	current_note = xmlNewChild(notation_node,
+				   NULL,
+				   BAD_CAST "note",
+				   NULL);
 
+	str = g_strdup_printf("%u",
+			      k);
+	
+	xmlNewProp(current_note,
+		   BAD_CAST "x",
+		   BAD_CAST str);
+
+	g_free(str);
+	
+	str = g_strdup_printf("%u",
+			      k + 1);
+	
+	xmlNewProp(current_note,
+		   BAD_CAST "x1",
+		   BAD_CAST str);
+
+	str = g_strdup_printf("%u",
+			      16 * (k));
+	
+	xmlNewProp(current_note,
+		   BAD_CAST "x-256th",
+		   BAD_CAST str);
+
+	g_free(str);
+
+	str = g_strdup_printf("%u",
+			      16 * (k + 1));
+	
+	xmlNewProp(current_note,
+		   BAD_CAST "x1-256th",
+		   BAD_CAST str);
+
+	g_free(str);
+	
 	if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
-	  xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", input_pads - current_pad - 1));
+	  str = g_strdup_printf("%u",
+				input_pads - current_pad - 1);
+	  
+	  xmlNewProp(current_note,
+		     BAD_CAST "y",
+		     BAD_CAST str);
+
+	  g_free(str);
 	}else{
-	  xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current_pad));
+	  str = g_strdup_printf("%u",
+				current_pad);
+	  
+	  xmlNewProp(current_note,
+		     BAD_CAST "y",
+		     BAD_CAST str);
+
+	  g_free(str);
 	}
 	  
-	if(x_boundary > k){
-	  x_boundary = k;
+	if(x_256th_boundary > 16 * k){
+	  x_256th_boundary = 16 * k;
 	}
       
 	if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
@@ -4151,9 +4199,24 @@ ags_machine_copy_pattern_to_notation(AgsMachine *machine,
     current = next_current;
   }
 
-  xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
-  xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
+  str = g_strdup_printf("%u",
+			x_256th_boundary);
+  
+  xmlNewProp(notation_node,
+	     BAD_CAST "x-256th-boundary",
+	     BAD_CAST str);
 
+  g_free(str);
+  
+  str = g_strdup_printf("%u",
+			y_boundary);
+  
+  xmlNewProp(notation_node,
+	     BAD_CAST "y-boundary",
+	     BAD_CAST str);
+
+  g_free(str);
+  
   return(notation_node);
 }
 

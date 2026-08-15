@@ -3056,6 +3056,8 @@ ags_notation_copy_256th_selection(AgsNotation *notation)
 
   GList *selection;
 
+  gchar *str;
+
   guint current_x0, current_x1, current_y;
   guint current_x0_256th, current_x1_256th;
   guint x_256th_boundary, y_boundary;
@@ -3099,10 +3101,15 @@ ags_notation_copy_256th_selection(AgsNotation *notation)
 				BAD_CAST "timestamp");
     xmlAddChild(notation_node,
 		timestamp_node);
+
+    str = g_strdup_printf("%lu",
+			  ags_timestamp_get_ags_offset(timestamp));
     
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%lu", ags_timestamp_get_ags_offset(timestamp))));
+	       BAD_CAST str);
+
+    g_free(str);
   }
   
   /* selection */
@@ -3135,23 +3142,51 @@ ags_notation_copy_256th_selection(AgsNotation *notation)
 			       BAD_CAST "note",
 			       NULL);
 
+    str = g_strdup_printf("%u",
+			  current_x0);
+    
     xmlNewProp(current_note,
 	       BAD_CAST "x",
-	       BAD_CAST (g_strdup_printf("%u", current_x0)));
+	       BAD_CAST str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%u",
+			  current_x1);
+    
     xmlNewProp(current_note,
 	       BAD_CAST "x1",
-	       BAD_CAST (g_strdup_printf("%u", current_x1)));
+	       BAD_CAST str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%u",
+			  current_y);
+    
     xmlNewProp(current_note,
 	       BAD_CAST "y",
-	       BAD_CAST (g_strdup_printf("%u", current_y)));
+	       BAD_CAST str);
 
+    g_free(str);
+
+    str = g_strdup_printf("%u",
+			  current_x0_256th);
+    
     xmlNewProp(current_note,
 	       BAD_CAST "x-256th",
-	       BAD_CAST (g_strdup_printf("%u", current_x0_256th)));
+	       BAD_CAST str);
+
+    g_free(str);
+
+    str = g_strdup_printf("%u",
+			  current_x1_256th);
+    
     xmlNewProp(current_note,
 	       BAD_CAST "x1-256th",
-	       BAD_CAST (g_strdup_printf("%u", current_x1_256th)));
+	       BAD_CAST str);
 
+    g_free(str);
+    
     if(y_boundary > current_y){
       y_boundary = current_y;
     }
@@ -3161,13 +3196,23 @@ ags_notation_copy_256th_selection(AgsNotation *notation)
 	       
   g_rec_mutex_unlock(notation_mutex);
 
+  str = g_strdup_printf("%u",
+			x_256th_boundary);
+  
   xmlNewProp(notation_node,
 	     BAD_CAST "x-256th-boundary",
-	     BAD_CAST (g_strdup_printf("%u", x_256th_boundary)));
+	     BAD_CAST str);
+
+  g_free(str);
+  
+  str = g_strdup_printf("%u",
+			y_boundary);
   xmlNewProp(notation_node,
 	     BAD_CAST "y-boundary",
-	     BAD_CAST (g_strdup_printf("%u", y_boundary)));
+	     BAD_CAST str);
 
+  g_free(str);
+  
   return(notation_node);
 }
 
@@ -3904,11 +3949,12 @@ ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(AgsNotation 
   /* parse */
   for(; node != NULL; ){
     if(node->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp("note",
+      if(!xmlStrncmp(BAD_CAST "note",
 		     node->name,
 		     5)){
 	/* retrieve x0 offset */
-	x0 = xmlGetProp(node, "x");
+	x0 = xmlGetProp(node,
+			BAD_CAST "x");
 
 	if(x0 == NULL){
 	  node = node->next;
@@ -3916,10 +3962,12 @@ ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(AgsNotation 
 	  continue;
 	}
 
-	x0_val = g_ascii_strtoll(x0,
+	x0_val = g_ascii_strtoll(AGS_BAD_CAST x0,
 				 &endptr,
 				 10);
 
+	xmlFree(x0);
+	
 	if(x0 == endptr){
 	  node = node->next;
 	  
@@ -3927,7 +3975,8 @@ ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(AgsNotation 
 	}
 
 	/* retrieve x1 offset */
-	x1 = xmlGetProp(node, "x1");
+	x1 = xmlGetProp(node,
+			BAD_CAST "x1");
 
 	if(x1 == NULL){
 	  node = node->next;
@@ -3935,9 +3984,11 @@ ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(AgsNotation 
 	  continue;
 	}
 
-	x1_val = g_ascii_strtoll(x1,
+	x1_val = g_ascii_strtoll(AGS_BAD_CAST x1,
 				 &endptr,
 				 10);
+
+	xmlFree(x1);
 
 	if(x1 == endptr){
 	  node = node->next;
@@ -3946,37 +3997,44 @@ ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(AgsNotation 
 	}
 
 	/* retrieve x0 256th offset */
-	x0_256th = xmlGetProp(node, "x-256th");
+	x0_256th = xmlGetProp(node,
+			      BAD_CAST "x-256th");
 
 	x0_256th_val = 16 * x0_val;
 	
 	if(x0_256th != NULL){
-	  x0_256th_val = g_ascii_strtoll(x0_256th,
+	  x0_256th_val = g_ascii_strtoll(AGS_BAD_CAST x0_256th,
 					 &endptr,
 					 10);
 	  
 	  if(x0_256th == endptr){
 	    x0_256th_val = 16 * x0_val;
 	  }
+
+	  xmlFree(x0_256th);
 	}
 	
 	/* retrieve x1 256th offset */
-	x1_256th = xmlGetProp(node, "x1-256th");
+	x1_256th = xmlGetProp(node,
+			      BAD_CAST "x1-256th");
 
 	x1_256th_val = 16 * x1_val;
 	
 	if(x1_256th != NULL){
-	  x1_256th_val = g_ascii_strtoll(x1_256th,
+	  x1_256th_val = g_ascii_strtoll(AGS_BAD_CAST x1_256th,
 					 &endptr,
 					 10);
 
 	  if(x1_256th == endptr){
 	    x1_256th_val = 16 * x1_val;
 	  }
+
+	  xmlFree(x1_256th);
 	}
 	
 	/* retrieve y offset */
-	y = xmlGetProp(node, "y");
+	y = xmlGetProp(node,
+		       BAD_CAST "y");
 
 	if(y == NULL){
 	  node = node->next;
@@ -3984,9 +4042,11 @@ ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(AgsNotation 
 	  continue;
 	}
 
-	y_val = g_ascii_strtoll(y,
+	y_val = g_ascii_strtoll(AGS_BAD_CAST y,
 				&endptr,
 				10);
+
+	xmlFree(y);
 
 	if(y == endptr){
 	  node = node->next;
@@ -4026,11 +4086,11 @@ ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(AgsNotation 
 
 	    x1_256th_val += base_x_256th_difference;
 	  }
-
-	  x0_val = (guint) floor((double) x0_256th_val / 16.0);
-	  x1_val = (guint) floor((double) x1_256th_val / 16.0);
 	}
 
+	x0_val = (guint) floor((double) x0_256th_val / 16.0);
+	x1_val = (guint) floor((double) x1_256th_val / 16.0);
+	
 	if(reset_y_offset){
 	  if(subtract_y){
 	    if(y_val >= base_y_difference){
@@ -4107,7 +4167,10 @@ ags_notation_insert_native_256th_piano_from_clipboard(AgsNotation *notation,
 						      gboolean reset_y_offset, guint y_offset,
 						      gboolean match_channel, gboolean no_duplicates)
 {
+  xmlChar *prop;
+  
   guint current_audio_channel;
+  guint audio_channel_val;
   
   gboolean match_timestamp;
   
@@ -4115,6 +4178,8 @@ ags_notation_insert_native_256th_piano_from_clipboard(AgsNotation *notation,
     return;
   }
 
+  current_audio_channel = 0;
+  
   g_object_get(notation,
 	       "audio-channel", &current_audio_channel,
 	       NULL);
@@ -4125,14 +4190,24 @@ ags_notation_insert_native_256th_piano_from_clipboard(AgsNotation *notation,
     /* changes contain only optional informations */
     match_timestamp = TRUE;
 
+    prop = xmlGetProp(root_node,
+		      "audio-channel");
+
+    audio_channel_val = 0;
+
+    if(prop != NULL){
+      audio_channel_val = g_ascii_strtoull(AGS_BAD_CAST prop,
+					   NULL,
+					   10);
+
+      xmlFree(prop);
+    }
+    
     if(match_channel &&
-       current_audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
-							    "audio-channel"),
-						 NULL,
-						 10)){
+       current_audio_channel != audio_channel_val){
       return;
     }
-        
+  
     ags_notation_insert_native_256th_piano_from_clipboard_version_9_2_2(notation,
 									root_node, version,
 									base_frequency,
@@ -4205,7 +4280,16 @@ ags_notation_insert_256th_from_clipboard(AgsNotation *notation,
 							      reset_x_offset, x_256th_offset,
 							      reset_y_offset, y_offset,
 							      match_channel, no_duplicates);
+
+	xmlFree(base_frequency);
+
+	xmlFree(x_256th_boundary);
+	xmlFree(y_boundary);
       }
+
+      xmlFree(version);
+      xmlFree(type);
+      xmlFree(format);
     }
   }
 }
@@ -4815,6 +4899,8 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 	    delta_time = g_ascii_strtoull(str,
 					  NULL,
 					  10);
+
+	    xmlFree(str);
 	  }
     
 	  /* get event */
@@ -4861,6 +4947,8 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 	      ags_notation_add_note(notation,
 				    note,
 				    FALSE);
+
+	      xmlFree(str);
 	    }
 	  }else if(!xmlStrncmp(event,
 			       "note-off",
@@ -4892,6 +4980,8 @@ ags_notation_from_raw_midi(guchar *raw_midi,
 
 		midi_note[note_y] = NULL;
 	      }
+
+	      xmlFree(str);
 	    }
 	  }
 	}else if(!xmlStrncmp(child->name,

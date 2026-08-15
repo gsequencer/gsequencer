@@ -1,3 +1,10 @@
+ags (9.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation clipboard potential SIGSEGV
+	* fixed automation clipboard potential SIGSEGV
+	* fixed wave clipboard potential SIGSEGV
+
 ags (9.2.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
