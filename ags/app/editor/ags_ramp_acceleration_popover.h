@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 #define AGS_IS_RAMP_ACCELERATION_POPOVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RAMP_ACCELERATION_POPOVER))
 #define AGS_RAMP_ACCELERATION_POPOVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_RAMP_ACCELERATION_POPOVER, AgsRampAccelerationPopoverClass))
 
-#define AGS_RAMP_ACCELERATION_MAX_BEATS (16 * 16 * 1200)
+#define AGS_RAMP_ACCELERATION_MAX_BEATS (16 * 1200)
 #define AGS_RAMP_ACCELERATION_MAX_STEPS (128)
 #define AGS_RAMP_ACCELERATION_DEFAULT_WIDTH (64)
 
@@ -53,10 +53,12 @@ struct _AgsRampAccelerationPopover
   
   GtkComboBoxText *port;
 
-  GtkSpinButton *ramp_x0;
+  GtkSpinButton *ramp_x0_tact;
+  GtkSpinButton *ramp_x0_1024th;
   GtkSpinButton *ramp_y0;
 
-  GtkSpinButton *ramp_x1;
+  GtkSpinButton *ramp_x1_tact;
+  GtkSpinButton *ramp_x1_1024th;
   GtkSpinButton *ramp_y1;
 
   GtkSpinButton *ramp_step_count;

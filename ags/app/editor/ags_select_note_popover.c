@@ -224,18 +224,32 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  /* select x0 - spin button */
-  select_note_popover->select_x0 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										    AGS_SELECT_NOTE_MAX_BEATS,
-										    1.0);
-  gtk_spin_button_set_digits(select_note_popover->select_x0,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x0),
-			       9);
-  gtk_spin_button_set_value(select_note_popover->select_x0,
+  /* select x0 - tact */
+  select_note_popover->select_x0_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											 AGS_SELECT_NOTE_MAX_BEATS,
+											 1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_x0_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x0_tact),
+			       6);
+  gtk_spin_button_set_value(select_note_popover->select_x0_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 (GtkWidget *) select_note_popover->select_x0);
+		 (GtkWidget *) select_note_popover->select_x0_tact);
+  
+
+  /* select x0 - 256th */
+  select_note_popover->select_x0_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											  255.0,
+											  1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_x0_256th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x0_256th),
+			       4);
+  gtk_spin_button_set_value(select_note_popover->select_x0_256th,
+			    0.0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) select_note_popover->select_x0_256th);
   
   /* select y0 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -253,9 +267,9 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
 										    AGS_SELECT_NOTE_MAX_KEYS,
 										    1.0);
   gtk_spin_button_set_digits(select_note_popover->select_y0,
-			     3);
+			     0);
   gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_y0),
-			       9);
+			       4);
   gtk_spin_button_set_value(select_note_popover->select_y0,
 			    0.0);
   gtk_box_append(hbox,
@@ -272,18 +286,31 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  /* select x1 - spin button */
-  select_note_popover->select_x1 = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										    AGS_SELECT_NOTE_MAX_BEATS,
-										    1.0);
-  gtk_spin_button_set_digits(select_note_popover->select_x1,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x1),
-			       9);
-  gtk_spin_button_set_value(select_note_popover->select_x1,
+  /* select x1 - tact */
+  select_note_popover->select_x1_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											 AGS_SELECT_NOTE_MAX_BEATS,
+											 1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_x1_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x1_tact),
+			       6);
+  gtk_spin_button_set_value(select_note_popover->select_x1_tact,
 			    0.0);
   gtk_box_append(hbox,
-		 (GtkWidget *) select_note_popover->select_x1);
+		 (GtkWidget *) select_note_popover->select_x1_tact);
+
+  /* select x1 - 256th */
+  select_note_popover->select_x1_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+											  255.0,
+											  1.0);
+  gtk_spin_button_set_digits(select_note_popover->select_x1_256th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_x1_256th),
+			       6);
+  gtk_spin_button_set_value(select_note_popover->select_x1_256th,
+			    0.0);
+  gtk_box_append(hbox,
+		 (GtkWidget *) select_note_popover->select_x1_256th);
 
   /* select y1 - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -301,9 +328,9 @@ ags_select_note_popover_init(AgsSelectNotePopover *select_note_popover)
 										    AGS_SELECT_NOTE_MAX_KEYS,
 										    1.0);
   gtk_spin_button_set_digits(select_note_popover->select_y1,
-			     3);
+			     0);
   gtk_editable_set_width_chars(GTK_EDITABLE(select_note_popover->select_y1),
-			       9);
+			       4);
   gtk_spin_button_set_value(select_note_popover->select_y1,
 			    0.0);
   gtk_box_append(hbox,
@@ -357,7 +384,7 @@ ags_select_note_popover_xml_compose(AgsConnectable *connectable)
 
   /* select x0 */
   str = g_strdup_printf("%f",
-			gtk_spin_button_get_value(select_note_popover->select_x0));
+			(256.0 * gtk_spin_button_get_value(select_note_popover->select_x0_tact)) + gtk_spin_button_get_value(select_note_popover->select_x0_256th));
   
   xmlNewProp(node,
 	     BAD_CAST "select-x0",
@@ -377,7 +404,7 @@ ags_select_note_popover_xml_compose(AgsConnectable *connectable)
 
   /* select x1 */
   str = g_strdup_printf("%f",
-			gtk_spin_button_get_value(select_note_popover->select_x1));
+			(256.0 * gtk_spin_button_get_value(select_note_popover->select_x1_tact)) + gtk_spin_button_get_value(select_note_popover->select_x1_256th));
   
   xmlNewProp(node,
 	     BAD_CAST "select-x1",
@@ -405,6 +432,9 @@ ags_select_note_popover_xml_parse(AgsConnectable *connectable,
   AgsSelectNotePopover *select_note_popover;
   
   gchar *str;
+
+  gdouble select_x0;
+  gdouble select_x1;
   
   select_note_popover = AGS_SELECT_NOTE_POPOVER(connectable);
 
@@ -421,9 +451,14 @@ ags_select_note_popover_xml_parse(AgsConnectable *connectable,
   str = xmlGetProp(node,
 		   "select-x0");
 
-  gtk_spin_button_set_value(select_note_popover->select_x0,
-			    g_ascii_strtod(str,
-					   NULL));
+  select_x0 = g_ascii_strtod(str,
+			     NULL);
+  
+  gtk_spin_button_set_value(select_note_popover->select_x0_tact,
+			    floor(select_x0 / 256.0));
+  
+  gtk_spin_button_set_value(select_note_popover->select_x0_256th,
+			    (gdouble) ((gint) select_x0 % 256));
   
   xmlFree(str);
 
@@ -441,9 +476,14 @@ ags_select_note_popover_xml_parse(AgsConnectable *connectable,
   str = xmlGetProp(node,
 		   "select-x1");
 
-  gtk_spin_button_set_value(select_note_popover->select_x1,
-			    g_ascii_strtod(str,
-					   NULL));
+  select_x1 = g_ascii_strtod(str,
+			     NULL);
+  
+  gtk_spin_button_set_value(select_note_popover->select_x1_tact,
+			    floor(select_x1 / 256.0));
+  
+  gtk_spin_button_set_value(select_note_popover->select_x1_256th,
+			    (gdouble) ((gint) select_x1 % 256));
   
   xmlFree(str);
 
@@ -574,10 +614,10 @@ ags_select_note_popover_apply(AgsApplicable *applicable)
   /* get some values */
   copy_selection = gtk_check_button_get_active(select_note_popover->copy_selection);
 
-  x0_256th = 16.0 * gtk_spin_button_get_value(select_note_popover->select_x0);
+  x0_256th = (256.0 * gtk_spin_button_get_value(select_note_popover->select_x0_tact)) + gtk_spin_button_get_value(select_note_popover->select_x0_256th);
   y0 = gtk_spin_button_get_value(select_note_popover->select_y0);
 
-  x1_256th = 16.0 * gtk_spin_button_get_value(select_note_popover->select_x1);
+  x1_256th = (256.0 * gtk_spin_button_get_value(select_note_popover->select_x1_tact)) + gtk_spin_button_get_value(select_note_popover->select_x1_256th);
   y1 = gtk_spin_button_get_value(select_note_popover->select_y1);
   
   timestamp = ags_timestamp_new();

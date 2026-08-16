@@ -339,6 +339,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->loop);
 
+  /* position - time */
   label = (GtkLabel *) gtk_label_new("position");
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
@@ -347,17 +348,29 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->position_time);
 
+  /* position - tact */
   navigation->position_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 									       (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT,
 									       1.0);
   gtk_spin_button_set_digits(navigation->position_tact,
-			     3);
+			     0);
   gtk_editable_set_width_chars(GTK_EDITABLE(navigation->position_tact),
-			       9);
+			       6);
   gtk_box_append(hbox,
 		 (GtkWidget *) navigation->position_tact);
 
+  /* position - 16th pulse */
+  navigation->position_16th_pulse = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										     (gdouble) 15.0,
+										     1.0);
+  gtk_spin_button_set_digits(navigation->position_16th_pulse,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(navigation->position_16th_pulse),
+			       3);
+  gtk_box_append(hbox,
+		 (GtkWidget *) navigation->position_16th_pulse);
 
+  /* duration */
   label = (GtkLabel *) gtk_label_new("duration");
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
@@ -382,38 +395,68 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) navigation->expansion_box);
 
+  /* loop L */
   label = (GtkLabel *) gtk_label_new(i18n("loop L"));
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) label);
 
+  /* loop L - tact */
   navigation->loop_left_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										65000.0,
+										(gdouble) AGS_NAVIGATION_MAX_POSITION_TACT,
 										1.0);
   gtk_spin_button_set_digits(navigation->loop_left_tact,
-			     3);  
+			     0);  
   gtk_editable_set_width_chars(GTK_EDITABLE(navigation->loop_left_tact),
-			       9);
+			       6);
   gtk_spin_button_set_value(navigation->loop_left_tact,
 			    0.0);
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->loop_left_tact);
 
+  /* loop L - 16th pulse */
+  navigation->loop_left_16th_pulse = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										      15.0,
+										      1.0);
+  gtk_spin_button_set_digits(navigation->loop_left_16th_pulse,
+			     0);  
+  gtk_editable_set_width_chars(GTK_EDITABLE(navigation->loop_left_16th_pulse),
+			       3);
+  gtk_spin_button_set_value(navigation->loop_left_16th_pulse,
+			    0.0);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) navigation->loop_left_16th_pulse);
+  
+  /* loop R */
   label = (GtkLabel *) gtk_label_new(i18n("loop R"));
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) label);
 
+  /* loop R - tact */
   navigation->loop_right_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-										 65000.0,
+										 (gdouble) AGS_NAVIGATION_MAX_POSITION_TACT,
 										 1.0);
   gtk_spin_button_set_digits(navigation->loop_right_tact,
-			     3);  
+			     0);  
   gtk_editable_set_width_chars(GTK_EDITABLE(navigation->loop_right_tact),
-			       9);
+			       6);
   gtk_spin_button_set_value(navigation->loop_right_tact,
-			    64.0);
+			    4.0);
   gtk_box_append(navigation->expansion_box,
 		 (GtkWidget *) navigation->loop_right_tact);
 
+  /* loop R - 16th pulse */
+  navigation->loop_right_16th_pulse = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+										       15.0,
+										       1.0);
+  gtk_spin_button_set_digits(navigation->loop_right_16th_pulse,
+			     0);  
+  gtk_editable_set_width_chars(GTK_EDITABLE(navigation->loop_right_16th_pulse),
+			       3);
+  gtk_spin_button_set_value(navigation->loop_right_16th_pulse,
+			    0.0);
+  gtk_box_append(navigation->expansion_box,
+		 (GtkWidget *) navigation->loop_right_16th_pulse);
+  
   //  navigation->scroll = NULL;
   
   navigation->scroll = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("auto-scroll"));
@@ -575,6 +618,9 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect_after((GObject *) navigation->position_tact, "value-changed",
 			 G_CALLBACK(ags_navigation_position_tact_callback), (gpointer) navigation);
 
+  g_signal_connect_after((GObject *) navigation->position_16th_pulse, "value-changed",
+			 G_CALLBACK(ags_navigation_position_16th_pulse_callback), (gpointer) navigation);
+  
   //  g_signal_connect((GObject *) navigation->duration_tact, "value-changed",
   //		   G_CALLBACK(ags_navigation_duration_tact_callback), (gpointer) navigation);
 
@@ -594,8 +640,14 @@ ags_navigation_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) navigation->loop_left_tact, "value-changed",
 		   G_CALLBACK(ags_navigation_loop_left_tact_callback), (gpointer) navigation);
 
+  g_signal_connect((GObject *) navigation->loop_left_16th_pulse, "value-changed",
+		   G_CALLBACK(ags_navigation_loop_left_16th_pulse_callback), (gpointer) navigation);
+
   g_signal_connect((GObject *) navigation->loop_right_tact, "value-changed",
 		   G_CALLBACK(ags_navigation_loop_right_tact_callback), (gpointer) navigation);
+
+  g_signal_connect((GObject *) navigation->loop_right_16th_pulse, "value-changed",
+		   G_CALLBACK(ags_navigation_loop_right_16th_pulse_callback), (gpointer) navigation);
 }
 
 void
@@ -671,6 +723,12 @@ ags_navigation_disconnect(AgsConnectable *connectable)
 		      (gpointer) navigation,
 		      NULL);
 
+  g_object_disconnect((GObject *) navigation->position_16th_pulse,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_navigation_position_16th_pulse_callback),
+		      (gpointer) navigation,
+		      NULL);
+
   if(navigation->soundcard != NULL){
     g_object_disconnect(navigation->soundcard,
 			"any_signal::stop",
@@ -686,9 +744,21 @@ ags_navigation_disconnect(AgsConnectable *connectable)
 		      (gpointer) navigation,
 		      NULL);
 
+  g_object_disconnect((GObject *) navigation->loop_left_16th_pulse,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_navigation_loop_left_16th_pulse_callback),
+		      (gpointer) navigation,
+		      NULL);
+
   g_object_disconnect((GObject *) navigation->loop_right_tact,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_navigation_loop_right_tact_callback),
+		      (gpointer) navigation,
+		      NULL);
+  
+  g_object_disconnect((GObject *) navigation->loop_right_16th_pulse,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_navigation_loop_right_16th_pulse_callback),
 		      (gpointer) navigation,
 		      NULL);
 }

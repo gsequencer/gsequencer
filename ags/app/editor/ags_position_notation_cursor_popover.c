@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
+
+#include <math.h>
 
 #include <ags/i18n.h>
 
@@ -223,18 +225,31 @@ ags_position_notation_cursor_popover_init(AgsPositionNotationCursorPopover *posi
   gtk_box_append(hbox,
 		 (GtkWidget *) label);
 
-  /* position x - spin button */
-  position_notation_cursor_popover->position_x = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
-												  AGS_POSITION_NOTATION_CURSOR_MAX_BEATS,
-												  1.0);
-  gtk_spin_button_set_digits(position_notation_cursor_popover->position_x,
-			     3);
-  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_x),
-			       9);
-  gtk_spin_button_set_value(position_notation_cursor_popover->position_x,
+  /* position x - tact */
+  position_notation_cursor_popover->position_x_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+												       AGS_POSITION_NOTATION_CURSOR_MAX_BEATS,
+												       1.0);
+  gtk_spin_button_set_digits(position_notation_cursor_popover->position_x_tact,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_x_tact),
+			       6);
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_tact,
 			    0.0);
   gtk_box_append((GtkBox *) hbox,
-		 (GtkWidget *) position_notation_cursor_popover->position_x);
+		 (GtkWidget *) position_notation_cursor_popover->position_x_tact);
+
+  /* position x - 256th */
+  position_notation_cursor_popover->position_x_256th = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
+													255.0,
+													1.0);
+  gtk_spin_button_set_digits(position_notation_cursor_popover->position_x_256th,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_x_256th),
+			       4);
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_256th,
+			    0.0);
+  gtk_box_append((GtkBox *) hbox,
+		 (GtkWidget *) position_notation_cursor_popover->position_x_256th);
   
   /* position y - hbox */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -251,6 +266,10 @@ ags_position_notation_cursor_popover_init(AgsPositionNotationCursorPopover *posi
   position_notation_cursor_popover->position_y = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
 												  AGS_POSITION_NOTATION_CURSOR_MAX_KEYS,
 												  1.0);
+  gtk_spin_button_set_digits(position_notation_cursor_popover->position_y,
+			     0);
+  gtk_editable_set_width_chars(GTK_EDITABLE(position_notation_cursor_popover->position_y),
+			       4);
   gtk_spin_button_set_value(position_notation_cursor_popover->position_y,
 			    0.0);
   gtk_box_append(hbox,
@@ -304,7 +323,7 @@ ags_position_notation_cursor_popover_xml_compose(AgsConnectable *connectable)
 
   /* position x */
   str = g_strdup_printf("%f",
-			gtk_spin_button_get_value(position_notation_cursor_popover->position_x));
+			(256.0 * gtk_spin_button_get_value(position_notation_cursor_popover->position_x_tact) + gtk_spin_button_get_value(position_notation_cursor_popover->position_x_256th)));
   
   xmlNewProp(node,
 	     BAD_CAST "position-x",
@@ -332,6 +351,8 @@ ags_position_notation_cursor_popover_xml_parse(AgsConnectable *connectable,
   AgsPositionNotationCursorPopover *position_notation_cursor_popover;
 
   xmlChar *str;
+
+  gdouble position_x;
   
   position_notation_cursor_popover = AGS_POSITION_NOTATION_CURSOR_POPOVER(connectable);
 
@@ -348,9 +369,14 @@ ags_position_notation_cursor_popover_xml_parse(AgsConnectable *connectable,
   str = xmlGetProp(node,
 		   "position-x");
 
-  gtk_spin_button_set_value(position_notation_cursor_popover->position_x,
-			    g_ascii_strtod(str,
-					   NULL));
+  position_x = g_ascii_strtod(str,
+			      NULL);
+  
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_tact,
+			    floor(position_x / 256.0));
+  
+  gtk_spin_button_set_value(position_notation_cursor_popover->position_x_256th,
+			    (gdouble) ((gint) position_x % 256));
   
   xmlFree(str);
 
@@ -445,7 +471,7 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
   //NOTE:JK: some deco
   //  guint map_height, height;
   guint history;
-  guint x; //, y;
+  guint x, y;
   
   position_notation_cursor_popover = AGS_POSITION_NOTATION_CURSOR_POPOVER(applicable);
 
@@ -468,13 +494,15 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
   
   zoom = exp2((double) history - 2.0);
   
-  x = gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x);
+  x = (256 * gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_tact)) + gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_x_256th);
 
+  y = gtk_spin_button_get_value_as_int(position_notation_cursor_popover->position_y);
+  
   notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
   if(notation_edit != NULL){
-    notation_edit->cursor_position_x = 16 * x;
-    notation_edit->cursor_position_y = 0.0;
+    notation_edit->cursor_position_x_256th = x;
+    notation_edit->cursor_position_y = y;
   }
 
   hadjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->hscrollbar));
@@ -484,7 +512,7 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
   /* make visible */  
   if(hadjustment != NULL){
     gtk_adjustment_set_value(hadjustment,
-			     ((x * 16 * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
+			     ((x * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
   }
 
   if(gtk_check_button_get_active(position_notation_cursor_popover->set_focus)){

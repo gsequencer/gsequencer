@@ -592,6 +592,7 @@ ags_preset_dialog_real_response(AgsPresetDialog *preset_dialog,
       
       ags_applicable_apply(AGS_APPLICABLE(preset_dialog));
     }
+    /* fall through */
   case GTK_RESPONSE_DELETE_EVENT:
   case GTK_RESPONSE_CLOSE:
   case GTK_RESPONSE_REJECT:

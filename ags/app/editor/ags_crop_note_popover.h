@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -54,8 +54,11 @@ struct _AgsCropNotePopover
   GtkCheckButton *in_place;
   GtkCheckButton *do_resize;
 
-  GtkSpinButton *crop_note;
-  GtkSpinButton *padding_note;
+  GtkSpinButton *crop_note_tact;
+  GtkSpinButton *crop_note_256th;
+
+  GtkSpinButton *padding_note_tact;
+  GtkSpinButton *padding_note_256th;
 
   GtkBox *action_area;
 

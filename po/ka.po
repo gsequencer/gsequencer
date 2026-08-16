@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 8.3.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-08-10 15:26+0200\n"
+"POT-Creation-Date: 2026-08-15 02:40+0200\n"
 "PO-Revision-Date: 2026-04-12 06:57+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: \n"
@@ -74,11 +74,11 @@ msgstr "მომხმარებლის სახელი"
 msgid "password"
 msgstr "პაროლი"
 
-#: ags/app/ags_export_window_callbacks.c:200
+#: ags/app/ags_export_window_callbacks.c:241
 msgid "Replace existing file(s)?"
 msgstr "ჩანაცვლდეს არსებული ფაილ(ებ)-ი?"
 
-#: ags/app/ags_export_window_callbacks.c:203
+#: ags/app/ags_export_window_callbacks.c:244
 msgid "Following files exist, do you want to remove in order to export?"
 msgstr "შემდეგი ფაილი არსებობს. გნებავთ, წაშალოთ ის გატანისთვის?"
 
@@ -363,7 +363,7 @@ msgstr "გამოტანის ფორმატი"
 msgid "file"
 msgstr "ფაილი"
 
-#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:418
+#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:442
 msgid "export"
 msgstr "გატანა"
 
@@ -482,33 +482,33 @@ msgid "Note:y"
 msgstr "ნოტა:y"
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:205
-#: ags/app/editor/ags_position_notation_cursor_popover.c:209
+#: ags/app/editor/ags_position_notation_cursor_popover.c:211
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:158
 #: ags/app/editor/ags_position_automation_cursor_popover.c:205
 msgid "set focus"
 msgstr "ფოკუსის დაყენება"
 
 #: ags/app/editor/ags_position_wave_cursor_popover.c:218
-#: ags/app/editor/ags_position_notation_cursor_popover.c:222
+#: ags/app/editor/ags_position_notation_cursor_popover.c:224
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:171
 #: ags/app/editor/ags_position_automation_cursor_popover.c:218
 msgid "position x"
 msgstr "მდებარეობის x"
 
-#: ags/app/editor/ags_position_wave_cursor_popover.c:245
-#: ags/app/editor/ags_position_notation_cursor_popover.c:269
-#: ags/app/editor/ags_ramp_acceleration_popover.c:338
+#: ags/app/editor/ags_position_wave_cursor_popover.c:258
+#: ags/app/editor/ags_position_notation_cursor_popover.c:288
+#: ags/app/editor/ags_ramp_acceleration_popover.c:364
 #: ags/app/editor/ags_time_stretch_buffer_popover.c:284
-#: ags/app/editor/ags_crop_note_popover.c:284
-#: ags/app/editor/ags_position_automation_cursor_popover.c:245
-#: ags/app/editor/ags_select_acceleration_popover.c:276
-#: ags/app/editor/ags_select_buffer_popover.c:269
-#: ags/app/editor/ags_move_note_popover.c:275
-#: ags/app/editor/ags_select_note_popover.c:322
+#: ags/app/editor/ags_crop_note_popover.c:312
+#: ags/app/editor/ags_position_automation_cursor_popover.c:258
+#: ags/app/editor/ags_select_acceleration_popover.c:302
+#: ags/app/editor/ags_select_buffer_popover.c:295
+#: ags/app/editor/ags_move_note_popover.c:290
+#: ags/app/editor/ags_select_note_popover.c:349
 msgid "apply"
 msgstr "გადატარება"
 
-#: ags/app/editor/ags_position_notation_cursor_popover.c:246
+#: ags/app/editor/ags_position_notation_cursor_popover.c:261
 #: ags/app/editor/ags_position_sheet_cursor_dialog.c:191
 msgid "position y"
 msgstr "მდებარეობის y"
@@ -517,19 +517,19 @@ msgstr "მდებარეობის y"
 msgid "ramp x0"
 msgstr "დახრა x0"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:241
+#: ags/app/editor/ags_ramp_acceleration_popover.c:254
 msgid "ramp y0"
 msgstr "დახრა y0"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:265
+#: ags/app/editor/ags_ramp_acceleration_popover.c:278
 msgid "ramp x1"
 msgstr "დახრა x1"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:289
+#: ags/app/editor/ags_ramp_acceleration_popover.c:315
 msgid "ramp y1"
 msgstr "დახრა y1"
 
-#: ags/app/editor/ags_ramp_acceleration_popover.c:313
+#: ags/app/editor/ags_ramp_acceleration_popover.c:339
 msgid "ramp step count"
 msgstr "დახრის ნაბიჯების რაოდენობა"
 
@@ -578,24 +578,24 @@ msgstr "ორიგ BPM"
 msgid "new BPM"
 msgstr "ახალ BPM"
 
-#: ags/app/editor/ags_crop_note_popover.c:210
-#: ags/app/editor/ags_move_note_popover.c:215
+#: ags/app/editor/ags_crop_note_popover.c:212
+#: ags/app/editor/ags_move_note_popover.c:217
 msgid "absolute"
 msgstr "აბსოლუტური"
 
-#: ags/app/editor/ags_crop_note_popover.c:215
+#: ags/app/editor/ags_crop_note_popover.c:217
 msgid "in-place"
 msgstr "ადგილზევე"
 
-#: ags/app/editor/ags_crop_note_popover.c:220
+#: ags/app/editor/ags_crop_note_popover.c:222
 msgid "do resize"
 msgstr "ზომის შეცვლა"
 
-#: ags/app/editor/ags_crop_note_popover.c:233
+#: ags/app/editor/ags_crop_note_popover.c:235
 msgid "crop note"
 msgstr "ნოტის ამოჭრა"
 
-#: ags/app/editor/ags_crop_note_popover.c:257
+#: ags/app/editor/ags_crop_note_popover.c:272
 msgid "padding note"
 msgstr "შევსების ნოტა"
 
@@ -891,9 +891,9 @@ msgstr "მონიშნულის კოპირება"
 msgid "select x0"
 msgstr ""
 
-#: ags/app/editor/ags_select_acceleration_popover.c:249
-#: ags/app/editor/ags_select_buffer_popover.c:242
-#: ags/app/editor/ags_select_note_popover.c:271
+#: ags/app/editor/ags_select_acceleration_popover.c:262
+#: ags/app/editor/ags_select_buffer_popover.c:255
+#: ags/app/editor/ags_select_note_popover.c:285
 msgid "select x1"
 msgstr ""
 
@@ -1008,23 +1008,23 @@ msgstr "ნოტაციის x0"
 msgid "notation x1"
 msgstr "ნოტაციის x1"
 
-#: ags/app/editor/ags_move_note_popover.c:210
+#: ags/app/editor/ags_move_note_popover.c:212
 msgid "relative"
 msgstr "ფარდობითი"
 
-#: ags/app/editor/ags_move_note_popover.c:228
+#: ags/app/editor/ags_move_note_popover.c:230
 msgid "move x"
 msgstr "x-ის გადაწევა"
 
-#: ags/app/editor/ags_move_note_popover.c:252
+#: ags/app/editor/ags_move_note_popover.c:267
 msgid "move y"
 msgstr "y-ის გადაწევა"
 
-#: ags/app/editor/ags_select_note_popover.c:247
+#: ags/app/editor/ags_select_note_popover.c:261
 msgid "select y0"
 msgstr "y0-ის არჩევა"
 
-#: ags/app/editor/ags_select_note_popover.c:295
+#: ags/app/editor/ags_select_note_popover.c:322
 msgid "select y1"
 msgstr "y1-ის არჩევა"
 
@@ -1106,19 +1106,19 @@ msgstr "წინ გადახტომა"
 msgid "loop"
 msgstr "მარყუჟი"
 
-#: ags/app/ags_navigation.c:385
+#: ags/app/ags_navigation.c:399
 msgid "loop L"
 msgstr ""
 
-#: ags/app/ags_navigation.c:401
+#: ags/app/ags_navigation.c:430
 msgid "loop R"
 msgstr ""
 
-#: ags/app/ags_navigation.c:419
+#: ags/app/ags_navigation.c:462
 msgid "auto-scroll"
 msgstr "ავტოგადახვევა"
 
-#: ags/app/ags_navigation.c:425 ags/app/ags_export_window.c:221
+#: ags/app/ags_navigation.c:468 ags/app/ags_export_window.c:221
 msgid "exclude sequencers"
 msgstr "სეკვენსერების გამორიცხვა"
 
@@ -1237,12 +1237,12 @@ msgstr "დახმარება"
 msgid "help - user manual"
 msgstr "help - მომხმარებლის სახელმძღვანელო"
 
-#: ags/app/ags_effect_line.c:573 ags/app/ags_line.c:595
+#: ags/app/ags_effect_line.c:573 ags/app/ags_line.c:597
 msgid "group"
 msgstr "ჯგუფი"
 
 #: ags/app/ags_effect_line.c:1110 ags/app/ags_effect_line.c:1116
-#: ags/app/ags_line.c:1189 ags/app/ags_line.c:1195
+#: ags/app/ags_line.c:1191 ags/app/ags_line.c:1197
 msgid "channel"
 msgstr "არხი"
 
@@ -2177,7 +2177,7 @@ msgstr "რეჟიმი"
 msgid "tact"
 msgstr "ტაქტი"
 
-#: ags/app/ags_export_window.c:317
+#: ags/app/ags_export_window.c:341
 msgid "time"
 msgstr "დრო"
 

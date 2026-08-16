@@ -1,3 +1,46 @@
+ags (9.2.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation clipboard potential SIGSEGV
+	* fixed automation clipboard potential SIGSEGV
+	* fixed wave clipboard potential SIGSEGV
+
+ags (9.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_copy_256th_selection()
+	* implemented ags_notation_cut_256th_selection()
+	* implemented ags_notation_insert_256th_from_clipboard()
+	* implemented ags_notation_remove_note_256th_at_position()
+	* implemented 16th pulse of AgsPositionNotationCursorPopover
+	* implemented 256th pulse of AgsSelectNotePopover
+	* implemented 256th pulse of AgsMoveNotePopover
+	* implemented 256th pulse of AgsCropNotePopover
+	* implemented 256th pulse of AgsImportNotationSmfPopover
+	* implemented 1024th pulse of AgsSelectAccelerationPopover
+	* implemented 1024th pulse of AgsRampAccelerationPopover
+	* implemented 1024th pulse of AgsSelectBufferPopover
+	* implemented 1024th pulse of AgsRampMarkerPopover
+	* refactored AgsCompositeEditor to support note 256th
+	* added missing build of ags_check_system_midi_parser_test
+	* minor improvements
+
+ags (9.2.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented 16th pulse duration of audio export
+
+ags (9.2.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented 16th pulse position
+	* implemented 16th pulse loop L and R
+	* improved machine margin
+	* improved pad spacing
+	* improved line spacing
+	* improved effect pad spacing
+	* improved effect line spacing
+
 ags (9.1.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

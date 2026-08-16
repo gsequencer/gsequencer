@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2023 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -605,7 +605,7 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     }
 
     /* cursor position x */
-    str = g_strdup_printf("%u", AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x);
+    str = g_strdup_printf("%u", AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x_256th);
     gtk_label_set_label(notation_meta->cursor_x_position,
 			str);
 
@@ -628,7 +628,7 @@ ags_notation_meta_refresh(AgsNotationMeta *notation_meta)
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    x0 = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x;
+    x0 = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_x_256th / 16.0;
     y0 = AGS_NOTATION_EDIT(composite_editor->notation_edit->edit)->cursor_position_y;
 
     x1 = x0 + exp2(6.0 - (double) gtk_combo_box_get_active(composite_editor->toolbar->zoom));    

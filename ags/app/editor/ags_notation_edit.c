@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -312,7 +312,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   notation_edit->key_count = AGS_NOTATION_EDIT_DEFAULT_KEY_COUNT;
 
-  notation_edit->cursor_position_x = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X;
+  notation_edit->cursor_position_x_256th = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_X;
   notation_edit->cursor_position_y = AGS_NOTATION_EDIT_DEFAULT_CURSOR_POSITION_Y;
 
   notation_edit->selected_note_border = AGS_NOTATION_EDIT_DEFAULT_SELECTED_NOTE_BORDER;
@@ -773,6 +773,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 {  
   AgsMachine *machine;
   AgsCompositeEditor *composite_editor;
+  AgsCompositeToolbar *composite_toolbar;
   AgsNotebook *channel_selector;
   
   AgsApplicationContext *application_context;
@@ -782,6 +783,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
   guint l_control_key, r_control_key;  
   gboolean pattern_mode;
   double zoom_factor;
+  gboolean snap_to_zoom;
   gint i;
   gboolean do_feedback;
   gboolean key_handled;
@@ -807,6 +809,10 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
   
   composite_editor = (AgsCompositeEditor *) ags_ui_provider_get_composite_editor(AGS_UI_PROVIDER(application_context));
 
+  composite_toolbar = composite_editor->toolbar;
+  
+  snap_to_zoom = gtk_check_button_get_active(composite_toolbar->snap_to_zoom);
+  
   channel_selector = composite_editor->notation_edit->channel_selector;
     
   machine = composite_editor->selected_machine;
@@ -882,7 +888,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 	  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
 	  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_edit->cursor_position_x / AGS_NOTATION_DEFAULT_OFFSET);
+	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor((double) notation_edit->cursor_position_x_256th / 16.0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
 	  
 	  i = 0;
 	  do_feedback = TRUE;
@@ -898,18 +904,34 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 	    
 	    if(list_notation != NULL){
 	      AgsNote *note;
-	      
-	      note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
-					     notation_edit->cursor_position_x, notation_edit->cursor_position_y,
-					     FALSE);
 
-	      if(note != NULL){
-		if(note->x[1] - note->x[0] - zoom_factor >= zoom_factor){
-		  ags_note_set_x1(note,
-				  note->x[1] - zoom_factor);
-		}else{
-		  ags_note_set_x1(note,
-				  note->x[0] + zoom_factor);
+	      if(snap_to_zoom){
+		note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
+					       (guint) floor(notation_edit->cursor_position_x_256th / 16.0), notation_edit->cursor_position_y,
+					       FALSE);
+
+		if(note != NULL){
+		  if(note->x[1] - note->x[0] - zoom_factor >= zoom_factor){
+		    ags_note_set_x1(note,
+				    note->x[1] - zoom_factor);
+		  }else{
+		    ags_note_set_x1(note,
+				    note->x[0] + zoom_factor);
+		  }
+		}
+	      }else{
+		note = ags_notation_find_exact_note_256th_point(AGS_NOTATION(list_notation->data),
+								notation_edit->cursor_position_x_256th, notation_edit->cursor_position_y,
+								FALSE);
+		
+		if(note != NULL){
+		  if(note->x[1] - note->x[0] - 1 > 0){
+		    ags_note_set_x1_256th(note,
+					  note->x_256th[1] - 1);
+		  }else{
+		    ags_note_set_x1_256th(note,
+					  note->x_256th[0] + 1);
+		  }
 		}
 	      }
 	    }
@@ -924,17 +946,25 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 	  gdouble x0_offset;
 
 	  /* position cursor */
-	  if(notation_edit->cursor_position_x > 0){
-	    if(notation_edit->cursor_position_x - (zoom_factor) > 0){
-	      notation_edit->cursor_position_x -= (zoom_factor);
+	  if(notation_edit->cursor_position_x_256th > 0){
+	    if(snap_to_zoom){
+	      if((gint) floor(notation_edit->cursor_position_x_256th) - (gint) floor(16.0 * zoom_factor) > 0){
+		notation_edit->cursor_position_x_256th -= (gint) floor(16.0 * zoom_factor);
+	      }else{
+		notation_edit->cursor_position_x_256th = 0;
+	      }
 	    }else{
-	      notation_edit->cursor_position_x = 0;
+	      if((gint) floor(notation_edit->cursor_position_x_256th) - (1) > 0){
+		notation_edit->cursor_position_x_256th -= (1);
+	      }else{
+		notation_edit->cursor_position_x_256th = 0;
+	      }
 	    }
 	  
 	    do_feedback = TRUE;
 	  }
 
-	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
+	  x0_offset = (gdouble) floor((double) notation_edit->cursor_position_x_256th / 16.0) * (gdouble) notation_edit->control_width;
       
 	  if(x0_offset / zoom_factor < gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar))){
 	    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar),
@@ -960,7 +990,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 	  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
 	  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(notation_edit->cursor_position_x / AGS_NOTATION_DEFAULT_OFFSET);
+	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * (guint64) floor((double) notation_edit->cursor_position_x_256th / 16.0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
 	  
 	  i = 0;
 	  do_feedback = TRUE;
@@ -976,14 +1006,25 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 	    
 	    if(list_notation != NULL){
 	      AgsNote *note;
-	      
-	      note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
-					     notation_edit->cursor_position_x, notation_edit->cursor_position_y,
-					     FALSE);
 
-	      if(note != NULL){
-		ags_note_set_x1(note,
-				note->x[1] + zoom_factor);
+	      if(snap_to_zoom){
+		note = ags_notation_find_point(AGS_NOTATION(list_notation->data),
+					       (gint) floor(notation_edit->cursor_position_x_256th / 16.0), notation_edit->cursor_position_y,
+					       FALSE);
+	      
+		if(note != NULL){
+		  ags_note_set_x1(note,
+				  note->x[1] + zoom_factor);
+		}
+	      }else{
+		note = ags_notation_find_exact_note_256th_point(AGS_NOTATION(list_notation->data),
+								notation_edit->cursor_position_x_256th, notation_edit->cursor_position_y,
+								FALSE);
+	      
+		if(note != NULL){
+		  ags_note_set_x1_256th(note,
+					note->x_256th[1] + 1);
+		}
 	      }
 	    }
 
@@ -996,14 +1037,22 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 	}else{
 	  gdouble x0_offset;
 	  
-	  /* position cursor */      
-	  if(notation_edit->cursor_position_x < AGS_NAVIGATION_MAX_POSITION_TICS){
-	    notation_edit->cursor_position_x += (zoom_factor);
-	  
-	    do_feedback = TRUE;
+	  /* position cursor */
+	  if(snap_to_zoom){
+	    if((gint) floor((double) notation_edit->cursor_position_x_256th / 16.0) < AGS_NAVIGATION_MAX_POSITION_TICS){
+	      notation_edit->cursor_position_x_256th += (gint) floor(16.0 * zoom_factor);
+	      
+	      do_feedback = TRUE;
+	    }
+	  }else{
+	    if(notation_edit->cursor_position_x_256th < AGS_NAVIGATION_MAX_POSITION_TICS){
+	      notation_edit->cursor_position_x_256th += (1);
+	      
+	      do_feedback = TRUE;
+	    }
 	  }
 
-	  x0_offset = notation_edit->cursor_position_x * notation_edit->control_width;
+	  x0_offset = (gdouble) floor((double) notation_edit->cursor_position_x_256th / 16.0) * (gdouble) notation_edit->control_width;
       
 	  if((x0_offset + notation_edit->control_width) / zoom_factor > gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)) + allocation.width){
 	    gtk_adjustment_set_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar),
@@ -1058,15 +1107,25 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
 
 	note = ags_note_new();
 
-	ags_note_set_x0(note,
-			notation_edit->cursor_position_x);
+	ags_note_set_x0_256th(note,
+			      notation_edit->cursor_position_x_256th);
 
-	if(!pattern_mode){
-	  ags_note_set_x1(note,
-			  notation_edit->cursor_position_x + zoom_factor);
+	if(snap_to_zoom){
+	  if(!pattern_mode){
+	    ags_note_set_x1_256th(note,
+				  notation_edit->cursor_position_x_256th + (gint) floor(16.0 * zoom_factor));
+	  }else{
+	    ags_note_set_x1_256th(note,
+				  notation_edit->cursor_position_x_256th + 16);
+	  }
 	}else{
-	  ags_note_set_x1(note,
-			  notation_edit->cursor_position_x + 1);
+	  if(!pattern_mode){
+	    ags_note_set_x1_256th(note,
+				  notation_edit->cursor_position_x_256th + (gint) 1);
+	  }else{
+	    ags_note_set_x1_256th(note,
+				  notation_edit->cursor_position_x_256th + 16);
+	  }
 	}
 	
 	ags_note_set_y(note,
@@ -1081,7 +1140,7 @@ ags_notation_edit_key_released_callback(GtkEventControllerKey *event_controller,
       {
 	/* delete note */
 	ags_composite_editor_delete_note(composite_editor,
-					 notation_edit->cursor_position_x, notation_edit->cursor_position_y);
+					 notation_edit->cursor_position_x_256th, notation_edit->cursor_position_y);
       }
       break;
     }
@@ -1124,13 +1183,13 @@ ags_notation_edit_drawing_area_motion_notify_position_cursor(GtkWidget *editor,
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
 
   /* cursor position */
-  notation_edit->cursor_position_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-  notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
+  notation_edit->cursor_position_x_256th = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) * 16.0 / notation_edit->control_width;
+  notation_edit->cursor_position_x_256th = (zoom_factor * 16.0) * floor(notation_edit->cursor_position_x_256th / (zoom_factor * 16.0));
 
   notation_edit->cursor_position_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 
 #ifdef AGS_DEBUG
-  g_message("%lu %lu", notation_edit->cursor_position_x, notation_edit->cursor_position_y);
+  g_message("%lu %lu", notation_edit->cursor_position_x_256th, notation_edit->cursor_position_y);
 #endif
 }
 
@@ -1552,9 +1611,9 @@ ags_notation_edit_drawing_area_button_press_position_cursor(GtkWidget *editor,
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
   
   /* cursor position */
-  notation_edit->cursor_position_x = (gint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-  notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
-    
+  notation_edit->cursor_position_x_256th = (gint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) * 16.0 / notation_edit->control_width;
+  notation_edit->cursor_position_x_256th = (zoom_factor * 16.0) * floor(notation_edit->cursor_position_x_256th / (zoom_factor * 16.0));
+  
   notation_edit->cursor_position_y = (gint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 }
 
@@ -1660,8 +1719,8 @@ ags_notation_edit_drawing_area_button_release_position_cursor(GtkWidget *editor,
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
 
   /* cursor position */
-  notation_edit->cursor_position_x = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-  notation_edit->cursor_position_x = zoom_factor * floor(notation_edit->cursor_position_x / zoom_factor);
+  notation_edit->cursor_position_x_256th = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar))) * 16.0) / notation_edit->control_width;
+  notation_edit->cursor_position_x_256th = (zoom_factor * 16.0) * floor(notation_edit->cursor_position_x_256th / (zoom_factor * 16.0));
 
   notation_edit->cursor_position_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 }
@@ -2817,7 +2876,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit, cairo_t *cr)
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) toolbar->zoom));
 
   /* get offset */
-  x = ((double) notation_edit->cursor_position_x * (double) notation_edit->control_width) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)) * zoom_factor);
+  x = (((double) notation_edit->cursor_position_x_256th / 16.0) * (double) notation_edit->control_width) - (gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)) * zoom_factor);
   y = ((double) notation_edit->cursor_position_y * (double) notation_edit->control_height) - gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar));
 
   width = (double) notation_edit->control_width;

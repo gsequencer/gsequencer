@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,7 +52,8 @@ struct _AgsPositionWaveCursorPopover
 
   GtkCheckButton *set_focus;
 
-  GtkSpinButton *position_x;
+  GtkSpinButton *position_x_tact;
+  GtkSpinButton *position_x_1024th;
 
   GtkBox *action_area;
 
