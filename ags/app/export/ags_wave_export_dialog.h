@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -69,7 +69,10 @@ struct _AgsWaveExportDialog
   GtkButton *file_open_button;
 
   GtkSpinButton *start_tact;
+  GtkSpinButton *start_256th;
+
   GtkSpinButton *end_tact;
+  GtkSpinButton *end_256th;
 
   GtkLabel *duration;
 

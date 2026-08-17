@@ -174,6 +174,9 @@ ags_export_window_init(AgsExportWindow *export_window)
   gtk_window_set_hide_on_close((GtkWindow *) export_window,
 			       TRUE);
 
+  gtk_window_set_default_size((GtkWindow *) export_window,
+			      800, 600);
+
   ags_atomic_int_set(&(export_window->do_stop),
 		   FALSE);
   
@@ -190,9 +193,6 @@ ags_export_window_init(AgsExportWindow *export_window)
 			 FALSE);
   gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
-
-  gtk_box_set_spacing(vbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_window_set_child((GtkWindow *) export_window,
 		       (GtkWidget *) vbox);
@@ -395,6 +395,11 @@ ags_export_window_init(AgsExportWindow *export_window)
 
   /* add */
   export_window->add = (GtkButton *) gtk_button_new_from_icon_name("list-add");
+
+  gtk_widget_set_margin_end((GtkWidget *) export_window->add,
+			    6);
+  gtk_widget_set_margin_bottom((GtkWidget *) export_window->add,
+			       6);
   
   gtk_widget_set_halign((GtkWidget *) export_window->add,
 			GTK_ALIGN_END);
@@ -434,8 +439,6 @@ ags_export_window_init(AgsExportWindow *export_window)
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_widget_set_halign((GtkWidget *) hbox,
 			GTK_ALIGN_END);
-  gtk_box_set_spacing(vbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 
@@ -446,9 +449,6 @@ ags_export_window_init(AgsExportWindow *export_window)
 			       6);
   gtk_box_append(hbox,
 		 (GtkWidget *) export_window->export);
-
-  gtk_window_set_default_size((GtkWindow *) export_window,
-			      800, 600);
 }
 
 gboolean
