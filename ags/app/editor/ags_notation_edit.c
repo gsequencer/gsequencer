@@ -1664,7 +1664,7 @@ ags_notation_edit_drawing_area_button_press_add_note(GtkWidget *editor,
 
   if(!pattern_mode){
     if(!snap_to_zoom){
-      note->x_256th[0] = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / ((double) notation_edit->control_width / 16.0);
+      note->x_256th[0] = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) * 16.0 / (double) notation_edit->control_width;
       note->x_256th[1] = note->x_256th[0] + 16;
 
       if(note->x_256th[1] <= note->x_256th[0]){
@@ -1894,21 +1894,19 @@ ags_notation_edit_drawing_area_button_release_delete_note(GtkWidget *editor,
 							  gint n_press,
 							  gdouble x, gdouble y)
 {
+  guint note_x_256th, note_y;
   double zoom_factor;
-  gint new_x, new_y;
   
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) AGS_COMPOSITE_TOOLBAR(toolbar)->zoom));
 
   /* note */
-  new_x = (gint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) / notation_edit->control_width;
-  new_x = zoom_factor * floor(new_x / zoom_factor);
+  note_x_256th = (guint) (zoom_factor * (x + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->hscrollbar)))) * 16.0 / (double) notation_edit->control_width;
     
-  new_y = (gint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
+  note_y = (guint) ((y + gtk_adjustment_get_value(gtk_scrollbar_get_adjustment(notation_edit->vscrollbar))) / notation_edit->control_height);
 
-  /* delete note */
   ags_composite_editor_delete_note((AgsCompositeEditor *) editor,
-				   new_x, new_y);
+				   note_x_256th, note_y);
 }
 
 void

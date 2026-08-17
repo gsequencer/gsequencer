@@ -5263,7 +5263,9 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
 
     GList *start_notation, *notation;
 
-    gint i;
+    guint tmp_x_256th;
+    gint i, j;
+    gboolean success;
     
     timestamp = ags_timestamp_new();
 
@@ -5285,8 +5287,16 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
 						  timestamp);
       
       if(notation != NULL){
-	ags_notation_remove_note_256th_at_position(notation->data,
-						   x_256th, y);
+	for(j = 0; j < 16; j++){
+	  tmp_x_256th = (guint) (16.0 * floor((double) x_256th / 16.0)) + j;
+	  
+	  success = ags_notation_remove_note_256th_at_position(notation->data,
+							       tmp_x_256th, y);
+	  
+	  if(success){
+	    break;
+	  }
+	}
       }
 
       g_list_free_full(start_notation,
