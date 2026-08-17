@@ -1,3 +1,10 @@
+ags (9.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsWaveExportDialog 256th pulse support
+	* improved AgsWaveExportDialog default size
+	* improved AgsExportWindow default size
+
 ags (9.2.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

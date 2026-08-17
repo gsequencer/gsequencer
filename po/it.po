@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-08-15 02:40+0200\n"
+"POT-Creation-Date: 2026-08-17 19:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -280,7 +280,7 @@ msgstr ""
 
 #: ags/app/ags_pcm_file_dialog.c:293
 #: ags/app/export/ags_midi_export_wizard.c:489
-#: ags/app/export/ags_wave_export_dialog.c:418
+#: ags/app/export/ags_wave_export_dialog.c:327
 #: ags/app/import/ags_midi_import_wizard.c:480
 #: ags/app/ags_export_soundcard.c:336
 msgid "open"
@@ -339,26 +339,26 @@ msgstr ""
 msgid "audio fast export"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:308
-msgid "start tact"
-msgstr ""
-
-#: ags/app/export/ags_wave_export_dialog.c:329
-msgid "end tact"
-msgstr ""
-
-#: ags/app/export/ags_wave_export_dialog.c:363
-#: ags/app/ags_export_soundcard.c:341
-msgid "output format"
-msgstr ""
-
-#: ags/app/export/ags_wave_export_dialog.c:405
+#: ags/app/export/ags_wave_export_dialog.c:314
 #: ags/app/machine/ags_pitch_sampler.c:313 ags/app/machine/ags_audiorec.c:272
 #: ags/app/ags_export_soundcard.c:289
 msgid "file"
 msgstr ""
 
-#: ags/app/export/ags_wave_export_dialog.c:432 ags/app/ags_export_window.c:442
+#: ags/app/export/ags_wave_export_dialog.c:338
+msgid "start tact"
+msgstr ""
+
+#: ags/app/export/ags_wave_export_dialog.c:377
+msgid "end tact"
+msgstr ""
+
+#: ags/app/export/ags_wave_export_dialog.c:429
+#: ags/app/ags_export_soundcard.c:341
+msgid "output format"
+msgstr ""
+
+#: ags/app/export/ags_wave_export_dialog.c:488 ags/app/ags_export_window.c:445
 msgid "export"
 msgstr ""
 
