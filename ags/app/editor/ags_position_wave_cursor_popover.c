@@ -70,7 +70,7 @@ static void ags_position_wave_cursor_popover_activate_button_callback(GtkButton 
  * @section_id:
  * @include: ags/app/editor/ags_position_wave_cursor_popover.h
  *
- * The #AgsPositionWaveCursorPopover lets you crop notes.
+ * The #AgsPositionWaveCursorPopover lets you position wave cursor popover.
  */
 
 static gpointer ags_position_wave_cursor_popover_parent_class = NULL;

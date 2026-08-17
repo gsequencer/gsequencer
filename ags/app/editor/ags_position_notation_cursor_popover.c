@@ -71,12 +71,12 @@ static void ags_position_notation_cursor_popover_activate_button_callback(GtkBut
 
 /**
  * SECTION:ags_position_notation_cursor_popover
- * @short_description: crop tool
+ * @short_description: position notation cursor tool
  * @title: AgsPositionNotationCursorPopover
  * @section_id:
  * @include: ags/app/editor/ags_position_notation_cursor_popover.h
  *
- * The #AgsPositionNotationCursorPopover lets you crop notes.
+ * The #AgsPositionNotationCursorPopover lets you position notation cursor.
  */
 
 static gpointer ags_position_notation_cursor_popover_parent_class = NULL;
@@ -500,14 +500,17 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
   
   notation_edit = (AgsNotationEdit *) composite_editor->notation_edit->edit;
 
+  hadjustment = NULL;
+  widget = NULL;
+  
   if(notation_edit != NULL){
     notation_edit->cursor_position_x_256th = x;
     notation_edit->cursor_position_y = y;
+
+    hadjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->hscrollbar));
+
+    widget = (GtkWidget *) notation_edit->drawing_area;
   }
-
-  hadjustment = gtk_range_get_adjustment(GTK_RANGE(notation_edit->hscrollbar));
-
-  widget = (GtkWidget *) notation_edit->drawing_area;
     
   /* make visible */  
   if(hadjustment != NULL){

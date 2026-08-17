@@ -66,12 +66,12 @@ static void ags_ramp_marker_popover_activate_button_callback(GtkButton *activate
 
 /**
  * SECTION:ags_ramp_marker_popover
- * @short_description: crop tool
+ * @short_description: ramp marker popover tool
  * @title: AgsRampMarkerPopover
  * @section_id:
  * @include: ags/app/editor/ags_ramp_marker_popover.h
  *
- * The #AgsRampMarkerPopover lets you crop notes.
+ * The #AgsRampMarkerPopover lets you ramp marker popover tool.
  */
 
 static gpointer ags_ramp_marker_popover_parent_class = NULL;

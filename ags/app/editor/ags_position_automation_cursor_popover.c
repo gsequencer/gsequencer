@@ -65,12 +65,12 @@ static void ags_position_automation_cursor_popover_activate_button_callback(GtkB
 
 /**
  * SECTION:ags_position_automation_cursor_popover
- * @short_description: crop tool
+ * @short_description: position automation cursor tool
  * @title: AgsPositionAutomationCursorPopover
  * @section_id:
  * @include: ags/app/editor/ags_position_automation_cursor_popover.h
  *
- * The #AgsPositionAutomationCursorPopover lets you crop notes.
+ * The #AgsPositionAutomationCursorPopover lets you position automation cursor.
  */
 
 static gpointer ags_position_automation_cursor_popover_parent_class = NULL;
