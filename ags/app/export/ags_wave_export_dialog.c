@@ -414,7 +414,7 @@ ags_wave_export_dialog_init(AgsWaveExportDialog *wave_export_dialog)
 		 (GtkWidget *) hbox);
 
   wave_export_dialog->duration = (GtkLabel *) gtk_label_new("0000:00.000");
-  g_object_set(G_OBJECT(label),
+  g_object_set(G_OBJECT(wave_export_dialog->duration),
 	       "xalign", 0.0,
 	       NULL);
   gtk_box_append(hbox,
