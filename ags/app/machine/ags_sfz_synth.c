@@ -835,6 +835,28 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_box_append(vbox,
 		 (GtkWidget *) ext_hbox);
 
+  /* low-pass filter */
+  low_pass_frame = (GtkFrame *) gtk_frame_new(i18n("low-pass filter"));
+
+  gtk_box_append(ext_hbox,
+		 (GtkWidget *) low_pass_frame);
+
+  low_pass_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(low_pass_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(low_pass_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_vexpand((GtkWidget *) low_pass_grid,
+			 FALSE);  
+
+  gtk_widget_set_valign((GtkWidget *) low_pass_grid,
+			GTK_ALIGN_START);
+  
+  gtk_frame_set_child(low_pass_frame,
+		      (GtkWidget *) low_pass_grid);
+
   sfz_synth->low_pass_enabled = NULL;
 
 #if 0
@@ -950,6 +972,12 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
   gtk_grid_set_row_spacing(tremolo_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_vexpand((GtkWidget *) tremolo_grid,
+			 FALSE);  
+
+  gtk_widget_set_valign((GtkWidget *) tremolo_grid,
+			GTK_ALIGN_START);
 
   gtk_frame_set_child(tremolo_frame,
 		      (GtkWidget *) tremolo_grid);
@@ -1105,6 +1133,12 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_grid_set_row_spacing(vibrato_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
+  gtk_widget_set_vexpand((GtkWidget *) vibrato_grid,
+			 FALSE);  
+
+  gtk_widget_set_valign((GtkWidget *) vibrato_grid,
+			GTK_ALIGN_START);
+
   gtk_frame_set_child(vibrato_frame,
 		      (GtkWidget *) vibrato_grid);
 
@@ -1258,6 +1292,12 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
   gtk_grid_set_row_spacing(wah_wah_grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_vexpand((GtkWidget *) wah_wah_grid,
+			 FALSE);  
+
+  gtk_widget_set_valign((GtkWidget *) wah_wah_grid,
+			GTK_ALIGN_START);
 
   gtk_frame_set_child(wah_wah_frame,
 		      (GtkWidget *) wah_wah_grid);

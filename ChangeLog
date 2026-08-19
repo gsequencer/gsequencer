@@ -3,6 +3,10 @@ ags (9.3.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added low-pass filter to AgsSF2Synth
 	* added low-pass filter to AgsSFZSynth
+	* added low-pass filter to ags-fx-sf2-synth
+	* added low-pass filter to ags-fx-sfz-synth
+	* added low-pass filter sf2 synth fields to simple file
+	* added low-pass filter sfz synth fields to simple file
 
 ags (9.2.4)
 

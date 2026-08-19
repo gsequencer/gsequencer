@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 8.3.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-08-17 19:05+0200\n"
+"POT-Creation-Date: 2026-08-20 01:03+0200\n"
 "PO-Revision-Date: 2026-04-12 06:57+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: \n"
@@ -157,7 +157,7 @@ msgstr "კონვერტი"
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
-#: ags/app/machine/ags_lv2_bridge.c:484 ags/app/machine/ags_sf2_synth.c:455
+#: ags/app/machine/ags_lv2_bridge.c:484 ags/app/machine/ags_sf2_synth.c:457
 #: ags/app/machine/ags_ffplayer.c:364
 msgid "preset"
 msgstr "პრესეტი"
@@ -369,11 +369,13 @@ msgstr "გატანა"
 
 #: ags/app/export/ags_machine_mapper.c:180
 #: ags/app/editor/ags_envelope_editor.c:197 ags/app/ags_resize_editor.c:135
-#: ags/app/machine/ags_sfz_synth.c:852 ags/app/machine/ags_sfz_synth.c:1006
-#: ags/app/machine/ags_sfz_synth.c:1160 ags/app/machine/ags_pitch_sampler.c:395
-#: ags/app/machine/ags_pitch_sampler.c:530 ags/app/machine/ags_sf2_synth.c:898
-#: ags/app/machine/ags_sf2_synth.c:1052 ags/app/machine/ags_sf2_synth.c:1206
-#: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
+#: ags/app/machine/ags_sfz_synth.c:863 ags/app/machine/ags_sfz_synth.c:985
+#: ags/app/machine/ags_sfz_synth.c:1145 ags/app/machine/ags_sfz_synth.c:1305
+#: ags/app/machine/ags_pitch_sampler.c:395
+#: ags/app/machine/ags_pitch_sampler.c:530 ags/app/machine/ags_sf2_synth.c:911
+#: ags/app/machine/ags_sf2_synth.c:1033 ags/app/machine/ags_sf2_synth.c:1193
+#: ags/app/machine/ags_sf2_synth.c:1353 ags/app/machine/ags_ffplayer.c:484
+#: ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
 #: ags/app/import/ags_track_mapper.c:243
 #: ags/app/ags_connection_editor_listing.c:177
@@ -950,7 +952,7 @@ msgstr "გაშვება"
 
 #: ags/app/editor/ags_pattern_envelope.c:751
 #: ags/app/editor/ags_envelope_editor.c:574
-#: ags/app/machine/ags_sfz_synth.c:1427 ags/app/machine/ags_sf2_synth.c:1473
+#: ags/app/machine/ags_sfz_synth.c:1572 ags/app/machine/ags_sf2_synth.c:1620
 msgid "ratio"
 msgstr "მასშტაბი"
 
@@ -1434,13 +1436,13 @@ msgstr "დადუმება"
 #: ags/app/machine/ags_dssi_bridge.c:349 ags/app/machine/ags_lv2_bridge.c:459
 #: ags/app/machine/ags_live_dssi_bridge.c:349
 #: ags/app/machine/ags_live_vst3_bridge.c:356
-#: ags/app/machine/ags_sf2_synth.c:448 ags/app/machine/ags_vst3_bridge.c:338
+#: ags/app/machine/ags_sf2_synth.c:450 ags/app/machine/ags_vst3_bridge.c:338
 msgid "program"
 msgstr "პროგრამა"
 
 #: ags/app/machine/ags_matrix.c:384 ags/app/machine/ags_drum.c:473
-#: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1166
-#: ags/app/machine/ags_sf2_synth.c:1212 ags/app/machine/ags_fm_oscillator.c:267
+#: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1311
+#: ags/app/machine/ags_sf2_synth.c:1359 ags/app/machine/ags_fm_oscillator.c:267
 msgid "length"
 msgstr "სიგრძე"
 
@@ -1516,8 +1518,8 @@ msgstr "ქვემოთ"
 msgid "kit"
 msgstr ""
 
-#: ags/app/machine/ags_drum.c:367 ags/app/machine/ags_sfz_synth.c:349
-#: ags/app/machine/ags_audiorec.c:295 ags/app/machine/ags_sf2_synth.c:357
+#: ags/app/machine/ags_drum.c:367 ags/app/machine/ags_sfz_synth.c:351
+#: ags/app/machine/ags_audiorec.c:295 ags/app/machine/ags_sf2_synth.c:359
 #: ags/app/machine/ags_ffplayer.c:403
 msgid "_Open"
 msgstr "_გახსნა"
@@ -1572,122 +1574,140 @@ msgstr "არჩულია"
 msgid "download samples"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:399
+#: ags/app/machine/ags_sfz_synth.c:401
 msgid "opcode"
 msgstr "ოპკოდი"
 
-#: ags/app/machine/ags_sfz_synth.c:408
+#: ags/app/machine/ags_sfz_synth.c:410
 msgid "value"
 msgstr "მნიშვნელობა"
 
-#: ags/app/machine/ags_sfz_synth.c:452 ags/app/machine/ags_sf2_synth.c:497
+#: ags/app/machine/ags_sfz_synth.c:454 ags/app/machine/ags_sf2_synth.c:499
 msgid "WAV 1 - octave"
 msgstr "WAV 1 - ოქტავა"
 
-#: ags/app/machine/ags_sfz_synth.c:488 ags/app/machine/ags_sf2_synth.c:533
+#: ags/app/machine/ags_sfz_synth.c:490 ags/app/machine/ags_sf2_synth.c:535
 msgid "WAV 1 - key"
 msgstr "WAV 1 - გასაღები"
 
-#: ags/app/machine/ags_sfz_synth.c:523 ags/app/machine/ags_sf2_synth.c:568
+#: ags/app/machine/ags_sfz_synth.c:525 ags/app/machine/ags_sf2_synth.c:570
 msgid "WAV 1 - volume"
 msgstr "WAV 1 - ხმა"
 
-#: ags/app/machine/ags_sfz_synth.c:573
+#: ags/app/machine/ags_sfz_synth.c:575
 #: ags/app/machine/ags_hybrid_fm_synth.c:1306
-#: ags/app/machine/ags_sf2_synth.c:618 ags/app/machine/ags_hybrid_synth.c:1353
+#: ags/app/machine/ags_sf2_synth.c:620 ags/app/machine/ags_hybrid_synth.c:1353
 msgid "pitch type"
 msgstr "ტონის ტიპი"
 
-#: ags/app/machine/ags_sfz_synth.c:608
+#: ags/app/machine/ags_sfz_synth.c:610
 #: ags/app/machine/ags_hybrid_fm_synth.c:1601
-#: ags/app/machine/ags_sf2_synth.c:653 ags/app/machine/ags_hybrid_synth.c:1654
+#: ags/app/machine/ags_sf2_synth.c:657 ags/app/machine/ags_hybrid_synth.c:1654
 msgid "chorus input volume"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:642
+#: ags/app/machine/ags_sfz_synth.c:644
 #: ags/app/machine/ags_hybrid_fm_synth.c:1635
-#: ags/app/machine/ags_sf2_synth.c:687 ags/app/machine/ags_hybrid_synth.c:1688
+#: ags/app/machine/ags_sf2_synth.c:691 ags/app/machine/ags_hybrid_synth.c:1688
 msgid "chorus output volume"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:676
+#: ags/app/machine/ags_sfz_synth.c:678
 #: ags/app/machine/ags_hybrid_fm_synth.c:1669
-#: ags/app/machine/ags_sf2_synth.c:721 ags/app/machine/ags_hybrid_synth.c:1722
+#: ags/app/machine/ags_sf2_synth.c:725 ags/app/machine/ags_hybrid_synth.c:1722
 msgid "chorus LFO"
 msgstr "ქორის LFO"
 
-#: ags/app/machine/ags_sfz_synth.c:706
+#: ags/app/machine/ags_sfz_synth.c:708
 #: ags/app/machine/ags_hybrid_fm_synth.c:1699
-#: ags/app/machine/ags_sf2_synth.c:751 ags/app/machine/ags_hybrid_synth.c:1752
+#: ags/app/machine/ags_sf2_synth.c:755 ags/app/machine/ags_hybrid_synth.c:1752
 msgid "chorus LFO frequency"
 msgstr "ქორის LFO-ის სიხშირე"
 
-#: ags/app/machine/ags_sfz_synth.c:721
+#: ags/app/machine/ags_sfz_synth.c:723
 #: ags/app/machine/ags_hybrid_fm_synth.c:1714
-#: ags/app/machine/ags_sf2_synth.c:766 ags/app/machine/ags_hybrid_synth.c:1767
+#: ags/app/machine/ags_sf2_synth.c:770 ags/app/machine/ags_hybrid_synth.c:1767
 msgid "chorus depth"
 msgstr "ქორის სიღრმე"
 
-#: ags/app/machine/ags_sfz_synth.c:755
+#: ags/app/machine/ags_sfz_synth.c:757
 #: ags/app/machine/ags_hybrid_fm_synth.c:1748
-#: ags/app/machine/ags_sf2_synth.c:800 ags/app/machine/ags_hybrid_synth.c:1801
+#: ags/app/machine/ags_sf2_synth.c:804 ags/app/machine/ags_hybrid_synth.c:1801
 msgid "chorus mix"
 msgstr "ქორის შერევა"
 
-#: ags/app/machine/ags_sfz_synth.c:789
+#: ags/app/machine/ags_sfz_synth.c:791
 #: ags/app/machine/ags_hybrid_fm_synth.c:1782
-#: ags/app/machine/ags_sf2_synth.c:834 ags/app/machine/ags_hybrid_synth.c:1835
+#: ags/app/machine/ags_sf2_synth.c:838 ags/app/machine/ags_hybrid_synth.c:1835
 msgid "chorus delay"
 msgstr "ქორის დაყოვნება"
 
-#: ags/app/machine/ags_sfz_synth.c:837 ags/app/machine/ags_sf2_synth.c:883
+#: ags/app/machine/ags_sfz_synth.c:839 ags/app/machine/ags_sf2_synth.c:887
+msgid "low-pass filter"
+msgstr ""
+
+#: ags/app/machine/ags_sfz_synth.c:870 ags/app/machine/ags_sf2_synth.c:918
+#, fuzzy
+msgid "cut-off frequency"
+msgstr "სიხშირე"
+
+#: ags/app/machine/ags_sfz_synth.c:901 ags/app/machine/ags_sf2_synth.c:949
+#, fuzzy
+msgid "filter gain"
+msgstr "ხმაურის გაძლიერება"
+
+#: ags/app/machine/ags_sfz_synth.c:932 ags/app/machine/ags_sf2_synth.c:980
+msgid "no-clip"
+msgstr ""
+
+#: ags/app/machine/ags_sfz_synth.c:964 ags/app/machine/ags_sf2_synth.c:1012
 msgid "tremolo"
 msgstr "ტრემოლო"
 
-#: ags/app/machine/ags_sfz_synth.c:858 ags/app/machine/ags_sfz_synth.c:1012
-#: ags/app/machine/ags_sf2_synth.c:904 ags/app/machine/ags_sf2_synth.c:1058
+#: ags/app/machine/ags_sfz_synth.c:991 ags/app/machine/ags_sfz_synth.c:1151
+#: ags/app/machine/ags_sf2_synth.c:1039 ags/app/machine/ags_sf2_synth.c:1199
 msgid "gain"
 msgstr "გაძლიერება"
 
-#: ags/app/machine/ags_sfz_synth.c:891 ags/app/machine/ags_sfz_synth.c:1045
-#: ags/app/machine/ags_sfz_synth.c:1460 ags/app/machine/ags_sf2_synth.c:937
-#: ags/app/machine/ags_sf2_synth.c:1091 ags/app/machine/ags_sf2_synth.c:1506
+#: ags/app/machine/ags_sfz_synth.c:1024 ags/app/machine/ags_sfz_synth.c:1184
+#: ags/app/machine/ags_sfz_synth.c:1605 ags/app/machine/ags_sf2_synth.c:1072
+#: ags/app/machine/ags_sf2_synth.c:1232 ags/app/machine/ags_sf2_synth.c:1653
 msgid "lfo-depth"
 msgstr "lfo-depth"
 
-#: ags/app/machine/ags_sfz_synth.c:924 ags/app/machine/ags_sfz_synth.c:1078
-#: ags/app/machine/ags_sfz_synth.c:1493 ags/app/machine/ags_sf2_synth.c:970
-#: ags/app/machine/ags_sf2_synth.c:1124 ags/app/machine/ags_sf2_synth.c:1539
+#: ags/app/machine/ags_sfz_synth.c:1057 ags/app/machine/ags_sfz_synth.c:1217
+#: ags/app/machine/ags_sfz_synth.c:1638 ags/app/machine/ags_sf2_synth.c:1105
+#: ags/app/machine/ags_sf2_synth.c:1265 ags/app/machine/ags_sf2_synth.c:1686
 msgid "lfo-freq"
 msgstr "lfo-freq"
 
-#: ags/app/machine/ags_sfz_synth.c:957 ags/app/machine/ags_sfz_synth.c:1111
-#: ags/app/machine/ags_sfz_synth.c:1526 ags/app/machine/ags_sf2_synth.c:1003
-#: ags/app/machine/ags_sf2_synth.c:1157 ags/app/machine/ags_sf2_synth.c:1572
+#: ags/app/machine/ags_sfz_synth.c:1090 ags/app/machine/ags_sfz_synth.c:1250
+#: ags/app/machine/ags_sfz_synth.c:1671 ags/app/machine/ags_sf2_synth.c:1138
+#: ags/app/machine/ags_sf2_synth.c:1298 ags/app/machine/ags_sf2_synth.c:1719
 msgid "tuning"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:991 ags/app/machine/ags_sf2_synth.c:1037
+#: ags/app/machine/ags_sfz_synth.c:1124 ags/app/machine/ags_sf2_synth.c:1172
 msgid "vibrato"
 msgstr "ვიბრატო"
 
-#: ags/app/machine/ags_sfz_synth.c:1145 ags/app/machine/ags_sf2_synth.c:1191
+#: ags/app/machine/ags_sfz_synth.c:1284 ags/app/machine/ags_sf2_synth.c:1332
 msgid "wah-wah"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1195 ags/app/machine/ags_sf2_synth.c:1241
+#: ags/app/machine/ags_sfz_synth.c:1340 ags/app/machine/ags_sf2_synth.c:1388
 msgid "attack [x|y]"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1253 ags/app/machine/ags_sf2_synth.c:1299
+#: ags/app/machine/ags_sfz_synth.c:1398 ags/app/machine/ags_sf2_synth.c:1446
 msgid "decay [x|y]"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1311 ags/app/machine/ags_sf2_synth.c:1357
+#: ags/app/machine/ags_sfz_synth.c:1456 ags/app/machine/ags_sf2_synth.c:1504
 msgid "sustain [x|y]"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1369 ags/app/machine/ags_sf2_synth.c:1415
+#: ags/app/machine/ags_sfz_synth.c:1514 ags/app/machine/ags_sf2_synth.c:1562
 msgid "release [x|y]"
 msgstr ""
 
@@ -1923,7 +1943,7 @@ msgstr ""
 msgid "high pass filter gain"
 msgstr ""
 
-#: ags/app/machine/ags_sf2_synth.c:411
+#: ags/app/machine/ags_sf2_synth.c:413
 msgid "bank"
 msgstr "ბანკი"
 

@@ -11716,6 +11716,51 @@ ags_simple_file_read_sfz_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
   /* ext */
   str = xmlGetProp(node,
+		   "low-pass-cut-off-frequency");
+
+  if(str != NULL){
+    gdouble cut_off_frequency;
+
+    cut_off_frequency = ags_file_util_get_double(simple_file->file_util,
+						 str);
+
+    ags_dial_set_value(sfz_synth->low_pass_cut_off_frequency,
+		       cut_off_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-filter-gain");
+
+  if(str != NULL){
+    gdouble filter_gain;
+
+    filter_gain = ags_file_util_get_double(simple_file->file_util,
+					   str);
+
+    ags_dial_set_value(sfz_synth->low_pass_filter_gain,
+		       filter_gain);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "low-pass-no-clip");
+
+  if(str != NULL){
+    gdouble no_clip;
+
+    no_clip = ags_file_util_get_double(simple_file->file_util,
+				       str);
+
+    ags_dial_set_value(sfz_synth->low_pass_no_clip,
+		       no_clip);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "tremolo-enabled");
 
   if(str != NULL){
@@ -12611,6 +12656,51 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
 
   /* ext */
   str = xmlGetProp(node,
+		   "low-pass-cut-off-frequency");
+
+  if(str != NULL){
+    gdouble cut_off_frequency;
+
+    cut_off_frequency = ags_file_util_get_double(simple_file->file_util,
+						 str);
+
+    ags_dial_set_value(sf2_synth->low_pass_cut_off_frequency,
+		       cut_off_frequency);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
+		   "low-pass-filter-gain");
+
+  if(str != NULL){
+    gdouble filter_gain;
+
+    filter_gain = ags_file_util_get_double(simple_file->file_util,
+					   str);
+
+    ags_dial_set_value(sf2_synth->low_pass_filter_gain,
+		       filter_gain);
+      
+    xmlFree(str);
+  }
+  
+  str = xmlGetProp(node,
+		   "low-pass-no-clip");
+
+  if(str != NULL){
+    gdouble no_clip;
+
+    no_clip = ags_file_util_get_double(simple_file->file_util,
+				       str);
+
+    ags_dial_set_value(sf2_synth->low_pass_no_clip,
+		       no_clip);
+      
+    xmlFree(str);
+  }
+
+  str = xmlGetProp(node,
 		   "tremolo-enabled");
 
   if(str != NULL){
@@ -12623,7 +12713,7 @@ ags_simple_file_read_sf2_synth_launch(AgsSimpleFile *simple_file, xmlNode *node,
       
     xmlFree(str);
   }
-
+  
   str = xmlGetProp(node,
 		   "tremolo-gain");
 
@@ -24175,6 +24265,33 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     /* ext */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->low_pass_cut_off_frequency));
+    
+    xmlNewProp(node,
+	       BAD_CAST "low-pass-cut-off-frequency",
+	       BAD_CAST str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->low_pass_filter_gain));
+    
+    xmlNewProp(node,
+	       BAD_CAST "low-pass-filter-gain",
+	       BAD_CAST str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sfz_synth->low_pass_no_clip));
+    
+    xmlNewProp(node,
+	       BAD_CAST "low-pass-no-clip",
+	       BAD_CAST str);
+
+    g_free(str);    
+
     str = g_strdup_printf("%s",
 			  (gtk_check_button_get_active(sfz_synth->tremolo_enabled) ? "true": "false"));
     
@@ -24641,6 +24758,33 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     g_free(str);    
 
     /* ext */
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->low_pass_cut_off_frequency));
+    
+    xmlNewProp(node,
+	       BAD_CAST "low-pass-cut-off-frequency",
+	       BAD_CAST str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->low_pass_filter_gain));
+    
+    xmlNewProp(node,
+	       BAD_CAST "low-pass-filter-gain",
+	       BAD_CAST str);
+
+    g_free(str);    
+
+    str = g_strdup_printf("%lf",
+			  ags_dial_get_value(sf2_synth->low_pass_no_clip));
+    
+    xmlNewProp(node,
+	       BAD_CAST "low-pass-no-clip",
+	       BAD_CAST str);
+
+    g_free(str);    
+
     str = g_strdup_printf("%s",
 			  (gtk_check_button_get_active(sf2_synth->tremolo_enabled) ? "true": "false"));
     
