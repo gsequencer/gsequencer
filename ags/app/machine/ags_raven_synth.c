@@ -1987,7 +1987,7 @@ ags_raven_synth_init(AgsRavenSynth *raven_synth)
 			   1.0);
 
   gtk_adjustment_set_step_increment(adjustment,
-				    1.0);
+				    0.01);
 
   gtk_adjustment_set_value(adjustment,
 			   1.0);

@@ -2113,12 +2113,6 @@ ags_modular_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(modular_synth->chorus_delay, "value-changed",
 			 G_CALLBACK(ags_modular_synth_chorus_delay_callback), modular_synth);
-
-  g_signal_connect_after(modular_synth->chorus_input_volume, "value-changed",
-			 G_CALLBACK(ags_modular_synth_chorus_input_volume_callback), modular_synth);
-  
-  g_signal_connect_after(modular_synth->chorus_output_volume, "value-changed",
-			 G_CALLBACK(ags_modular_synth_chorus_output_volume_callback), modular_synth);
 }
 
 void
@@ -2447,18 +2441,6 @@ ags_modular_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect(modular_synth->chorus_delay,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_modular_synth_chorus_delay_callback),
-		      modular_synth,
-		      NULL);
-
-  g_object_disconnect(modular_synth->chorus_input_volume,
-		      "any_signal::value-changed",
-		      G_CALLBACK(ags_modular_synth_chorus_input_volume_callback),
-		      modular_synth,
-		      NULL);
-  
-  g_object_disconnect(modular_synth->chorus_output_volume,
-		      "any_signal::value-changed",
-			 G_CALLBACK(ags_modular_synth_chorus_output_volume_callback),
 		      modular_synth,
 		      NULL);
 }

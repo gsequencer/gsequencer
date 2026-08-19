@@ -58,6 +58,10 @@ void ags_sfz_synth_chorus_depth_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_chorus_mix_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 void ags_sfz_synth_chorus_delay_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
 
+void ags_sfz_synth_low_pass_cut_off_frequency_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
+void ags_sfz_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
+void ags_sfz_synth_low_pass_no_clip_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);
+
 void ags_sfz_synth_tremolo_enabled_callback(GtkCheckButton *button, AgsSFZSynth *sfz_synth);
 
 void ags_sfz_synth_tremolo_gain_callback(AgsDial *dial, AgsSFZSynth *sfz_synth);

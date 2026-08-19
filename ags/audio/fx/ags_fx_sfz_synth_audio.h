@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2022 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -32,6 +32,7 @@
 #include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_volume_util.h>
 #include <ags/audio/ags_chorus_util.h>
+#include <ags/audio/ags_low_pass_filter_util.h>
 
 #include <ags/audio/fx/ags_fx_notation_audio.h>
 
@@ -81,6 +82,10 @@ struct _AgsFxSFZSynthAudio
   AgsPort *chorus_depth;
   AgsPort *chorus_mix;
   AgsPort *chorus_delay;
+
+  AgsPort *low_pass_cut_off_frequency;
+  AgsPort *low_pass_filter_gain;
+  AgsPort *low_pass_no_clip;
  
   AgsFxSFZSynthAudioScopeData* scope_data[AGS_SOUND_SCOPE_LAST];
 };
@@ -110,6 +115,8 @@ struct _AgsFxSFZSynthAudioChannelData
   AgsSFZSynthUtil *synth;
     
   AgsChorusUtil *chorus_util;
+  
+  AgsLowPassFilterUtil *low_pass_filter_util;
   
   AgsFxSFZSynthAudioInputData* input_data[AGS_SEQUENCER_MAX_MIDI_KEYS];
 };

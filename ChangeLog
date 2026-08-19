@@ -1,3 +1,9 @@
+ags (9.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added low-pass filter to AgsSF2Synth
+	* added low-pass filter to AgsSFZSynth
+
 ags (9.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

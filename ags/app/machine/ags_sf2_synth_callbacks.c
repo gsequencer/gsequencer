@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1011,6 +1011,171 @@ ags_sf2_synth_volume_callback(GtkRange *range, AgsSF2Synth *sf2_synth)
   if(start_input != NULL){
     g_object_unref(start_input);
   }
+}
+
+void
+ags_sf2_synth_low_pass_cut_off_frequency_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sf2_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(sf2_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SF2_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-cut-off-frequency", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_sf2_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sf2_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(sf2_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SF2_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-filter-gain", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
+}
+
+void
+ags_sf2_synth_low_pass_no_clip_callback(AgsDial *dial, AgsSF2Synth *sf2_synth)
+{
+  AgsAudio *audio;
+  
+  GList *start_play, *start_recall, *recall;
+
+  gdouble volume;
+
+  if((AGS_MACHINE_NO_UPDATE & (AGS_MACHINE(sf2_synth)->flags)) != 0){
+    return;
+  }
+
+  audio = AGS_MACHINE(sf2_synth)->audio;
+
+  volume = ags_dial_get_value(dial);
+  
+  start_play = ags_audio_get_play(audio);
+  start_recall = ags_audio_get_recall(audio);
+    
+  recall =
+    start_recall = g_list_concat(start_play, start_recall);
+
+  while((recall = ags_recall_find_type(recall, AGS_TYPE_FX_SF2_SYNTH_AUDIO)) != NULL){
+    AgsPort *port;
+
+    port = NULL;
+      
+    g_object_get(recall->data,
+		 "low-pass-no-clip", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      g_value_set_float(&value,
+			(gfloat) volume);
+
+      ags_port_safe_write(port,
+			  &value);
+
+      g_object_unref(port);
+    }
+    
+    /* iterate */
+    recall = recall->next;
+  }
+
+  g_list_free_full(start_recall,
+		   (GDestroyNotify) g_object_unref);
 }
 
 void
