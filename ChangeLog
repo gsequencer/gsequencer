@@ -1,3 +1,25 @@
+ags (9.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added enabled switch to AgsSF2Synth low-pass
+	* added enabled switch to AgsSFZSynth low-pass
+	* added enabled port to ags-sf2-synth
+	* added enabled port to ags-sfz-synth
+	* improved ags_stargazer_synth_refresh_port()
+	* improved ags_quantum_synth_refresh_port()
+	* improved ags_raven_synth_refresh_port()
+	* improved ags_composite_editor_delete_note()
+
+ags (9.3.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added low-pass filter to AgsSF2Synth
+	* added low-pass filter to AgsSFZSynth
+	* added low-pass filter to ags-fx-sf2-synth
+	* added low-pass filter to ags-fx-sfz-synth
+	* added low-pass filter sf2 synth fields to simple file
+	* added low-pass filter sfz synth fields to simple file
+
 ags (9.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

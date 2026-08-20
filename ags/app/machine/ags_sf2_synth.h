@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -129,6 +129,12 @@ struct _AgsSF2Synth
   AgsDial *chorus_mix;
   AgsDial *chorus_delay;
 
+  GtkCheckButton *low_pass_enabled;
+
+  AgsDial *low_pass_cut_off_frequency;
+  AgsDial *low_pass_filter_gain;
+  AgsDial *low_pass_no_clip;
+  
   GtkCheckButton *tremolo_enabled;
 
   AgsDial *tremolo_gain;

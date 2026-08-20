@@ -12077,6 +12077,20 @@ ags_fx_raven_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  ags_chorus_util_set_samplerate(channel_data->chorus_util,
 					 samplerate);
 
+	  ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util_0,
+						     buffer_size);
+	  ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util_0,
+					      format);
+	  ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util_0,
+						  samplerate);
+
+	  ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util_1,
+						     buffer_size);
+	  ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util_1,
+					      format);
+	  ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util_1,
+						  samplerate);
+
 	  /* alloc chorus destination */
 	  destination = ags_stream_alloc(buffer_size,
 					 format);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2024 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -67,6 +67,12 @@ void ags_sf2_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, Ags
 void ags_sf2_synth_chorus_depth_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 void ags_sf2_synth_chorus_mix_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 void ags_sf2_synth_chorus_delay_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_low_pass_enabled_callback(GtkCheckButton *button, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_low_pass_cut_off_frequency_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_low_pass_no_clip_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_tremolo_enabled_callback(GtkCheckButton *button, AgsSF2Synth *sf2_synth);
 
