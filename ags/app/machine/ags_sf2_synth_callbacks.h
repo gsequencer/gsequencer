@@ -56,10 +56,6 @@ void ags_sf2_synth_synth_key_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_synth_volume_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 
-void ags_sf2_synth_low_pass_cut_off_frequency_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
-void ags_sf2_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
-void ags_sf2_synth_low_pass_no_clip_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
-
 void ags_sf2_synth_chorus_enabled_callback(GtkButton *button, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_chorus_input_volume_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
@@ -71,6 +67,12 @@ void ags_sf2_synth_chorus_lfo_frequency_callback(GtkSpinButton *spin_button, Ags
 void ags_sf2_synth_chorus_depth_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 void ags_sf2_synth_chorus_mix_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 void ags_sf2_synth_chorus_delay_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_low_pass_enabled_callback(GtkCheckButton *button, AgsSF2Synth *sf2_synth);
+
+void ags_sf2_synth_low_pass_cut_off_frequency_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_low_pass_filter_gain_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
+void ags_sf2_synth_low_pass_no_clip_callback(AgsDial *dial, AgsSF2Synth *sf2_synth);
 
 void ags_sf2_synth_tremolo_enabled_callback(GtkCheckButton *button, AgsSF2Synth *sf2_synth);
 

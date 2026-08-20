@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -857,15 +857,11 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   gtk_frame_set_child(low_pass_frame,
 		      (GtkWidget *) low_pass_grid);
 
-  sfz_synth->low_pass_enabled = NULL;
-
-#if 0
   sfz_synth->low_pass_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_grid_attach(low_pass_grid,
 		  (GtkWidget *) sfz_synth->low_pass_enabled,
 		  0, 0,
 		  2, 1);
-#endif
   
   label = (GtkLabel *) gtk_label_new(i18n("cut-off frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
@@ -1805,6 +1801,9 @@ ags_sfz_synth_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_sfz_synth_chorus_delay_callback), sfz_synth);
 
   /* low-pass */
+  g_signal_connect_after(sfz_synth->low_pass_enabled, "toggled",
+			 G_CALLBACK(ags_sfz_synth_low_pass_enabled_callback), sfz_synth);
+
   g_signal_connect_after(sfz_synth->low_pass_cut_off_frequency, "value-changed",
 			 G_CALLBACK(ags_sfz_synth_low_pass_cut_off_frequency_callback), sfz_synth);
 
@@ -1984,6 +1983,12 @@ ags_sfz_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   /* low-pass */
+  g_object_disconnect((GObject *) sfz_synth->low_pass_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_sfz_synth_low_pass_enabled_callback),
+		      sfz_synth,
+		      NULL);
+
   g_object_disconnect(sfz_synth->low_pass_cut_off_frequency,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_sfz_synth_low_pass_cut_off_frequency_callback),
@@ -2925,6 +2930,33 @@ ags_sfz_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
     
+    /* low-pass enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "low-pass-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(sfz_synth->low_pass_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(sfz_synth->low_pass_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
+
     /* low-pass cut off frequency */
     port = NULL;
 
@@ -2987,6 +3019,33 @@ ags_sfz_synth_refresh_port(AgsMachine *machine)
 
       ags_dial_set_value(sfz_synth->low_pass_no_clip,
 			 (gdouble) g_value_get_float(&value));
+
+      g_object_unref(port);
+    }
+
+    /* vibrato enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(sfz_synth->vibrato_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(sfz_synth->vibrato_enabled,
+				    FALSE);
+      }
 
       g_object_unref(port);
     }
@@ -3084,6 +3143,33 @@ ags_sfz_synth_refresh_port(AgsMachine *machine)
   
   if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TREMOLO_AUDIO)) != NULL){
     AgsPort *port;
+
+    /* tremolo enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(sfz_synth->tremolo_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(sfz_synth->tremolo_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }
 
     /* tremolo gain */
     port = NULL;

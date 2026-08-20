@@ -1,3 +1,9 @@
+ags (9.3.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added enabled switch to AgsSF2Synth low-pass
+	* added enabled switch to AgsSFZSynth low-pass
+
 ags (9.3.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

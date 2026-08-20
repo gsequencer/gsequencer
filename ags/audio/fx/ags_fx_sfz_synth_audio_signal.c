@@ -182,6 +182,7 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   gdouble vibrato_lfo_depth;
   gdouble vibrato_lfo_freq;
   gdouble vibrato_tuning;
+  gboolean low_pass_enabled;
   guint format;
   guint samplerate;
   guint audio_buffer_util_format;
@@ -298,6 +299,8 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
   vibrato_lfo_depth = 1.0;
   vibrato_lfo_freq = 8.172;
   vibrato_tuning = 0.0;
+
+  low_pass_enabled = FALSE;
   
   if(fx_sfz_synth_audio != NULL){
     AgsPort *port;
@@ -611,6 +614,26 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 
     g_value_unset(&value);
     
+    /* low-pass enabled */
+    g_object_get(fx_sfz_synth_audio,
+		 "low-pass-enabled", &port,
+		 NULL);
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	low_pass_enabled = TRUE;
+      }
+      
+      g_object_unref(port);
+    }
+
+    g_value_unset(&value);
+
     /* low-pass cut-off frequency */    
     g_object_get(fx_sfz_synth_audio,
 		 "low-pass-cut-off-frequency", &port,
@@ -766,28 +789,37 @@ ags_fx_sfz_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notation_
 				  NULL);
 
     /* low-pass */
-    ags_low_pass_filter_util_set_source(channel_data->low_pass_filter_util,
-					source->stream_current->data);
-    ags_low_pass_filter_util_set_source_stride(channel_data->low_pass_filter_util,
-					       1);
+    if(low_pass_enabled){
+      ags_low_pass_filter_util_set_source(channel_data->low_pass_filter_util,
+					  source->stream_current->data);
+      ags_low_pass_filter_util_set_source_stride(channel_data->low_pass_filter_util,
+						 1);
 
-    ags_low_pass_filter_util_set_destination(channel_data->low_pass_filter_util,
-					     source->stream_current->data);
-    ags_low_pass_filter_util_set_destination_stride(channel_data->low_pass_filter_util,
-						    1);
+      ags_low_pass_filter_util_set_destination(channel_data->low_pass_filter_util,
+					       source->stream_current->data);
+      ags_low_pass_filter_util_set_destination_stride(channel_data->low_pass_filter_util,
+						      1);
 
-    ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util,
-					    samplerate);
-    ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util,
-					       buffer_size);
-    ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util,
-					format);
+      ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util,
+					      samplerate);
+      ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util,
+						 buffer_size);
+      ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util,
+					  format);
     
-    g_rec_mutex_lock(source_stream_mutex);
+      g_rec_mutex_lock(source_stream_mutex);
     
-    ags_low_pass_filter_util_process(channel_data->low_pass_filter_util);
+      ags_low_pass_filter_util_process(channel_data->low_pass_filter_util);
 
-    g_rec_mutex_unlock(source_stream_mutex);
+      g_rec_mutex_unlock(source_stream_mutex);
+      
+      /* reset source and destination */
+      ags_low_pass_filter_util_set_source(channel_data->low_pass_filter_util,
+					  NULL);
+      
+      ags_low_pass_filter_util_set_destination(channel_data->low_pass_filter_util,
+					       NULL);
+    }
     
     /* chorus */
     if(ags_chorus_util_get_depth(channel_data->chorus_util) != 0.0 &&

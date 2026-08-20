@@ -83,6 +83,8 @@ struct _AgsFxSFZSynthAudio
   AgsPort *chorus_mix;
   AgsPort *chorus_delay;
 
+  AgsPort *low_pass_enabled;
+  
   AgsPort *low_pass_cut_off_frequency;
   AgsPort *low_pass_filter_gain;
   AgsPort *low_pass_no_clip;
