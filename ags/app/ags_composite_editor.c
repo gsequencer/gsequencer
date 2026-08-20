@@ -5262,10 +5262,16 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
     AgsTimestamp *timestamp;
 
     GList *start_notation, *notation;
+    GList *start_note, *note;
+    GList *last_match;
 
+    guint current_x0_256th, current_x1_256th;
+    guint current_y;
     guint tmp_x_256th;
     gint i, j;
     gboolean success;
+    
+    GRecMutex *notation_mutex;
     
     timestamp = ags_timestamp_new();
 
@@ -5286,17 +5292,75 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
       notation = ags_notation_find_near_timestamp(start_notation, i,
 						  timestamp);
       
+      tmp_x_256th = (guint) (64.0 * floor((double) x_256th / 64.0));
+      
       if(notation != NULL){
-	for(j = 0; j < 16; j++){
-	  tmp_x_256th = (guint) (16.0 * floor((double) x_256th / 16.0)) + j;
-	  
-	  success = ags_notation_remove_note_256th_at_position(notation->data,
-							       tmp_x_256th, y);
-	  
-	  if(success){
+	/* get notation mutex */
+	notation_mutex = AGS_NOTATION_GET_OBJ_MUTEX(notation->data);
+
+	/* find note */
+	g_rec_mutex_lock(notation_mutex);
+
+	note =
+	  start_note = g_list_copy_deep(AGS_NOTATION(notation->data)->note,
+					(GCopyFunc) g_object_ref,
+					NULL);
+  
+	g_rec_mutex_unlock(notation_mutex);
+
+	last_match = NULL;
+	
+	while(note != NULL){
+	  current_x0_256th = 0;
+	  current_x1_256th = 0;
+	  current_y = 0;
+    
+	  g_object_get(note->data,
+		       "x0-256th", &current_x0_256th,
+		       "x1-256th", &current_x1_256th,
+		       "y", &current_y,
+		       NULL);
+
+	  if(current_x0_256th == x_256th &&
+	     current_y == y){
+      	    success = TRUE;
+      
 	    break;
 	  }
+
+	  if(current_x0_256th >= x_256th &&
+	     current_x1_256th < x_256th &&
+	     current_y == y){
+	    last_match = note;
+	  }
+	  
+	  if(current_x0_256th > x_256th){
+	    break;
+	  }
+
+	  note = note->next;
 	}
+
+	if(!success){
+	  if(last_match != NULL){
+	    note = last_match;
+	    
+	    success = TRUE;
+	  }
+	}
+
+	if(success){
+	  g_rec_mutex_lock(notation_mutex);
+    
+	  AGS_NOTATION(notation->data)->note = g_list_remove(AGS_NOTATION(notation->data)->note,
+							     note->data);
+	  g_object_unref(note->data);
+
+	  g_rec_mutex_unlock(notation_mutex);
+	}
+
+	g_list_free_full(start_note,
+			 g_object_unref);
       }
 
       g_list_free_full(start_notation,

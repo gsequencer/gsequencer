@@ -8,6 +8,7 @@ ags (9.3.1)
 	* improved ags_stargazer_synth_refresh_port()
 	* improved ags_quantum_synth_refresh_port()
 	* improved ags_raven_synth_refresh_port()
+	* improved ags_composite_editor_delete_note()
 
 ags (9.3.0)
 
