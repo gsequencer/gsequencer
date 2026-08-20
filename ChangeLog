@@ -3,6 +3,11 @@ ags (9.3.1)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added enabled switch to AgsSF2Synth low-pass
 	* added enabled switch to AgsSFZSynth low-pass
+	* added enabled port to ags-sf2-synth
+	* added enabled port to ags-sfz-synth
+	* improved ags_stargazer_synth_refresh_port()
+	* improved ags_quantum_synth_refresh_port()
+	* improved ags_raven_synth_refresh_port()
 
 ags (9.3.0)
 
