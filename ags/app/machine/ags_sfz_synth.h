@@ -111,6 +111,12 @@ struct _AgsSFZSynth
   AgsDial *chorus_depth;
   AgsDial *chorus_mix;
   AgsDial *chorus_delay;
+
+  GtkCheckButton *low_pass_enabled;
+
+  AgsDial *low_pass_cut_off_frequency;
+  AgsDial *low_pass_filter_gain;
+  AgsDial *low_pass_no_clip;
   
   GtkCheckButton *tremolo_enabled;
 

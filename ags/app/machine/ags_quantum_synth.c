@@ -6660,6 +6660,33 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
       g_object_unref(port);
     }
 
+    /* vibrato enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "vibrato-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(quantum_synth->vibrato_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(quantum_synth->vibrato_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }    
+
     /* vibrato gain */
     port = NULL;
 
@@ -6753,6 +6780,33 @@ ags_quantum_synth_refresh_port(AgsMachine *machine)
   
   if((recall = ags_recall_find_type(recall, AGS_TYPE_FX_TREMOLO_AUDIO)) != NULL){
     AgsPort *port;
+
+    /* tremolo enabled */
+    port = NULL;
+
+    g_object_get(recall->data,
+		 "tremolo-enabled", &port,
+		 NULL);
+
+    if(port != NULL){
+      GValue value = G_VALUE_INIT;
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(port,
+			 &value);
+
+      if(g_value_get_float(&value) != 0.0){
+	gtk_check_button_set_active(quantum_synth->tremolo_enabled,
+				    TRUE);
+      }else{
+	gtk_check_button_set_active(quantum_synth->tremolo_enabled,
+				    FALSE);
+      }
+
+      g_object_unref(port);
+    }    
 
     /* tremolo gain */
     port = NULL;

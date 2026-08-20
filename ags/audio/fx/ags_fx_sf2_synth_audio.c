@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,6 +79,11 @@ static AgsPluginPort* ags_fx_sf2_synth_audio_get_vibrato_lfo_depth_plugin_port()
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_vibrato_lfo_freq_plugin_port();
 static AgsPluginPort* ags_fx_sf2_synth_audio_get_vibrato_tuning_plugin_port();
 
+static AgsPluginPort* ags_fx_sf2_synth_audio_get_low_pass_enabled_plugin_port();
+static AgsPluginPort* ags_fx_sf2_synth_audio_get_low_pass_cut_off_frequency_plugin_port();
+static AgsPluginPort* ags_fx_sf2_synth_audio_get_low_pass_filter_gain_plugin_port();
+static AgsPluginPort* ags_fx_sf2_synth_audio_get_low_pass_no_clip_plugin_port();
+
 /**
  * SECTION:ags_fx_sf2_synth_audio
  * @short_description: fx Soundfont2 synth audio
@@ -112,28 +117,36 @@ static const gchar* ags_fx_sf2_synth_audio_specifier[] = {
   "./vibrato-lfo-depth[0]",
   "./vibrato-lfo-freq[0]",
   "./vibrato-tuning[0]",
+  "./low-pass-enabled[0]",
+  "./low-pass-cut-off-frequency[0]",
+  "./low-pass-filter-gain[0]",
+  "./low-pass-no-clip[0]",
   NULL,
 };
 
 static const gchar* ags_fx_sf2_synth_audio_control_port[] = {
-  "1/18",
-  "2/18",
-  "3/18",
-  "4/18",
-  "5/18",
-  "6/18",
-  "7/18",
-  "8/18",
-  "9/18",
-  "10/18",
-  "11/18",
-  "12/18",
-  "13/18",
-  "14/18",
-  "15/18",
-  "16/18",
-  "17/18",
-  "18/18",
+  "1/22",
+  "2/22",
+  "3/22",
+  "4/22",
+  "5/22",
+  "6/22",
+  "7/22",
+  "8/22",
+  "9/22",
+  "10/22",
+  "11/22",
+  "12/22",
+  "13/22",
+  "14/22",
+  "15/22",
+  "16/22",
+  "17/22",
+  "18/22",
+  "19/22",
+  "20/22",
+  "21/22",
+  "22/22",
   NULL,
 };
 
@@ -157,6 +170,10 @@ enum{
   PROP_VIBRATO_LFO_DEPTH,
   PROP_VIBRATO_LFO_FREQ,
   PROP_VIBRATO_TUNING,
+  PROP_LOW_PASS_ENABLED,
+  PROP_LOW_PASS_CUT_OFF_FREQUENCY,
+  PROP_LOW_PASS_FILTER_GAIN,
+  PROP_LOW_PASS_NO_CLIP,
 };
 
 GType
@@ -180,9 +197,9 @@ ags_fx_sf2_synth_audio_get_type()
     };
 
     ags_type_fx_sf2_synth_audio = g_type_register_static(AGS_TYPE_FX_NOTATION_AUDIO,
-							"AgsFxSF2SynthAudio",
-							&ags_fx_sf2_synth_audio_info,
-							0);
+							 "AgsFxSF2SynthAudio",
+							 &ags_fx_sf2_synth_audio_info,
+							 0);
 
     g_once_init_leave(&g_define_type_id__static, ags_type_fx_sf2_synth_audio);
   }
@@ -497,6 +514,70 @@ ags_fx_sf2_synth_audio_class_init(AgsFxSF2SynthAudioClass *fx_sf2_synth_audio)
   g_object_class_install_property(gobject,
 				  PROP_VIBRATO_TUNING,
 				  param_spec);
+
+  /**
+   * AgsFxSF2SynthAudio:low-pass-enabled:
+   *
+   * The low-pass enabled.
+   * 
+   * Since: 9.3.1
+   */
+  param_spec = g_param_spec_object("low-pass-enabled",
+				   i18n_pspec("low-pass enabled of recall"),
+				   i18n_pspec("The low-pass enabled"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOW_PASS_ENABLED,
+				  param_spec);
+
+  /**
+   * AgsFxSF2SynthAudio:low-pass-cut-off-frequency:
+   *
+   * The low-pass-cut-off-frequency.
+   * 
+   * Since: 9.3.0
+   */
+  param_spec = g_param_spec_object("low-pass-cut-off-frequency",
+				   i18n_pspec("low-pass cut off frequency of recall"),
+				   i18n_pspec("The low-pass cut off frequency"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOW_PASS_CUT_OFF_FREQUENCY,
+				  param_spec);
+  
+  /**
+   * AgsFxSF2SynthAudio:low-pass-filter-gain:
+   *
+   * The low-pass-filter-gain.
+   * 
+   * Since: 9.3.0
+   */
+  param_spec = g_param_spec_object("low-pass-filter-gain",
+				   i18n_pspec("low-pass filter gain of recall"),
+				   i18n_pspec("The low-pass filter gain"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOW_PASS_FILTER_GAIN,
+				  param_spec);
+  
+  /**
+   * AgsFxSF2SynthAudio:low-pass-no-clip:
+   *
+   * The low-pass-no-clip.
+   * 
+   * Since: 9.3.0
+   */
+  param_spec = g_param_spec_object("low-pass-no-clip",
+				   i18n_pspec("low-pass no-clip of recall"),
+				   i18n_pspec("The low-pass no clip"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOW_PASS_NO_CLIP,
+				  param_spec);
 }
 
 void
@@ -526,14 +607,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 
   /* synth octave */
   fx_sf2_synth_audio->synth_octave = g_object_new(AGS_TYPE_PORT,
-						   "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						   "specifier", "./synth-octave[0]",
-						   "control-port", "1/18",
-						   "port-value-is-pointer", FALSE,
-						   "port-value-type", G_TYPE_FLOAT,
-						   "port-value-size", sizeof(gfloat),
-						   "port-value-length", 1,
-						   NULL);
+						  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						  "specifier", "./synth-octave[0]",
+						  "control-port", "1/22",
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_FLOAT,
+						  "port-value-size", sizeof(gfloat),
+						  "port-value-length", 1,
+						  NULL);
   
   fx_sf2_synth_audio->synth_octave->port_value.ags_port_float = (gfloat) 0.0;
 
@@ -548,14 +629,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* synth key */
   fx_sf2_synth_audio->synth_key = g_object_new(AGS_TYPE_PORT,
-						"plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						"specifier", "./synth-key[0]",
-						"control-port", "2/18",
-						"port-value-is-pointer", FALSE,
-						"port-value-type", G_TYPE_FLOAT,
-						"port-value-size", sizeof(gfloat),
-						"port-value-length", 1,
-						NULL);
+					       "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+					       "specifier", "./synth-key[0]",
+					       "control-port", "2/22",
+					       "port-value-is-pointer", FALSE,
+					       "port-value-type", G_TYPE_FLOAT,
+					       "port-value-size", sizeof(gfloat),
+					       "port-value-length", 1,
+					       NULL);
   
   fx_sf2_synth_audio->synth_key->port_value.ags_port_float = (gfloat) 2.0;
 
@@ -572,7 +653,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   fx_sf2_synth_audio->synth_pitch_type = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
 						      "specifier", "./synth-pitch-type[0]",
-						      "control-port", "3/18",
+						      "control-port", "3/22",
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
@@ -595,14 +676,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* synth volume */
   fx_sf2_synth_audio->synth_volume = g_object_new(AGS_TYPE_PORT,
-						   "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						   "specifier", "./synth-volume[0]",
-						   "control-port", "4/18",
-						   "port-value-is-pointer", FALSE,
-						   "port-value-type", G_TYPE_FLOAT,
-						   "port-value-size", sizeof(gfloat),
-						   "port-value-length", 1,
-						   NULL);
+						  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						  "specifier", "./synth-volume[0]",
+						  "control-port", "4/22",
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_FLOAT,
+						  "port-value-size", sizeof(gfloat),
+						  "port-value-length", 1,
+						  NULL);
   
   fx_sf2_synth_audio->synth_volume->port_value.ags_port_float = (gfloat) 0.5;
 
@@ -617,14 +698,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus enabled */
   fx_sf2_synth_audio->chorus_enabled = g_object_new(AGS_TYPE_PORT,
-						   "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						   "specifier", "./chorus-enabled[0]",
-						   "control-port", "5/18",
-						   "port-value-is-pointer", FALSE,
-						   "port-value-type", G_TYPE_FLOAT,
-						   "port-value-size", sizeof(gfloat),
-						   "port-value-length", 1,
-						   NULL);
+						    "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						    "specifier", "./chorus-enabled[0]",
+						    "control-port", "5/22",
+						    "port-value-is-pointer", FALSE,
+						    "port-value-type", G_TYPE_FLOAT,
+						    "port-value-size", sizeof(gfloat),
+						    "port-value-length", 1,
+						    NULL);
   
   fx_sf2_synth_audio->chorus_enabled->port_value.ags_port_float = (gfloat) TRUE;
 
@@ -639,14 +720,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus pitch type */
   fx_sf2_synth_audio->chorus_pitch_type = g_object_new(AGS_TYPE_PORT,
-						      "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						      "specifier", "./chorus-pitch-type[0]",
-						      "control-port", "6/18",
-						      "port-value-is-pointer", FALSE,
-						      "port-value-type", G_TYPE_FLOAT,
-						      "port-value-size", sizeof(gfloat),
-						      "port-value-length", 1,
-						      NULL);
+						       "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						       "specifier", "./chorus-pitch-type[0]",
+						       "control-port", "6/22",
+						       "port-value-is-pointer", FALSE,
+						       "port-value-type", G_TYPE_FLOAT,
+						       "port-value-size", sizeof(gfloat),
+						       "port-value-length", 1,
+						       NULL);
   
   fx_sf2_synth_audio->chorus_pitch_type->port_value.ags_port_float = (gfloat) 0.0;
 
@@ -664,14 +745,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus input volume */
   fx_sf2_synth_audio->chorus_input_volume = g_object_new(AGS_TYPE_PORT,
-							"plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-							"specifier", "./chorus-input-volume[0]",
-							"control-port", "7/18",
-							"port-value-is-pointer", FALSE,
-							"port-value-type", G_TYPE_FLOAT,
-							"port-value-size", sizeof(gfloat),
-							"port-value-length", 1,
-							NULL);
+							 "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+							 "specifier", "./chorus-input-volume[0]",
+							 "control-port", "7/22",
+							 "port-value-is-pointer", FALSE,
+							 "port-value-type", G_TYPE_FLOAT,
+							 "port-value-size", sizeof(gfloat),
+							 "port-value-length", 1,
+							 NULL);
   
   fx_sf2_synth_audio->chorus_input_volume->port_value.ags_port_float = (gfloat) 1.0;
 
@@ -686,14 +767,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus output volume */
   fx_sf2_synth_audio->chorus_output_volume = g_object_new(AGS_TYPE_PORT,
-							 "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-							 "specifier", "./chorus-output-volume[0]",
-							 "control-port", "8/18",
-							 "port-value-is-pointer", FALSE,
-							 "port-value-type", G_TYPE_FLOAT,
-							 "port-value-size", sizeof(gfloat),
-							 "port-value-length", 1,
-							 NULL);
+							  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+							  "specifier", "./chorus-output-volume[0]",
+							  "control-port", "8/22",
+							  "port-value-is-pointer", FALSE,
+							  "port-value-type", G_TYPE_FLOAT,
+							  "port-value-size", sizeof(gfloat),
+							  "port-value-length", 1,
+							  NULL);
   
   fx_sf2_synth_audio->chorus_output_volume->port_value.ags_port_float = (gfloat) 1.0;
 
@@ -708,14 +789,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus LFO oscillator */
   fx_sf2_synth_audio->chorus_lfo_oscillator = g_object_new(AGS_TYPE_PORT,
-							  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-							  "specifier", "./chorus-lfo-oscillator[0]",
-							  "control-port", "9/18",
-							  "port-value-is-pointer", FALSE,
-							  "port-value-type", G_TYPE_FLOAT,
-							  "port-value-size", sizeof(gfloat),
-							  "port-value-length", 1,
-							  NULL);
+							   "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+							   "specifier", "./chorus-lfo-oscillator[0]",
+							   "control-port", "9/22",
+							   "port-value-is-pointer", FALSE,
+							   "port-value-type", G_TYPE_FLOAT,
+							   "port-value-size", sizeof(gfloat),
+							   "port-value-length", 1,
+							   NULL);
   
   fx_sf2_synth_audio->chorus_lfo_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
 
@@ -730,14 +811,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus LFO frequency */
   fx_sf2_synth_audio->chorus_lfo_frequency = g_object_new(AGS_TYPE_PORT,
-							 "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-							 "specifier", "./chorus-lfo-frequency[0]",
-							 "control-port", "10/18",
-							 "port-value-is-pointer", FALSE,
-							 "port-value-type", G_TYPE_FLOAT,
-							 "port-value-size", sizeof(gfloat),
-							 "port-value-length", 1,
-							 NULL);
+							  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+							  "specifier", "./chorus-lfo-frequency[0]",
+							  "control-port", "10/22",
+							  "port-value-is-pointer", FALSE,
+							  "port-value-type", G_TYPE_FLOAT,
+							  "port-value-size", sizeof(gfloat),
+							  "port-value-length", 1,
+							  NULL);
   
   fx_sf2_synth_audio->chorus_lfo_frequency->port_value.ags_port_float = (gfloat) 0.01;
 
@@ -752,14 +833,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus depth */
   fx_sf2_synth_audio->chorus_depth = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						 "specifier", "./chorus-depth[0]",
-						 "control-port", "11/18",
-						 "port-value-is-pointer", FALSE,
-						 "port-value-type", G_TYPE_FLOAT,
-						 "port-value-size", sizeof(gfloat),
-						 "port-value-length", 1,
-						 NULL);
+						  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						  "specifier", "./chorus-depth[0]",
+						  "control-port", "11/22",
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_FLOAT,
+						  "port-value-size", sizeof(gfloat),
+						  "port-value-length", 1,
+						  NULL);
   
   fx_sf2_synth_audio->chorus_depth->port_value.ags_port_float = (gfloat) 0.0;
 
@@ -774,14 +855,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus mix */
   fx_sf2_synth_audio->chorus_mix = g_object_new(AGS_TYPE_PORT,
-					       "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-					       "specifier", "./chorus-mix[0]",
-					       "control-port", "12/18",
-					       "port-value-is-pointer", FALSE,
-					       "port-value-type", G_TYPE_FLOAT,
-					       "port-value-size", sizeof(gfloat),
-					       "port-value-length", 1,
-					       NULL);
+						"plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						"specifier", "./chorus-mix[0]",
+						"control-port", "12/22",
+						"port-value-is-pointer", FALSE,
+						"port-value-type", G_TYPE_FLOAT,
+						"port-value-size", sizeof(gfloat),
+						"port-value-length", 1,
+						NULL);
   
   fx_sf2_synth_audio->chorus_mix->port_value.ags_port_float = (gfloat) 0.5;
 
@@ -796,14 +877,14 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   
   /* chorus delay */
   fx_sf2_synth_audio->chorus_delay = g_object_new(AGS_TYPE_PORT,
-						 "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
-						 "specifier", "./chorus-delay[0]",
-						 "control-port", "13/18",
-						 "port-value-is-pointer", FALSE,
-						 "port-value-type", G_TYPE_FLOAT,
-						 "port-value-size", sizeof(gfloat),
-						 "port-value-length", 1,
-						 NULL);
+						  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						  "specifier", "./chorus-delay[0]",
+						  "control-port", "13/22",
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_FLOAT,
+						  "port-value-size", sizeof(gfloat),
+						  "port-value-length", 1,
+						  NULL);
   
   fx_sf2_synth_audio->chorus_delay->port_value.ags_port_float = (gfloat) 0.0;
 
@@ -820,7 +901,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   fx_sf2_synth_audio->vibrato_enabled = g_object_new(AGS_TYPE_PORT,
 						     "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
 						     "specifier", "./vibrato-enabled[0]",
-						     "control-port", "14/18",
+						     "control-port", "14/22",
 						     "port-value-is-pointer", FALSE,
 						     "port-value-type", G_TYPE_FLOAT,
 						     "port-value-size", sizeof(gfloat),
@@ -842,7 +923,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   fx_sf2_synth_audio->vibrato_gain = g_object_new(AGS_TYPE_PORT,
 						  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
 						  "specifier", "./vibrato-gain[0]",
-						  "control-port", "15/18",
+						  "control-port", "15/22",
 						  "port-value-is-pointer", FALSE,
 						  "port-value-type", G_TYPE_FLOAT,
 						  "port-value-size", sizeof(gfloat),
@@ -864,7 +945,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   fx_sf2_synth_audio->vibrato_lfo_depth = g_object_new(AGS_TYPE_PORT,
 						       "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
 						       "specifier", "./vibrato-lfo-depth[0]",
-						       "control-port", "16/18",
+						       "control-port", "16/22",
 						       "port-value-is-pointer", FALSE,
 						       "port-value-type", G_TYPE_FLOAT,
 						       "port-value-size", sizeof(gfloat),
@@ -886,7 +967,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   fx_sf2_synth_audio->vibrato_lfo_freq = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
 						      "specifier", "./vibrato-lfo-freq[0]",
-						      "control-port", "17/18",
+						      "control-port", "17/22",
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_FLOAT,
 						      "port-value-size", sizeof(gfloat),
@@ -908,7 +989,7 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
   fx_sf2_synth_audio->vibrato_tuning = g_object_new(AGS_TYPE_PORT,
 						    "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
 						    "specifier", "./vibrato-tuning[0]",
-						    "control-port", "18/18",
+						    "control-port", "18/22",
 						    "port-value-is-pointer", FALSE,
 						    "port-value-type", G_TYPE_FLOAT,
 						    "port-value-size", sizeof(gfloat),
@@ -925,7 +1006,95 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 		      fx_sf2_synth_audio->vibrato_tuning);
 
   position++;
+
+  /* low-pass enabled */
+  fx_sf2_synth_audio->low_pass_enabled = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						      "specifier", "./low-pass-enabled[0]",
+						      "control-port", "19/22",
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_FLOAT,
+						      "port-value-size", sizeof(gfloat),
+						      "port-value-length", 1,
+						      NULL);
   
+  fx_sf2_synth_audio->low_pass_enabled->port_value.ags_port_float = (gfloat) FALSE;
+
+  g_object_set(fx_sf2_synth_audio->low_pass_enabled,
+	       "plugin-port", ags_fx_sf2_synth_audio_get_low_pass_enabled_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
+		      fx_sf2_synth_audio->low_pass_enabled);
+
+  position++;
+  
+  /* low-pass cut off frequency */
+  fx_sf2_synth_audio->low_pass_cut_off_frequency = g_object_new(AGS_TYPE_PORT,
+								"plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+								"specifier", "./low-pass-cut-off-frequency[0]",
+								"control-port", "20/22",
+								"port-value-is-pointer", FALSE,
+								"port-value-type", G_TYPE_FLOAT,
+								"port-value-size", sizeof(gfloat),
+								"port-value-length", 1,
+								NULL);
+  
+  fx_sf2_synth_audio->low_pass_cut_off_frequency->port_value.ags_port_float = (gfloat) 2000.0;
+
+  g_object_set(fx_sf2_synth_audio->low_pass_cut_off_frequency,
+	       "plugin-port", ags_fx_sf2_synth_audio_get_low_pass_cut_off_frequency_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
+		      fx_sf2_synth_audio->low_pass_cut_off_frequency);
+
+  position++;
+  
+  /* low-pass filter gain */
+  fx_sf2_synth_audio->low_pass_filter_gain = g_object_new(AGS_TYPE_PORT,
+							  "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+							  "specifier", "./low-pass-filter-gain[0]",
+							  "control-port", "21/22",
+							  "port-value-is-pointer", FALSE,
+							  "port-value-type", G_TYPE_FLOAT,
+							  "port-value-size", sizeof(gfloat),
+							  "port-value-length", 1,
+							  NULL);
+  
+  fx_sf2_synth_audio->low_pass_filter_gain->port_value.ags_port_float = (gfloat) 1.0;
+
+  g_object_set(fx_sf2_synth_audio->low_pass_filter_gain,
+	       "plugin-port", ags_fx_sf2_synth_audio_get_low_pass_filter_gain_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
+		      fx_sf2_synth_audio->low_pass_filter_gain);
+
+  position++;
+  
+  /* low-pass no-clip */
+  fx_sf2_synth_audio->low_pass_no_clip = g_object_new(AGS_TYPE_PORT,
+						      "plugin-name", ags_fx_sf2_synth_audio_plugin_name,
+						      "specifier", "./low-pass-no-clip[0]",
+						      "control-port", "22/22",
+						      "port-value-is-pointer", FALSE,
+						      "port-value-type", G_TYPE_FLOAT,
+						      "port-value-size", sizeof(gfloat),
+						      "port-value-length", 1,
+						      NULL);
+  
+  fx_sf2_synth_audio->low_pass_no_clip->port_value.ags_port_float = (gfloat) 0.0;
+
+  g_object_set(fx_sf2_synth_audio->low_pass_no_clip,
+	       "plugin-port", ags_fx_sf2_synth_audio_get_low_pass_no_clip_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_sf2_synth_audio,
+		      fx_sf2_synth_audio->low_pass_no_clip);
+
+  position++;
+
   /* scope data */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     if(i == AGS_SOUND_SCOPE_PLAYBACK ||
@@ -942,9 +1111,9 @@ ags_fx_sf2_synth_audio_init(AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 
 void
 ags_fx_sf2_synth_audio_set_property(GObject *gobject,
-				   guint prop_id,
-				   const GValue *value,
-				   GParamSpec *param_spec)
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
 
@@ -957,491 +1126,599 @@ ags_fx_sf2_synth_audio_set_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SYNTH_OCTAVE:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->synth_octave){
+      if(port == fx_sf2_synth_audio->synth_octave){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->synth_octave != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_octave));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->synth_octave = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->synth_octave != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_octave));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->synth_octave = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_SYNTH_KEY:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->synth_key){
+      if(port == fx_sf2_synth_audio->synth_key){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->synth_key != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_key));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->synth_key = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->synth_key != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_key));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->synth_key = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_SYNTH_VOLUME:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->synth_volume){
+      if(port == fx_sf2_synth_audio->synth_volume){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->synth_volume != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_volume));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->synth_volume = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->synth_volume != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_volume));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->synth_volume = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_SYNTH_PITCH_TYPE:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->synth_pitch_type){
+      if(port == fx_sf2_synth_audio->synth_pitch_type){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->synth_pitch_type != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_pitch_type));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->synth_pitch_type = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->synth_pitch_type != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->synth_pitch_type));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->synth_pitch_type = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_ENABLED:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_enabled){
+      if(port == fx_sf2_synth_audio->chorus_enabled){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_enabled != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_enabled));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_enabled = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_enabled != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_enabled));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_enabled = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_PITCH_TYPE:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_pitch_type){
+      if(port == fx_sf2_synth_audio->chorus_pitch_type){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_pitch_type != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_pitch_type));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_pitch_type = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_pitch_type != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_pitch_type));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_pitch_type = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_INPUT_VOLUME:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_input_volume){
+      if(port == fx_sf2_synth_audio->chorus_input_volume){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_input_volume != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_input_volume));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_input_volume = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_input_volume != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_input_volume));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_input_volume = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_OUTPUT_VOLUME:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_output_volume){
+      if(port == fx_sf2_synth_audio->chorus_output_volume){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_output_volume != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_output_volume));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_output_volume = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_output_volume != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_output_volume));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_output_volume = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_LFO_OSCILLATOR:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_lfo_oscillator){
+      if(port == fx_sf2_synth_audio->chorus_lfo_oscillator){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_lfo_oscillator != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_oscillator));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_lfo_oscillator = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_lfo_oscillator != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_oscillator));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_lfo_oscillator = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_LFO_FREQUENCY:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_lfo_frequency){
+      if(port == fx_sf2_synth_audio->chorus_lfo_frequency){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_lfo_frequency != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_frequency));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_lfo_frequency = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_lfo_frequency != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_lfo_frequency));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_lfo_frequency = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_DEPTH:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_depth){
+      if(port == fx_sf2_synth_audio->chorus_depth){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_depth != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_depth));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_depth = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_depth != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_depth));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_depth = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_MIX:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_mix){
+      if(port == fx_sf2_synth_audio->chorus_mix){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_mix != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_mix));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_mix = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_mix != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_mix));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_mix = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_CHORUS_DELAY:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->chorus_delay){
+      if(port == fx_sf2_synth_audio->chorus_delay){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->chorus_delay != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_delay));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->chorus_delay = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->chorus_delay != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->chorus_delay));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->chorus_delay = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_VIBRATO_ENABLED:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->vibrato_enabled){
+      if(port == fx_sf2_synth_audio->vibrato_enabled){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->vibrato_enabled != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_enabled));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->vibrato_enabled = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->vibrato_enabled != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_enabled));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->vibrato_enabled = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_VIBRATO_GAIN:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->vibrato_gain){
+      if(port == fx_sf2_synth_audio->vibrato_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->vibrato_gain != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->vibrato_gain = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->vibrato_gain != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_gain));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->vibrato_gain = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_VIBRATO_LFO_DEPTH:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->vibrato_lfo_depth){
+      if(port == fx_sf2_synth_audio->vibrato_lfo_depth){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->vibrato_lfo_depth != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_lfo_depth));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->vibrato_lfo_depth = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->vibrato_lfo_depth != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_lfo_depth));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->vibrato_lfo_depth = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_VIBRATO_LFO_FREQ:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->vibrato_lfo_freq){
+      if(port == fx_sf2_synth_audio->vibrato_lfo_freq){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->vibrato_lfo_freq != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_lfo_freq));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->vibrato_lfo_freq = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
-
-    if(fx_sf2_synth_audio->vibrato_lfo_freq != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_lfo_freq));
-    }
-      
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
-
-    fx_sf2_synth_audio->vibrato_lfo_freq = port;
-      
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+    break;
   case PROP_VIBRATO_TUNING:
-  {
-    AgsPort *port;
+    {
+      AgsPort *port;
 
-    port = (AgsPort *) g_value_get_object(value);
+      port = (AgsPort *) g_value_get_object(value);
 
-    g_rec_mutex_lock(recall_mutex);
+      g_rec_mutex_lock(recall_mutex);
 
-    if(port == fx_sf2_synth_audio->vibrato_tuning){
+      if(port == fx_sf2_synth_audio->vibrato_tuning){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->vibrato_tuning != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_tuning));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->vibrato_tuning = port;
+      
       g_rec_mutex_unlock(recall_mutex);	
-
-      return;
     }
+    break;
+  case PROP_LOW_PASS_ENABLED:
+    {
+      AgsPort *port;
 
-    if(fx_sf2_synth_audio->vibrato_tuning != NULL){
-      g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_tuning));
-    }
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_sf2_synth_audio->low_pass_enabled){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->low_pass_enabled != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_enabled));
+      }
       
-    if(port != NULL){
-      g_object_ref(G_OBJECT(port));
-    }
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
 
-    fx_sf2_synth_audio->vibrato_tuning = port;
+      fx_sf2_synth_audio->low_pass_enabled = port;
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_CUT_OFF_FREQUENCY:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_sf2_synth_audio->low_pass_cut_off_frequency){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->low_pass_cut_off_frequency != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_cut_off_frequency));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->low_pass_cut_off_frequency = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_FILTER_GAIN:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_sf2_synth_audio->low_pass_filter_gain){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->low_pass_filter_gain != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_filter_gain));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->low_pass_filter_gain = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_NO_CLIP:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_sf2_synth_audio->low_pass_no_clip){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_sf2_synth_audio->low_pass_no_clip != NULL){
+	g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_no_clip));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_sf2_synth_audio->low_pass_no_clip = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1450,9 +1727,9 @@ ags_fx_sf2_synth_audio_set_property(GObject *gobject,
 
 void
 ags_fx_sf2_synth_audio_get_property(GObject *gobject,
-				   guint prop_id,
-				   GValue *value,
-				   GParamSpec *param_spec)
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec)
 {
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
 
@@ -1465,167 +1742,203 @@ ags_fx_sf2_synth_audio_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SYNTH_OCTAVE:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->synth_octave);
+      g_value_set_object(value, fx_sf2_synth_audio->synth_octave);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_SYNTH_KEY:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->synth_key);
+      g_value_set_object(value, fx_sf2_synth_audio->synth_key);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_SYNTH_VOLUME:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->synth_volume);
+      g_value_set_object(value, fx_sf2_synth_audio->synth_volume);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_SYNTH_PITCH_TYPE:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->synth_pitch_type);
+      g_value_set_object(value, fx_sf2_synth_audio->synth_pitch_type);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_VIBRATO_ENABLED:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->vibrato_enabled);
+      g_value_set_object(value, fx_sf2_synth_audio->vibrato_enabled);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_VIBRATO_GAIN:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->vibrato_gain);
+      g_value_set_object(value, fx_sf2_synth_audio->vibrato_gain);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_VIBRATO_LFO_DEPTH:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->vibrato_lfo_depth);
+      g_value_set_object(value, fx_sf2_synth_audio->vibrato_lfo_depth);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_VIBRATO_LFO_FREQ:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->vibrato_lfo_freq);
+      g_value_set_object(value, fx_sf2_synth_audio->vibrato_lfo_freq);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_VIBRATO_TUNING:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->vibrato_tuning);
+      g_value_set_object(value, fx_sf2_synth_audio->vibrato_tuning);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_ENABLED:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_enabled);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_enabled);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_PITCH_TYPE:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_pitch_type);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_pitch_type);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_INPUT_VOLUME:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_input_volume);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_input_volume);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_OUTPUT_VOLUME:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_output_volume);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_output_volume);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_LFO_OSCILLATOR:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_lfo_oscillator);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_lfo_oscillator);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_LFO_FREQUENCY:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_lfo_frequency);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_lfo_frequency);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_DEPTH:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_depth);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_depth);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_MIX:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_mix);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_mix);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_CHORUS_DELAY:
-  {
-    g_rec_mutex_lock(recall_mutex);
+    {
+      g_rec_mutex_lock(recall_mutex);
 
-    g_value_set_object(value, fx_sf2_synth_audio->chorus_delay);
+      g_value_set_object(value, fx_sf2_synth_audio->chorus_delay);
       
-    g_rec_mutex_unlock(recall_mutex);	
-  }
-  break;
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_ENABLED:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_sf2_synth_audio->low_pass_enabled);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_CUT_OFF_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_sf2_synth_audio->low_pass_cut_off_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_FILTER_GAIN:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_sf2_synth_audio->low_pass_filter_gain);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_LOW_PASS_NO_CLIP:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_sf2_synth_audio->low_pass_no_clip);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -1765,6 +2078,34 @@ ags_fx_sf2_synth_audio_dispose(GObject *gobject)
     fx_sf2_synth_audio->vibrato_tuning = NULL;
   }
 
+  /* low-pass enabled */
+  if(fx_sf2_synth_audio->low_pass_enabled != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_enabled));
+
+    fx_sf2_synth_audio->low_pass_enabled = NULL;
+  }
+
+  /* low-pass cut-off frequency */
+  if(fx_sf2_synth_audio->low_pass_cut_off_frequency != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_cut_off_frequency));
+
+    fx_sf2_synth_audio->low_pass_cut_off_frequency = NULL;
+  }
+
+  /* low-pass filter gain */
+  if(fx_sf2_synth_audio->low_pass_filter_gain != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_filter_gain));
+
+    fx_sf2_synth_audio->low_pass_filter_gain = NULL;
+  }
+
+  /* low-pass no-clip */
+  if(fx_sf2_synth_audio->low_pass_no_clip != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_no_clip));
+
+    fx_sf2_synth_audio->low_pass_no_clip = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_fx_sf2_synth_audio_parent_class)->dispose(gobject);
 }
@@ -1867,7 +2208,27 @@ ags_fx_sf2_synth_audio_finalize(GObject *gobject)
   if(fx_sf2_synth_audio->vibrato_tuning != NULL){
     g_object_unref(G_OBJECT(fx_sf2_synth_audio->vibrato_tuning));
   }
-  
+
+  /* low-pass enabled */
+  if(fx_sf2_synth_audio->low_pass_enabled != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_enabled));
+  }
+
+  /* low-pass cut-off frequency */
+  if(fx_sf2_synth_audio->low_pass_cut_off_frequency != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_cut_off_frequency));
+  }
+
+  /* low-pass filter gain */
+  if(fx_sf2_synth_audio->low_pass_filter_gain != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_filter_gain));
+  }
+
+  /* low-pass no-clip */
+  if(fx_sf2_synth_audio->low_pass_no_clip != NULL){
+    g_object_unref(G_OBJECT(fx_sf2_synth_audio->low_pass_no_clip));
+  }
+
   /* scope data */
   for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
     if(i == AGS_SOUND_SCOPE_PLAYBACK ||
@@ -1883,8 +2244,8 @@ ags_fx_sf2_synth_audio_finalize(GObject *gobject)
 
 void
 ags_fx_sf2_synth_audio_notify_audio_callback(GObject *gobject,
-					    GParamSpec *pspec,
-					    gpointer user_data)
+					     GParamSpec *pspec,
+					     gpointer user_data)
 {
   AgsAudio *audio;
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
@@ -1908,8 +2269,8 @@ ags_fx_sf2_synth_audio_notify_audio_callback(GObject *gobject,
 
 void
 ags_fx_sf2_synth_audio_notify_buffer_size_callback(GObject *gobject,
-						  GParamSpec *pspec,
-						  gpointer user_data)
+						   GParamSpec *pspec,
+						   gpointer user_data)
 {
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
 
@@ -1968,6 +2329,9 @@ ags_fx_sf2_synth_audio_notify_buffer_size_callback(GObject *gobject,
 	
 	ags_chorus_util_set_buffer_length(channel_data->chorus_util,
 					  buffer_size);
+
+	ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util,
+						   buffer_size);
       }
     }
   }
@@ -1977,8 +2341,8 @@ ags_fx_sf2_synth_audio_notify_buffer_size_callback(GObject *gobject,
 
 void
 ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
-					     GParamSpec *pspec,
-					     gpointer user_data)
+					      GParamSpec *pspec,
+					      gpointer user_data)
 {
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
 
@@ -2035,6 +2399,9 @@ ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
 
 	ags_chorus_util_set_format(channel_data->chorus_util,
 				   format);
+	
+	ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util,
+					    format);
       }
     }
   }
@@ -2044,8 +2411,8 @@ ags_fx_sf2_synth_audio_notify_format_callback(GObject *gobject,
 
 void
 ags_fx_sf2_synth_audio_notify_samplerate_callback(GObject *gobject,
-						 GParamSpec *pspec,
-						 gpointer user_data)
+						  GParamSpec *pspec,
+						  gpointer user_data)
 {
   AgsFxSF2SynthAudio *fx_sf2_synth_audio;
 
@@ -2088,6 +2455,9 @@ ags_fx_sf2_synth_audio_notify_samplerate_callback(GObject *gobject,
 	
 	ags_chorus_util_set_samplerate(channel_data->chorus_util,
 				       samplerate);
+	
+	ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util,
+						samplerate);
       }
     }
   }
@@ -2097,8 +2467,8 @@ ags_fx_sf2_synth_audio_notify_samplerate_callback(GObject *gobject,
 
 void
 ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
-						  guint audio_channels, guint audio_channels_old,
-						  AgsFxSF2SynthAudio *fx_sf2_synth_audio)
+						   guint audio_channels, guint audio_channels_old,
+						   AgsFxSF2SynthAudio *fx_sf2_synth_audio)
 {
   guint input_pads;
   guint output_port_count, input_port_count;
@@ -2150,7 +2520,7 @@ ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	scope_data->channel_data = (AgsFxSF2SynthAudioChannelData **) g_malloc(audio_channels * sizeof(AgsFxSF2SynthAudioChannelData *)); 
       }else{
 	scope_data->channel_data = (AgsFxSF2SynthAudioChannelData **) g_realloc(scope_data->channel_data,
-									     audio_channels * sizeof(AgsFxSF2SynthAudioChannelData *)); 
+										audio_channels * sizeof(AgsFxSF2SynthAudioChannelData *)); 
       }
 
       if(scope_data->audio_channels < audio_channels){
@@ -2178,6 +2548,13 @@ ags_fx_sf2_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 	  ags_chorus_util_set_samplerate(channel_data->chorus_util,
 					 samplerate);
 
+	  ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util,
+						     buffer_size);
+	  ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util,
+					      format);
+	  ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util,
+						  samplerate);
+	  
 	  /* alloc chorus destination */
 	  destination = ags_stream_alloc(buffer_size,
 					 format);
@@ -2448,6 +2825,9 @@ ags_fx_sf2_synth_audio_channel_data_alloc()
   
   /* chorus util */
   channel_data->chorus_util = ags_chorus_util_alloc();
+
+  /* low-pass filter util */
+  channel_data->low_pass_filter_util = ags_low_pass_filter_util_alloc();
   
   for(i = 0; i < AGS_SEQUENCER_MAX_MIDI_KEYS; i++){
     channel_data->input_data[i] = ags_fx_sf2_synth_audio_input_data_alloc();
@@ -3232,6 +3612,163 @@ ags_fx_sf2_synth_audio_get_vibrato_tuning_plugin_port()
 		      -1200.0);
     g_value_set_float(plugin_port->upper_value,
 		      1200.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_sf2_synth_audio_get_low_pass_enabled_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_sf2_synth_audio_get_low_pass_cut_off_frequency_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      2000.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      22000.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_sf2_synth_audio_get_low_pass_filter_gain_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      1.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_sf2_synth_audio_get_low_pass_no_clip_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_FLOAT);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_FLOAT);
+
+    g_value_set_float(plugin_port->default_value,
+		      0.0);
+    g_value_set_float(plugin_port->lower_value,
+		      0.0);
+    g_value_set_float(plugin_port->upper_value,
+		      1.0);
   }
 
   g_mutex_unlock(&mutex);

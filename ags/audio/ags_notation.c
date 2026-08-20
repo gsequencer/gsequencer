@@ -1574,6 +1574,7 @@ ags_notation_remove_note_256th_at_position(AgsNotation *notation,
   
   while(list != NULL){
     current_x0_256th = 0;
+    current_y = 0;
     
     g_object_get(list->data,
 		 "x0-256th", &current_x0_256th,

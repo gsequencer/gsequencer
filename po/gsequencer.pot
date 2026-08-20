@@ -18,9 +18,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 9.2.4\n"
+"Project-Id-Version: gsequencer 9.3.1\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-08-17 19:05+0200\n"
+"POT-Creation-Date: 2026-08-20 21:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,7 +152,7 @@ msgstr ""
 #: ags/app/editor/ags_pattern_envelope.c:276
 #: ags/app/editor/ags_envelope_editor.c:205
 #: ags/app/machine/ags_live_lv2_bridge.c:496
-#: ags/app/machine/ags_lv2_bridge.c:484 ags/app/machine/ags_sf2_synth.c:455
+#: ags/app/machine/ags_lv2_bridge.c:484 ags/app/machine/ags_sf2_synth.c:457
 #: ags/app/machine/ags_ffplayer.c:364
 msgid "preset"
 msgstr ""
@@ -364,11 +364,13 @@ msgstr ""
 
 #: ags/app/export/ags_machine_mapper.c:180
 #: ags/app/editor/ags_envelope_editor.c:197 ags/app/ags_resize_editor.c:135
-#: ags/app/machine/ags_sfz_synth.c:852 ags/app/machine/ags_sfz_synth.c:1006
-#: ags/app/machine/ags_sfz_synth.c:1160 ags/app/machine/ags_pitch_sampler.c:395
-#: ags/app/machine/ags_pitch_sampler.c:530 ags/app/machine/ags_sf2_synth.c:898
-#: ags/app/machine/ags_sf2_synth.c:1052 ags/app/machine/ags_sf2_synth.c:1206
-#: ags/app/machine/ags_ffplayer.c:484 ags/app/machine/ags_ffplayer.c:612
+#: ags/app/machine/ags_sfz_synth.c:860 ags/app/machine/ags_sfz_synth.c:981
+#: ags/app/machine/ags_sfz_synth.c:1141 ags/app/machine/ags_sfz_synth.c:1301
+#: ags/app/machine/ags_pitch_sampler.c:395
+#: ags/app/machine/ags_pitch_sampler.c:530 ags/app/machine/ags_sf2_synth.c:908
+#: ags/app/machine/ags_sf2_synth.c:1029 ags/app/machine/ags_sf2_synth.c:1189
+#: ags/app/machine/ags_sf2_synth.c:1349 ags/app/machine/ags_ffplayer.c:484
+#: ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
 #: ags/app/import/ags_track_mapper.c:243
 #: ags/app/ags_connection_editor_listing.c:177
@@ -945,7 +947,7 @@ msgstr ""
 
 #: ags/app/editor/ags_pattern_envelope.c:751
 #: ags/app/editor/ags_envelope_editor.c:574
-#: ags/app/machine/ags_sfz_synth.c:1427 ags/app/machine/ags_sf2_synth.c:1473
+#: ags/app/machine/ags_sfz_synth.c:1568 ags/app/machine/ags_sf2_synth.c:1616
 msgid "ratio"
 msgstr ""
 
@@ -1429,13 +1431,13 @@ msgstr ""
 #: ags/app/machine/ags_dssi_bridge.c:349 ags/app/machine/ags_lv2_bridge.c:459
 #: ags/app/machine/ags_live_dssi_bridge.c:349
 #: ags/app/machine/ags_live_vst3_bridge.c:356
-#: ags/app/machine/ags_sf2_synth.c:448 ags/app/machine/ags_vst3_bridge.c:338
+#: ags/app/machine/ags_sf2_synth.c:450 ags/app/machine/ags_vst3_bridge.c:338
 msgid "program"
 msgstr ""
 
 #: ags/app/machine/ags_matrix.c:384 ags/app/machine/ags_drum.c:473
-#: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1166
-#: ags/app/machine/ags_sf2_synth.c:1212 ags/app/machine/ags_fm_oscillator.c:267
+#: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1307
+#: ags/app/machine/ags_sf2_synth.c:1355 ags/app/machine/ags_fm_oscillator.c:267
 msgid "length"
 msgstr ""
 
@@ -1511,8 +1513,8 @@ msgstr ""
 msgid "kit"
 msgstr ""
 
-#: ags/app/machine/ags_drum.c:367 ags/app/machine/ags_sfz_synth.c:349
-#: ags/app/machine/ags_audiorec.c:295 ags/app/machine/ags_sf2_synth.c:357
+#: ags/app/machine/ags_drum.c:367 ags/app/machine/ags_sfz_synth.c:351
+#: ags/app/machine/ags_audiorec.c:295 ags/app/machine/ags_sf2_synth.c:359
 #: ags/app/machine/ags_ffplayer.c:403
 msgid "_Open"
 msgstr ""
@@ -1567,122 +1569,138 @@ msgstr ""
 msgid "download samples"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:399
+#: ags/app/machine/ags_sfz_synth.c:401
 msgid "opcode"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:408
+#: ags/app/machine/ags_sfz_synth.c:410
 msgid "value"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:452 ags/app/machine/ags_sf2_synth.c:497
+#: ags/app/machine/ags_sfz_synth.c:454 ags/app/machine/ags_sf2_synth.c:499
 msgid "WAV 1 - octave"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:488 ags/app/machine/ags_sf2_synth.c:533
+#: ags/app/machine/ags_sfz_synth.c:490 ags/app/machine/ags_sf2_synth.c:535
 msgid "WAV 1 - key"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:523 ags/app/machine/ags_sf2_synth.c:568
+#: ags/app/machine/ags_sfz_synth.c:525 ags/app/machine/ags_sf2_synth.c:570
 msgid "WAV 1 - volume"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:573
+#: ags/app/machine/ags_sfz_synth.c:575
 #: ags/app/machine/ags_hybrid_fm_synth.c:1306
-#: ags/app/machine/ags_sf2_synth.c:618 ags/app/machine/ags_hybrid_synth.c:1353
+#: ags/app/machine/ags_sf2_synth.c:620 ags/app/machine/ags_hybrid_synth.c:1353
 msgid "pitch type"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:608
+#: ags/app/machine/ags_sfz_synth.c:610
 #: ags/app/machine/ags_hybrid_fm_synth.c:1601
-#: ags/app/machine/ags_sf2_synth.c:653 ags/app/machine/ags_hybrid_synth.c:1654
+#: ags/app/machine/ags_sf2_synth.c:657 ags/app/machine/ags_hybrid_synth.c:1654
 msgid "chorus input volume"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:642
+#: ags/app/machine/ags_sfz_synth.c:644
 #: ags/app/machine/ags_hybrid_fm_synth.c:1635
-#: ags/app/machine/ags_sf2_synth.c:687 ags/app/machine/ags_hybrid_synth.c:1688
+#: ags/app/machine/ags_sf2_synth.c:691 ags/app/machine/ags_hybrid_synth.c:1688
 msgid "chorus output volume"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:676
+#: ags/app/machine/ags_sfz_synth.c:678
 #: ags/app/machine/ags_hybrid_fm_synth.c:1669
-#: ags/app/machine/ags_sf2_synth.c:721 ags/app/machine/ags_hybrid_synth.c:1722
+#: ags/app/machine/ags_sf2_synth.c:725 ags/app/machine/ags_hybrid_synth.c:1722
 msgid "chorus LFO"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:706
+#: ags/app/machine/ags_sfz_synth.c:708
 #: ags/app/machine/ags_hybrid_fm_synth.c:1699
-#: ags/app/machine/ags_sf2_synth.c:751 ags/app/machine/ags_hybrid_synth.c:1752
+#: ags/app/machine/ags_sf2_synth.c:755 ags/app/machine/ags_hybrid_synth.c:1752
 msgid "chorus LFO frequency"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:721
+#: ags/app/machine/ags_sfz_synth.c:723
 #: ags/app/machine/ags_hybrid_fm_synth.c:1714
-#: ags/app/machine/ags_sf2_synth.c:766 ags/app/machine/ags_hybrid_synth.c:1767
+#: ags/app/machine/ags_sf2_synth.c:770 ags/app/machine/ags_hybrid_synth.c:1767
 msgid "chorus depth"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:755
+#: ags/app/machine/ags_sfz_synth.c:757
 #: ags/app/machine/ags_hybrid_fm_synth.c:1748
-#: ags/app/machine/ags_sf2_synth.c:800 ags/app/machine/ags_hybrid_synth.c:1801
+#: ags/app/machine/ags_sf2_synth.c:804 ags/app/machine/ags_hybrid_synth.c:1801
 msgid "chorus mix"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:789
+#: ags/app/machine/ags_sfz_synth.c:791
 #: ags/app/machine/ags_hybrid_fm_synth.c:1782
-#: ags/app/machine/ags_sf2_synth.c:834 ags/app/machine/ags_hybrid_synth.c:1835
+#: ags/app/machine/ags_sf2_synth.c:838 ags/app/machine/ags_hybrid_synth.c:1835
 msgid "chorus delay"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:837 ags/app/machine/ags_sf2_synth.c:883
+#: ags/app/machine/ags_sfz_synth.c:839 ags/app/machine/ags_sf2_synth.c:887
+msgid "low-pass filter"
+msgstr ""
+
+#: ags/app/machine/ags_sfz_synth.c:866 ags/app/machine/ags_sf2_synth.c:914
+msgid "cut-off frequency"
+msgstr ""
+
+#: ags/app/machine/ags_sfz_synth.c:897 ags/app/machine/ags_sf2_synth.c:945
+msgid "filter gain"
+msgstr ""
+
+#: ags/app/machine/ags_sfz_synth.c:928 ags/app/machine/ags_sf2_synth.c:976
+msgid "no-clip"
+msgstr ""
+
+#: ags/app/machine/ags_sfz_synth.c:960 ags/app/machine/ags_sf2_synth.c:1008
 msgid "tremolo"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:858 ags/app/machine/ags_sfz_synth.c:1012
-#: ags/app/machine/ags_sf2_synth.c:904 ags/app/machine/ags_sf2_synth.c:1058
+#: ags/app/machine/ags_sfz_synth.c:987 ags/app/machine/ags_sfz_synth.c:1147
+#: ags/app/machine/ags_sf2_synth.c:1035 ags/app/machine/ags_sf2_synth.c:1195
 msgid "gain"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:891 ags/app/machine/ags_sfz_synth.c:1045
-#: ags/app/machine/ags_sfz_synth.c:1460 ags/app/machine/ags_sf2_synth.c:937
-#: ags/app/machine/ags_sf2_synth.c:1091 ags/app/machine/ags_sf2_synth.c:1506
+#: ags/app/machine/ags_sfz_synth.c:1020 ags/app/machine/ags_sfz_synth.c:1180
+#: ags/app/machine/ags_sfz_synth.c:1601 ags/app/machine/ags_sf2_synth.c:1068
+#: ags/app/machine/ags_sf2_synth.c:1228 ags/app/machine/ags_sf2_synth.c:1649
 msgid "lfo-depth"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:924 ags/app/machine/ags_sfz_synth.c:1078
-#: ags/app/machine/ags_sfz_synth.c:1493 ags/app/machine/ags_sf2_synth.c:970
-#: ags/app/machine/ags_sf2_synth.c:1124 ags/app/machine/ags_sf2_synth.c:1539
+#: ags/app/machine/ags_sfz_synth.c:1053 ags/app/machine/ags_sfz_synth.c:1213
+#: ags/app/machine/ags_sfz_synth.c:1634 ags/app/machine/ags_sf2_synth.c:1101
+#: ags/app/machine/ags_sf2_synth.c:1261 ags/app/machine/ags_sf2_synth.c:1682
 msgid "lfo-freq"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:957 ags/app/machine/ags_sfz_synth.c:1111
-#: ags/app/machine/ags_sfz_synth.c:1526 ags/app/machine/ags_sf2_synth.c:1003
-#: ags/app/machine/ags_sf2_synth.c:1157 ags/app/machine/ags_sf2_synth.c:1572
+#: ags/app/machine/ags_sfz_synth.c:1086 ags/app/machine/ags_sfz_synth.c:1246
+#: ags/app/machine/ags_sfz_synth.c:1667 ags/app/machine/ags_sf2_synth.c:1134
+#: ags/app/machine/ags_sf2_synth.c:1294 ags/app/machine/ags_sf2_synth.c:1715
 msgid "tuning"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:991 ags/app/machine/ags_sf2_synth.c:1037
+#: ags/app/machine/ags_sfz_synth.c:1120 ags/app/machine/ags_sf2_synth.c:1168
 msgid "vibrato"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1145 ags/app/machine/ags_sf2_synth.c:1191
+#: ags/app/machine/ags_sfz_synth.c:1280 ags/app/machine/ags_sf2_synth.c:1328
 msgid "wah-wah"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1195 ags/app/machine/ags_sf2_synth.c:1241
+#: ags/app/machine/ags_sfz_synth.c:1336 ags/app/machine/ags_sf2_synth.c:1384
 msgid "attack [x|y]"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1253 ags/app/machine/ags_sf2_synth.c:1299
+#: ags/app/machine/ags_sfz_synth.c:1394 ags/app/machine/ags_sf2_synth.c:1442
 msgid "decay [x|y]"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1311 ags/app/machine/ags_sf2_synth.c:1357
+#: ags/app/machine/ags_sfz_synth.c:1452 ags/app/machine/ags_sf2_synth.c:1500
 msgid "sustain [x|y]"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1369 ags/app/machine/ags_sf2_synth.c:1415
+#: ags/app/machine/ags_sfz_synth.c:1510 ags/app/machine/ags_sf2_synth.c:1558
 msgid "release [x|y]"
 msgstr ""
 
@@ -1918,7 +1936,7 @@ msgstr ""
 msgid "high pass filter gain"
 msgstr ""
 
-#: ags/app/machine/ags_sf2_synth.c:411
+#: ags/app/machine/ags_sf2_synth.c:413
 msgid "bank"
 msgstr ""
 

@@ -554,22 +554,26 @@ ags_ramp_marker_popover_apply(AgsApplicable *applicable)
       
     current = AGS_PROGRAM(list_program->data);
 
+    current_timestamp = NULL;
+    
     g_object_get(current,
 		 "timestamp", &current_timestamp,
 		 NULL);
-
-    g_object_unref(current_timestamp);
       
     if(ags_timestamp_get_ags_offset(current_timestamp) < x0){
+      g_object_unref(current_timestamp);
+      
       list_program = list_program->next;
 	
       continue;
     }
 
     if(ags_timestamp_get_ags_offset(current_timestamp) > x1){
+      g_object_unref(current_timestamp);
+      
       break;
     }
-
+    
     upper = 240.0;
     lower = 0.0;
     steps = 240.0;
@@ -613,6 +617,8 @@ ags_ramp_marker_popover_apply(AgsApplicable *applicable)
 	
       list_marker = list_marker->next;
     }
+    
+    g_object_unref(current_timestamp);
 
     g_list_free(list_marker_start);
       

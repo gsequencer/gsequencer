@@ -518,7 +518,8 @@ ags_position_notation_cursor_popover_apply(AgsApplicable *applicable)
 			     ((x * 64 / zoom) * (gtk_adjustment_get_upper(hadjustment) / (AGS_NOTATION_DEFAULT_LENGTH / zoom))));
   }
 
-  if(gtk_check_button_get_active(position_notation_cursor_popover->set_focus)){
+  if(widget != NULL &&
+     gtk_check_button_get_active(position_notation_cursor_popover->set_focus)){
     gtk_widget_grab_focus(widget);
   }
 }
