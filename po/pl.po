@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 3.7.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-08-20 01:03+0200\n"
+"POT-Creation-Date: 2026-08-20 21:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -382,12 +382,12 @@ msgstr "eksportuj"
 
 #: ags/app/export/ags_machine_mapper.c:180
 #: ags/app/editor/ags_envelope_editor.c:197 ags/app/ags_resize_editor.c:135
-#: ags/app/machine/ags_sfz_synth.c:863 ags/app/machine/ags_sfz_synth.c:985
-#: ags/app/machine/ags_sfz_synth.c:1145 ags/app/machine/ags_sfz_synth.c:1305
+#: ags/app/machine/ags_sfz_synth.c:860 ags/app/machine/ags_sfz_synth.c:981
+#: ags/app/machine/ags_sfz_synth.c:1141 ags/app/machine/ags_sfz_synth.c:1301
 #: ags/app/machine/ags_pitch_sampler.c:395
-#: ags/app/machine/ags_pitch_sampler.c:530 ags/app/machine/ags_sf2_synth.c:911
-#: ags/app/machine/ags_sf2_synth.c:1033 ags/app/machine/ags_sf2_synth.c:1193
-#: ags/app/machine/ags_sf2_synth.c:1353 ags/app/machine/ags_ffplayer.c:484
+#: ags/app/machine/ags_pitch_sampler.c:530 ags/app/machine/ags_sf2_synth.c:908
+#: ags/app/machine/ags_sf2_synth.c:1029 ags/app/machine/ags_sf2_synth.c:1189
+#: ags/app/machine/ags_sf2_synth.c:1349 ags/app/machine/ags_ffplayer.c:484
 #: ags/app/machine/ags_ffplayer.c:612
 #: ags/app/ags_machine_editor_collection.c:175
 #: ags/app/import/ags_track_mapper.c:243
@@ -985,7 +985,7 @@ msgstr "wydanie"
 
 #: ags/app/editor/ags_pattern_envelope.c:751
 #: ags/app/editor/ags_envelope_editor.c:574
-#: ags/app/machine/ags_sfz_synth.c:1572 ags/app/machine/ags_sf2_synth.c:1620
+#: ags/app/machine/ags_sfz_synth.c:1568 ags/app/machine/ags_sf2_synth.c:1616
 msgid "ratio"
 msgstr "współczynnik"
 
@@ -1508,8 +1508,8 @@ msgid "program"
 msgstr "program"
 
 #: ags/app/machine/ags_matrix.c:384 ags/app/machine/ags_drum.c:473
-#: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1311
-#: ags/app/machine/ags_sf2_synth.c:1359 ags/app/machine/ags_fm_oscillator.c:267
+#: ags/app/machine/ags_oscillator.c:268 ags/app/machine/ags_sfz_synth.c:1307
+#: ags/app/machine/ags_sf2_synth.c:1355 ags/app/machine/ags_fm_oscillator.c:267
 msgid "length"
 msgstr "długość"
 
@@ -1717,71 +1717,71 @@ msgstr ""
 msgid "low-pass filter"
 msgstr "włączone"
 
-#: ags/app/machine/ags_sfz_synth.c:870 ags/app/machine/ags_sf2_synth.c:918
+#: ags/app/machine/ags_sfz_synth.c:866 ags/app/machine/ags_sf2_synth.c:914
 #, fuzzy
 msgid "cut-off frequency"
 msgstr "częstotliwość"
 
-#: ags/app/machine/ags_sfz_synth.c:901 ags/app/machine/ags_sf2_synth.c:949
+#: ags/app/machine/ags_sfz_synth.c:897 ags/app/machine/ags_sf2_synth.c:945
 msgid "filter gain"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:932 ags/app/machine/ags_sf2_synth.c:980
+#: ags/app/machine/ags_sfz_synth.c:928 ags/app/machine/ags_sf2_synth.c:976
 msgid "no-clip"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:964 ags/app/machine/ags_sf2_synth.c:1012
+#: ags/app/machine/ags_sfz_synth.c:960 ags/app/machine/ags_sf2_synth.c:1008
 msgid "tremolo"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:991 ags/app/machine/ags_sfz_synth.c:1151
-#: ags/app/machine/ags_sf2_synth.c:1039 ags/app/machine/ags_sf2_synth.c:1199
+#: ags/app/machine/ags_sfz_synth.c:987 ags/app/machine/ags_sfz_synth.c:1147
+#: ags/app/machine/ags_sf2_synth.c:1035 ags/app/machine/ags_sf2_synth.c:1195
 msgid "gain"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1024 ags/app/machine/ags_sfz_synth.c:1184
-#: ags/app/machine/ags_sfz_synth.c:1605 ags/app/machine/ags_sf2_synth.c:1072
-#: ags/app/machine/ags_sf2_synth.c:1232 ags/app/machine/ags_sf2_synth.c:1653
+#: ags/app/machine/ags_sfz_synth.c:1020 ags/app/machine/ags_sfz_synth.c:1180
+#: ags/app/machine/ags_sfz_synth.c:1601 ags/app/machine/ags_sf2_synth.c:1068
+#: ags/app/machine/ags_sf2_synth.c:1228 ags/app/machine/ags_sf2_synth.c:1649
 msgid "lfo-depth"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1057 ags/app/machine/ags_sfz_synth.c:1217
-#: ags/app/machine/ags_sfz_synth.c:1638 ags/app/machine/ags_sf2_synth.c:1105
-#: ags/app/machine/ags_sf2_synth.c:1265 ags/app/machine/ags_sf2_synth.c:1686
+#: ags/app/machine/ags_sfz_synth.c:1053 ags/app/machine/ags_sfz_synth.c:1213
+#: ags/app/machine/ags_sfz_synth.c:1634 ags/app/machine/ags_sf2_synth.c:1101
+#: ags/app/machine/ags_sf2_synth.c:1261 ags/app/machine/ags_sf2_synth.c:1682
 msgid "lfo-freq"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1090 ags/app/machine/ags_sfz_synth.c:1250
-#: ags/app/machine/ags_sfz_synth.c:1671 ags/app/machine/ags_sf2_synth.c:1138
-#: ags/app/machine/ags_sf2_synth.c:1298 ags/app/machine/ags_sf2_synth.c:1719
+#: ags/app/machine/ags_sfz_synth.c:1086 ags/app/machine/ags_sfz_synth.c:1246
+#: ags/app/machine/ags_sfz_synth.c:1667 ags/app/machine/ags_sf2_synth.c:1134
+#: ags/app/machine/ags_sf2_synth.c:1294 ags/app/machine/ags_sf2_synth.c:1715
 #, fuzzy
 msgid "tuning"
 msgstr "tuning LFO"
 
-#: ags/app/machine/ags_sfz_synth.c:1124 ags/app/machine/ags_sf2_synth.c:1172
+#: ags/app/machine/ags_sfz_synth.c:1120 ags/app/machine/ags_sf2_synth.c:1168
 msgid "vibrato"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1284 ags/app/machine/ags_sf2_synth.c:1332
+#: ags/app/machine/ags_sfz_synth.c:1280 ags/app/machine/ags_sf2_synth.c:1328
 msgid "wah-wah"
 msgstr ""
 
-#: ags/app/machine/ags_sfz_synth.c:1340 ags/app/machine/ags_sf2_synth.c:1388
+#: ags/app/machine/ags_sfz_synth.c:1336 ags/app/machine/ags_sf2_synth.c:1384
 #, fuzzy
 msgid "attack [x|y]"
 msgstr "atak"
 
-#: ags/app/machine/ags_sfz_synth.c:1398 ags/app/machine/ags_sf2_synth.c:1446
+#: ags/app/machine/ags_sfz_synth.c:1394 ags/app/machine/ags_sf2_synth.c:1442
 #, fuzzy
 msgid "decay [x|y]"
 msgstr "rozpad"
 
-#: ags/app/machine/ags_sfz_synth.c:1456 ags/app/machine/ags_sf2_synth.c:1504
+#: ags/app/machine/ags_sfz_synth.c:1452 ags/app/machine/ags_sf2_synth.c:1500
 #, fuzzy
 msgid "sustain [x|y]"
 msgstr "udźwig"
 
-#: ags/app/machine/ags_sfz_synth.c:1514 ags/app/machine/ags_sf2_synth.c:1562
+#: ags/app/machine/ags_sfz_synth.c:1510 ags/app/machine/ags_sf2_synth.c:1558
 #, fuzzy
 msgid "release [x|y]"
 msgstr "wydanie"
