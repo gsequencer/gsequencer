@@ -5330,8 +5330,8 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
 	    break;
 	  }
 
-	  if(current_x0_256th >= x_256th &&
-	     current_x1_256th < x_256th &&
+	  if(current_x0_256th < x_256th &&
+	     current_x1_256th >= x_256th &&
 	     current_y == y){
 	    last_match = note;
 	  }
