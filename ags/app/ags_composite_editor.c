@@ -5308,6 +5308,8 @@ ags_composite_editor_delete_note(AgsCompositeEditor *composite_editor,
   
 	g_rec_mutex_unlock(notation_mutex);
 
+	success = FALSE;
+	
 	last_match = NULL;
 	
 	while(note != NULL){
