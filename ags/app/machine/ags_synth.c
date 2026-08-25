@@ -226,7 +226,17 @@ ags_synth_init(AgsSynth *synth)
 			 FALSE);
   gtk_widget_set_hexpand((GtkWidget *) hbox,
 			 FALSE);
-  
+
+  gtk_widget_set_margin_top((GtkWidget *) hbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) hbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) hbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) hbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(synth)->frame,
 		      (GtkWidget *) hbox);
 

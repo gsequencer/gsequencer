@@ -320,6 +320,16 @@ ags_sf2_synth_init(AgsSF2Synth *sf2_synth)
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(sf2_synth)->frame,
 		      (GtkWidget *) vbox);
 

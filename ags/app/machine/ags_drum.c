@@ -280,10 +280,17 @@ ags_drum_init(AgsDrum *drum)
 
   /* create widgets */
   drum->vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				      0);
+				      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
-  gtk_box_set_spacing(drum->vbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_widget_set_margin_top((GtkWidget *) drum->vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) drum->vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) drum->vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) drum->vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
 
   gtk_frame_set_child(AGS_MACHINE(drum)->frame,
 		      (GtkWidget *) drum->vbox);

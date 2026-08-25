@@ -320,17 +320,21 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
 
-  gtk_box_set_spacing(vbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
 
   gtk_frame_set_child(AGS_MACHINE(modular_synth)->frame,
 		      (GtkWidget *) vbox);
 
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
-
-  gtk_box_set_spacing(hbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);

@@ -218,7 +218,7 @@ ags_navigation_init(AgsNavigation *navigation)
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_PADDING);
   gtk_widget_set_margin_bottom((GtkWidget *) hbox,
-			       8);
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
   gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) hbox);
 
@@ -391,7 +391,7 @@ ags_navigation_init(AgsNavigation *navigation)
   navigation->expansion_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						     AGS_UI_PROVIDER_DEFAULT_PADDING);
   gtk_widget_set_margin_bottom((GtkWidget *) navigation->expansion_box,
-			       8);
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
   gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) navigation->expansion_box);
 

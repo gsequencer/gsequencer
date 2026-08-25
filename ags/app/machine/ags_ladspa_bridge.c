@@ -288,6 +288,16 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 
   AGS_EFFECT_BRIDGE(AGS_MACHINE(ladspa_bridge)->bridge)->parent_machine = (GtkWidget *) ladspa_bridge;
 
+  gtk_widget_set_margin_top((GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  
   gtk_frame_set_child(AGS_MACHINE(ladspa_bridge)->frame,
 		      (GtkWidget *) AGS_MACHINE(ladspa_bridge)->bridge);
 

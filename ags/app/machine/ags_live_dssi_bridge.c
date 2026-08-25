@@ -336,13 +336,23 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 
   gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
-  
+
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(live_dssi_bridge)->frame,
 		      (GtkWidget *) vbox);
 
   /* program */
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_box_append(vbox,
 		 (GtkWidget *) hbox);
 

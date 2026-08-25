@@ -326,6 +326,16 @@ ags_vst3_bridge_init(AgsVst3Bridge *vst3_bridge)
   gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
 
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(vst3_bridge)->frame,
 		      (GtkWidget *) vbox);  
 

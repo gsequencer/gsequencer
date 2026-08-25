@@ -286,6 +286,16 @@ ags_matrix_init(AgsMatrix *matrix)
   gtk_grid_set_row_spacing(matrix->grid,
 			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
+  gtk_widget_set_margin_top((GtkWidget *) matrix->grid,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) matrix->grid,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) matrix->grid,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) matrix->grid,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(matrix)->frame,
 		      (GtkWidget *) matrix->grid);
 
