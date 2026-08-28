@@ -812,6 +812,11 @@ ags_machine_init(AgsMachine *machine)
   gtk_widget_set_margin_bottom((GtkWidget *) context_box,
 			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
   
+  gtk_widget_set_margin_start((GtkWidget *) context_box,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) context_box,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_label_widget(machine->frame,
 			     (GtkWidget *) context_box);
 

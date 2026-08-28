@@ -217,8 +217,17 @@ ags_navigation_init(AgsNavigation *navigation)
   /* GtkWidget */  
   hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				AGS_UI_PROVIDER_DEFAULT_PADDING);
+  
+  gtk_widget_set_margin_top((GtkWidget *) hbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
   gtk_widget_set_margin_bottom((GtkWidget *) hbox,
 			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) hbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) hbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  
   gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) hbox);
 
@@ -390,8 +399,17 @@ ags_navigation_init(AgsNavigation *navigation)
   /* expansion */
   navigation->expansion_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 						     AGS_UI_PROVIDER_DEFAULT_PADDING);
+  
+  gtk_widget_set_margin_top((GtkWidget *) navigation->expansion_box,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
   gtk_widget_set_margin_bottom((GtkWidget *) navigation->expansion_box,
 			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) navigation->expansion_box,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) navigation->expansion_box,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_box_append((GtkBox *) navigation,
 		 (GtkWidget *) navigation->expansion_box);
 
