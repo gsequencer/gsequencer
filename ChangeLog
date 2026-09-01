@@ -1,6 +1,8 @@
 ags (9.3.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ramp acceleration popover inserted data wrong timestamp
+	* fixed composite editor cut with automation edit
 	* improved margin of machines
 
 ags (9.3.2)
