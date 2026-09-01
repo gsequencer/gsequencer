@@ -623,6 +623,8 @@ ags_recall_channel_automate(AgsRecall *recall)
       current_automation = automation->data;
 
       /* get some fields */
+      timestamp = NULL;
+      
       g_object_get(current_automation,
 		   "timestamp", &timestamp,
 		   NULL);

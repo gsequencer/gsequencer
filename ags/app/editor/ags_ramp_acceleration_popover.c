@@ -822,7 +822,7 @@ ags_ramp_acceleration_popover_apply(AgsApplicable *applicable)
 	timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * (guint64) floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
 
 	if(nth_match > 0){
-	  timestamp->timer.ags_offset.offset += (nth_match * AGS_AUTOMATION_DEFAULT_OFFSET);
+	  timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
 	}
 	
 	start_list_automation = g_list_copy(AGS_PORT(play_port->data)->automation);      
