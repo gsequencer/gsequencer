@@ -451,6 +451,16 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   gtk_widget_set_hexpand((GtkWidget *) live_lv2_bridge->vbox,
 			 FALSE);
+
+  gtk_widget_set_margin_top((GtkWidget *) live_lv2_bridge->vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) live_lv2_bridge->vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) live_lv2_bridge->vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) live_lv2_bridge->vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
   
   gtk_frame_set_child(AGS_MACHINE(live_lv2_bridge)->frame,
 		      (GtkWidget *) live_lv2_bridge->vbox);

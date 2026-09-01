@@ -309,12 +309,22 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(sfz_synth)->frame,
 		      (GtkWidget *) vbox);
 
   /* SFZ */
   sfz_hbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
-				    0);
+				    AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) sfz_hbox,
 			GTK_ALIGN_START);  
@@ -323,9 +333,6 @@ ags_sfz_synth_init(AgsSFZSynth *sfz_synth)
 
   gtk_widget_set_hexpand((GtkWidget *) sfz_hbox,
 			 FALSE);
-
-  gtk_box_set_spacing(sfz_hbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_box_append(vbox,
 		 (GtkWidget *) sfz_hbox);

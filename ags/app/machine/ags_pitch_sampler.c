@@ -296,6 +296,16 @@ ags_pitch_sampler_init(AgsPitchSampler *pitch_sampler)
   gtk_box_set_spacing(vbox,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
 
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(pitch_sampler)->frame,
 		      (GtkWidget *) vbox);
   

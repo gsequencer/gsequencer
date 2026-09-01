@@ -232,6 +232,16 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_START);
   
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
   gtk_frame_set_child(AGS_MACHINE(spectrometer)->frame,
 		      (GtkWidget *) vbox);
 
