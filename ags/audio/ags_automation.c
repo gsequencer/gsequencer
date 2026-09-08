@@ -2450,6 +2450,8 @@ ags_automation_add_acceleration(AgsAutomation *automation,
 
   if(use_selection_list){
     if((current = ags_automation_find_point(automation, acceleration->x, acceleration->y, TRUE)) != NULL){
+      g_rec_mutex_unlock(automation_mutex);
+      
       g_warning("inconsistent data");
       
       return;
@@ -2469,6 +2471,8 @@ ags_automation_add_acceleration(AgsAutomation *automation,
       current->x = acceleration->x;
       current->y = acceleration->y;
 
+      g_rec_mutex_unlock(automation_mutex);
+      
       return;
     }
     

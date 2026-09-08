@@ -1,3 +1,20 @@
+ags (9.3.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential dead-lock with automation
+
+ags (9.3.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ramp acceleration popover inserted data wrong timestamp
+	* fixed composite editor cut with automation edit
+	* improved margin of machines
+
+ags (9.3.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_composite_editor_delete_note()
+
 ags (9.3.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

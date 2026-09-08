@@ -819,7 +819,7 @@ ags_ramp_acceleration_popover_apply(AgsApplicable *applicable)
       i = 0;
 
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	timestamp->timer.ags_offset.offset = (guint64) floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
+	timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * (guint64) floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
 
 	if(nth_match > 0){
 	  timestamp->timer.ags_offset.offset += (nth_match * AGS_AUTOMATION_DEFAULT_OFFSET);
@@ -930,7 +930,7 @@ ags_ramp_acceleration_popover_apply(AgsApplicable *applicable)
       i = 0;
 
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	timestamp->timer.ags_offset.offset = (guint64) floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
+	timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * (guint64) floor((double) x0 / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
 
 	if(nth_match > 0){
 	  timestamp->timer.ags_offset.offset += (nth_match * AGS_AUTOMATION_DEFAULT_OFFSET);

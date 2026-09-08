@@ -317,7 +317,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   /* create widgets */
   vbox = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
-				0);
+				AGS_UI_PROVIDER_DEFAULT_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) vbox,
 			GTK_ALIGN_START);  
@@ -326,10 +326,17 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   gtk_widget_set_hexpand((GtkWidget *) vbox,
 			 FALSE);
+  
+  gtk_widget_set_margin_top((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_bottom((GtkWidget *) vbox,
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
 
-  gtk_box_set_spacing(vbox,
-		      AGS_UI_PROVIDER_DEFAULT_SPACING);
-
+  gtk_widget_set_margin_start((GtkWidget *) vbox,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) vbox,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  
   gtk_frame_set_child(AGS_MACHINE(ffplayer)->frame,
 		      (GtkWidget *) vbox);
   

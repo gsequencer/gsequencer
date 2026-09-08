@@ -171,11 +171,16 @@ ags_composite_toolbar_init(AgsCompositeToolbar *composite_toolbar)
   
   gtk_box_set_spacing((GtkBox *) composite_toolbar,
 		      AGS_UI_PROVIDER_DEFAULT_SPACING);
-
+  
   gtk_widget_set_margin_top((GtkWidget *) composite_toolbar,
-			    8);
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
   gtk_widget_set_margin_bottom((GtkWidget *) composite_toolbar,
-			       8);
+			       AGS_UI_PROVIDER_DEFAULT_MARGIN);
+
+  gtk_widget_set_margin_start((GtkWidget *) composite_toolbar,
+			      AGS_UI_PROVIDER_DEFAULT_MARGIN);
+  gtk_widget_set_margin_end((GtkWidget *) composite_toolbar,
+			    AGS_UI_PROVIDER_DEFAULT_MARGIN);
   
   /* action group */
   action_group = g_simple_action_group_new();
