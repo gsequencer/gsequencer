@@ -352,8 +352,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* env-0 */
   env_0_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(env_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(env_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) env_0_grid,
 			GTK_ALIGN_START);
+  
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) env_0_grid,
 		  0, 0,
@@ -547,8 +554,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* env-1 */
   env_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(env_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(env_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) env_1_grid,
 			GTK_ALIGN_START);
+
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) env_1_grid,
 		  1, 0,
@@ -742,8 +756,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* lfo-0 */
   lfo_0_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(lfo_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(lfo_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) lfo_0_grid,
 			GTK_ALIGN_START);
+
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) lfo_0_grid,
 		  0, 1,
@@ -863,8 +884,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* lfo-1 */
   lfo_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(lfo_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(lfo_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) lfo_1_grid,
 			GTK_ALIGN_START);
+
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) lfo_1_grid,
 		  1, 1,
@@ -984,8 +1012,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* noise */
   noise_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(noise_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(noise_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) noise_grid,
 			GTK_ALIGN_START);
+
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) noise_grid,
 		  0, 2,
@@ -1055,8 +1090,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* modulation */
   modulation_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(modulation_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(modulation_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_halign((GtkWidget *) modulation_grid,
 			GTK_ALIGN_START);
+
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) modulation_grid,
 		  2, 0,
@@ -1071,8 +1113,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* osc-0 */
   osc_0_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(osc_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(osc_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_halign((GtkWidget *) osc_0_grid,
 	 		GTK_ALIGN_START);
+
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) osc_0_grid,
 		  3, 0,
@@ -1223,8 +1272,15 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* osc-1 */
   osc_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(osc_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(osc_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_halign((GtkWidget *) osc_1_grid,
 	 		GTK_ALIGN_START);
+
   gtk_grid_attach(modular_synth_grid,
 		  (GtkWidget *) osc_1_grid,
 		  3, 1,
@@ -1376,6 +1432,11 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
   /* effect */
   effect_grid = (GtkGrid *) gtk_grid_new();
 
+  gtk_grid_set_column_spacing(effect_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(effect_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_valign((GtkWidget *) effect_grid,
 	 		GTK_ALIGN_START);
   gtk_widget_set_halign((GtkWidget *) effect_grid,
@@ -1453,6 +1514,11 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* low-pass */
   low_pass_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(low_pass_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(low_pass_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) low_pass_grid,
 	 		GTK_ALIGN_START);
@@ -1562,6 +1628,11 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* amplifier */
   amplifier_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(amplifier_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(amplifier_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   gtk_widget_set_valign((GtkWidget *) amplifier_grid,
 	 		GTK_ALIGN_START);
@@ -1708,6 +1779,11 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* chorus grid */
   chorus_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(chorus_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(chorus_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
 
   gtk_grid_set_column_spacing(chorus_grid,
 			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);

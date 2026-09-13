@@ -139,6 +139,7 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
   GSimpleAction *add_quantum_synth_action;
   GSimpleAction *add_raven_synth_action;
   GSimpleAction *add_modular_synth_action;
+  GSimpleAction *add_abyss_synth_action;
   GSimpleAction *add_ffplayer_action;
   GSimpleAction *add_sf2_synth_action;
   GSimpleAction *add_pitch_sampler_action;
@@ -584,6 +585,14 @@ ags_gsequencer_application_init(AgsGSequencerApplication *gsequencer_app)
 		   G_CALLBACK(ags_gsequencer_add_modular_synth_callback), gsequencer_app);
   g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
 			  G_ACTION(add_modular_synth_action));
+
+  /* abyss synth */
+  add_abyss_synth_action = g_simple_action_new("add_abyss_synth",
+					       NULL);
+  g_signal_connect(add_abyss_synth_action, "activate",
+		   G_CALLBACK(ags_gsequencer_add_abyss_synth_callback), gsequencer_app);
+  g_action_map_add_action(G_ACTION_MAP(gsequencer_app),
+			  G_ACTION(add_abyss_synth_action));
 
 #if defined(AGS_WITH_LIBINSTPATCH)
   /* ffplayer */

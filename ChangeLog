@@ -1,3 +1,8 @@
+ags (9.4.0)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_ring_modulation_util.[ch]
+
 ags (9.3.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

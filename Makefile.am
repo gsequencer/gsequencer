@@ -1,4 +1,4 @@
-#Copyright (C) 2005-2025 Joel Kraehemann
+#Copyright (C) 2005-2026 Joel Kraehemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -1415,8 +1415,10 @@ libags_audio_h_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.h \
 	ags/audio/ags_fluid_util.h \
 	ags/audio/ags_fm_synth_util.h \
+	ags/audio/ags_abyss_synth_util.h \
 	ags/audio/ags_modular_synth_util.h \
 	ags/audio/ags_raven_synth_util.h \
+	ags/audio/ags_ring_modulation_util.h \
 	ags/audio/ags_seq_synth_util.h \
 	ags/audio/ags_star_synth_util.h \
 	ags/audio/ags_fourier_transform_util.h \
@@ -1526,8 +1528,10 @@ libags_audio_c_sources = \
 	ags/audio/ags_fluid_interpolate_none_util.c \
 	ags/audio/ags_fluid_util.c \
 	ags/audio/ags_fm_synth_util.c \
+	ags/audio/ags_abyss_synth_util.c \
 	ags/audio/ags_modular_synth_util.c \
 	ags/audio/ags_raven_synth_util.c \
+	ags/audio/ags_ring_modulation_util.c \
 	ags/audio/ags_seq_synth_util.c \
 	ags/audio/ags_star_synth_util.c \
 	ags/audio/ags_fourier_transform_util.c \
@@ -2233,6 +2237,12 @@ libags_audio_fx_h_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.h \
 	ags/audio/fx/ags_fx_fm_synth_recycling.h \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.h \
+	ags/audio/fx/ags_fx_abyss_synth_audio.h \
+	ags/audio/fx/ags_fx_abyss_synth_audio_processor.h \
+	ags/audio/fx/ags_fx_abyss_synth_channel.h \
+	ags/audio/fx/ags_fx_abyss_synth_channel_processor.h \
+	ags/audio/fx/ags_fx_abyss_synth_recycling.h \
+	ags/audio/fx/ags_fx_abyss_synth_audio_signal.h \
 	ags/audio/fx/ags_fx_modular_synth_audio.h \
 	ags/audio/fx/ags_fx_modular_synth_audio_processor.h \
 	ags/audio/fx/ags_fx_modular_synth_channel.h \
@@ -3189,6 +3199,8 @@ libgsequencer_machine_h_sources = \
 	ags/app/machine/ags_modular_synth_callbacks.h \
 	ags/app/machine/ags_raven_synth.h \
 	ags/app/machine/ags_raven_synth_callbacks.h \
+	ags/app/machine/ags_abyss_synth.h \
+	ags/app/machine/ags_abyss_synth_callbacks.h \
 	ags/app/machine/ags_sfz_synth.h \
 	ags/app/machine/ags_sfz_synth_callbacks.h \
 	ags/app/machine/ags_synth_callbacks.h \
@@ -3338,6 +3350,8 @@ libgsequencer_machine_c_sources = \
 	ags/app/machine/ags_modular_synth_callbacks.c \
 	ags/app/machine/ags_raven_synth.c \
 	ags/app/machine/ags_raven_synth_callbacks.c \
+	ags/app/machine/ags_abyss_synth.c \
+	ags/app/machine/ags_abyss_synth_callbacks.c \
 	ags/app/machine/ags_sfz_synth.c \
 	ags/app/machine/ags_sfz_synth_callbacks.c \
 	ags/app/machine/ags_syncsynth.c \

@@ -22,7 +22,6 @@
 #include <ags/libags-audio-globals.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_fluid_util.h>
 #include <ags/audio/ags_fluid_interpolate_4th_order_util.h>
@@ -30,13 +29,8 @@
 #include <ags/audio/ags_lfo_synth_util.h>
 #include <ags/audio/ags_noise_util.h>
 
-#if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
-#include <Accelerate/Accelerate.h>
-#endif
-
 #include <math.h>
 #include <complex.h>
-
 
 /**
  * SECTION:ags_ring_modulation_util
@@ -113,8 +107,11 @@ ags_ring_modulation_util_copy(AgsRingModulationUtil *ptr)
   new_ptr = (AgsRingModulationUtil *) g_new(AgsRingModulationUtil,
 					    1);
   
-  new_ptr->source = ptr->source;
-  new_ptr->source_stride = ptr->source_stride;
+  new_ptr->modulator_source = ptr->modulator_source;
+  new_ptr->modulator_source_stride = ptr->modulator_source_stride;
+
+  new_ptr->carrier_source = ptr->carrier_source;
+  new_ptr->carrier_source_stride = ptr->carrier_source_stride;
 
   new_ptr->buffer_length = ptr->buffer_length;
   new_ptr->format = ptr->format;
@@ -697,9 +694,9 @@ ags_ring_modulation_util_compute_s8(AgsRingModulationUtil *ring_modulation_util)
 #endif
   
   GType pitch_type;
-  
-  guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint modulator_source_stride, carrier_source_stride, destination_stride;
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -712,7 +709,8 @@ ags_ring_modulation_util_compute_s8(AgsRingModulationUtil *ring_modulation_util)
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -843,7 +841,7 @@ ags_ring_modulation_util_compute_s8(AgsRingModulationUtil *ring_modulation_util)
 #endif
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     destination[0] = gain * (((1.0 - mix) * pitch_buffer[0]) * ((mix) * (drive * carrier_source[0])));
 
     destination += destination_stride;
@@ -870,6 +868,7 @@ ags_ring_modulation_util_compute_s16(AgsRingModulationUtil *ring_modulation_util
   
   guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -882,7 +881,8 @@ ags_ring_modulation_util_compute_s16(AgsRingModulationUtil *ring_modulation_util
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -995,7 +995,7 @@ ags_ring_modulation_util_compute_s16(AgsRingModulationUtil *ring_modulation_util
 
     carrier_source += carrier_source_stride;
 
-    v_pitch_buffer_b /= (gdouble) G_MAXINT16;
+    v_buffer_b /= (gdouble) G_MAXINT16;
     
     v_buffer = gain * (((1.0 - mix) * v_buffer_a) * ((mix) * (drive * v_buffer_b)));
 
@@ -1014,7 +1014,7 @@ ags_ring_modulation_util_compute_s16(AgsRingModulationUtil *ring_modulation_util
 #endif
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     destination[0] = gain * (((1.0 - mix) * pitch_buffer[0]) * ((mix) * (drive * carrier_source[0])));
 
     destination += destination_stride;
@@ -1041,6 +1041,7 @@ ags_ring_modulation_util_compute_s24(AgsRingModulationUtil *ring_modulation_util
   
   guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -1053,7 +1054,8 @@ ags_ring_modulation_util_compute_s24(AgsRingModulationUtil *ring_modulation_util
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -1184,7 +1186,7 @@ ags_ring_modulation_util_compute_s24(AgsRingModulationUtil *ring_modulation_util
 #endif
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     destination[0] = gain * (((1.0 - mix) * pitch_buffer[0]) * ((mix) * (drive * carrier_source[0])));
 
     destination += destination_stride;
@@ -1211,6 +1213,7 @@ ags_ring_modulation_util_compute_s32(AgsRingModulationUtil *ring_modulation_util
   
   guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -1223,7 +1226,8 @@ ags_ring_modulation_util_compute_s32(AgsRingModulationUtil *ring_modulation_util
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -1354,7 +1358,7 @@ ags_ring_modulation_util_compute_s32(AgsRingModulationUtil *ring_modulation_util
 #endif
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     destination[0] = gain * (((1.0 - mix) * pitch_buffer[0]) * ((mix) * (drive * carrier_source[0])));
 
     destination += destination_stride;
@@ -1381,6 +1385,7 @@ ags_ring_modulation_util_compute_s64(AgsRingModulationUtil *ring_modulation_util
   
   guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -1393,7 +1398,8 @@ ags_ring_modulation_util_compute_s64(AgsRingModulationUtil *ring_modulation_util
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -1524,7 +1530,7 @@ ags_ring_modulation_util_compute_s64(AgsRingModulationUtil *ring_modulation_util
 #endif
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     destination[0] = gain * (((1.0 - mix) * pitch_buffer[0]) * ((mix) * (drive * carrier_source[0])));
 
     destination += destination_stride;
@@ -1551,6 +1557,7 @@ ags_ring_modulation_util_compute_float(AgsRingModulationUtil *ring_modulation_ut
   
   guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -1563,7 +1570,8 @@ ags_ring_modulation_util_compute_float(AgsRingModulationUtil *ring_modulation_ut
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -1693,7 +1701,7 @@ ags_ring_modulation_util_compute_float(AgsRingModulationUtil *ring_modulation_ut
 #endif
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     destination[0] = gain * (((1.0 - mix) * pitch_buffer[0]) * ((mix) * (drive * carrier_source[0])));
 
     destination += destination_stride;
@@ -1720,6 +1728,7 @@ ags_ring_modulation_util_compute_double(AgsRingModulationUtil *ring_modulation_u
   
   guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -1732,7 +1741,8 @@ ags_ring_modulation_util_compute_double(AgsRingModulationUtil *ring_modulation_u
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -1862,7 +1872,7 @@ ags_ring_modulation_util_compute_double(AgsRingModulationUtil *ring_modulation_u
 #endif
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     destination[0] = gain * (((1.0 - mix) * pitch_buffer[0]) * ((mix) * (drive * carrier_source[0])));
 
     destination += destination_stride;
@@ -1889,6 +1899,7 @@ ags_ring_modulation_util_compute_complex(AgsRingModulationUtil *ring_modulation_
   
   guint modulator_source_stride, carrier_source_stride, destination_stride;
 
+  guint copy_mode;
   gint root_note;
   guint buffer_length;
   guint samplerate;
@@ -1901,7 +1912,8 @@ ags_ring_modulation_util_compute_complex(AgsRingModulationUtil *ring_modulation_
 
   if(ring_modulation_util == NULL ||
      ring_modulation_util->destination == NULL ||
-     ring_modulation_util->source == NULL){
+     ring_modulation_util->modulator_source == NULL ||
+     ring_modulation_util->carrier_source == NULL){
     return;
   }
   
@@ -1985,7 +1997,7 @@ ags_ring_modulation_util_compute_complex(AgsRingModulationUtil *ring_modulation_
   i = 0;
 
   /* loop tail */
-  for(; i < volume_util->buffer_length;){
+  for(; i < ring_modulation_util->buffer_length;){
     ags_complex_set(destination,
 		    gain * (((1.0 - mix) * ags_complex_get(pitch_buffer)) * ((mix) * (drive * ags_complex_get(carrier_source)))));
 

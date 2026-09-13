@@ -145,6 +145,8 @@
 #include <ags/audio/ags_star_synth_util.h>
 #include <ags/audio/ags_modular_synth_util.h>
 #include <ags/audio/ags_raven_synth_util.h>
+#include <ags/audio/ags_abyss_synth_util.h>
+#include <ags/audio/ags_ring_modulation_util.h>
 #include <ags/audio/ags_track.h>
 #include <ags/audio/ags_tremolo_util.h>
 #include <ags/audio/ags_vector_256_manager.h>
@@ -342,6 +344,12 @@
 #include <ags/audio/fx/ags_fx_modular_synth_channel.h>
 #include <ags/audio/fx/ags_fx_modular_synth_channel_processor.h>
 #include <ags/audio/fx/ags_fx_modular_synth_recycling.h>
+#include <ags/audio/fx/ags_fx_abyss_synth_audio.h>
+#include <ags/audio/fx/ags_fx_abyss_synth_audio_processor.h>
+#include <ags/audio/fx/ags_fx_abyss_synth_audio_signal.h>
+#include <ags/audio/fx/ags_fx_abyss_synth_channel.h>
+#include <ags/audio/fx/ags_fx_abyss_synth_channel_processor.h>
+#include <ags/audio/fx/ags_fx_abyss_synth_recycling.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio_processor.h>
 #include <ags/audio/fx/ags_fx_high_pass_audio_signal.h>

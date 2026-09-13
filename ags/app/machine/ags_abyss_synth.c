@@ -2091,7 +2091,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   gtk_spin_button_set_value(abyss_synth->seq_0_lfo_frequency,
 			    8.0);  
   gtk_grid_attach(seq_0_grid,
-		  (GtkWidget *) abyss_synth->synth_0_seq_volume_lfo_frequency,
+		  (GtkWidget *) abyss_synth->seq_0_lfo_frequency,
 		  6, 1,
 		  2, 1);
 
@@ -2539,7 +2539,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   gtk_spin_button_set_value(abyss_synth->seq_1_lfo_frequency,
 			    8.0);  
   gtk_grid_attach(seq_1_grid,
-		  (GtkWidget *) abyss_synth->synth_0_seq_volume_lfo_frequency,
+		  (GtkWidget *) abyss_synth->seq_1_lfo_frequency,
 		  6, 1,
 		  2, 1);
 
@@ -2987,7 +2987,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   gtk_spin_button_set_value(abyss_synth->seq_2_lfo_frequency,
 			    8.0);  
   gtk_grid_attach(seq_2_grid,
-		  (GtkWidget *) abyss_synth->synth_0_seq_volume_lfo_frequency,
+		  (GtkWidget *) abyss_synth->seq_2_lfo_frequency,
 		  6, 1,
 		  2, 1);
 
@@ -3435,7 +3435,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   gtk_spin_button_set_value(abyss_synth->seq_3_lfo_frequency,
 			    8.0);  
   gtk_grid_attach(seq_3_grid,
-		  (GtkWidget *) abyss_synth->synth_0_seq_volume_lfo_frequency,
+		  (GtkWidget *) abyss_synth->seq_3_lfo_frequency,
 		  6, 1,
 		  2, 1);
   
@@ -3458,7 +3458,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   label = (GtkLabel *) gtk_label_new(i18n("noise 1 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(noise_grid,
+  gtk_grid_attach(pink_noise_0_grid,
 		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
@@ -3489,7 +3489,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   label = (GtkLabel *) gtk_label_new(i18n("noise 1 - gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(noise_grid,
+  gtk_grid_attach(pink_noise_0_grid,
 		  (GtkWidget *) label,
 		  2, 0,
 		  1, 1);
@@ -3527,7 +3527,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   label = (GtkLabel *) gtk_label_new(i18n("noise 2 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(noise_grid,
+  gtk_grid_attach(pink_noise_1_grid,
 		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
@@ -3558,7 +3558,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   label = (GtkLabel *) gtk_label_new(i18n("noise 2 - gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(noise_grid,
+  gtk_grid_attach(pink_noise_1_grid,
 		  (GtkWidget *) label,
 		  2, 0,
 		  1, 1);
@@ -3588,7 +3588,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   /* Osc box */
   osc_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				   AGS_UI_PROVIDER_DEFAULT_SPACING);
-  gtk_grid_attach(abss_synth_grid,
+  gtk_grid_attach(abyss_synth_grid,
 		  (GtkWidget *) osc_box,
 		  0, 0,
 		  1, 1);
@@ -4903,6 +4903,44 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(abyss_synth->env_1_frequency, "value-changed",
 			 G_CALLBACK(ags_abyss_synth_env_1_frequency_callback), abyss_synth);
 
+  /* env-2 */
+  g_signal_connect_after(abyss_synth->env_2_attack, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_attack_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_decay, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_decay_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_sustain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_sustain_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_release, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_release_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_gain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_gain_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_frequency_callback), abyss_synth);
+
+  /* env-3 */
+  g_signal_connect_after(abyss_synth->env_2_attack, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_attack_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_decay, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_decay_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_sustain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_sustain_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_release, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_release_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_gain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_gain_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->env_2_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_env_2_frequency_callback), abyss_synth);
+
   /* LFO-0 */
   g_signal_connect_after(abyss_synth->lfo_0_oscillator, "notify::selected",
 			 G_CALLBACK(ags_abyss_synth_lfo_0_oscillator_callback), abyss_synth);
@@ -4929,18 +4967,267 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(abyss_synth->lfo_1_tuning, "value-changed",
 			 G_CALLBACK(ags_abyss_synth_lfo_1_tuning_callback), abyss_synth);
 
-  /* noise */
+  /* LFO-2 */
+  g_signal_connect_after(abyss_synth->lfo_2_oscillator, "notify::selected",
+			 G_CALLBACK(ags_abyss_synth_lfo_2_oscillator_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->lfo_2_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_lfo_2_frequency_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->lfo_2_depth, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_lfo_2_depth_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->lfo_2_tuning, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_lfo_2_tuning_callback), abyss_synth);
+
+  /* LFO-3 */
+  g_signal_connect_after(abyss_synth->lfo_3_oscillator, "notify::selected",
+			 G_CALLBACK(ags_abyss_synth_lfo_3_oscillator_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->lfo_3_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_lfo_3_frequency_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->lfo_3_depth, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_lfo_3_depth_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->lfo_3_tuning, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_lfo_3_tuning_callback), abyss_synth);
+
+  /* pink noise 0 */
   g_signal_connect_after(abyss_synth->pink_noise_0_frequency, "value-changed",
-			 G_CALLBACK(ags_abyss_synth_noise_frequency_callback), abyss_synth);
+			 G_CALLBACK(ags_abyss_synth_pink_noise_0_frequency_callback), abyss_synth);
 
   g_signal_connect_after(abyss_synth->pink_noise_0_gain, "value-changed",
-			 G_CALLBACK(ags_abyss_synth_noise_gain_callback), abyss_synth);
+			 G_CALLBACK(ags_abyss_synth_pink_noise_0_gain_callback), abyss_synth);
 
+  /* pink noise 1 */
+  g_signal_connect_after(abyss_synth->pink_noise_1_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_pink_noise_1_frequency_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->pink_noise_1_gain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_pink_noise_1_gain_callback), abyss_synth);
+
+  /* seq-0 modulation */
+  g_signal_connect_after(abyss_synth->seq_0_modulation_0, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_1, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_2, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_2_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_3, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_3_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_4, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_4_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_5, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_5_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_6, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_6_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_7, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_7_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_8, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_8_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_9, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_9_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_10, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_10_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_11, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_11_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_12, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_12_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_13, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_13_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_14, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_14_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_modulation_15, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_modulation_15_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_pingpong, "toggled",
+			 G_CALLBACK(ags_abyss_synth_seq_0_pingpong_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_0_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_0_lfo_frequency_callback), abyss_synth);
+
+  /* seq-1 modulation */
+  g_signal_connect_after(abyss_synth->seq_1_modulation_0, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_1, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_2, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_2_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_3, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_3_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_4, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_4_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_5, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_5_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_6, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_6_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_7, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_7_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_8, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_8_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_9, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_9_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_10, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_10_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_11, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_11_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_12, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_12_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_13, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_13_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_14, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_14_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_modulation_15, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_modulation_15_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_pingpong, "toggled",
+			 G_CALLBACK(ags_abyss_synth_seq_1_pingpong_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_1_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_1_lfo_frequency_callback), abyss_synth);
+
+  /* seq-2 modulation */
+  g_signal_connect_after(abyss_synth->seq_2_modulation_0, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_1, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_2, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_2_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_3, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_3_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_4, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_4_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_5, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_5_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_6, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_6_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_7, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_7_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_8, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_8_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_9, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_9_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_10, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_10_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_11, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_11_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_12, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_12_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_13, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_13_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_14, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_14_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_modulation_15, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_modulation_15_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_pingpong, "toggled",
+			 G_CALLBACK(ags_abyss_synth_seq_2_pingpong_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_2_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_2_lfo_frequency_callback), abyss_synth);
+
+  /* seq-3 modulation */
+  g_signal_connect_after(abyss_synth->seq_3_modulation_0, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_1, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_2, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_2_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_3, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_3_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_4, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_4_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_5, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_5_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_6, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_6_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_7, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_7_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_8, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_8_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_9, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_9_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_10, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_10_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_11, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_11_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_12, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_12_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_13, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_13_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_14, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_14_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_modulation_15, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_modulation_15_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_pingpong, "toggled",
+			 G_CALLBACK(ags_abyss_synth_seq_3_pingpong_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->seq_3_lfo_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_seq_3_lfo_frequency_callback), abyss_synth);
+  
   /* modulation matrix */
-  ags_connectable_connect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));
-
-  g_signal_connect_after(abyss_synth->modulation_matrix, "toggled",
-			 G_CALLBACK(ags_abyss_synth_modulation_matrix_callback), abyss_synth);
 
   /* osc-0 */
   g_signal_connect_after(abyss_synth->osc_0_oscillator, "notify::selected",
@@ -4957,6 +5244,15 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(abyss_synth->osc_0_volume, "value-changed",
 			 G_CALLBACK(ags_abyss_synth_osc_0_volume_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_0_low_pass_0, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_0_low_pass_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_0_low_pass_1, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_0_low_pass_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_0_no_low_pass, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_0_no_low_pass_callback), abyss_synth);
 
   /* osc-1 */
   g_signal_connect_after(abyss_synth->osc_1_oscillator, "notify::selected",
@@ -4973,6 +5269,65 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(abyss_synth->osc_1_volume, "value-changed",
 			 G_CALLBACK(ags_abyss_synth_osc_1_volume_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_1_low_pass_0, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_1_low_pass_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_1_low_pass_1, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_1_low_pass_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_1_no_low_pass, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_1_no_low_pass_callback), abyss_synth);
+
+  /* osc-2 */
+  g_signal_connect_after(abyss_synth->osc_2_oscillator, "notify::selected",
+			 G_CALLBACK(ags_abyss_synth_osc_2_oscillator_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_2_octave, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_2_octave_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_2_key, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_2_key_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_2_phase, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_2_phase_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_2_volume, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_2_volume_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_2_low_pass_0, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_2_low_pass_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_2_low_pass_1, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_2_low_pass_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_2_no_low_pass, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_2_no_low_pass_callback), abyss_synth);
+
+  /* osc-3 */
+  g_signal_connect_after(abyss_synth->osc_3_oscillator, "notify::selected",
+			 G_CALLBACK(ags_abyss_synth_osc_3_oscillator_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_3_octave, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_3_octave_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_3_key, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_3_key_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_3_phase, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_3_phase_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_3_volume, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_osc_3_volume_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_3_low_pass_0, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_3_low_pass_0_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_3_low_pass_1, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_3_low_pass_1_callback), abyss_synth);
+  
+  g_signal_connect_after(abyss_synth->osc_3_no_low_pass, "toggled",
+			 G_CALLBACK(ags_abyss_synth_osc_3_no_low_pass_callback), abyss_synth);
 
   /* volume */
   g_signal_connect_after(abyss_synth->volume, "value-changed",
@@ -5119,6 +5474,80 @@ ags_abyss_synth_disconnect(AgsConnectable *connectable)
 		      abyss_synth,
 		      NULL);
 
+  /* env-2 */
+  g_object_disconnect(abyss_synth->env_2_attack,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_2_attack_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_2_decay,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_2_decay_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_2_sustain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_2_sustain_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_2_release,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_2_release_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_2_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_2_gain_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_2_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_2_frequency_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* env-3 */
+  g_object_disconnect(abyss_synth->env_3_attack,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_3_attack_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_3_decay,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_3_decay_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_3_sustain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_3_sustain_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_3_release,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_3_release_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_3_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_3_gain_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->env_3_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_env_3_frequency_callback),
+		      abyss_synth,
+		      NULL);
+
   /* LFO-0 */
   g_object_disconnect(abyss_synth->lfo_0_oscillator,
 		      "any_signal::notify::selected",
@@ -5169,27 +5598,519 @@ ags_abyss_synth_disconnect(AgsConnectable *connectable)
 		      abyss_synth,
 		      NULL);
 
-  /* pink noise */
+  /* LFO-2 */
+  g_object_disconnect(abyss_synth->lfo_2_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_abyss_synth_lfo_2_oscillator_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->lfo_2_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_lfo_2_frequency_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->lfo_2_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_lfo_2_depth_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->lfo_2_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_lfo_2_tuning_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* LFO-3 */
+  g_object_disconnect(abyss_synth->lfo_3_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_abyss_synth_lfo_3_oscillator_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->lfo_3_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_lfo_3_frequency_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->lfo_3_depth,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_lfo_3_depth_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->lfo_3_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_lfo_3_tuning_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* seq 0 */
+  g_object_disconnect(abyss_synth->seq_0_modulation_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_0_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_1_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_2_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_3_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_4,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_4_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_5,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_5_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_6,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_6_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_7,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_7_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_8,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_8_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_9,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_9_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_10,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_10_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_11,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_11_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_12,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_12_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_13,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_13_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_14,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_14_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_modulation_15,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_modulation_15_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_0_pingpong,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_abyss_synth_seq_0_pingpong_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->seq_0_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_0_lfo_frequency_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* seq 1 */
+  g_object_disconnect(abyss_synth->seq_1_modulation_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_0_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_1_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_2_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_3_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_4,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_4_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_5,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_5_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_6,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_6_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_7,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_7_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_8,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_8_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_9,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_9_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_10,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_10_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_11,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_11_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_12,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_12_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_13,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_13_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_14,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_14_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_modulation_15,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_modulation_15_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_1_pingpong,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_abyss_synth_seq_1_pingpong_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->seq_1_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_1_lfo_frequency_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* seq 2 */
+  g_object_disconnect(abyss_synth->seq_2_modulation_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_0_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_1_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_2_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_3_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_4,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_4_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_5,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_5_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_6,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_6_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_7,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_7_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_8,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_8_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_9,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_9_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_10,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_10_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_11,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_11_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_12,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_12_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_13,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_13_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_14,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_14_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_modulation_15,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_modulation_15_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_2_pingpong,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_abyss_synth_seq_2_pingpong_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->seq_2_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_2_lfo_frequency_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* seq 3 */
+  g_object_disconnect(abyss_synth->seq_3_modulation_0,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_0_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_1,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_1_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_2,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_2_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_3,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_3_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_4,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_4_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_5,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_5_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_6,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_6_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_7,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_7_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_8,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_8_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_9,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_9_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_10,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_10_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_11,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_11_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_12,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_12_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_13,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_13_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_14,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_14_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_modulation_15,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_modulation_15_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->seq_3_pingpong,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_abyss_synth_seq_3_pingpong_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->seq_3_lfo_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_seq_3_lfo_frequency_callback),
+		      abyss_synth,
+		      NULL);
+  
+  /* pink noise 0 */
   g_object_disconnect(abyss_synth->pink_noise_0_frequency,
 		      "any_signal::value-changed",
-		      G_CALLBACK(ags_abyss_synth_noise_frequency_callback),
+		      G_CALLBACK(ags_abyss_synth_pink_noise_0_frequency_callback),
 		      abyss_synth,
 		      NULL);
 
   g_object_disconnect(abyss_synth->pink_noise_0_gain,
 		      "any_signal::value-changed",
-		      G_CALLBACK(ags_abyss_synth_noise_gain_callback),
+		      G_CALLBACK(ags_abyss_synth_pink_noise_0_gain_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* pink noise 1 */
+  g_object_disconnect(abyss_synth->pink_noise_1_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_pink_noise_1_frequency_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->pink_noise_1_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_pink_noise_1_gain_callback),
 		      abyss_synth,
 		      NULL);
 
   /* modulation matrix */
-  ags_connectable_disconnect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));
-
-  g_object_disconnect(abyss_synth->modulation_matrix,
-		      "any_signal::toggled",
-		      G_CALLBACK(ags_abyss_synth_modulation_matrix_callback),
-		      abyss_synth,
-		      NULL);
 
   /* osc-0 */
   g_object_disconnect(abyss_synth->osc_0_oscillator,

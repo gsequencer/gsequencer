@@ -17,10 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __RESOURCE_ags_gsequencer_H__
-#define __RESOURCE_ags_gsequencer_H__
+#include <ags/app/machine/ags_abyss_synth_callbacks.h>
 
-#include <gio/gio.h>
+#include <ags/app/ags_window.h>
 
-extern GResource *ags_gsequencer_get_resource (void);
-#endif
+#include <math.h>

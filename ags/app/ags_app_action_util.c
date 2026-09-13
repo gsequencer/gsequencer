@@ -63,6 +63,7 @@
 #include <ags/app/machine/ags_quantum_synth.h>
 #include <ags/app/machine/ags_raven_synth.h>
 #include <ags/app/machine/ags_modular_synth.h>
+#include <ags/app/machine/ags_abyss_synth.h>
 
 #if defined(AGS_WITH_LIBINSTPATCH)
 #include <ags/app/machine/ags_ffplayer.h>
@@ -1477,6 +1478,25 @@ ags_app_action_util_add_modular_synth()
 }
 
 void
+ags_app_action_util_add_abyss_synth()
+{
+  AgsAbyssSynth *abyss_synth;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+  
+  application_context = ags_application_context_get_instance();
+
+  /* create abyss synth */
+  abyss_synth = (AgsAbyssSynth *) ags_machine_util_new_abyss_synth();
+
+  add_audio = ags_add_audio_new(AGS_MACHINE(abyss_synth)->audio);
+  ags_ui_provider_schedule_task(AGS_UI_PROVIDER(application_context),
+				(AgsTask *) add_audio);
+}
+
+void
 ags_app_action_util_add_ffplayer()
 {
 #if defined(AGS_WITH_LIBINSTPATCH)
@@ -2152,6 +2172,7 @@ ags_app_action_util_edit_notation()
      AGS_IS_QUANTUM_SYNTH(machine) ||
      AGS_IS_RAVEN_SYNTH(machine) ||
      AGS_IS_MODULAR_SYNTH(machine) ||
+     AGS_IS_ABYSS_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||
@@ -2305,6 +2326,7 @@ ags_app_action_util_edit_sheet()
      AGS_IS_QUANTUM_SYNTH(machine) ||
      AGS_IS_RAVEN_SYNTH(machine) ||
      AGS_IS_MODULAR_SYNTH(machine) ||
+     AGS_IS_ABYSS_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||
