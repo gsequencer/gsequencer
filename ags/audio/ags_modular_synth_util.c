@@ -69,16 +69,6 @@ static gboolean ags_modular_synth_util_volume_receives(AgsModularSynthUtil *modu
 						       gint64 *sends,
 						       AgsModularSynthSends modular_synth_sends);
 
-#if 0
-extern void ags_fluid_interpolate_4th_order_util_config();
-
-extern gboolean ags_fluid_interp_coeff_4th_order_initialized;
-
-extern gdouble ags_fluid_interp_coeff_4th_order[AGS_FLUID_INTERP_MAX][4];
-
-extern GMutex ags_fluid_interp_coeff_4th_order_mutex;
-#endif
-
 /**
  * SECTION:ags_modular_synth_util
  * @short_description: frequency modulation synth util
@@ -523,15 +513,11 @@ void
 ags_modular_synth_util_set_format(AgsModularSynthUtil *modular_synth_util,
 				  AgsSoundcardFormat format)
 {
-  guint buffer_length;
-
   if(modular_synth_util == NULL){
     return;
   }
 
   modular_synth_util->format = format;
-
-  buffer_length = modular_synth_util->buffer_length;
 
   /*  */
   ags_common_pitch_util_set_format(modular_synth_util->pitch_util,

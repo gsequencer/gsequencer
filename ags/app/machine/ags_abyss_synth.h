@@ -129,8 +129,11 @@ struct _AgsAbyssSynth
   AgsDial *lfo_3_tuning;
 
   /* pink noise */
-  AgsDial *pink_noise_frequency;
-  AgsDial *pink_noise_gain;
+  AgsDial *pink_noise_0_frequency;
+  AgsDial *pink_noise_0_gain;
+  
+  AgsDial *pink_noise_1_frequency;
+  AgsDial *pink_noise_1_gain;
 
   /* SEQ 0-3 */
   AgsDial *seq_0_modulation_0;
@@ -285,21 +288,19 @@ struct _AgsAbyssSynth
   /* ring 0-1 */
   GtkCheckButton *ring_0_enabled;
   
-  AgsDial *ring_0_lfo_frequency;
-  AgsDial *ring_0_lfo_depth;
+  AgsDial *ring_0_tuning;
+  AgsDial *ring_0_drive;
   
-  AgsDial *ring_0_dry;
-  AgsDial *ring_0_wet;
+  AgsDial *ring_0_mix;
 
   AgsDial *ring_0_gain;
 
   GtkCheckButton *ring_1_enabled;
   
-  AgsDial *ring_1_lfo_frequency;
-  AgsDial *ring_1_lfo_depth;
+  AgsDial *ring_1_tuning;
+  AgsDial *ring_1_drive;
   
-  AgsDial *ring_1_dry;
-  AgsDial *ring_1_wet;
+  AgsDial *ring_1_mix;
 
   AgsDial *ring_1_gain;
   
