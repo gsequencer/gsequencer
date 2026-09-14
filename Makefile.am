@@ -2440,6 +2440,12 @@ libags_audio_fx_c_sources = \
 	ags/audio/fx/ags_fx_fm_synth_channel_processor.c \
 	ags/audio/fx/ags_fx_fm_synth_recycling.c \
 	ags/audio/fx/ags_fx_fm_synth_audio_signal.c \
+	ags/audio/fx/ags_fx_abyss_synth_audio.c \
+	ags/audio/fx/ags_fx_abyss_synth_audio_processor.c \
+	ags/audio/fx/ags_fx_abyss_synth_channel.c \
+	ags/audio/fx/ags_fx_abyss_synth_channel_processor.c \
+	ags/audio/fx/ags_fx_abyss_synth_recycling.c \
+	ags/audio/fx/ags_fx_abyss_synth_audio_signal.c \
 	ags/audio/fx/ags_fx_modular_synth_audio.c \
 	ags/audio/fx/ags_fx_modular_synth_audio_processor.c \
 	ags/audio/fx/ags_fx_modular_synth_channel.c \

@@ -292,6 +292,7 @@ ags_modular_synth_util_free(AgsModularSynthUtil *ptr)
   
   g_free(ptr);
 }
+
 /**
  * ags_modular_synth_util_get_source:
  * @modular_synth_util: the #AgsModularSynthUtil-struct

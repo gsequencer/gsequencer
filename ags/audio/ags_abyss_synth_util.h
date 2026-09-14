@@ -32,6 +32,8 @@ G_BEGIN_DECLS
 #define AGS_TYPE_ABYSS_SYNTH_UTIL         (ags_abyss_synth_util_get_type())
 #define AGS_ABYSS_SYNTH_UTIL(ptr) ((AgsAbyssSynthUtil *)(ptr))
 
+#define AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT (16)
+
 #define AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR (AGS_SYNTH_OSCILLATOR_SIN)
 #define AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY (440.0)
 #define AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_PHASE (0.0)
@@ -148,6 +150,18 @@ G_BEGIN_DECLS
 	.lfo_3_tuning = AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_TUNING,	\
 	.lfo_3_sends = {0,},						\
 	.lfo_3_buffer = NULL,						\
+	.seq_0_modulation = {0,},					\
+	.seq_0_pingpong = FALSE,					\
+	.seq_0_lfo_frequency = 6.0,					\
+	.seq_1_modulation = {0,},					\
+	.seq_1_pingpong = FALSE,					\
+	.seq_1_lfo_frequency = 6.0,					\
+	.seq_2_modulation = {0,},					\
+	.seq_2_pingpong = FALSE,					\
+	.seq_2_lfo_frequency = 6.0,					\
+	.seq_3_modulation = {0,},					\
+	.seq_3_pingpong = FALSE,					\
+	.seq_3_lfo_frequency = 6.0,					\
 	.noise_0_util = NULL,						\
 	.noise_0_frequency = 220.0,					\
 	.noise_0_gain = 1.0,						\
@@ -340,6 +354,26 @@ struct _AgsAbyssSynthUtil
   
   gpointer lfo_3_buffer;
   
+  gdouble seq_0_modulation[AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT];
+
+  gboolean seq_0_pingpong;
+  gdouble seq_0_lfo_frequency;
+
+  gdouble seq_1_modulation[AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT];
+
+  gboolean seq_1_pingpong;
+  gdouble seq_1_lfo_frequency;
+
+  gdouble seq_2_modulation[AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT];
+
+  gboolean seq_2_pingpong;
+  gdouble seq_2_lfo_frequency;
+
+  gdouble seq_3_modulation[AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT];
+
+  gboolean seq_3_pingpong;
+  gdouble seq_3_lfo_frequency;
+
   gpointer noise_0_util;
   
   gdouble noise_0_frequency;
@@ -425,6 +459,38 @@ gdouble ags_abyss_synth_util_get_osc_1_volume(AgsAbyssSynthUtil *abyss_synth_uti
 void ags_abyss_synth_util_set_osc_1_volume(AgsAbyssSynthUtil *abyss_synth_util,
 					   gdouble osc_1_volume);
 
+AgsSynthOscillatorMode ags_abyss_synth_util_get_osc_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
+					       AgsSynthOscillatorMode osc_2_oscillator);
+
+gdouble ags_abyss_synth_util_get_osc_2_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_2_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					      gdouble osc_2_frequency);
+
+gdouble ags_abyss_synth_util_get_osc_2_phase(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_2_phase(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble osc_2_phase);
+
+gdouble ags_abyss_synth_util_get_osc_2_volume(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_2_volume(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble osc_2_volume);
+
+AgsSynthOscillatorMode ags_abyss_synth_util_get_osc_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
+					       AgsSynthOscillatorMode osc_3_oscillator);
+
+gdouble ags_abyss_synth_util_get_osc_3_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_3_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					      gdouble osc_3_frequency);
+
+gdouble ags_abyss_synth_util_get_osc_3_phase(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_3_phase(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble osc_3_phase);
+
+gdouble ags_abyss_synth_util_get_osc_3_volume(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_3_volume(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble osc_3_volume);
+
 gdouble ags_abyss_synth_util_get_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util,
 					   gdouble pitch_tuning);
@@ -493,6 +559,66 @@ void ags_abyss_synth_util_set_env_1_sends(AgsAbyssSynthUtil *abyss_synth_util,
 					  gint64 *env_1_sends,
 					  guint env_1_sends_count);
 
+gdouble ags_abyss_synth_util_get_env_2_attack(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_2_attack(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble env_2_attack);
+
+gdouble ags_abyss_synth_util_get_env_2_sustain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_2_sustain(AgsAbyssSynthUtil *abyss_synth_util,
+					    gdouble env_2_sustain);
+
+gdouble ags_abyss_synth_util_get_env_2_decay(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_2_decay(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble env_2_decay);
+
+gdouble ags_abyss_synth_util_get_env_2_release(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_2_release(AgsAbyssSynthUtil *abyss_synth_util,
+					    gdouble env_2_release);
+
+gdouble ags_abyss_synth_util_get_env_2_gain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_2_gain(AgsAbyssSynthUtil *abyss_synth_util,
+					 gdouble env_2_gain);
+
+gdouble ags_abyss_synth_util_get_env_2_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_2_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					      gdouble env_2_frequency);
+
+gint64* ags_abyss_synth_util_get_env_2_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					     guint *env_2_sends_count);
+void ags_abyss_synth_util_set_env_2_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint64 *env_2_sends,
+					  guint env_2_sends_count);
+
+gdouble ags_abyss_synth_util_get_env_3_attack(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_3_attack(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble env_3_attack);
+
+gdouble ags_abyss_synth_util_get_env_3_sustain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_3_sustain(AgsAbyssSynthUtil *abyss_synth_util,
+					    gdouble env_3_sustain);
+
+gdouble ags_abyss_synth_util_get_env_3_decay(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_3_decay(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble env_3_decay);
+
+gdouble ags_abyss_synth_util_get_env_3_release(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_3_release(AgsAbyssSynthUtil *abyss_synth_util,
+					    gdouble env_3_release);
+
+gdouble ags_abyss_synth_util_get_env_3_gain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_3_gain(AgsAbyssSynthUtil *abyss_synth_util,
+					 gdouble env_3_gain);
+
+gdouble ags_abyss_synth_util_get_env_3_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_env_3_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					      gdouble env_3_frequency);
+
+gint64* ags_abyss_synth_util_get_env_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					     guint *env_3_sends_count);
+void ags_abyss_synth_util_set_env_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint64 *env_3_sends,
+					  guint env_3_sends_count);
+
 AgsSynthOscillatorMode ags_abyss_synth_util_get_lfo_0_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_lfo_0_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
 					       AgsSynthOscillatorMode lfo_0_oscillator);
@@ -537,19 +663,77 @@ void ags_abyss_synth_util_set_lfo_1_sends(AgsAbyssSynthUtil *abyss_synth_util,
 					  gint64 *lfo_1_sends,
 					  guint lfo_1_sends_count);
 
-gdouble ags_abyss_synth_util_get_noise_frequency(AgsAbyssSynthUtil *abyss_synth_util);
-void ags_abyss_synth_util_set_noise_frequency(AgsAbyssSynthUtil *abyss_synth_util,
-					      gdouble noise_frequency);
+AgsSynthOscillatorMode ags_abyss_synth_util_get_lfo_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
+					       AgsSynthOscillatorMode lfo_2_oscillator);
 
-gdouble ags_abyss_synth_util_get_noise_gain(AgsAbyssSynthUtil *abyss_synth_util);
-void ags_abyss_synth_util_set_noise_gain(AgsAbyssSynthUtil *abyss_synth_util,
-					 gdouble noise_gain);
+gdouble ags_abyss_synth_util_get_lfo_2_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_2_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					      gdouble lfo_2_frequency);
 
-gint64* ags_abyss_synth_util_get_noise_sends(AgsAbyssSynthUtil *abyss_synth_util,
-					     guint *noise_sends_count);
-void ags_abyss_synth_util_set_noise_sends(AgsAbyssSynthUtil *abyss_synth_util,
-					  gint64 *noise_sends,
-					  guint noise_sends_count);
+gdouble ags_abyss_synth_util_get_lfo_2_depth(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_2_depth(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble lfo_2_depth);
+
+gdouble ags_abyss_synth_util_get_lfo_2_tuning(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_2_tuning(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble lfo_2_tuning);
+
+gint64* ags_abyss_synth_util_get_lfo_2_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					     guint *lfo_2_sends_count);
+void ags_abyss_synth_util_set_lfo_2_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint64 *lfo_2_sends,
+					  guint lfo_2_sends_count);
+
+AgsSynthOscillatorMode ags_abyss_synth_util_get_lfo_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
+					       AgsSynthOscillatorMode lfo_3_oscillator);
+
+gdouble ags_abyss_synth_util_get_lfo_3_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_3_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					      gdouble lfo_3_frequency);
+
+gdouble ags_abyss_synth_util_get_lfo_3_depth(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_3_depth(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble lfo_3_depth);
+
+gdouble ags_abyss_synth_util_get_lfo_3_tuning(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_lfo_3_tuning(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble lfo_3_tuning);
+
+gint64* ags_abyss_synth_util_get_lfo_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					     guint *lfo_3_sends_count);
+void ags_abyss_synth_util_set_lfo_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint64 *lfo_3_sends,
+					  guint lfo_3_sends_count);
+
+gdouble ags_abyss_synth_util_get_noise_0_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_noise_0_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+						gdouble noise_frequency);
+
+gdouble ags_abyss_synth_util_get_noise_0_gain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_noise_0_gain(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble noise_gain);
+
+gint64* ags_abyss_synth_util_get_noise_0_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					       guint *noise_sends_count);
+void ags_abyss_synth_util_set_noise_0_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					    gint64 *noise_sends,
+					    guint noise_sends_count);
+
+gdouble ags_abyss_synth_util_get_noise_1_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_noise_1_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+						gdouble noise_frequency);
+
+gdouble ags_abyss_synth_util_get_noise_1_gain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_noise_1_gain(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble noise_gain);
+
+gint64* ags_abyss_synth_util_get_noise_1_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					       guint *noise_sends_count);
+void ags_abyss_synth_util_set_noise_1_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					    gint64 *noise_sends,
+					    guint noise_sends_count);
 
 guint ags_abyss_synth_util_get_frame_count(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_frame_count(AgsAbyssSynthUtil *abyss_synth_util,

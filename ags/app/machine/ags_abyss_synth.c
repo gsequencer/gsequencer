@@ -184,8 +184,12 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   GtkGrid *osc_1_grid;
   GtkGrid *osc_2_grid;
   GtkGrid *osc_3_grid;
+  GtkBox *ring_box;
+  GtkGrid *ring_0_grid;
+  GtkGrid *ring_1_grid;
   GtkGrid *effect_grid;  
-  GtkGrid *low_pass_grid;  
+  GtkGrid *low_pass_0_grid;  
+  GtkGrid *low_pass_1_grid;  
   GtkGrid *amplifier_grid;  
   GtkGrid *chorus_grid;
   GtkLabel *label;
@@ -373,7 +377,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   gtk_grid_attach(abyss_synth_grid,
 		  (GtkWidget *) sends_notebook,
 		  0, 0,
-		  1, 1);
+		  2, 1);
     
   /* env box */
   env_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
@@ -385,8 +389,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   
   /* env-0 */
   env_0_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(env_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(env_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) env_0_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) env_0_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(env_box,
 		 (GtkWidget *) env_0_grid);
 
@@ -578,8 +591,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* env-1 */
   env_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(env_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(env_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) env_1_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) env_1_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(env_box,
 		 (GtkWidget *) env_1_grid);
 
@@ -771,8 +793,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* env-2 */
   env_2_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(env_2_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(env_2_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) env_2_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) env_2_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(env_box,
 		 (GtkWidget *) env_2_grid);
 
@@ -964,8 +995,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* env-3 */
   env_3_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(env_3_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(env_3_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) env_3_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) env_3_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(env_box,
 		 (GtkWidget *) env_3_grid);
 
@@ -1165,8 +1205,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* lfo-0 */
   lfo_0_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(lfo_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(lfo_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) lfo_0_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) lfo_0_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(lfo_box,
 		 (GtkWidget *) lfo_0_grid);
 
@@ -1284,8 +1333,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* lfo-1 */
   lfo_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(lfo_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(lfo_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) lfo_1_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) lfo_1_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(lfo_box,
 		 (GtkWidget *) lfo_1_grid);
 
@@ -1403,8 +1461,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* lfo-2 */
   lfo_2_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(lfo_2_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(lfo_2_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) lfo_2_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) lfo_2_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(lfo_box,
 		 (GtkWidget *) lfo_2_grid);
 
@@ -1522,8 +1589,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* lfo-3 */
   lfo_3_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(lfo_3_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(lfo_3_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) lfo_3_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) lfo_3_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(lfo_box,
 		 (GtkWidget *) lfo_3_grid);
 
@@ -3440,7 +3516,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  2, 1);
   
   /* pink noise box */
-  pink_noise_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
+  pink_noise_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
 					  AGS_UI_PROVIDER_DEFAULT_SPACING);
   
   gtk_notebook_append_page(sends_notebook,
@@ -3449,8 +3525,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   
   /* pink noise 0 */
   pink_noise_0_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(pink_noise_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(pink_noise_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) pink_noise_0_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) pink_noise_0_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(pink_noise_box,
 		 (GtkWidget *) pink_noise_0_grid);
 
@@ -3518,8 +3603,17 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 
   /* pink noise 1 */
   pink_noise_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(pink_noise_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(pink_noise_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+  
   gtk_widget_set_halign((GtkWidget *) pink_noise_1_grid,
 			GTK_ALIGN_START);
+  gtk_widget_set_valign((GtkWidget *) pink_noise_1_grid,
+			GTK_ALIGN_START);
+
   gtk_box_append(pink_noise_box,
 		 (GtkWidget *) pink_noise_1_grid);
 
@@ -3585,18 +3679,25 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  3, 0,
 		  1, 1);
 
-  /* Osc box */
+  /* osc box */
   osc_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				   AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(abyss_synth_grid,
 		  (GtkWidget *) osc_box,
-		  0, 0,
+		  2, 0,
 		  1, 1);
   
   /* osc-0 */
   osc_0_grid = (GtkGrid *) gtk_grid_new();
+  
+  gtk_grid_set_column_spacing(osc_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(osc_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_halign((GtkWidget *) osc_0_grid,
 	 		GTK_ALIGN_START);
+
   gtk_box_append(osc_box,
 		 (GtkWidget *) osc_0_grid);
 
@@ -3741,7 +3842,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   gtk_grid_attach(osc_0_grid,
 		  (GtkWidget *) abyss_synth->osc_0_volume,
 		  1, 4,
-		  1, 4);
+		  1, 1);
 
   /* to low-pass */
   abyss_synth->osc_0_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-1 - low-pass-0"));
@@ -3766,10 +3867,20 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  0, 7,
 		  2, 1);
 
+  gtk_check_button_set_active(abyss_synth->osc_0_no_low_pass,
+			      TRUE);
+
   /* osc-1 */
   osc_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(osc_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(osc_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_halign((GtkWidget *) osc_1_grid,
 	 		GTK_ALIGN_START);
+
   gtk_box_append(osc_box,
 		 (GtkWidget *) osc_1_grid);
 
@@ -3939,10 +4050,20 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  0, 7,
 		  2, 1);
 
+  gtk_check_button_set_active(abyss_synth->osc_1_no_low_pass,
+			      TRUE);
+
   /* osc-2 */
   osc_2_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(osc_2_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(osc_2_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_halign((GtkWidget *) osc_2_grid,
 	 		GTK_ALIGN_START);
+
   gtk_box_append(osc_box,
 		 (GtkWidget *) osc_2_grid);
 
@@ -4112,10 +4233,20 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  0, 7,
 		  2, 1);
 
+  gtk_check_button_set_active(abyss_synth->osc_2_no_low_pass,
+			      TRUE);
+
   /* osc-3 */
   osc_3_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_grid_set_column_spacing(osc_3_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(osc_3_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
   gtk_widget_set_halign((GtkWidget *) osc_3_grid,
 	 		GTK_ALIGN_START);
+  
   gtk_box_append(osc_box,
 		 (GtkWidget *) osc_3_grid);
 
@@ -4284,6 +4415,307 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  (GtkWidget *) abyss_synth->osc_3_no_low_pass,
 		  0, 7,
 		  2, 1);
+
+  gtk_check_button_set_active(abyss_synth->osc_3_no_low_pass,
+			      TRUE);
+
+  /* ring box */
+  ring_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_VERTICAL,
+				   AGS_UI_PROVIDER_DEFAULT_SPACING);
+  gtk_grid_attach(abyss_synth_grid,
+		  (GtkWidget *) ring_box,
+		  4, 0,
+		  1, 1);
+  
+  /* ring 0 */
+  ring_0_grid = (GtkGrid *) gtk_grid_new();
+  
+  gtk_grid_set_column_spacing(ring_0_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(ring_0_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_halign((GtkWidget *) ring_0_grid,
+	 		GTK_ALIGN_START);
+  
+  gtk_box_append(ring_box,
+		 (GtkWidget *) ring_0_grid);
+
+  /* enabled */
+  abyss_synth->ring_0_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("ring-1 - enabled"));
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) abyss_synth->ring_0_enabled,
+		  0, 0,
+		  2, 1);
+  
+  /* tuning */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-1 - tuning"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  abyss_synth->ring_0_tuning = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_0_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_0_tuning,
+		      12);
+
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) abyss_synth->ring_0_tuning,
+		  1, 1,
+		  1, 1);
+
+  /* drive */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-1 - drive"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  abyss_synth->ring_0_drive = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_0_drive);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_0_drive,
+		      12);
+
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) abyss_synth->ring_0_drive,
+		  1, 2,
+		  1, 1);
+
+  /* mix */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-1 - mix"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+  
+  abyss_synth->ring_0_mix = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_0_mix);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_0_mix,
+		      12);
+
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) abyss_synth->ring_0_mix,
+		  1, 3,
+		  1, 1);
+
+  /* gain */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-1 - gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+  
+  abyss_synth->ring_0_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_0_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_0_gain,
+		      12);
+
+  gtk_grid_attach(ring_0_grid,
+		  (GtkWidget *) abyss_synth->ring_0_gain,
+		  1, 4,
+		  1, 1);
+  
+  /* ring 1 */
+  ring_1_grid = (GtkGrid *) gtk_grid_new();
+  
+  gtk_grid_set_column_spacing(ring_1_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(ring_1_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_halign((GtkWidget *) ring_1_grid,
+	 		GTK_ALIGN_START);
+  
+  gtk_box_append(ring_box,
+		 (GtkWidget *) ring_1_grid);
+
+  /* enabled */
+  abyss_synth->ring_1_enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("ring-2 - enabled"));
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) abyss_synth->ring_1_enabled,
+		  0, 0,
+		  2, 1);
+  
+  /* tuning */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-2 - tuning"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  abyss_synth->ring_1_tuning = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_1_tuning);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_1_tuning,
+		      12);
+
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) abyss_synth->ring_1_tuning,
+		  1, 1,
+		  1, 1);
+
+  /* drive */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-2 - drive"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  abyss_synth->ring_1_drive = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_1_drive);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_1_drive,
+		      12);
+
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) abyss_synth->ring_1_drive,
+		  1, 2,
+		  1, 1);
+
+  /* mix */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-2 - mix"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) label,
+		  0, 3,
+		  1, 1);
+  
+  abyss_synth->ring_1_mix = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_1_mix);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_1_mix,
+		      12);
+
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) abyss_synth->ring_1_mix,
+		  1, 3,
+		  1, 1);
+
+  /* gain */
+  label = (GtkLabel *) gtk_label_new(i18n("ring-2 - gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) label,
+		  0, 4,
+		  1, 1);
+  
+  abyss_synth->ring_1_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->ring_1_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   -12.0);
+  gtk_adjustment_set_upper(adjustment,
+			   12.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->ring_1_gain,
+		      12);
+
+  gtk_grid_attach(ring_1_grid,
+		  (GtkWidget *) abyss_synth->ring_1_gain,
+		  1, 4,
+		  1, 1);
   
   /* effect */
   effect_grid = (GtkGrid *) gtk_grid_new();
@@ -4298,7 +4730,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   
   gtk_grid_attach(abyss_synth_grid,
 		  (GtkWidget *) effect_grid,
-		  4, 0,
+		  5, 0,
 		  1, 1);
 
   /* pitch tuning */
@@ -4363,27 +4795,27 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1,
 		  1, 1);
 
-  /* low-pass */
-  low_pass_grid = (GtkGrid *) gtk_grid_new();
+  /* low-pass 0 */
+  low_pass_0_grid = (GtkGrid *) gtk_grid_new();
 
-  gtk_widget_set_valign((GtkWidget *) low_pass_grid,
+  gtk_widget_set_valign((GtkWidget *) low_pass_0_grid,
 	 		GTK_ALIGN_START);
-  gtk_widget_set_halign((GtkWidget *) low_pass_grid,
+  gtk_widget_set_halign((GtkWidget *) low_pass_0_grid,
 	 		GTK_ALIGN_START);
 
-  gtk_widget_set_vexpand((GtkWidget *) low_pass_grid,
+  gtk_widget_set_vexpand((GtkWidget *) low_pass_0_grid,
 			 FALSE);
   
   gtk_grid_attach(abyss_synth_grid,
-		  (GtkWidget *) low_pass_grid,
+		  (GtkWidget *) low_pass_0_grid,
 		  0, 4,
-		  2, 1);
+		  1, 1);
 
   /* low-pass-0 cut-off frequency */
   label = (GtkLabel *) gtk_label_new(i18n("cut-off frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(low_pass_grid,
+  gtk_grid_attach(low_pass_0_grid,
 		  (GtkWidget *) label,
 		  0, 0,
 		  1, 1);
@@ -4405,7 +4837,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   ags_dial_set_radius(abyss_synth->low_pass_0_cut_off_frequency,
 		      12);
 
-  gtk_grid_attach(low_pass_grid,
+  gtk_grid_attach(low_pass_0_grid,
 		  (GtkWidget *) abyss_synth->low_pass_0_cut_off_frequency,
 		  1, 0,
 		  1, 1);
@@ -4414,7 +4846,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   label = (GtkLabel *) gtk_label_new(i18n("filter gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(low_pass_grid,
+  gtk_grid_attach(low_pass_0_grid,
 		  (GtkWidget *) label,
 		  0, 1,
 		  1, 1);
@@ -4436,7 +4868,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   ags_dial_set_radius(abyss_synth->low_pass_0_filter_gain,
 		      12);
 
-  gtk_grid_attach(low_pass_grid,
+  gtk_grid_attach(low_pass_0_grid,
 		  (GtkWidget *) abyss_synth->low_pass_0_filter_gain,
 		  1, 1,
 		  1, 1);
@@ -4445,7 +4877,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   label = (GtkLabel *) gtk_label_new(i18n("no-clip"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
-  gtk_grid_attach(low_pass_grid,
+  gtk_grid_attach(low_pass_0_grid,
 		  (GtkWidget *) label,
 		  0, 2,
 		  1, 1);
@@ -4467,8 +4899,117 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   ags_dial_set_radius(abyss_synth->low_pass_0_no_clip,
 		      12);
 
-  gtk_grid_attach(low_pass_grid,
+  gtk_grid_attach(low_pass_0_grid,
 		  (GtkWidget *) abyss_synth->low_pass_0_no_clip,
+		  1, 2,
+		  1, 1);
+
+  /* low-pass 1 */
+  low_pass_1_grid = (GtkGrid *) gtk_grid_new();
+
+  gtk_widget_set_valign((GtkWidget *) low_pass_1_grid,
+	 		GTK_ALIGN_START);
+  gtk_widget_set_halign((GtkWidget *) low_pass_1_grid,
+	 		GTK_ALIGN_START);
+
+  gtk_widget_set_vexpand((GtkWidget *) low_pass_1_grid,
+			 FALSE);
+  
+  gtk_grid_attach(abyss_synth_grid,
+		  (GtkWidget *) low_pass_1_grid,
+		  1, 4,
+		  1, 1);
+
+  /* low-pass-0 cut-off frequency */
+  label = (GtkLabel *) gtk_label_new(i18n("cut-off frequency"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(low_pass_1_grid,
+		  (GtkWidget *) label,
+		  0, 0,
+		  1, 1);
+  
+  abyss_synth->low_pass_1_cut_off_frequency = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->low_pass_1_cut_off_frequency);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   22000.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->low_pass_1_cut_off_frequency,
+		      12);
+
+  gtk_grid_attach(low_pass_1_grid,
+		  (GtkWidget *) abyss_synth->low_pass_1_cut_off_frequency,
+		  1, 0,
+		  1, 1);
+
+  /* low-pass-0 filter gain */
+  label = (GtkLabel *) gtk_label_new(i18n("filter gain"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(low_pass_1_grid,
+		  (GtkWidget *) label,
+		  0, 1,
+		  1, 1);
+  
+  abyss_synth->low_pass_1_filter_gain = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->low_pass_1_filter_gain);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   1.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->low_pass_1_filter_gain,
+		      12);
+
+  gtk_grid_attach(low_pass_1_grid,
+		  (GtkWidget *) abyss_synth->low_pass_1_filter_gain,
+		  1, 1,
+		  1, 1);
+
+  /* low-pass-0 no-clip */
+  label = (GtkLabel *) gtk_label_new(i18n("no-clip"));
+  gtk_widget_set_halign((GtkWidget *) label,
+			GTK_ALIGN_START);
+  gtk_grid_attach(low_pass_1_grid,
+		  (GtkWidget *) label,
+		  0, 2,
+		  1, 1);
+  
+  abyss_synth->low_pass_1_no_clip = (AgsDial *) ags_dial_new();
+
+  adjustment = ags_dial_get_adjustment(abyss_synth->low_pass_1_no_clip);
+
+  gtk_adjustment_set_lower(adjustment,
+			   0.0);
+  gtk_adjustment_set_upper(adjustment,
+			   22000.0);
+
+  gtk_adjustment_set_step_increment(adjustment,
+				    0.01);
+
+  gtk_adjustment_set_value(adjustment,
+			   0.0);
+  ags_dial_set_radius(abyss_synth->low_pass_1_no_clip,
+		      12);
+
+  gtk_grid_attach(low_pass_1_grid,
+		  (GtkWidget *) abyss_synth->low_pass_1_no_clip,
 		  1, 2,
 		  1, 1);
 
@@ -4485,7 +5026,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   
   gtk_grid_attach(abyss_synth_grid,
 		  (GtkWidget *) amplifier_grid,
-		  1, 4,
+		  2, 4,
 		  2, 1);
 
   /* amplifier-0 amp-0 gain */
@@ -5347,6 +5888,16 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
   g_signal_connect_after(abyss_synth->low_pass_0_no_clip, "value-changed",
 			 G_CALLBACK(ags_abyss_synth_low_pass_0_no_clip_callback), abyss_synth);
 
+  /* low-pass 1 */
+  g_signal_connect_after(abyss_synth->low_pass_1_cut_off_frequency, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_low_pass_1_cut_off_frequency_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->low_pass_1_filter_gain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_low_pass_1_filter_gain_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->low_pass_1_no_clip, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_low_pass_1_no_clip_callback), abyss_synth);
+
   /* amplifier 0 */  
   g_signal_connect_after(abyss_synth->amplifier_0_amp_0_gain, "value-changed",
 			 G_CALLBACK(ags_abyss_synth_amplifier_0_amp_0_gain_callback), abyss_synth);
@@ -6204,6 +6755,25 @@ ags_abyss_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect(abyss_synth->low_pass_0_no_clip,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_abyss_synth_low_pass_0_no_clip_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* low-pass 1 */
+  g_object_disconnect(abyss_synth->low_pass_1_cut_off_frequency,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_low_pass_1_cut_off_frequency_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->low_pass_1_filter_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_low_pass_1_filter_gain_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->low_pass_1_no_clip,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_low_pass_1_no_clip_callback),
 		      abyss_synth,
 		      NULL);
 

@@ -1,7 +1,9 @@
 ags (9.4.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAbyssSynth
 	* implemented ags_ring_modulation_util.[ch]
+	* implemented ags-fx-abyss-synth
 
 ags (9.3.4)
 

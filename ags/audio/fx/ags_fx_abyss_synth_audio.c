@@ -1202,7 +1202,7 @@ ags_fx_abyss_synth_audio_class_init(AgsFxAbyssSynthAudioClass *fx_abyss_synth_au
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_NOISE_FREQUENCY,
+				  PROP_SYNTH_0_PINK_NOISE_0_FREQUENCY,
 				  param_spec);
 
   /**
@@ -1218,7 +1218,7 @@ ags_fx_abyss_synth_audio_class_init(AgsFxAbyssSynthAudioClass *fx_abyss_synth_au
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_NOISE_GAIN,
+				  PROP_SYNTH_0_PINK_NOISE_0_GAIN,
 				  param_spec);
 
   /**
@@ -1234,7 +1234,7 @@ ags_fx_abyss_synth_audio_class_init(AgsFxAbyssSynthAudioClass *fx_abyss_synth_au
 				   AGS_TYPE_PORT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_SYNTH_0_NOISE_SENDS,
+				  PROP_SYNTH_0_PINK_NOISE_0_SENDS,
 				  param_spec);
 
   /**
@@ -2336,7 +2336,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
   position++;
   
   /* synth-0 noise frequency */
-  fx_abyss_synth_audio->synth_0_noise_frequency = g_object_new(AGS_TYPE_PORT,
+  fx_abyss_synth_audio->synth_0_pink_noise_0_frequency = g_object_new(AGS_TYPE_PORT,
 							       "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
 							       "specifier", "./noise-frequency[0]",
 							       "control-port", "37/56",
@@ -2346,19 +2346,19 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							       "port-value-length", 1,
 							       NULL);
   
-  fx_abyss_synth_audio->synth_0_noise_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_pink_noise_0_frequency->port_value.ags_port_float = (gfloat) 0.0;
 
-  g_object_set(fx_abyss_synth_audio->synth_0_noise_frequency,
-	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_noise_frequency_plugin_port(),
+  g_object_set(fx_abyss_synth_audio->synth_0_pink_noise_0_frequency,
+	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_frequency_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
-		      fx_abyss_synth_audio->synth_0_noise_frequency);
+		      fx_abyss_synth_audio->synth_0_pink_noise_0_frequency);
 
   position++;
 
   /* synth-0 noise gain */
-  fx_abyss_synth_audio->synth_0_noise_gain = g_object_new(AGS_TYPE_PORT,
+  fx_abyss_synth_audio->synth_0_pink_noise_0_gain = g_object_new(AGS_TYPE_PORT,
 							  "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
 							  "specifier", "./noise-gain[0]",
 							  "control-port", "38/56",
@@ -2368,19 +2368,19 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							  "port-value-length", 1,
 							  NULL);
   
-  fx_abyss_synth_audio->synth_0_noise_gain->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_pink_noise_0_gain->port_value.ags_port_float = (gfloat) 0.0;
 
-  g_object_set(fx_abyss_synth_audio->synth_0_noise_gain,
-	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_noise_gain_plugin_port(),
+  g_object_set(fx_abyss_synth_audio->synth_0_pink_noise_0_gain,
+	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_gain_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
-		      fx_abyss_synth_audio->synth_0_noise_gain);
+		      fx_abyss_synth_audio->synth_0_pink_noise_0_gain);
 
   position++;
 
   /* synth-0 noise sends */
-  fx_abyss_synth_audio->synth_0_noise_sends = g_object_new(AGS_TYPE_PORT,
+  fx_abyss_synth_audio->synth_0_pink_noise_0_sends = g_object_new(AGS_TYPE_PORT,
 							   "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
 							   "specifier", "./noise-sends[0]",
 							   "control-port", "39/56",
@@ -2390,16 +2390,16 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							   "port-value-length", AGS_ABYSS_SYNTH_SENDS_COUNT,
 							   NULL);
   
-  fx_abyss_synth_audio->synth_0_noise_sends->port_value.ags_port_pointer = (gint *) g_malloc(AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+  fx_abyss_synth_audio->synth_0_pink_noise_0_sends->port_value.ags_port_pointer = (gint *) g_malloc(AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
 
-  memset(fx_abyss_synth_audio->synth_0_noise_sends->port_value.ags_port_pointer, 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+  memset(fx_abyss_synth_audio->synth_0_pink_noise_0_sends->port_value.ags_port_pointer, 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
 
-  g_object_set(fx_abyss_synth_audio->synth_0_noise_sends,
-	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_noise_sends_plugin_port(),
+  g_object_set(fx_abyss_synth_audio->synth_0_pink_noise_0_sends,
+	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_sends_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
-		      fx_abyss_synth_audio->synth_0_noise_sends);
+		      fx_abyss_synth_audio->synth_0_pink_noise_0_sends);
 
   position++;
   
@@ -2417,7 +2417,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
   fx_abyss_synth_audio->low_pass_0_cut_off_frequency->port_value.ags_port_float = (gfloat) 2000.0;
 
   g_object_set(fx_abyss_synth_audio->low_pass_0_cut_off_frequency,
-	       "plugin-port", ags_fx_abyss_synth_audio_get_low_pass_cut_off_frequency_plugin_port(),
+	       "plugin-port", ags_fx_abyss_synth_audio_get_low_pass_0_cut_off_frequency_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
@@ -2439,7 +2439,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
   fx_abyss_synth_audio->low_pass_0_filter_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_abyss_synth_audio->low_pass_0_filter_gain,
-	       "plugin-port", ags_fx_abyss_synth_audio_get_low_pass_filter_gain_plugin_port(),
+	       "plugin-port", ags_fx_abyss_synth_audio_get_low_pass_0_filter_gain_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
@@ -2461,7 +2461,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
   fx_abyss_synth_audio->low_pass_0_no_clip->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->low_pass_0_no_clip,
-	       "plugin-port", ags_fx_abyss_synth_audio_get_low_pass_no_clip_plugin_port(),
+	       "plugin-port", ags_fx_abyss_synth_audio_get_low_pass_0_no_clip_plugin_port(),
 	       NULL);
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
@@ -3779,7 +3779,7 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
-  case PROP_SYNTH_0_NOISE_FREQUENCY:
+  case PROP_SYNTH_0_PINK_NOISE_0_FREQUENCY:
     {
       AgsPort *port;
 
@@ -3787,26 +3787,26 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
 
       g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_abyss_synth_audio->synth_0_noise_frequency){
+      if(port == fx_abyss_synth_audio->synth_0_pink_noise_0_frequency){
 	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
 
-      if(fx_abyss_synth_audio->synth_0_noise_frequency != NULL){
-	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_noise_frequency));
+      if(fx_abyss_synth_audio->synth_0_pink_noise_0_frequency != NULL){
+	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_pink_noise_0_frequency));
       }
       
       if(port != NULL){
 	g_object_ref(G_OBJECT(port));
       }
 
-      fx_abyss_synth_audio->synth_0_noise_frequency = port;
+      fx_abyss_synth_audio->synth_0_pink_noise_0_frequency = port;
       
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
-  case PROP_SYNTH_0_NOISE_GAIN:
+  case PROP_SYNTH_0_PINK_NOISE_0_GAIN:
     {
       AgsPort *port;
 
@@ -3814,26 +3814,26 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
 
       g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_abyss_synth_audio->synth_0_noise_gain){
+      if(port == fx_abyss_synth_audio->synth_0_pink_noise_0_gain){
 	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
 
-      if(fx_abyss_synth_audio->synth_0_noise_gain != NULL){
-	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_noise_gain));
+      if(fx_abyss_synth_audio->synth_0_pink_noise_0_gain != NULL){
+	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_pink_noise_0_gain));
       }
       
       if(port != NULL){
 	g_object_ref(G_OBJECT(port));
       }
 
-      fx_abyss_synth_audio->synth_0_noise_gain = port;
+      fx_abyss_synth_audio->synth_0_pink_noise_0_gain = port;
       
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
-  case PROP_SYNTH_0_NOISE_SENDS:
+  case PROP_SYNTH_0_PINK_NOISE_0_SENDS:
     {
       AgsPort *port;
 
@@ -3841,21 +3841,21 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
 
       g_rec_mutex_lock(recall_mutex);
 
-      if(port == fx_abyss_synth_audio->synth_0_noise_sends){
+      if(port == fx_abyss_synth_audio->synth_0_pink_noise_0_sends){
 	g_rec_mutex_unlock(recall_mutex);	
 
 	return;
       }
 
-      if(fx_abyss_synth_audio->synth_0_noise_sends != NULL){
-	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_noise_sends));
+      if(fx_abyss_synth_audio->synth_0_pink_noise_0_sends != NULL){
+	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_pink_noise_0_sends));
       }
       
       if(port != NULL){
 	g_object_ref(G_OBJECT(port));
       }
 
-      fx_abyss_synth_audio->synth_0_noise_sends = port;
+      fx_abyss_synth_audio->synth_0_pink_noise_0_sends = port;
       
       g_rec_mutex_unlock(recall_mutex);	
     }
@@ -4665,29 +4665,29 @@ ags_fx_abyss_synth_audio_get_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
-  case PROP_SYNTH_0_NOISE_FREQUENCY:
+  case PROP_SYNTH_0_PINK_NOISE_0_FREQUENCY:
     {
       g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_abyss_synth_audio->synth_0_noise_frequency);
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_pink_noise_0_frequency);
       
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
-  case PROP_SYNTH_0_NOISE_GAIN:
+  case PROP_SYNTH_0_PINK_NOISE_0_GAIN:
     {
       g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_abyss_synth_audio->synth_0_noise_gain);
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_pink_noise_0_gain);
       
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
-  case PROP_SYNTH_0_NOISE_SENDS:
+  case PROP_SYNTH_0_PINK_NOISE_0_SENDS:
     {
       g_rec_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, fx_abyss_synth_audio->synth_0_noise_sends);
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_pink_noise_0_sends);
       
       g_rec_mutex_unlock(recall_mutex);	
     }
@@ -6928,7 +6928,7 @@ ags_fx_abyss_synth_audio_get_synth_0_lfo_1_sends_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_abyss_synth_audio_get_synth_0_noise_frequency_plugin_port()
+ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_frequency_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
@@ -6967,7 +6967,7 @@ ags_fx_abyss_synth_audio_get_synth_0_noise_frequency_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_abyss_synth_audio_get_synth_0_noise_gain_plugin_port()
+ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_gain_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
@@ -7006,7 +7006,7 @@ ags_fx_abyss_synth_audio_get_synth_0_noise_gain_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_abyss_synth_audio_get_synth_0_noise_sends_plugin_port()
+ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_sends_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
@@ -7374,7 +7374,7 @@ ags_fx_abyss_synth_audio_get_chorus_mix_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_abyss_synth_audio_get_low_pass_cut_off_frequency_plugin_port()
+ags_fx_abyss_synth_audio_get_low_pass_0_cut_off_frequency_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
@@ -7413,7 +7413,7 @@ ags_fx_abyss_synth_audio_get_low_pass_cut_off_frequency_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_abyss_synth_audio_get_low_pass_filter_gain_plugin_port()
+ags_fx_abyss_synth_audio_get_low_pass_0_filter_gain_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 
@@ -7452,7 +7452,7 @@ ags_fx_abyss_synth_audio_get_low_pass_filter_gain_plugin_port()
 }
 
 static AgsPluginPort*
-ags_fx_abyss_synth_audio_get_low_pass_no_clip_plugin_port()
+ags_fx_abyss_synth_audio_get_low_pass_0_no_clip_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
 

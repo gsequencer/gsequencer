@@ -240,6 +240,20 @@ void ags_abyss_synth_osc_3_low_pass_0_callback(GtkCheckButton *check_button, Ags
 void ags_abyss_synth_osc_3_low_pass_1_callback(GtkCheckButton *check_button, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_osc_3_no_low_pass_callback(GtkCheckButton *check_button, AgsAbyssSynth *abyss_synth);
 
+void ags_abyss_synth_ring_0_enabled_callback(GtkCheckButton *button, AgsAbyssSynth *abyss_synth);
+
+void ags_abyss_synth_ring_0_tuning_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_ring_0_drive_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_ring_0_mix_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_ring_0_gain_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+
+void ags_abyss_synth_ring_1_enabled_callback(GtkCheckButton *button, AgsAbyssSynth *abyss_synth);
+
+void ags_abyss_synth_ring_1_tuning_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_ring_1_drive_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_ring_1_mix_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_ring_1_gain_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+
 void ags_abyss_synth_pitch_tuning_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 
 void ags_abyss_synth_volume_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
@@ -247,6 +261,10 @@ void ags_abyss_synth_volume_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_low_pass_0_cut_off_frequency_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_low_pass_0_filter_gain_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_low_pass_0_no_clip_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+
+void ags_abyss_synth_low_pass_1_cut_off_frequency_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_low_pass_1_filter_gain_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_low_pass_1_no_clip_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 
 void ags_abyss_synth_amplifier_0_amp_0_gain_callback(GtkRange *range, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_amplifier_0_amp_1_gain_callback(GtkRange *range, AgsAbyssSynth *abyss_synth);
