@@ -202,6 +202,10 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
   AgsMachineCounter *machine_counter;
 
   AgsApplicationContext *application_context;   
+
+  GStrvBuilder *strv_builder;
+
+  gchar **label_x, **label_y;
   
   gchar *machine_name;
 
@@ -404,7 +408,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) env_0_grid);
 
   /* attack */
-  label = (GtkLabel *) gtk_label_new(i18n("env-0 - attack"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - attack"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_0_grid,
@@ -435,7 +439,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* decay */
-  label = (GtkLabel *) gtk_label_new(i18n("env-0 - decay"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - decay"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_0_grid,
@@ -466,7 +470,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* sustain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-0 - sustain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - sustain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_0_grid,
@@ -497,7 +501,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* release */
-  label = (GtkLabel *) gtk_label_new(i18n("env-0 - release"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - release"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_0_grid,
@@ -528,7 +532,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* gain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-0 - gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_0_grid,
@@ -559,7 +563,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("env-0 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-1 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_0_grid,
@@ -606,7 +610,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) env_1_grid);
 
   /* attack */
-  label = (GtkLabel *) gtk_label_new(i18n("env-1 - attack"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-2 - attack"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_1_grid,
@@ -637,7 +641,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* decay */
-  label = (GtkLabel *) gtk_label_new(i18n("env-1 - decay"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-2 - decay"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_1_grid,
@@ -668,7 +672,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* sustain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-1 - sustain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-2 - sustain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_1_grid,
@@ -699,7 +703,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* release */
-  label = (GtkLabel *) gtk_label_new(i18n("env-1 - release"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-2 - release"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_1_grid,
@@ -730,7 +734,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* gain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-1 - gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-2 - gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_1_grid,
@@ -761,7 +765,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("env-1 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-2 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_1_grid,
@@ -808,7 +812,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) env_2_grid);
 
   /* attack */
-  label = (GtkLabel *) gtk_label_new(i18n("env-2 - attack"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-3 - attack"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_2_grid,
@@ -839,7 +843,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* decay */
-  label = (GtkLabel *) gtk_label_new(i18n("env-2 - decay"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-3 - decay"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_2_grid,
@@ -870,7 +874,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* sustain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-2 - sustain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-3 - sustain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_2_grid,
@@ -901,7 +905,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* release */
-  label = (GtkLabel *) gtk_label_new(i18n("env-2 - release"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-3 - release"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_2_grid,
@@ -932,7 +936,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* gain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-2 - gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-3 - gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_2_grid,
@@ -963,7 +967,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("env-2 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-3 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_2_grid,
@@ -1010,7 +1014,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) env_3_grid);
 
   /* attack */
-  label = (GtkLabel *) gtk_label_new(i18n("env-3 - attack"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-4 - attack"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_3_grid,
@@ -1041,7 +1045,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* decay */
-  label = (GtkLabel *) gtk_label_new(i18n("env-3 - decay"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-4 - decay"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_3_grid,
@@ -1072,7 +1076,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* sustain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-3 - sustain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-4 - sustain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_3_grid,
@@ -1103,7 +1107,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* release */
-  label = (GtkLabel *) gtk_label_new(i18n("env-3 - release"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-4 - release"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_3_grid,
@@ -1134,7 +1138,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* gain */
-  label = (GtkLabel *) gtk_label_new(i18n("env-3 - gain"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-4 - gain"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_3_grid,
@@ -1165,7 +1169,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("env-3 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("env-4 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(env_3_grid,
@@ -1220,7 +1224,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) lfo_0_grid);
 
   /* oscillator */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - oscillator"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - oscillator"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_0_grid,
@@ -1239,7 +1243,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_0_grid,
@@ -1270,7 +1274,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* depth */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - depth"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - depth"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_0_grid,
@@ -1301,7 +1305,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* tuning */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-0 - tuning"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - tuning"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_0_grid,
@@ -1348,7 +1352,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) lfo_1_grid);
 
   /* oscillator */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - oscillator"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - oscillator"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_1_grid,
@@ -1367,7 +1371,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_1_grid,
@@ -1398,7 +1402,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* depth */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - depth"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - depth"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_1_grid,
@@ -1429,7 +1433,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* tuning */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-1 - tuning"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - tuning"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_1_grid,
@@ -1476,7 +1480,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) lfo_2_grid);
 
   /* oscillator */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - oscillator"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - oscillator"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_2_grid,
@@ -1495,7 +1499,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_2_grid,
@@ -1526,7 +1530,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* depth */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - depth"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - depth"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_2_grid,
@@ -1557,7 +1561,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* tuning */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-2 - tuning"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - tuning"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_2_grid,
@@ -1604,7 +1608,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		 (GtkWidget *) lfo_3_grid);
 
   /* oscillator */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - oscillator"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-4 - oscillator"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_3_grid,
@@ -1623,7 +1627,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* frequency */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - frequency"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-4 - frequency"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_3_grid,
@@ -1654,7 +1658,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* depth */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - depth"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-4 - depth"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_3_grid,
@@ -1685,7 +1689,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* tuning */
-  label = (GtkLabel *) gtk_label_new(i18n("lfo-3 - tuning"));
+  label = (GtkLabel *) gtk_label_new(i18n("lfo-4 - tuning"));
   gtk_widget_set_halign((GtkWidget *) label,
 			GTK_ALIGN_START);
   gtk_grid_attach(lfo_3_grid,
@@ -3679,12 +3683,92 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  3, 0,
 		  1, 1);
 
+  /* modulation */
+  modulation_grid = (GtkGrid *) gtk_grid_new();
+  
+  gtk_grid_set_column_spacing(modulation_grid,
+			      AGS_UI_PROVIDER_DEFAULT_COLUMN_SPACING);
+  gtk_grid_set_row_spacing(modulation_grid,
+			   AGS_UI_PROVIDER_DEFAULT_ROW_SPACING);
+
+  gtk_widget_set_halign((GtkWidget *) modulation_grid,
+	 		GTK_ALIGN_START);
+  
+  gtk_grid_attach(abyss_synth_grid,
+		  (GtkWidget *) modulation_grid,
+		  2, 0,
+		  1, 1);
+
+  /* modulation matrix */
+  abyss_synth->modulation_matrix = ags_modulation_matrix_new();
+
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add_many(strv_builder,
+			  "osc-1 - frequency",
+			  "osc-1 - phase",
+			  "osc-1 - volume",
+			  "osc-2 - frequency",
+			  "osc-2 - phase",
+			  "osc-2 - volume",
+			  "osc-3 - frequency",
+			  "osc-3 - phase",
+			  "osc-3 - volume",
+			  "osc-4 - frequency",
+			  "osc-4 - phase",
+			  "osc-4 - volume",
+			  "ring-1 - tuning",
+			  "ring-1 - drive",
+			  "ring-1 - mix",
+			  "ring-1 - gain",
+			  "ring-2 - tuning",
+			  "ring-2 - drive",
+			  "ring-2 - mix",
+			  "ring-2 - gain",
+			  "pitch tuning",
+			  "volume",
+			  NULL);
+
+  label_x = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_add_many(strv_builder,
+			  "env-1",
+			  "env-2",
+			  "env-3",
+			  "env-4",
+			  "lfo-1",
+			  "lfo-2",
+			  "lfo-3",
+			  "lfo-4",
+			  "seq-1",
+			  "seq-2",
+			  "seq-3",
+			  "seq-4",
+			  "noise-1",
+			  "noise-2",
+			  NULL);
+
+  label_y = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_unref(strv_builder);
+
+  ags_modulation_matrix_set_dim(abyss_synth->modulation_matrix,
+				22, 14);
+
+  ags_modulation_matrix_set_label(abyss_synth->modulation_matrix,
+				  label_x, label_y);
+
+  gtk_grid_attach(modulation_grid,
+		  (GtkWidget *) abyss_synth->modulation_matrix,
+		  0, 0,
+		  1, 1);
+
   /* osc box */
   osc_box = (GtkBox *) gtk_box_new(GTK_ORIENTATION_HORIZONTAL,
 				   AGS_UI_PROVIDER_DEFAULT_SPACING);
   gtk_grid_attach(abyss_synth_grid,
 		  (GtkWidget *) osc_box,
-		  2, 0,
+		  3, 0,
 		  1, 1);
   
   /* osc-0 */
@@ -3845,13 +3929,13 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* to low-pass */
-  abyss_synth->osc_0_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-1 - low-pass-0"));
+  abyss_synth->osc_0_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-1 - low-pass-1"));
   gtk_grid_attach(osc_0_grid,
 		  (GtkWidget *) abyss_synth->osc_0_low_pass_0,
 		  0, 5,
 		  2, 1);
 
-  abyss_synth->osc_0_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-1 - low-pass-1"));
+  abyss_synth->osc_0_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-1 - low-pass-2"));
   gtk_check_button_set_group(abyss_synth->osc_0_low_pass_1,
 			     abyss_synth->osc_0_low_pass_0);
   gtk_grid_attach(osc_0_grid,
@@ -4028,13 +4112,13 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* to low-pass */
-  abyss_synth->osc_1_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-2 - low-pass-0"));
+  abyss_synth->osc_1_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-2 - low-pass-1"));
   gtk_grid_attach(osc_1_grid,
 		  (GtkWidget *) abyss_synth->osc_1_low_pass_0,
 		  0, 5,
 		  2, 1);
 
-  abyss_synth->osc_1_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-2 - low-pass-1"));
+  abyss_synth->osc_1_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-2 - low-pass-2"));
   gtk_check_button_set_group(abyss_synth->osc_1_low_pass_1,
 			     abyss_synth->osc_1_low_pass_0);
   gtk_grid_attach(osc_1_grid,
@@ -4211,13 +4295,13 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* to low-pass */
-  abyss_synth->osc_2_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-3 - low-pass-0"));
+  abyss_synth->osc_2_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-3 - low-pass-1"));
   gtk_grid_attach(osc_2_grid,
 		  (GtkWidget *) abyss_synth->osc_2_low_pass_0,
 		  0, 5,
 		  2, 1);
 
-  abyss_synth->osc_2_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-3 - low-pass-1"));
+  abyss_synth->osc_2_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-3 - low-pass-2"));
   gtk_check_button_set_group(abyss_synth->osc_2_low_pass_1,
 			     abyss_synth->osc_2_low_pass_0);
   gtk_grid_attach(osc_2_grid,
@@ -4394,13 +4478,13 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 		  1, 1);
 
   /* to low-pass */
-  abyss_synth->osc_3_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-4 - low-pass-0"));
+  abyss_synth->osc_3_low_pass_0 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-4 - low-pass-1"));
   gtk_grid_attach(osc_3_grid,
 		  (GtkWidget *) abyss_synth->osc_3_low_pass_0,
 		  0, 5,
 		  2, 1);
 
-  abyss_synth->osc_3_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-4 - low-pass-1"));
+  abyss_synth->osc_3_low_pass_1 = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("osc-4 - low-pass-2"));
   gtk_check_button_set_group(abyss_synth->osc_3_low_pass_1,
 			     abyss_synth->osc_3_low_pass_0);
   gtk_grid_attach(osc_3_grid,
@@ -5769,6 +5853,7 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_abyss_synth_seq_3_lfo_frequency_callback), abyss_synth);
   
   /* modulation matrix */
+  ags_connectable_connect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));  
 
   /* osc-0 */
   g_signal_connect_after(abyss_synth->osc_0_oscillator, "notify::selected",
@@ -6662,6 +6747,7 @@ ags_abyss_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   /* modulation matrix */
+  ags_connectable_disconnect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));  
 
   /* osc-0 */
   g_object_disconnect(abyss_synth->osc_0_oscillator,

@@ -66,7 +66,7 @@ struct _AgsFxAbyssSynthAudio
   AgsPort *synth_0_osc_0_phase;
   AgsPort *synth_0_osc_0_volume;
 
-  AgsPort *synth_0_osc_0_low_pass;
+  AgsPort *synth_0_osc_0_low_pass_sends;
   
   AgsPort *synth_0_osc_1_oscillator;
   
@@ -76,7 +76,7 @@ struct _AgsFxAbyssSynthAudio
   AgsPort *synth_0_osc_1_phase;
   AgsPort *synth_0_osc_1_volume;
 
-  AgsPort *synth_0_osc_1_low_pass;
+  AgsPort *synth_0_osc_1_low_pass_sends;
 
   AgsPort *synth_0_osc_2_oscillator;
   
@@ -86,7 +86,7 @@ struct _AgsFxAbyssSynthAudio
   AgsPort *synth_0_osc_2_phase;
   AgsPort *synth_0_osc_2_volume;
 
-  AgsPort *synth_0_osc_2_low_pass;
+  AgsPort *synth_0_osc_2_low_pass_sends;
 
   AgsPort *synth_0_osc_3_oscillator;
   
@@ -96,7 +96,7 @@ struct _AgsFxAbyssSynthAudio
   AgsPort *synth_0_osc_3_phase;
   AgsPort *synth_0_osc_3_volume;
   
-  AgsPort *synth_0_osc_3_low_pass;
+  AgsPort *synth_0_osc_3_low_pass_sends;
 
   AgsPort *synth_0_ring_0_enabled;
   

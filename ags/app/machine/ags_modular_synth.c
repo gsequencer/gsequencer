@@ -182,6 +182,10 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   AgsApplicationContext *application_context;   
   
+  GStrvBuilder *strv_builder;
+
+  gchar **label_x, **label_y;
+  
   gchar *machine_name;
 
   gint position;
@@ -1106,6 +1110,40 @@ ags_modular_synth_init(AgsModularSynth *modular_synth)
 
   /* modulation matrix */
   modular_synth->modulation_matrix = ags_modulation_matrix_new();
+
+  strv_builder = g_strv_builder_new();
+
+  g_strv_builder_add_many(strv_builder,
+			  "osc-0 - frequency",
+			  "osc-0 - phase",
+			  "osc-0 - volume",
+			  "osc-1 - frequency",
+			  "osc-1 - phase",
+			  "osc-1 - volume",
+			  "pitch tuning",
+			  "volume",
+			  NULL);
+
+  label_x = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_add_many(strv_builder,
+			  "env-0",
+			  "env-1",
+			  "lfo-0",
+			  "lfo-1",
+			  "noise",
+			  NULL);
+
+  label_y = g_strv_builder_end(strv_builder);
+
+  g_strv_builder_unref(strv_builder);
+  
+  ags_modulation_matrix_set_dim(modular_synth->modulation_matrix,
+				8, 5);
+
+  ags_modulation_matrix_set_label(modular_synth->modulation_matrix,
+				  label_x, label_y);
+
   gtk_grid_attach(modulation_grid,
 		  (GtkWidget *) modular_synth->modulation_matrix,
 		  0, 0,
