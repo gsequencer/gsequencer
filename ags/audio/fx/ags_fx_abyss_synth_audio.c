@@ -389,17 +389,17 @@ static const gchar* ags_fx_abyss_synth_audio_specifier[] = {
   "./synth-0-pink-noise-1-frequency[0]",
   "./synth-0-pink-noise-1-gain[0]",
   "./synth-0-pink-noise-1-sends[0]",
-  "./low-pass-0-cut-off-frequency",
-  "./low-pass-0-filter-gain",
-  "./low-pass-0-no-clip",
-  "./low-pass-1-cut-off-frequency",
-  "./low-pass-1-filter-gain",
-  "./low-pass-1-no-clip",
-  "./amplifier-0-amp-0-gain",
-  "./amplifier-0-amp-1-gain",
-  "./amplifier-0-amp-2-gain",
-  "./amplifier-0-amp-3-gain",
-  "./amplifier-0-filter-gain",
+  "./low-pass-0-cut-off-frequency[0]",
+  "./low-pass-0-filter-gain[0]",
+  "./low-pass-0-no-clip[0]",
+  "./low-pass-1-cut-off-frequency[0]",
+  "./low-pass-1-filter-gain[0]",
+  "./low-pass-1-no-clip[0]",
+  "./amplifier-0-amp-0-gain[0]",
+  "./amplifier-0-amp-1-gain[0]",
+  "./amplifier-0-amp-2-gain[0]",
+  "./amplifier-0-amp-3-gain[0]",
+  "./amplifier-0-filter-gain[0]",
   "./chorus-enabled[0]",
   "./chorus-pitch-type[0]",
   "./chorus-input-volume[0]",
@@ -3357,6 +3357,54 @@ ags_fx_abyss_synth_audio_class_init(AgsFxAbyssSynthAudioClass *fx_abyss_synth_au
 				  param_spec);
 
   /**
+   * AgsFxAbyssSynthAudio:low-pass-1-cut-off-frequency:
+   *
+   * The low-pass-1-cut-off-frequency.
+   * 
+   * Since: 9.4.0
+   */
+  param_spec = g_param_spec_object("low-pass-1-cut-off-frequency",
+				   i18n_pspec("low-pass 0 cut off frequency of recall"),
+				   i18n_pspec("The low-pass 0 cut off frequency"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOW_PASS_1_CUT_OFF_FREQUENCY,
+				  param_spec);
+  
+  /**
+   * AgsFxAbyssSynthAudio:low-pass-1-filter-gain:
+   *
+   * The low-pass-1-filter-gain.
+   * 
+   * Since: 9.4.0
+   */
+  param_spec = g_param_spec_object("low-pass-1-filter-gain",
+				   i18n_pspec("low-pass 0 filter gain of recall"),
+				   i18n_pspec("The low-pass 0 filter gain"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOW_PASS_1_FILTER_GAIN,
+				  param_spec);
+  
+  /**
+   * AgsFxAbyssSynthAudio:low-pass-1-no-clip:
+   *
+   * The low-pass-1-no-clip.
+   * 
+   * Since: 9.4.0
+   */
+  param_spec = g_param_spec_object("low-pass-1-no-clip",
+				   i18n_pspec("low-pass 0 no-clip of recall"),
+				   i18n_pspec("The low-pass 0 no clip"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOW_PASS_1_NO_CLIP,
+				  param_spec);
+
+  /**
    * AgsFxAbyssSynthAudio:amplifier-0-amp-0-gain:
    *
    * The amplifier 0 amp-0 gain.
@@ -3727,7 +3775,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								    "port-value-length", 1,
 								    NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_0_low_pass_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_osc_0_low_pass_sends->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_0_low_pass_sends,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_0_low_pass_sends_plugin_port(),
@@ -3859,7 +3907,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								    "port-value-length", 1,
 								    NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_1_low_pass_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_osc_1_low_pass_sends->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_1_low_pass_sends,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_1_low_pass_sends_plugin_port(),
@@ -3991,7 +4039,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								    "port-value-length", 1,
 								    NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_2_low_pass_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_osc_2_low_pass_sends->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_2_low_pass_sends,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_2_low_pass_sends_plugin_port(),
@@ -4123,7 +4171,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								    "port-value-length", 1,
 								    NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_3_low_pass_sends->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_osc_3_low_pass_sends->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_3_low_pass_sends,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_3_low_pass_sends_plugin_port(),

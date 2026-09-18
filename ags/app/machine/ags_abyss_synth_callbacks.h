@@ -121,7 +121,7 @@ void ags_abyss_synth_seq_0_modulation_13_callback(AgsDial *dial, AgsAbyssSynth *
 void ags_abyss_synth_seq_0_modulation_14_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_0_modulation_15_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 
-void ags_abyss_synth_seq_0_pingpong_callback(GtkCheckButton *button, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_seq_0_pingpong_callback(GtkCheckButton *check_button, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_0_lfo_frequency_callback(GtkSpinButton *spin_button, AgsAbyssSynth *abyss_synth);
 
 void ags_abyss_synth_seq_1_modulation_0_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
@@ -141,7 +141,7 @@ void ags_abyss_synth_seq_1_modulation_13_callback(AgsDial *dial, AgsAbyssSynth *
 void ags_abyss_synth_seq_1_modulation_14_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_1_modulation_15_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 
-void ags_abyss_synth_seq_1_pingpong_callback(GtkCheckButton *button, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_seq_1_pingpong_callback(GtkCheckButton *check_button, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_1_lfo_frequency_callback(GtkSpinButton *spin_button, AgsAbyssSynth *abyss_synth);
 
 void ags_abyss_synth_seq_2_modulation_0_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
@@ -161,7 +161,7 @@ void ags_abyss_synth_seq_2_modulation_13_callback(AgsDial *dial, AgsAbyssSynth *
 void ags_abyss_synth_seq_2_modulation_14_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_2_modulation_15_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 
-void ags_abyss_synth_seq_2_pingpong_callback(GtkCheckButton *button, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_seq_2_pingpong_callback(GtkCheckButton *check_button, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_2_lfo_frequency_callback(GtkSpinButton *spin_button, AgsAbyssSynth *abyss_synth);
 
 void ags_abyss_synth_seq_3_modulation_0_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
@@ -181,8 +181,12 @@ void ags_abyss_synth_seq_3_modulation_13_callback(AgsDial *dial, AgsAbyssSynth *
 void ags_abyss_synth_seq_3_modulation_14_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_3_modulation_15_callback(AgsDial *dial, AgsAbyssSynth *abyss_synth);
 
-void ags_abyss_synth_seq_3_pingpong_callback(GtkCheckButton *button, AgsAbyssSynth *abyss_synth);
+void ags_abyss_synth_seq_3_pingpong_callback(GtkCheckButton *check_button, AgsAbyssSynth *abyss_synth);
 void ags_abyss_synth_seq_3_lfo_frequency_callback(GtkSpinButton *spin_button, AgsAbyssSynth *abyss_synth);
+
+void ags_abyss_synth_modulation_matrix_callback(AgsModulationMatrix *modulation_matrix,
+						gint x, gint y,
+						AgsAbyssSynth *abyss_synth);
 
 void ags_abyss_synth_osc_0_oscillator_callback(GObject *gobject,
 					       GParamSpec *pspec,

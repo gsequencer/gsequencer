@@ -5853,7 +5853,10 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
 			 G_CALLBACK(ags_abyss_synth_seq_3_lfo_frequency_callback), abyss_synth);
   
   /* modulation matrix */
-  ags_connectable_connect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));  
+  ags_connectable_connect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));
+
+  g_signal_connect_after(abyss_synth->modulation_matrix, "toggled",
+			 G_CALLBACK(ags_abyss_synth_modulation_matrix_callback), abyss_synth);
 
   /* osc-0 */
   g_signal_connect_after(abyss_synth->osc_0_oscillator, "notify::selected",
@@ -5954,6 +5957,38 @@ ags_abyss_synth_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(abyss_synth->osc_3_no_low_pass, "toggled",
 			 G_CALLBACK(ags_abyss_synth_osc_3_no_low_pass_callback), abyss_synth);
+
+  /* ring 0 */
+  g_signal_connect_after(abyss_synth->ring_0_enabled, "toggled",
+			 G_CALLBACK(ags_abyss_synth_ring_0_enabled_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_0_tuning, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_0_tuning_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_0_drive, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_0_drive_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_0_mix, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_0_mix_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_0_gain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_0_gain_callback), abyss_synth);
+
+  /* ring 1 */
+  g_signal_connect_after(abyss_synth->ring_1_enabled, "toggled",
+			 G_CALLBACK(ags_abyss_synth_ring_1_enabled_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_1_tuning, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_1_tuning_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_1_drive, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_1_drive_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_1_mix, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_1_mix_callback), abyss_synth);
+
+  g_signal_connect_after(abyss_synth->ring_1_gain, "value-changed",
+			 G_CALLBACK(ags_abyss_synth_ring_1_gain_callback), abyss_synth);  
 
   /* volume */
   g_signal_connect_after(abyss_synth->volume, "value-changed",
@@ -6747,7 +6782,13 @@ ags_abyss_synth_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   /* modulation matrix */
-  ags_connectable_disconnect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));  
+  ags_connectable_disconnect(AGS_CONNECTABLE(abyss_synth->modulation_matrix));
+
+  g_object_disconnect(abyss_synth->modulation_matrix,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_abyss_synth_modulation_matrix_callback),
+		      abyss_synth,
+		      NULL);
 
   /* osc-0 */
   g_object_disconnect(abyss_synth->osc_0_oscillator,
@@ -6808,6 +6849,130 @@ ags_abyss_synth_disconnect(AgsConnectable *connectable)
   g_object_disconnect(abyss_synth->osc_1_volume,
 		      "any_signal::value-changed",
 		      G_CALLBACK(ags_abyss_synth_osc_1_volume_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* osc-2 */
+  g_object_disconnect(abyss_synth->osc_2_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_abyss_synth_osc_2_oscillator_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_2_octave,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_2_octave_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_2_key,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_2_key_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_2_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_2_phase_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_2_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_2_volume_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* osc-3 */
+  g_object_disconnect(abyss_synth->osc_3_oscillator,
+		      "any_signal::notify::selected",
+		      G_CALLBACK(ags_abyss_synth_osc_3_oscillator_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_3_octave,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_3_octave_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_3_key,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_3_key_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_3_phase,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_3_phase_callback),
+		      abyss_synth,
+		      NULL);
+  
+  g_object_disconnect(abyss_synth->osc_3_volume,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_osc_3_volume_callback),
+		      abyss_synth,
+		      NULL);
+  
+  /* ring 0 */
+  g_object_disconnect(abyss_synth->ring_0_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_abyss_synth_ring_0_enabled_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_0_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_0_tuning_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_0_drive,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_0_drive_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_0_mix,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_0_mix_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_0_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_0_gain_callback),
+		      abyss_synth,
+		      NULL);
+
+  /* ring 1 */
+  g_object_disconnect(abyss_synth->ring_1_enabled,
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_abyss_synth_ring_1_enabled_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_1_tuning,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_1_tuning_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_1_drive,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_1_drive_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_1_mix,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_1_mix_callback),
+		      abyss_synth,
+		      NULL);
+
+  g_object_disconnect(abyss_synth->ring_1_gain,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_abyss_synth_ring_1_gain_callback),
 		      abyss_synth,
 		      NULL);
 

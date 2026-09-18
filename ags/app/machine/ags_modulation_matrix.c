@@ -719,8 +719,8 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   double angle_0 = 0.0;
   double angle_1 = 2.0 * M_PI;
 
-  for(i = 0; i < modulation_matrix->n_cols; i++){
-    for(j = 0; j < modulation_matrix->n_rows; j++){      
+  for(i = 0; i < modulation_matrix->n_rows; i++){
+    for(j = 0; j < modulation_matrix->n_cols; j++){      
       if(ags_modulation_matrix_get_enabled(modulation_matrix, j, i)){
 	//	g_message("enabled %d | %d", j, i);
 
