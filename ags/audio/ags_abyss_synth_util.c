@@ -33,6 +33,10 @@
 #include <math.h>
 #include <complex.h>
 
+static gboolean ags_abyss_synth_util_sends_receives(AgsAbyssSynthUtil *abyss_synth_util,
+						    gint64 *sends,
+						    AgsAbyssSynthSends abyss_synth_sends);
+
 /**
  * SECTION:ags_abyss_synth_util
  * @short_description: frequency modulation synth util
@@ -80,6 +84,44 @@ ags_abyss_synth_util_alloc()
 				    1);
 
   ptr[0] = AGS_ABYSS_SYNTH_UTIL_INITIALIZER;
+
+  /* low-pass filter util */
+  ptr->low_pass_filter_util_0 = ags_low_pass_filter_util_alloc();
+  ptr->low_pass_filter_util_1 = ags_low_pass_filter_util_alloc();
+
+  /* pitch util */
+  ptr->pitch_util = ags_fluid_interpolate_4th_order_util_alloc();
+
+  /* envelope util */
+  ptr->env_0_util = ags_envelope_util_alloc();
+
+  ptr->env_1_util = ags_envelope_util_alloc();
+
+  ptr->env_2_util = ags_envelope_util_alloc();
+
+  ptr->env_3_util = ags_envelope_util_alloc();
+
+  /* LFO util */
+  ptr->lfo_0_util = ags_lfo_synth_util_alloc();
+
+  ptr->lfo_1_util = ags_lfo_synth_util_alloc();
+
+  ptr->lfo_2_util = ags_lfo_synth_util_alloc();
+
+  ptr->lfo_3_util = ags_lfo_synth_util_alloc();
+
+  /* pink noise */
+  ptr->noise_0_util = ags_noise_util_alloc();
+
+  AGS_NOISE_UTIL(ptr->noise_0_util)->mode = AGS_NOISE_UTIL_PINK_NOISE;
+
+  AGS_NOISE_UTIL(ptr->noise_0_util)->frequency = 220.0;
+
+  ptr->noise_1_util = ags_noise_util_alloc();
+
+  AGS_NOISE_UTIL(ptr->noise_1_util)->mode = AGS_NOISE_UTIL_PINK_NOISE;
+
+  AGS_NOISE_UTIL(ptr->noise_1_util)->frequency = 220.0;
   
   return(ptr);
 }
@@ -250,15 +292,84 @@ ags_abyss_synth_util_set_buffer_length(AgsAbyssSynthUtil *abyss_synth_util,
 
   abyss_synth_util->buffer_length = buffer_length;
 
+  /* low-pass */
+  ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_0,
+					     buffer_length);
+  
+  ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_1,
+					     buffer_length);
+
+  /* pitch */
   ags_common_pitch_util_set_buffer_length(abyss_synth_util->pitch_util,
 					  abyss_synth_util->pitch_type,
 					  buffer_length);
 
+  /* pink noise */
   ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				   buffer_length);
 
   ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				   buffer_length);
+
+  /* osc-0 */
+  ags_stream_free(abyss_synth_util->osc_0_buffer);
+
+  abyss_synth_util->osc_0_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->osc_0_buffer = ags_stream_alloc(buffer_length,
+						      abyss_synth_util->format);
+  }
+  
+  /* osc-1 */
+  ags_stream_free(abyss_synth_util->osc_1_buffer);
+
+  abyss_synth_util->osc_1_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->osc_1_buffer = ags_stream_alloc(buffer_length,
+						      abyss_synth_util->format);
+  }
+  
+  /* osc-2 */
+  ags_stream_free(abyss_synth_util->osc_2_buffer);
+
+  abyss_synth_util->osc_2_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->osc_2_buffer = ags_stream_alloc(buffer_length,
+						      abyss_synth_util->format);
+  }
+  
+  /* osc-3 */
+  ags_stream_free(abyss_synth_util->osc_3_buffer);
+
+  abyss_synth_util->osc_3_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->osc_3_buffer = ags_stream_alloc(buffer_length,
+						      abyss_synth_util->format);
+  }
+
+  /* ring-0 */
+  ags_stream_free(abyss_synth_util->ring_0_buffer);
+
+  abyss_synth_util->ring_0_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->ring_0_buffer = ags_stream_alloc(buffer_length,
+						       AGS_SOUNDCARD_DOUBLE);
+  }
+  
+  /* ring-1 */
+  ags_stream_free(abyss_synth_util->ring_1_buffer);
+
+  abyss_synth_util->ring_1_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->ring_1_buffer = ags_stream_alloc(buffer_length,
+						       AGS_SOUNDCARD_DOUBLE);
+  }
 
   /* pitch buffer */
   ags_stream_free(abyss_synth_util->pitch_buffer);
@@ -350,6 +461,46 @@ ags_abyss_synth_util_set_buffer_length(AgsAbyssSynthUtil *abyss_synth_util,
 						      AGS_SOUNDCARD_DOUBLE);
   }
 
+  /* seq-0 */
+  ags_stream_free(abyss_synth_util->seq_0_buffer);
+
+  abyss_synth_util->seq_0_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->seq_0_buffer = ags_stream_alloc(buffer_length,
+						      AGS_SOUNDCARD_DOUBLE);
+  }
+
+  /* seq-1 */
+  ags_stream_free(abyss_synth_util->seq_1_buffer);
+
+  abyss_synth_util->seq_1_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->seq_1_buffer = ags_stream_alloc(buffer_length,
+						      AGS_SOUNDCARD_DOUBLE);
+  }
+
+  /* seq-2 */
+  ags_stream_free(abyss_synth_util->seq_2_buffer);
+
+  abyss_synth_util->seq_2_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->seq_2_buffer = ags_stream_alloc(buffer_length,
+						      AGS_SOUNDCARD_DOUBLE);
+  }
+
+  /* seq-3 */
+  ags_stream_free(abyss_synth_util->seq_3_buffer);
+
+  abyss_synth_util->seq_3_buffer = NULL;
+  
+  if(buffer_length > 0){
+    abyss_synth_util->seq_3_buffer = ags_stream_alloc(buffer_length,
+						      AGS_SOUNDCARD_DOUBLE);
+  }
+
   /* noise 0 */
   ags_stream_free(abyss_synth_util->noise_0_buffer);
 
@@ -410,16 +561,65 @@ ags_abyss_synth_util_set_format(AgsAbyssSynthUtil *abyss_synth_util,
 
   abyss_synth_util->format = format;
 
-  /*  */
+  /* low-pass filter util */
+  ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_0,
+				      format);
+
+  ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_1,
+				      format);
+
+  /* pitch util */
   ags_common_pitch_util_set_format(abyss_synth_util->pitch_util,
 				   abyss_synth_util->pitch_type,
 				   format);
 
+  /* noise util */
   ags_noise_util_set_format(abyss_synth_util->noise_0_util,
 			    format);
 
   ags_noise_util_set_format(abyss_synth_util->noise_1_util,
 			    format);
+
+
+  /* osc-0 */
+  ags_stream_free(abyss_synth_util->osc_0_buffer);
+
+  abyss_synth_util->osc_0_buffer = NULL;
+  
+  if(abyss_synth_util->buffer_length > 0){
+    abyss_synth_util->osc_0_buffer = ags_stream_alloc(abyss_synth_util->buffer_length,
+						      format);
+  }
+  
+  /* osc-1 */
+  ags_stream_free(abyss_synth_util->osc_1_buffer);
+
+  abyss_synth_util->osc_1_buffer = NULL;
+  
+  if(abyss_synth_util->buffer_length > 0){
+    abyss_synth_util->osc_1_buffer = ags_stream_alloc(abyss_synth_util->buffer_length,
+						      format);
+  }
+  
+  /* osc-2 */
+  ags_stream_free(abyss_synth_util->osc_2_buffer);
+
+  abyss_synth_util->osc_2_buffer = NULL;
+  
+  if(abyss_synth_util->buffer_length > 0){
+    abyss_synth_util->osc_2_buffer = ags_stream_alloc(abyss_synth_util->buffer_length,
+						      format);
+  }
+  
+  /* osc-3 */
+  ags_stream_free(abyss_synth_util->osc_3_buffer);
+
+  abyss_synth_util->osc_3_buffer = NULL;
+  
+  if(abyss_synth_util->buffer_length > 0){
+    abyss_synth_util->osc_3_buffer = ags_stream_alloc(abyss_synth_util->buffer_length,
+						      format);
+  }
 }
 
 /**
@@ -486,6 +686,13 @@ ags_abyss_synth_util_set_samplerate(AgsAbyssSynthUtil *abyss_synth_util,
 
   ags_lfo_synth_util_set_frame_count(abyss_synth_util->lfo_3_util,
 				     samplerate / abyss_synth_util->lfo_3_frequency);
+
+  /* low-pass filter */
+  ags_low_pass_filter_util_set_samplerate(abyss_synth_util->low_pass_filter_util_0,
+					  samplerate);
+
+  ags_low_pass_filter_util_set_samplerate(abyss_synth_util->low_pass_filter_util_1,
+					  samplerate);
 
   /* pitch */
   ags_common_pitch_util_set_samplerate(abyss_synth_util->pitch_util,
@@ -661,6 +868,46 @@ ags_abyss_synth_util_set_osc_0_volume(AgsAbyssSynthUtil *abyss_synth_util,
 }
 
 /**
+ * ags_abyss_synth_util_get_osc_0_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 low-pass sends of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 low-pass sends
+ * 
+ * Since: 9.4.0
+ */
+gint64
+ags_abyss_synth_util_get_osc_0_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS);
+  }
+
+  return(abyss_synth_util->osc_0_low_pass_sends);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_0_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_0_low_pass_sends: the osc-0 low-pass sends
+ *
+ * Set @osc_0_low_pass_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_0_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					      gint64 osc_0_low_pass_sends)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_0_low_pass_sends = osc_0_low_pass_sends;
+}
+
+/**
  * ags_abyss_synth_util_get_osc_1_oscillator:
  * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
  * 
@@ -818,6 +1065,846 @@ ags_abyss_synth_util_set_osc_1_volume(AgsAbyssSynthUtil *abyss_synth_util,
   }
 
   abyss_synth_util->osc_1_volume = osc_1_volume;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_1_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 low-pass sends of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 low-pass sends
+ * 
+ * Since: 9.4.0
+ */
+gint64
+ags_abyss_synth_util_get_osc_1_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS);
+  }
+
+  return(abyss_synth_util->osc_1_low_pass_sends);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_1_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_1_low_pass_sends: the osc-0 low-pass sends
+ *
+ * Set @osc_1_low_pass_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_1_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					      gint64 osc_1_low_pass_sends)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_1_low_pass_sends = osc_1_low_pass_sends;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_2_oscillator:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 oscillator mode of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 oscillator mode as #AgsSynthOscillatorMode-enum
+ * 
+ * Since: 9.4.0
+ */
+AgsSynthOscillatorMode
+ags_abyss_synth_util_get_osc_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(AGS_SYNTH_OSCILLATOR_SIN);
+  }
+
+  return(abyss_synth_util->osc_2_oscillator);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_2_oscillator:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_2_oscillator: the osc-0 oscillator mode as #AgsSynthOscillatorMode-enum
+ *
+ * Set @osc_2_oscillator of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
+					  AgsSynthOscillatorMode osc_2_oscillator)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_2_oscillator = osc_2_oscillator;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_2_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 frequency of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 frequency
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_osc_2_frequency(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(440.0);
+  }
+
+  return(abyss_synth_util->osc_2_frequency);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_2_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_2_frequency: the osc-0 frequency
+ *
+ * Set @osc_2_frequency of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_2_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					 gdouble osc_2_frequency)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_2_frequency = osc_2_frequency;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_2_phase:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 phase of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 phase
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_osc_2_phase(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->osc_2_phase);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_2_phase:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_2_phase: the osc-0 phase
+ *
+ * Set @osc_2_phase of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_2_phase(AgsAbyssSynthUtil *abyss_synth_util,
+				     gdouble osc_2_phase)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_2_phase = osc_2_phase;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_2_volume:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 volume of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 volume
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_osc_2_volume(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->osc_2_volume);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_2_volume:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_2_volume: the osc-0 volume
+ *
+ * Set @osc_2_volume of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_2_volume(AgsAbyssSynthUtil *abyss_synth_util,
+				      gdouble osc_2_volume)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_2_volume = osc_2_volume;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_2_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 low-pass sends of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 low-pass sends
+ * 
+ * Since: 9.4.0
+ */
+gint64
+ags_abyss_synth_util_get_osc_2_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS);
+  }
+
+  return(abyss_synth_util->osc_2_low_pass_sends);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_2_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_2_low_pass_sends: the osc-0 low-pass sends
+ *
+ * Set @osc_2_low_pass_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_2_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					      gint64 osc_2_low_pass_sends)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_2_low_pass_sends = osc_2_low_pass_sends;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_3_oscillator:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 oscillator mode of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 oscillator mode as #AgsSynthOscillatorMode-enum
+ * 
+ * Since: 9.4.0
+ */
+AgsSynthOscillatorMode
+ags_abyss_synth_util_get_osc_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(AGS_SYNTH_OSCILLATOR_SIN);
+  }
+
+  return(abyss_synth_util->osc_3_oscillator);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_3_oscillator:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_3_oscillator: the osc-0 oscillator mode as #AgsSynthOscillatorMode-enum
+ *
+ * Set @osc_3_oscillator of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
+					  AgsSynthOscillatorMode osc_3_oscillator)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_3_oscillator = osc_3_oscillator;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_3_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 frequency of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 frequency
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_osc_3_frequency(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(440.0);
+  }
+
+  return(abyss_synth_util->osc_3_frequency);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_3_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_3_frequency: the osc-0 frequency
+ *
+ * Set @osc_3_frequency of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_3_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					 gdouble osc_3_frequency)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_3_frequency = osc_3_frequency;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_3_phase:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 phase of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 phase
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_osc_3_phase(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->osc_3_phase);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_3_phase:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_3_phase: the osc-0 phase
+ *
+ * Set @osc_3_phase of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_3_phase(AgsAbyssSynthUtil *abyss_synth_util,
+				     gdouble osc_3_phase)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_3_phase = osc_3_phase;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_3_volume:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 volume of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 volume
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_osc_3_volume(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->osc_3_volume);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_3_volume:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_3_volume: the osc-0 volume
+ *
+ * Set @osc_3_volume of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_3_volume(AgsAbyssSynthUtil *abyss_synth_util,
+				      gdouble osc_3_volume)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_3_volume = osc_3_volume;
+}
+
+/**
+ * ags_abyss_synth_util_get_osc_3_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get osc-0 low-pass sends of @abyss_synth_util.
+ * 
+ * Returns: the osc-0 low-pass sends
+ * 
+ * Since: 9.4.0
+ */
+gint64
+ags_abyss_synth_util_get_osc_3_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS);
+  }
+
+  return(abyss_synth_util->osc_3_low_pass_sends);
+}
+
+/**
+ * ags_abyss_synth_util_set_osc_3_low_pass_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @osc_3_low_pass_sends: the osc-0 low-pass sends
+ *
+ * Set @osc_3_low_pass_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_osc_3_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+					      gint64 osc_3_low_pass_sends)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->osc_3_low_pass_sends = osc_3_low_pass_sends;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_0_enabled:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 enabled of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 enabled
+ * 
+ * Since: 9.4.0
+ */
+gboolean
+ags_abyss_synth_util_get_ring_0_enabled(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(abyss_synth_util->ring_0_enabled);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_0_enabled:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_0_enabled: the ring-0 enabled
+ *
+ * Set @ring_0_enabled of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_0_enabled(AgsAbyssSynthUtil *abyss_synth_util,
+					gboolean ring_0_enabled)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_0_enabled = ring_0_enabled;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_0_pitch_tuning:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 pitch tuning of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 pitch tuning
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_0_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_0_pitch_tuning);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_0_pitch_tuning:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_0_pitch_tuning: the ring-0 pitch tuning
+ *
+ * Set @ring_0_pitch_tuning of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_0_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util,
+					     gdouble ring_0_pitch_tuning)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_0_pitch_tuning = ring_0_pitch_tuning;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_0_drive:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 drive of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 drive
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_0_drive(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_0_drive);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_0_drive:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_0_drive: the ring-0 drive
+ *
+ * Set @ring_0_drive of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_0_drive(AgsAbyssSynthUtil *abyss_synth_util,
+				      gdouble ring_0_drive)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_0_drive = ring_0_drive;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_0_mix:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 mix of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 mix
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_0_mix(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_0_mix);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_0_mix:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_0_mix: the ring-0 mix
+ *
+ * Set @ring_0_mix of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_0_mix(AgsAbyssSynthUtil *abyss_synth_util,
+					gdouble ring_0_mix)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_0_mix = ring_0_mix;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_0_gain:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 gain of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 gain
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_0_gain(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_0_gain);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_0_gain:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_0_gain: the ring-0 gain
+ *
+ * Set @ring_0_gain of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_0_gain(AgsAbyssSynthUtil *abyss_synth_util,
+				     gdouble ring_0_gain)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_0_gain = ring_0_gain;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_1_enabled:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 enabled of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 enabled
+ * 
+ * Since: 9.4.0
+ */
+gboolean
+ags_abyss_synth_util_get_ring_1_enabled(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(abyss_synth_util->ring_1_enabled);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_1_enabled:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_1_enabled: the ring-0 enabled
+ *
+ * Set @ring_1_enabled of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_1_enabled(AgsAbyssSynthUtil *abyss_synth_util,
+					gboolean ring_1_enabled)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_1_enabled = ring_1_enabled;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_1_pitch_tuning:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 pitch tuning of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 pitch tuning
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_1_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_1_pitch_tuning);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_1_pitch_tuning:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_1_pitch_tuning: the ring-0 pitch tuning
+ *
+ * Set @ring_1_pitch_tuning of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_1_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util,
+					     gdouble ring_1_pitch_tuning)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_1_pitch_tuning = ring_1_pitch_tuning;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_1_drive:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 drive of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 drive
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_1_drive(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_1_drive);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_1_drive:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_1_drive: the ring-0 drive
+ *
+ * Set @ring_1_drive of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_1_drive(AgsAbyssSynthUtil *abyss_synth_util,
+				      gdouble ring_1_drive)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_1_drive = ring_1_drive;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_1_mix:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 mix of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 mix
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_1_mix(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_1_mix);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_1_mix:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_1_mix: the ring-0 mix
+ *
+ * Set @ring_1_mix of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_1_mix(AgsAbyssSynthUtil *abyss_synth_util,
+					gdouble ring_1_mix)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_1_mix = ring_1_mix;
+}
+
+/**
+ * ags_abyss_synth_util_get_ring_1_gain:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get ring-0 gain of @abyss_synth_util.
+ * 
+ * Returns: the ring-0 gain
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_ring_1_gain(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(1.0);
+  }
+
+  return(abyss_synth_util->ring_1_gain);
+}
+
+/**
+ * ags_abyss_synth_util_set_ring_1_gain:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @ring_1_gain: the ring-0 gain
+ *
+ * Set @ring_1_gain of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_ring_1_gain(AgsAbyssSynthUtil *abyss_synth_util,
+				     gdouble ring_1_gain)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->ring_1_gain = ring_1_gain;
 }
 
 /**
@@ -2989,6 +4076,518 @@ ags_abyss_synth_util_set_lfo_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
 }
 
 /**
+ * ags_abyss_synth_util_get_seq_0_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * 
+ * Get seq-0 modulation at @position of @abyss_synth_util.
+ * 
+ * Returns: the seq-0 modulation
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_0_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_0_modulation[position]);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_0_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * @seq_0_modulation: the seq-0 modulation
+ *
+ * Set @seq_0_modulation at @position of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_0_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position,
+					  gdouble seq_0_modulation)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return;
+  }
+
+  abyss_synth_util->seq_0_modulation[position] = seq_0_modulation;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_0_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume pingpong of @abyss_synth_util.
+ * 
+ * Returns: the seq volume pingpong
+ * 
+ * Since: 9.4.0
+ */
+gboolean
+ags_abyss_synth_util_get_seq_0_pingpong(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(abyss_synth_util->seq_0_pingpong);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_0_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_0_pingpong: the seq volume pingpong
+ *
+ * Set @seq_0_pingpong of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_0_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					gboolean seq_0_pingpong)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_0_pingpong = seq_0_pingpong;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_0_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume lfo_frequency of @abyss_synth_util.
+ * 
+ * Returns: the seq volume lfo_frequency
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_0_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_0_lfo_frequency);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_0_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_0_lfo_frequency: the seq volume lfo_frequency
+ *
+ * Set @seq_0_lfo_frequency of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_0_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					     gdouble seq_0_lfo_frequency)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_0_lfo_frequency = seq_0_lfo_frequency;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_1_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * 
+ * Get seq-1 modulation at @position of @abyss_synth_util.
+ * 
+ * Returns: the seq-1 modulation
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_1_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_1_modulation[position]);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_1_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * @seq_1_modulation: the seq-1 modulation
+ *
+ * Set @seq_1_modulation at @position of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_1_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position,
+					  gdouble seq_1_modulation)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return;
+  }
+
+  abyss_synth_util->seq_1_modulation[position] = seq_1_modulation;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_1_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume pingpong of @abyss_synth_util.
+ * 
+ * Returns: the seq volume pingpong
+ * 
+ * Since: 9.4.0
+ */
+gboolean
+ags_abyss_synth_util_get_seq_1_pingpong(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(abyss_synth_util->seq_1_pingpong);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_1_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_1_pingpong: the seq volume pingpong
+ *
+ * Set @seq_1_pingpong of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_1_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					gboolean seq_1_pingpong)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_1_pingpong = seq_1_pingpong;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_1_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume lfo_frequency of @abyss_synth_util.
+ * 
+ * Returns: the seq volume lfo_frequency
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_1_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_1_lfo_frequency);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_1_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_1_lfo_frequency: the seq volume lfo_frequency
+ *
+ * Set @seq_1_lfo_frequency of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_1_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					     gdouble seq_1_lfo_frequency)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_1_lfo_frequency = seq_1_lfo_frequency;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_2_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * 
+ * Get seq-2 modulation at @position of @abyss_synth_util.
+ * 
+ * Returns: the seq-2 modulation
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_2_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_2_modulation[position]);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_2_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * @seq_2_modulation: the seq-2 modulation
+ *
+ * Set @seq_2_modulation at @position of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_2_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position,
+					  gdouble seq_2_modulation)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return;
+  }
+
+  abyss_synth_util->seq_2_modulation[position] = seq_2_modulation;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_2_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume pingpong of @abyss_synth_util.
+ * 
+ * Returns: the seq volume pingpong
+ * 
+ * Since: 9.4.0
+ */
+gboolean
+ags_abyss_synth_util_get_seq_2_pingpong(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(abyss_synth_util->seq_2_pingpong);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_2_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_2_pingpong: the seq volume pingpong
+ *
+ * Set @seq_2_pingpong of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_2_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					gboolean seq_2_pingpong)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_2_pingpong = seq_2_pingpong;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_2_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume lfo_frequency of @abyss_synth_util.
+ * 
+ * Returns: the seq volume lfo_frequency
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_2_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_2_lfo_frequency);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_2_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_2_lfo_frequency: the seq volume lfo_frequency
+ *
+ * Set @seq_2_lfo_frequency of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_2_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					     gdouble seq_2_lfo_frequency)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_2_lfo_frequency = seq_2_lfo_frequency;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_3_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * 
+ * Get seq-3 modulation at @position of @abyss_synth_util.
+ * 
+ * Returns: the seq-3 modulation
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_3_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_3_modulation[position]);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_3_modulation:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @position: the sequencer position of modulation
+ * @seq_3_modulation: the seq-3 modulation
+ *
+ * Set @seq_3_modulation at @position of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_3_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					  gint position,
+					  gdouble seq_3_modulation)
+{
+  if(abyss_synth_util == NULL ||
+     position < 0 ||
+     position >= AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT){
+    return;
+  }
+
+  abyss_synth_util->seq_3_modulation[position] = seq_3_modulation;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_3_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume pingpong of @abyss_synth_util.
+ * 
+ * Returns: the seq volume pingpong
+ * 
+ * Since: 9.4.0
+ */
+gboolean
+ags_abyss_synth_util_get_seq_3_pingpong(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(FALSE);
+  }
+
+  return(abyss_synth_util->seq_3_pingpong);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_3_pingpong:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_3_pingpong: the seq volume pingpong
+ *
+ * Set @seq_3_pingpong of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_3_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					gboolean seq_3_pingpong)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_3_pingpong = seq_3_pingpong;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_3_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * 
+ * Get seq volume lfo_frequency of @abyss_synth_util.
+ * 
+ * Returns: the seq volume lfo_frequency
+ * 
+ * Since: 9.4.0
+ */
+gdouble
+ags_abyss_synth_util_get_seq_3_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util == NULL){
+    return(0.0);
+  }
+
+  return(abyss_synth_util->seq_3_lfo_frequency);
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_3_lfo_frequency:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_3_lfo_frequency: the seq volume lfo_frequency
+ *
+ * Set @seq_3_lfo_frequency of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_3_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+					     gdouble seq_3_lfo_frequency)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  abyss_synth_util->seq_3_lfo_frequency = seq_3_lfo_frequency;
+}
+
+/**
  * ags_abyss_synth_util_get_noise_0_frequency:
  * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
  * 
@@ -3402,4 +5001,7217 @@ ags_abyss_synth_util_set_offset_256th(AgsAbyssSynthUtil *abyss_synth_util,
   }
   
   abyss_synth_util->offset_256th = offset_256th;
+}
+
+gboolean
+ags_abyss_synth_util_sends_receives(AgsAbyssSynthUtil *abyss_synth_util,
+				    gint64 *sends,
+				    AgsAbyssSynthSends abyss_synth_sends)
+{
+  guint i;
+  gboolean success;
+  
+  success = FALSE;
+
+  for(i = 0; i < AGS_ABYSS_SYNTH_SENDS_COUNT; i++){
+    if(sends[i] == abyss_synth_sends){
+      success = TRUE;
+
+      break;
+    }
+  }
+  
+  return(success);
+}
+
+void
+ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  gpointer pitch_util;
+
+  gfloat *source, *tmp_source;
+
+  gfloat *osc_0_buffer;
+  gfloat *osc_1_buffer;
+  gfloat *osc_2_buffer;
+  gfloat *osc_3_buffer;
+
+  gdouble *env_0_buffer;
+  gdouble *env_1_buffer;
+  gdouble *env_2_buffer;
+  gdouble *env_3_buffer;
+  
+  gdouble *lfo_0_buffer;
+  gdouble *lfo_1_buffer;
+  gdouble *lfo_2_buffer;
+  gdouble *lfo_3_buffer;
+  
+  gdouble *seq_0_buffer;
+  gdouble *seq_1_buffer;
+  gdouble *seq_2_buffer;
+  gdouble *seq_3_buffer;
+  
+  gdouble *ring_0_buffer;
+  gdouble *ring_1_buffer;
+
+  ags_v8double v_sine;
+  ags_v8double v_sawtooth;
+  ags_v8double v_triangle;
+  ags_v8double v_square;
+  ags_v8double v_impulse;
+  ags_v8double v_buffer;
+
+  ags_v8double v_osc_frequency;
+  ags_v8double tmp_v_osc_frequency;
+  ags_v8double v_osc_phase;
+  ags_v8double tmp_v_osc_phase;
+  ags_v8double v_osc_volume;
+  ags_v8double tmp_v_osc_volume;
+
+  guint source_stride;
+  guint buffer_length;
+  guint samplerate;
+
+  guint offset;
+  guint frame_count;
+
+  guint nth_sends;
+  gboolean env_0_has_sends;
+  gboolean env_1_has_sends;
+  gboolean env_2_has_sends;
+  gboolean env_3_has_sends;
+  gboolean lfo_0_has_sends;
+  gboolean lfo_1_has_sends;
+  gboolean lfo_2_has_sends;
+  gboolean lfo_3_has_sends;
+  gboolean seq_0_has_sends;
+  gboolean seq_1_has_sends;
+  gboolean seq_2_has_sends;
+  gboolean seq_3_has_sends;
+  gboolean noise_0_has_sends;
+  gboolean noise_1_has_sends;
+  
+  gdouble osc_0_frequency;
+  gdouble osc_0_phase;
+  gdouble osc_0_volume;
+  gint64 osc_0_low_pass_sends;
+  
+  gdouble osc_1_frequency;
+  gdouble osc_1_phase;
+  gdouble osc_1_volume;
+  gint64 osc_1_low_pass_sends;
+
+  gdouble osc_2_frequency;
+  gdouble osc_2_phase;
+  gdouble osc_2_volume;
+  gint64 osc_2_low_pass_sends;
+  
+  gdouble osc_3_frequency;
+  gdouble osc_3_phase;
+  gdouble osc_3_volume;
+  gint64 osc_3_low_pass_sends;
+
+  gdouble ring_0_enabled;
+  gdouble ring_0_pitch_tuning;
+  gdouble ring_0_drive;
+  gdouble ring_0_mix;
+  gdouble ring_0_gain;
+
+  gdouble ring_1_enabled;
+  gdouble ring_1_pitch_tuning;
+  gdouble ring_1_drive;
+  gdouble ring_1_mix;
+  gdouble ring_1_gain;
+
+  gdouble seq_modulation_a, seq_modulation_b;
+
+  gdouble seq_0_pingpong;
+  gdouble seq_0_lfo_frequency;
+
+  gdouble seq_1_pingpong;
+  gdouble seq_1_lfo_frequency;
+
+  gdouble seq_2_pingpong;
+  gdouble seq_2_lfo_frequency;
+
+  gdouble seq_3_pingpong;
+  gdouble seq_3_lfo_frequency;
+
+  gdouble env_volume;
+  gdouble env_amount;
+
+  gint seq_offset;
+  gint seq_end;
+  gint absolute_position, position;
+  gint direction;    
+  
+  gdouble main_pitch_tuning;
+
+  gdouble *pitch_buffer;
+
+  gdouble base_key;
+  gdouble tuning;
+  gdouble root_pitch_hz;
+
+  gdouble phase_incr;
+  guint64 dsp_phase;
+  guint64 dsp_phase_incr;
+  guint dsp_i;
+  guint dsp_phase_index;
+  guint start_index, end_index;
+  gdouble start_point, end_point1, end_point2;
+  gdouble coeffs_0, coeffs_1, coeffs_2, coeffs_3;
+    
+  gdouble main_volume;
+
+  gdouble volume;
+  gdouble tmp_volume, end_volume;
+
+  guint tmp_offset, end_offset;
+  guint compute_frame_count;
+  guint copy_mode;
+  guint i;
+  guint i_stop;
+  
+  if(abyss_synth_util == NULL ||
+     abyss_synth_util->source == NULL){
+    return;
+  }
+
+  pitch_util = abyss_synth_util->pitch_util;
+  
+  source = abyss_synth_util->source;
+
+  source_stride = abyss_synth_util->source_stride;
+
+  osc_0_buffer = abyss_synth_util->osc_0_buffer;
+  osc_1_buffer = abyss_synth_util->osc_1_buffer;
+  osc_2_buffer = abyss_synth_util->osc_2_buffer;
+  osc_3_buffer = abyss_synth_util->osc_3_buffer;
+
+  buffer_length = abyss_synth_util->buffer_length;
+
+  samplerate = abyss_synth_util->samplerate;
+
+  if(samplerate == 0){
+    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  }
+
+  offset = abyss_synth_util->offset;
+  frame_count = abyss_synth_util->frame_count;
+
+  /* OSC */
+  osc_0_frequency = abyss_synth_util->osc_0_frequency;
+  osc_0_phase = abyss_synth_util->osc_0_phase;
+  osc_0_volume = abyss_synth_util->osc_0_volume;
+  
+  if(osc_0_frequency == 0.0){
+    osc_0_frequency = 0.01;
+  }
+
+  osc_0_low_pass_sends = abyss_synth_util->osc_0_low_pass_sends;
+
+  osc_1_frequency = abyss_synth_util->osc_1_frequency;
+  osc_1_phase = abyss_synth_util->osc_1_phase;
+  osc_1_volume = abyss_synth_util->osc_1_volume;
+  
+  if(osc_1_frequency == 0.0){
+    osc_1_frequency = 0.01;
+  }
+
+  osc_1_low_pass_sends = abyss_synth_util->osc_1_low_pass_sends;
+
+  osc_2_frequency = abyss_synth_util->osc_2_frequency;
+  osc_2_phase = abyss_synth_util->osc_2_phase;
+  osc_2_volume = abyss_synth_util->osc_2_volume;
+  
+  if(osc_2_frequency == 0.0){
+    osc_2_frequency = 0.01;
+  }
+
+  osc_2_low_pass_sends = abyss_synth_util->osc_2_low_pass_sends;
+
+  osc_3_frequency = abyss_synth_util->osc_3_frequency;
+  osc_3_phase = abyss_synth_util->osc_3_phase;
+  osc_3_volume = abyss_synth_util->osc_3_volume;
+  
+  if(osc_3_frequency == 0.0){
+    osc_3_frequency = 0.01;
+  }
+
+  osc_3_low_pass_sends = abyss_synth_util->osc_3_low_pass_sends;
+
+  /* ring */
+  ring_0_enabled = abyss_synth_util->ring_0_enabled;
+
+  ring_0_pitch_tuning = abyss_synth_util->ring_0_pitch_tuning;
+
+  ring_0_drive = abyss_synth_util->ring_0_drive;
+  ring_0_mix = abyss_synth_util->ring_0_mix;
+  ring_0_gain = abyss_synth_util->ring_0_gain;
+
+  ring_0_buffer = (gdouble *) abyss_synth_util->ring_0_buffer;
+
+  ring_1_enabled = abyss_synth_util->ring_1_enabled;
+
+  ring_1_pitch_tuning = abyss_synth_util->ring_1_pitch_tuning;
+
+  ring_1_drive = abyss_synth_util->ring_1_drive;
+  ring_1_mix = abyss_synth_util->ring_1_mix;
+  ring_1_gain = abyss_synth_util->ring_1_gain;
+
+  ring_1_buffer = (gdouble *) abyss_synth_util->ring_1_buffer;
+
+  /* pitch buffer */
+  pitch_buffer = abyss_synth_util->pitch_buffer;
+
+  frame_count = abyss_synth_util->frame_count;
+  offset = abyss_synth_util->offset;
+  
+  /* env */
+  env_0_buffer = (gdouble *) abyss_synth_util->env_0_buffer;
+
+  env_1_buffer = (gdouble *) abyss_synth_util->env_1_buffer;
+
+  env_2_buffer = (gdouble *) abyss_synth_util->env_2_buffer;
+
+  env_3_buffer = (gdouble *) abyss_synth_util->env_3_buffer;
+
+  /* LFO */
+  lfo_0_buffer = (gdouble *) abyss_synth_util->lfo_0_buffer;
+
+  lfo_1_buffer = (gdouble *) abyss_synth_util->lfo_1_buffer;
+
+  lfo_2_buffer = (gdouble *) abyss_synth_util->lfo_2_buffer;
+
+  lfo_3_buffer = (gdouble *) abyss_synth_util->lfo_3_buffer;
+  
+  /* seq */
+  seq_0_pingpong = abyss_synth_util->seq_0_pingpong;
+  seq_0_lfo_frequency = abyss_synth_util->seq_0_lfo_frequency;
+
+  seq_0_buffer = (gdouble *) abyss_synth_util->seq_0_buffer;
+
+  seq_1_pingpong = abyss_synth_util->seq_1_pingpong;
+  seq_1_lfo_frequency = abyss_synth_util->seq_1_lfo_frequency;
+
+  seq_1_buffer = (gdouble *) abyss_synth_util->seq_1_buffer;
+
+  seq_2_pingpong = abyss_synth_util->seq_2_pingpong;
+  seq_2_lfo_frequency = abyss_synth_util->seq_2_lfo_frequency;
+
+  seq_2_buffer = (gdouble *) abyss_synth_util->seq_2_buffer;
+
+  seq_3_pingpong = abyss_synth_util->seq_3_pingpong;
+  seq_3_lfo_frequency = abyss_synth_util->seq_3_lfo_frequency;
+
+  seq_3_buffer = (gdouble *) abyss_synth_util->seq_3_buffer;
+
+  /* env-0 */
+  env_0_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->env_0_sends[nth_sends] != 0){
+      env_0_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(env_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->env_0_buffer)[i] = 1.0;
+    }
+    
+    ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+				 abyss_synth_util->env_0_buffer);
+
+    ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				      abyss_synth_util->env_0_buffer);
+
+    ags_envelope_util_set_buffer_length(abyss_synth_util->env_0_util,
+					buffer_length);
+
+    ags_envelope_util_set_format(abyss_synth_util->env_0_util,
+				 AGS_SOUNDCARD_DOUBLE);
+
+    tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = abyss_synth_util->env_0_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = abyss_synth_util->env_0_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = abyss_synth_util->env_0_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = abyss_synth_util->env_0_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_0_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = abyss_synth_util->env_0_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_0_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = abyss_synth_util->env_0_release;
+      
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = abyss_synth_util->env_0_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > abyss_synth_util->buffer_length){
+	compute_frame_count = abyss_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= abyss_synth_util->buffer_length){
+	  break;
+	}
+      }
+
+      ags_envelope_util_set_buffer_length(abyss_synth_util->env_0_util,
+					  compute_frame_count);
+
+      ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+				   env_0_buffer + (tmp_offset - offset));
+
+      ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+					env_0_buffer + (tmp_offset - offset));
+
+      ags_envelope_util_set_offset(abyss_synth_util->env_0_util,
+				   0);
+
+      ags_envelope_util_set_volume(abyss_synth_util->env_0_util,
+				   env_volume);
+
+      ags_envelope_util_set_amount(abyss_synth_util->env_0_util,
+				   env_amount);
+
+      ags_envelope_util_compute(abyss_synth_util->env_0_util);
+
+      /* iterate */
+      tmp_offset += (guint) compute_frame_count;
+    }
+  }
+
+  /* env-1 */
+  env_1_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->env_1_sends[nth_sends] != 0){
+      env_1_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(env_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->env_1_buffer)[i] = 1.0;
+    }
+    
+    ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+				 abyss_synth_util->env_1_buffer);
+
+    ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				      abyss_synth_util->env_1_buffer);
+
+    ags_envelope_util_set_buffer_length(abyss_synth_util->env_1_util,
+					buffer_length);
+
+    ags_envelope_util_set_format(abyss_synth_util->env_1_util,
+				 AGS_SOUNDCARD_DOUBLE);
+
+    tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = abyss_synth_util->env_1_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = abyss_synth_util->env_1_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = abyss_synth_util->env_1_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = abyss_synth_util->env_1_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_1_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = abyss_synth_util->env_1_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_1_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = abyss_synth_util->env_1_release;
+      
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = abyss_synth_util->env_1_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > abyss_synth_util->buffer_length){
+	compute_frame_count = abyss_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= abyss_synth_util->buffer_length){
+	  break;
+	}
+      }
+
+      ags_envelope_util_set_buffer_length(abyss_synth_util->env_1_util,
+					  compute_frame_count);
+
+      ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+				   ((gdouble *) abyss_synth_util->env_1_buffer) + (tmp_offset - offset));
+
+      ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+					((gdouble *) abyss_synth_util->env_1_buffer) + (tmp_offset - offset));
+
+      ags_envelope_util_set_offset(abyss_synth_util->env_1_util,
+				   0);
+
+      ags_envelope_util_set_volume(abyss_synth_util->env_1_util,
+				   env_volume);
+
+      ags_envelope_util_set_amount(abyss_synth_util->env_1_util,
+				   env_amount);
+
+      ags_envelope_util_compute(abyss_synth_util->env_1_util);
+
+      /* iterate */
+      tmp_offset += (guint) compute_frame_count;
+    }
+  }
+
+  /* env-2 */
+  env_2_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->env_2_sends[nth_sends] != 0){
+      env_2_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(env_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->env_2_buffer)[i] = 1.0;
+    }
+    
+    ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+				 abyss_synth_util->env_2_buffer);
+
+    ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				      abyss_synth_util->env_2_buffer);
+
+    ags_envelope_util_set_buffer_length(abyss_synth_util->env_2_util,
+					buffer_length);
+
+    ags_envelope_util_set_format(abyss_synth_util->env_2_util,
+				 AGS_SOUNDCARD_DOUBLE);
+
+    tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = abyss_synth_util->env_2_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = abyss_synth_util->env_2_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = abyss_synth_util->env_2_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = abyss_synth_util->env_2_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_2_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = abyss_synth_util->env_2_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_2_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = abyss_synth_util->env_2_release;
+      
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = abyss_synth_util->env_2_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > abyss_synth_util->buffer_length){
+	compute_frame_count = abyss_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= abyss_synth_util->buffer_length){
+	  break;
+	}
+      }
+
+      ags_envelope_util_set_buffer_length(abyss_synth_util->env_2_util,
+					  compute_frame_count);
+
+      ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+				   ((gdouble *) abyss_synth_util->env_2_buffer) + (tmp_offset - offset));
+
+      ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+					((gdouble *) abyss_synth_util->env_2_buffer) + (tmp_offset - offset));
+
+      ags_envelope_util_set_offset(abyss_synth_util->env_2_util,
+				   0);
+
+      ags_envelope_util_set_volume(abyss_synth_util->env_2_util,
+				   env_volume);
+
+      ags_envelope_util_set_amount(abyss_synth_util->env_2_util,
+				   env_amount);
+
+      ags_envelope_util_compute(abyss_synth_util->env_2_util);
+
+      /* iterate */
+      tmp_offset += (guint) compute_frame_count;
+    }
+  }
+
+  /* env-3 */
+  env_3_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->env_3_sends[nth_sends] != 0){
+      env_3_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(env_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->env_3_buffer)[i] = 1.0;
+    }
+    
+    ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+				 abyss_synth_util->env_3_buffer);
+
+    ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				      abyss_synth_util->env_3_buffer);
+
+    ags_envelope_util_set_buffer_length(abyss_synth_util->env_3_util,
+					buffer_length);
+
+    ags_envelope_util_set_format(abyss_synth_util->env_3_util,
+				 AGS_SOUNDCARD_DOUBLE);
+
+    tmp_offset = offset;
+
+    compute_frame_count = ((double) frame_count / 4.0);
+
+    while(tmp_offset < frame_count){
+      /* env-0 attack */
+      env_amount = 0.0;
+      env_volume = 1.0;
+
+      if((double) tmp_offset >= 0.0 &&
+	 (double) tmp_offset < (double) frame_count / 4.0){
+	env_volume = abyss_synth_util->env_3_attack;
+
+	end_offset = ((double) frame_count / 4.0);
+
+	end_volume = abyss_synth_util->env_3_decay;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - 0);
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 4.0 &&
+	       (double) tmp_offset < (double) frame_count / 2.0){
+	env_volume = abyss_synth_util->env_3_decay;
+
+	end_offset = ((double) frame_count / 2.0);
+
+	end_volume = abyss_synth_util->env_3_sustain;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count / 2.0 &&
+	       (double) tmp_offset < (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_3_sustain;
+
+	end_offset = ((double) frame_count * 3.0 / 4.0);
+
+	end_volume = abyss_synth_util->env_3_release;
+      
+	if(end_offset == 0){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count / 2.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else if((double) tmp_offset >= (double) frame_count * 3.0 / 4.0){
+	env_volume = abyss_synth_util->env_3_release;
+
+	end_offset = ((double) frame_count);
+
+	end_volume = abyss_synth_util->env_3_release;
+      
+	if(end_offset == 0 ||
+	   end_offset >= frame_count){
+	  env_amount = 0.0;
+	}else{
+	  env_amount = (end_volume - env_volume) / (end_offset - ((double) frame_count * 3.0 / 4.0));
+
+	  tmp_volume = env_volume + (env_amount * (tmp_offset - offset));
+
+	  env_volume = tmp_volume;
+	}
+      }else{
+	env_amount = 0.0;
+	env_volume = abyss_synth_util->env_3_release;
+      }
+
+      if(frame_count - tmp_offset > 0){
+	compute_frame_count = frame_count - tmp_offset;
+      }else{
+	compute_frame_count = ((double) frame_count / 4.0);
+      }
+      
+      if(compute_frame_count > (guint) ((double) frame_count / 4.0)){
+	compute_frame_count = (guint) ((double) frame_count / 4.0);
+      }
+      
+      if((tmp_offset - offset) + compute_frame_count > abyss_synth_util->buffer_length){
+	compute_frame_count = abyss_synth_util->buffer_length - (tmp_offset - offset);
+      }
+      
+      if(tmp_offset > 0){
+	if(tmp_offset - offset >= abyss_synth_util->buffer_length){
+	  break;
+	}
+      }
+
+      ags_envelope_util_set_buffer_length(abyss_synth_util->env_3_util,
+					  compute_frame_count);
+
+      ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+				   ((gdouble *) abyss_synth_util->env_3_buffer) + (tmp_offset - offset));
+
+      ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+					((gdouble *) abyss_synth_util->env_3_buffer) + (tmp_offset - offset));
+
+      ags_envelope_util_set_offset(abyss_synth_util->env_3_util,
+				   0);
+
+      ags_envelope_util_set_volume(abyss_synth_util->env_3_util,
+				   env_volume);
+
+      ags_envelope_util_set_amount(abyss_synth_util->env_3_util,
+				   env_amount);
+
+      ags_envelope_util_compute(abyss_synth_util->env_3_util);
+
+      /* iterate */
+      tmp_offset += (guint) compute_frame_count;
+    }
+  }
+
+  /* LFO-0 */
+  lfo_0_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->lfo_0_sends[nth_sends] != 0){
+      lfo_0_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(lfo_0_has_sends){
+    ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				  abyss_synth_util->lfo_0_buffer);
+
+    ags_lfo_synth_util_set_buffer_length(abyss_synth_util->lfo_0_util,
+					 buffer_length);
+
+    ags_lfo_synth_util_set_format(abyss_synth_util->lfo_0_util,
+				  AGS_SOUNDCARD_DOUBLE);
+
+    ags_lfo_synth_util_set_samplerate(abyss_synth_util->lfo_0_util,
+				      samplerate);
+
+    ags_lfo_synth_util_set_lfo_synth_oscillator_mode(abyss_synth_util->lfo_0_util,
+						     abyss_synth_util->lfo_0_oscillator);
+
+    ags_lfo_synth_util_set_frequency(abyss_synth_util->lfo_0_util,
+				     abyss_synth_util->lfo_0_frequency);
+
+    ags_lfo_synth_util_set_lfo_depth(abyss_synth_util->lfo_0_util,
+				     abyss_synth_util->lfo_0_depth);
+  
+    ags_lfo_synth_util_set_tuning(abyss_synth_util->lfo_0_util,
+				  abyss_synth_util->lfo_0_tuning);
+
+    ags_lfo_synth_util_set_offset(abyss_synth_util->lfo_0_util,
+				  offset);
+
+    switch(abyss_synth_util->lfo_0_oscillator){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_lfo_synth_util_compute_sin(abyss_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_lfo_synth_util_compute_sawtooth(abyss_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      {
+	ags_lfo_synth_util_compute_triangle(abyss_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {
+	ags_lfo_synth_util_compute_square(abyss_synth_util->lfo_0_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_lfo_synth_util_compute_impulse(abyss_synth_util->lfo_0_util);
+      }
+      break;
+    }
+  }
+
+  /* LFO-1 */
+  lfo_1_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->lfo_1_sends[nth_sends] != 0){
+      lfo_1_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(lfo_1_has_sends){
+    ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				  abyss_synth_util->lfo_1_buffer);
+
+    ags_lfo_synth_util_set_buffer_length(abyss_synth_util->lfo_1_util,
+					 buffer_length);
+
+    ags_lfo_synth_util_set_format(abyss_synth_util->lfo_1_util,
+				  AGS_SOUNDCARD_DOUBLE);
+
+    ags_lfo_synth_util_set_samplerate(abyss_synth_util->lfo_1_util,
+				      samplerate);
+
+    ags_lfo_synth_util_set_lfo_synth_oscillator_mode(abyss_synth_util->lfo_1_util,
+						     abyss_synth_util->lfo_1_oscillator);
+
+    ags_lfo_synth_util_set_frequency(abyss_synth_util->lfo_1_util,
+				     abyss_synth_util->lfo_1_frequency);
+
+    ags_lfo_synth_util_set_lfo_depth(abyss_synth_util->lfo_1_util,
+				     abyss_synth_util->lfo_1_depth);
+  
+    ags_lfo_synth_util_set_tuning(abyss_synth_util->lfo_1_util,
+				  abyss_synth_util->lfo_1_tuning);
+
+    ags_lfo_synth_util_set_offset(abyss_synth_util->lfo_1_util,
+				  offset);
+
+    switch(abyss_synth_util->lfo_1_oscillator){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_lfo_synth_util_compute_sin(abyss_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_lfo_synth_util_compute_sawtooth(abyss_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      {
+	ags_lfo_synth_util_compute_triangle(abyss_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {
+	ags_lfo_synth_util_compute_square(abyss_synth_util->lfo_1_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_lfo_synth_util_compute_impulse(abyss_synth_util->lfo_1_util);
+      }
+      break;
+    }
+  }
+  
+  /* LFO-2 */
+  lfo_2_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->lfo_2_sends[nth_sends] != 0){
+      lfo_2_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(lfo_2_has_sends){
+    ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				  abyss_synth_util->lfo_2_buffer);
+
+    ags_lfo_synth_util_set_buffer_length(abyss_synth_util->lfo_2_util,
+					 buffer_length);
+
+    ags_lfo_synth_util_set_format(abyss_synth_util->lfo_2_util,
+				  AGS_SOUNDCARD_DOUBLE);
+
+    ags_lfo_synth_util_set_samplerate(abyss_synth_util->lfo_2_util,
+				      samplerate);
+
+    ags_lfo_synth_util_set_lfo_synth_oscillator_mode(abyss_synth_util->lfo_2_util,
+						     abyss_synth_util->lfo_2_oscillator);
+
+    ags_lfo_synth_util_set_frequency(abyss_synth_util->lfo_2_util,
+				     abyss_synth_util->lfo_2_frequency);
+
+    ags_lfo_synth_util_set_lfo_depth(abyss_synth_util->lfo_2_util,
+				     abyss_synth_util->lfo_2_depth);
+  
+    ags_lfo_synth_util_set_tuning(abyss_synth_util->lfo_2_util,
+				  abyss_synth_util->lfo_2_tuning);
+
+    ags_lfo_synth_util_set_offset(abyss_synth_util->lfo_2_util,
+				  offset);
+
+    switch(abyss_synth_util->lfo_2_oscillator){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_lfo_synth_util_compute_sin(abyss_synth_util->lfo_2_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_lfo_synth_util_compute_sawtooth(abyss_synth_util->lfo_2_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      {
+	ags_lfo_synth_util_compute_triangle(abyss_synth_util->lfo_2_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {
+	ags_lfo_synth_util_compute_square(abyss_synth_util->lfo_2_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_lfo_synth_util_compute_impulse(abyss_synth_util->lfo_2_util);
+      }
+      break;
+    }
+  }
+  
+  /* LFO-3 */
+  lfo_3_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->lfo_3_sends[nth_sends] != 0){
+      lfo_3_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(lfo_3_has_sends){
+    ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				  abyss_synth_util->lfo_3_buffer);
+
+    ags_lfo_synth_util_set_buffer_length(abyss_synth_util->lfo_3_util,
+					 buffer_length);
+
+    ags_lfo_synth_util_set_format(abyss_synth_util->lfo_3_util,
+				  AGS_SOUNDCARD_DOUBLE);
+
+    ags_lfo_synth_util_set_samplerate(abyss_synth_util->lfo_3_util,
+				      samplerate);
+
+    ags_lfo_synth_util_set_lfo_synth_oscillator_mode(abyss_synth_util->lfo_3_util,
+						     abyss_synth_util->lfo_3_oscillator);
+
+    ags_lfo_synth_util_set_frequency(abyss_synth_util->lfo_3_util,
+				     abyss_synth_util->lfo_3_frequency);
+
+    ags_lfo_synth_util_set_lfo_depth(abyss_synth_util->lfo_3_util,
+				     abyss_synth_util->lfo_3_depth);
+  
+    ags_lfo_synth_util_set_tuning(abyss_synth_util->lfo_3_util,
+				  abyss_synth_util->lfo_3_tuning);
+
+    ags_lfo_synth_util_set_offset(abyss_synth_util->lfo_3_util,
+				  offset);
+
+    switch(abyss_synth_util->lfo_3_oscillator){
+    case AGS_SYNTH_OSCILLATOR_SIN:
+      {
+	ags_lfo_synth_util_compute_sin(abyss_synth_util->lfo_3_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SAWTOOTH:
+      {
+	ags_lfo_synth_util_compute_sawtooth(abyss_synth_util->lfo_3_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_TRIANGLE:
+      {
+	ags_lfo_synth_util_compute_triangle(abyss_synth_util->lfo_3_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_SQUARE:
+      {
+	ags_lfo_synth_util_compute_square(abyss_synth_util->lfo_3_util);
+      }
+      break;
+    case AGS_SYNTH_OSCILLATOR_IMPULSE:
+      {
+	ags_lfo_synth_util_compute_impulse(abyss_synth_util->lfo_3_util);
+      }
+      break;
+    }
+  }
+
+  /* seq-0 */
+  seq_0_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->seq_0_sends[nth_sends] != 0){
+      seq_0_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(seq_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      seq_end = (gint) floor(samplerate / seq_0_lfo_frequency);
+      seq_offset = (offset + i) % seq_end;
+
+      absolute_position = (offset + i) / seq_end;
+      position = absolute_position % 16;
+      
+      direction = 1;
+
+      if((gint) floor(absolute_position / 16) % 2 != 0){
+	direction = -1;
+      }
+
+      if(position < 15){
+	if(!seq_0_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_0_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_0_modulation[position + 1];
+	}else{
+	  if(position > 0){
+	    seq_modulation_a = abyss_synth_util->seq_0_modulation[position];
+	    seq_modulation_b = abyss_synth_util->seq_0_modulation[position - 1];
+	  }else{
+	    seq_modulation_a = abyss_synth_util->seq_0_modulation[0];
+	    seq_modulation_b = abyss_synth_util->seq_0_modulation[1];
+	  }
+	}
+      }else{
+	if(!seq_0_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_0_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_0_modulation[0];
+	}else{
+	  seq_modulation_a = abyss_synth_util->seq_0_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_0_modulation[position - 1];
+	}
+      }
+      
+      seq_0_buffer[i] = seq_modulation_a + ((((gdouble) seq_offset) * (seq_modulation_b - seq_modulation_a)) / ((gdouble) seq_end));
+    }
+  }
+
+  /* seq-1 */
+  seq_1_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->seq_1_sends[nth_sends] != 0){
+      seq_1_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(seq_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      seq_end = (gint) floor(samplerate / seq_1_lfo_frequency);
+      seq_offset = (offset + i) % seq_end;
+
+      absolute_position = (offset + i) / seq_end;
+      position = absolute_position % 16;
+      
+      direction = 1;
+
+      if((gint) floor(absolute_position / 16) % 2 != 0){
+	direction = -1;
+      }
+
+      if(position < 15){
+	if(!seq_1_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_1_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_1_modulation[position + 1];
+	}else{
+	  if(position > 0){
+	    seq_modulation_a = abyss_synth_util->seq_1_modulation[position];
+	    seq_modulation_b = abyss_synth_util->seq_1_modulation[position - 1];
+	  }else{
+	    seq_modulation_a = abyss_synth_util->seq_1_modulation[0];
+	    seq_modulation_b = abyss_synth_util->seq_1_modulation[1];
+	  }
+	}
+      }else{
+	if(!seq_1_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_1_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_1_modulation[0];
+	}else{
+	  seq_modulation_a = abyss_synth_util->seq_1_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_1_modulation[position - 1];
+	}
+      }
+      
+      seq_1_buffer[i] = seq_modulation_a + ((((gdouble) seq_offset) * (seq_modulation_b - seq_modulation_a)) / ((gdouble) seq_end));
+    }
+  }
+
+  /* seq-2 */
+  seq_2_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->seq_2_sends[nth_sends] != 0){
+      seq_2_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(seq_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      seq_end = (gint) floor(samplerate / seq_2_lfo_frequency);
+      seq_offset = (offset + i) % seq_end;
+
+      absolute_position = (offset + i) / seq_end;
+      position = absolute_position % 16;
+      
+      direction = 1;
+
+      if((gint) floor(absolute_position / 16) % 2 != 0){
+	direction = -1;
+      }
+
+      if(position < 15){
+	if(!seq_2_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_2_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_2_modulation[position + 1];
+	}else{
+	  if(position > 0){
+	    seq_modulation_a = abyss_synth_util->seq_2_modulation[position];
+	    seq_modulation_b = abyss_synth_util->seq_2_modulation[position - 1];
+	  }else{
+	    seq_modulation_a = abyss_synth_util->seq_2_modulation[0];
+	    seq_modulation_b = abyss_synth_util->seq_2_modulation[1];
+	  }
+	}
+      }else{
+	if(!seq_2_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_2_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_2_modulation[0];
+	}else{
+	  seq_modulation_a = abyss_synth_util->seq_2_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_2_modulation[position - 1];
+	}
+      }
+      
+      seq_2_buffer[i] = seq_modulation_a + ((((gdouble) seq_offset) * (seq_modulation_b - seq_modulation_a)) / ((gdouble) seq_end));
+    }
+  }
+
+  /* seq-3 */
+  seq_3_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->seq_3_sends[nth_sends] != 0){
+      seq_3_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(seq_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      seq_end = (gint) floor(samplerate / seq_3_lfo_frequency);
+      seq_offset = (offset + i) % seq_end;
+
+      absolute_position = (offset + i) / seq_end;
+      position = absolute_position % 16;
+      
+      direction = 1;
+
+      if((gint) floor(absolute_position / 16) % 2 != 0){
+	direction = -1;
+      }
+
+      if(position < 15){
+	if(!seq_3_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_3_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_3_modulation[position + 1];
+	}else{
+	  if(position > 0){
+	    seq_modulation_a = abyss_synth_util->seq_3_modulation[position];
+	    seq_modulation_b = abyss_synth_util->seq_3_modulation[position - 1];
+	  }else{
+	    seq_modulation_a = abyss_synth_util->seq_3_modulation[0];
+	    seq_modulation_b = abyss_synth_util->seq_3_modulation[1];
+	  }
+	}
+      }else{
+	if(!seq_3_pingpong ||
+	   direction == 1){
+	  seq_modulation_a = abyss_synth_util->seq_3_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_3_modulation[0];
+	}else{
+	  seq_modulation_a = abyss_synth_util->seq_3_modulation[position];
+	  seq_modulation_b = abyss_synth_util->seq_3_modulation[position - 1];
+	}
+      }
+      
+      seq_3_buffer[i] = seq_modulation_a + ((((gdouble) seq_offset) * (seq_modulation_b - seq_modulation_a)) / ((gdouble) seq_end));
+    }
+  }
+  
+  /* pink-noise 0 */
+  noise_0_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->noise_0_sends[nth_sends] != 0){
+      noise_0_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(noise_0_has_sends){
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      abyss_synth_util->noise_0_buffer);
+
+    ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
+				     buffer_length);
+
+    ags_noise_util_set_format(abyss_synth_util->noise_0_util,
+			      AGS_SOUNDCARD_DOUBLE);
+
+    ags_noise_util_set_samplerate(abyss_synth_util->noise_0_util,
+				  samplerate);
+
+    ags_noise_util_set_volume(abyss_synth_util->noise_0_util,
+			      abyss_synth_util->noise_0_gain);
+
+    ags_noise_util_set_frequency(abyss_synth_util->noise_0_util,
+				 abyss_synth_util->noise_0_frequency);
+
+    ags_noise_util_set_offset(abyss_synth_util->noise_0_util,
+			      offset);
+
+    ags_noise_util_compute(abyss_synth_util->noise_0_util);
+  }
+
+  /* pink-noise 1 */
+  noise_1_has_sends = FALSE;
+  
+  for(nth_sends = 0; nth_sends < AGS_ABYSS_SYNTH_SENDS_COUNT; nth_sends++){
+    if(abyss_synth_util->noise_1_sends[nth_sends] != 0){
+      noise_1_has_sends = TRUE;
+
+      break;
+    }
+  }
+
+  if(noise_1_has_sends){
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      abyss_synth_util->noise_1_buffer);
+
+    ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
+				     buffer_length);
+
+    ags_noise_util_set_format(abyss_synth_util->noise_1_util,
+			      AGS_SOUNDCARD_DOUBLE);
+
+    ags_noise_util_set_samplerate(abyss_synth_util->noise_1_util,
+				  samplerate);
+
+    ags_noise_util_set_volume(abyss_synth_util->noise_1_util,
+			      abyss_synth_util->noise_1_gain);
+
+    ags_noise_util_set_frequency(abyss_synth_util->noise_1_util,
+				 abyss_synth_util->noise_1_frequency);
+
+    ags_noise_util_set_offset(abyss_synth_util->noise_1_util,
+			      offset);
+
+    ags_noise_util_compute(abyss_synth_util->noise_1_util);
+  }
+
+  /* OSC 0-3 */
+  i = 0;
+
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  i_stop = buffer_length - (buffer_length % 8);
+
+  for(; i < i_stop;){
+    /* OSC-0 */
+    tmp_source = source;
+    
+    v_buffer = (ags_v8double) {
+      (gdouble) *(tmp_source),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride)
+    };
+
+    v_osc_frequency = (ags_v8double) {
+      osc_0_frequency,
+      osc_0_frequency,
+      osc_0_frequency,
+      osc_0_frequency,
+      osc_0_frequency,
+      osc_0_frequency,
+      osc_0_frequency,
+      osc_0_frequency
+    };
+
+    v_osc_phase = (ags_v8double) {
+      osc_0_phase,
+      osc_0_phase,
+      osc_0_phase,
+      osc_0_phase,
+      osc_0_phase,
+      osc_0_phase,
+      osc_0_phase,
+      osc_0_phase
+    };
+
+    v_osc_volume = (ags_v8double) {
+      osc_0_volume,
+      osc_0_volume,
+      osc_0_volume,
+      osc_0_volume,
+      osc_0_volume,
+      osc_0_volume,
+      osc_0_volume,
+      osc_0_volume
+    };
+
+    /* env-0 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-0 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-0 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-1 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-1 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-1 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-2 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-2 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-2 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-3 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-3 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-3 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+    
+    /* lfo-0 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-0 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-0 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-1 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-1 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-1 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-2 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-2 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-2 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-3 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-3 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-3 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* seq-0 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* seq-0 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* seq-0 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+
+    /* compute osc-0 */
+    if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      v_sine = (ags_v8double) {
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
+      };
+    
+      v_buffer += (v_sine * v_osc_volume);
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      v_sawtooth = (ags_v8double) {
+	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))), (samplerate / v_osc_frequency[1])) * 2.0 * v_osc_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))), (samplerate / v_osc_frequency[2])) * 2.0 * v_osc_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))), (samplerate / v_osc_frequency[3])) * 2.0 * v_osc_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))), (samplerate / v_osc_frequency[4])) * 2.0 * v_osc_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))), (samplerate / v_osc_frequency[5])) * 2.0 * v_osc_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))), (samplerate / v_osc_frequency[6])) * 2.0 * v_osc_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
+      };
+    
+      v_buffer += (v_sawtooth * v_osc_volume);
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      v_triangle = (ags_v8double) {
+	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+      };
+    
+      v_buffer += (v_triangle * v_osc_volume);
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      v_square = (ags_v8double) {
+	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+      };
+    
+      v_buffer += (v_square * v_osc_volume);
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      v_impulse = (ags_v8double) {
+	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+      };
+    
+      v_buffer += (v_impulse * v_osc_volume);
+    }
+    
+    *(osc_0_buffer) = (gfloat) v_buffer[0];
+    *(osc_0_buffer++) = (gfloat) v_buffer[1];
+    *(osc_0_buffer++) = (gfloat) v_buffer[2];
+    *(osc_0_buffer++) = (gfloat) v_buffer[3];
+    *(osc_0_buffer++) = (gfloat) v_buffer[4];
+    *(osc_0_buffer++) = (gfloat) v_buffer[5];
+    *(osc_0_buffer++) = (gfloat) v_buffer[6];
+    *(osc_0_buffer++) = (gfloat) v_buffer[7];
+
+    osc_0_buffer++;
+
+    /* OSC-1 */
+    tmp_source = source;
+    
+    v_buffer = (ags_v8double) {
+      (gdouble) *(tmp_source),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride)
+    };
+
+    v_osc_frequency = (ags_v8double) {
+      osc_1_frequency,
+      osc_1_frequency,
+      osc_1_frequency,
+      osc_1_frequency,
+      osc_1_frequency,
+      osc_1_frequency,
+      osc_1_frequency,
+      osc_1_frequency
+    };
+
+    v_osc_phase = (ags_v8double) {
+      osc_1_phase,
+      osc_1_phase,
+      osc_1_phase,
+      osc_1_phase,
+      osc_1_phase,
+      osc_1_phase,
+      osc_1_phase,
+      osc_1_phase
+    };
+
+    v_osc_volume = (ags_v8double) {
+      osc_1_volume,
+      osc_1_volume,
+      osc_1_volume,
+      osc_1_volume,
+      osc_1_volume,
+      osc_1_volume,
+      osc_1_volume,
+      osc_1_volume
+    };
+
+    /* env-0 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-0 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-0 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-1 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-1 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-1 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-2 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-2 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-2 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-3 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-3 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-3 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+    
+    /* lfo-0 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-0 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-0 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-1 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-1 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-1 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-2 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-2 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-2 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-3 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-3 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-3 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* seq-0 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* seq-0 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* seq-0 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+
+    /* compute osc-1 */
+    if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      v_sine = (ags_v8double) {
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
+      };
+    
+      v_buffer += (v_sine * v_osc_volume);
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      v_sawtooth = (ags_v8double) {
+	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))), (samplerate / v_osc_frequency[1])) * 2.0 * v_osc_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))), (samplerate / v_osc_frequency[2])) * 2.0 * v_osc_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))), (samplerate / v_osc_frequency[3])) * 2.0 * v_osc_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))), (samplerate / v_osc_frequency[4])) * 2.0 * v_osc_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))), (samplerate / v_osc_frequency[5])) * 2.0 * v_osc_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))), (samplerate / v_osc_frequency[6])) * 2.0 * v_osc_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
+      };
+    
+      v_buffer += (v_sawtooth * v_osc_volume);
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      v_triangle = (ags_v8double) {
+	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+      };
+    
+      v_buffer += (v_triangle * v_osc_volume);
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      v_square = (ags_v8double) {
+	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+      };
+    
+      v_buffer += (v_square * v_osc_volume);
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      v_impulse = (ags_v8double) {
+	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+      };
+    
+      v_buffer += (v_impulse * v_osc_volume);
+    }
+    
+    *(osc_1_buffer) = (gfloat) v_buffer[0];
+    *(osc_1_buffer++) = (gfloat) v_buffer[1];
+    *(osc_1_buffer++) = (gfloat) v_buffer[2];
+    *(osc_1_buffer++) = (gfloat) v_buffer[3];
+    *(osc_1_buffer++) = (gfloat) v_buffer[4];
+    *(osc_1_buffer++) = (gfloat) v_buffer[5];
+    *(osc_1_buffer++) = (gfloat) v_buffer[6];
+    *(osc_1_buffer++) = (gfloat) v_buffer[7];
+
+    osc_1_buffer++;
+
+    /* OSC-2 */
+    tmp_source = source;
+    
+    v_buffer = (ags_v8double) {
+      (gdouble) *(tmp_source),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride)
+    };
+
+    v_osc_frequency = (ags_v8double) {
+      osc_2_frequency,
+      osc_2_frequency,
+      osc_2_frequency,
+      osc_2_frequency,
+      osc_2_frequency,
+      osc_2_frequency,
+      osc_2_frequency,
+      osc_2_frequency
+    };
+
+    v_osc_phase = (ags_v8double) {
+      osc_2_phase,
+      osc_2_phase,
+      osc_2_phase,
+      osc_2_phase,
+      osc_2_phase,
+      osc_2_phase,
+      osc_2_phase,
+      osc_2_phase
+    };
+
+    v_osc_volume = (ags_v8double) {
+      osc_2_volume,
+      osc_2_volume,
+      osc_2_volume,
+      osc_2_volume,
+      osc_2_volume,
+      osc_2_volume,
+      osc_2_volume,
+      osc_2_volume
+    };
+
+    /* env-0 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-0 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-0 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-1 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-1 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-1 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-2 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-2 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-2 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-3 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-3 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-3 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+    
+    /* lfo-0 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-0 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-0 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-1 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-1 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-1 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-2 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-2 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-2 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-3 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-3 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-3 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* seq-0 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* seq-0 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* seq-0 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+
+    /* compute osc-2 */
+    if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      v_sine = (ags_v8double) {
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
+      };
+    
+      v_buffer += (v_sine * v_osc_volume);
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      v_sawtooth = (ags_v8double) {
+	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))), (samplerate / v_osc_frequency[1])) * 2.0 * v_osc_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))), (samplerate / v_osc_frequency[2])) * 2.0 * v_osc_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))), (samplerate / v_osc_frequency[3])) * 2.0 * v_osc_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))), (samplerate / v_osc_frequency[4])) * 2.0 * v_osc_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))), (samplerate / v_osc_frequency[5])) * 2.0 * v_osc_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))), (samplerate / v_osc_frequency[6])) * 2.0 * v_osc_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
+      };
+    
+      v_buffer += (v_sawtooth * v_osc_volume);
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      v_triangle = (ags_v8double) {
+	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+      };
+    
+      v_buffer += (v_triangle * v_osc_volume);
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      v_square = (ags_v8double) {
+	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+      };
+    
+      v_buffer += (v_square * v_osc_volume);
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      v_impulse = (ags_v8double) {
+	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+      };
+    
+      v_buffer += (v_impulse * v_osc_volume);
+    }
+    
+    *(osc_2_buffer) = (gfloat) v_buffer[0];
+    *(osc_2_buffer++) = (gfloat) v_buffer[1];
+    *(osc_2_buffer++) = (gfloat) v_buffer[2];
+    *(osc_2_buffer++) = (gfloat) v_buffer[3];
+    *(osc_2_buffer++) = (gfloat) v_buffer[4];
+    *(osc_2_buffer++) = (gfloat) v_buffer[5];
+    *(osc_2_buffer++) = (gfloat) v_buffer[6];
+    *(osc_2_buffer++) = (gfloat) v_buffer[7];
+
+    osc_2_buffer++;
+
+    /* OSC-3 */
+    tmp_source = source;
+    
+    v_buffer = (ags_v8double) {
+      (gdouble) *(tmp_source),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride),
+      (gdouble) *(tmp_source += source_stride)
+    };
+
+    v_osc_frequency = (ags_v8double) {
+      osc_3_frequency,
+      osc_3_frequency,
+      osc_3_frequency,
+      osc_3_frequency,
+      osc_3_frequency,
+      osc_3_frequency,
+      osc_3_frequency,
+      osc_3_frequency
+    };
+
+    v_osc_phase = (ags_v8double) {
+      osc_3_phase,
+      osc_3_phase,
+      osc_3_phase,
+      osc_3_phase,
+      osc_3_phase,
+      osc_3_phase,
+      osc_3_phase,
+      osc_3_phase
+    };
+
+    v_osc_volume = (ags_v8double) {
+      osc_3_volume,
+      osc_3_volume,
+      osc_3_volume,
+      osc_3_volume,
+      osc_3_volume,
+      osc_3_volume,
+      osc_3_volume,
+      osc_3_volume
+    };
+
+    /* env-0 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-0 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-0 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_0_buffer[i],
+	env_0_buffer[i + 1],
+	env_0_buffer[i + 2],
+	env_0_buffer[i + 3],
+	env_0_buffer[i + 4],
+	env_0_buffer[i + 5],
+	env_0_buffer[i + 6],
+	env_0_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-1 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-1 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-1 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_1_buffer[i],
+	env_1_buffer[i + 1],
+	env_1_buffer[i + 2],
+	env_1_buffer[i + 3],
+	env_1_buffer[i + 4],
+	env_1_buffer[i + 5],
+	env_1_buffer[i + 6],
+	env_1_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-2 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-2 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-2 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_2_buffer[i],
+	env_2_buffer[i + 1],
+	env_2_buffer[i + 2],
+	env_2_buffer[i + 3],
+	env_2_buffer[i + 4],
+	env_2_buffer[i + 5],
+	env_2_buffer[i + 6],
+	env_2_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+
+    /* env-3 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = tmp_v_osc_frequency * v_osc_frequency;
+    }
+      
+    /* env-3 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_phase = (tmp_v_osc_phase * 2.0 * M_PI) + v_osc_phase;
+    }
+
+    /* env-3 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	env_3_buffer[i],
+	env_3_buffer[i + 1],
+	env_3_buffer[i + 2],
+	env_3_buffer[i + 3],
+	env_3_buffer[i + 4],
+	env_3_buffer[i + 5],
+	env_3_buffer[i + 6],
+	env_3_buffer[i + 7]
+      };
+
+      v_osc_volume = tmp_v_osc_volume * v_osc_volume;
+    }
+    
+    /* lfo-0 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-0 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-0 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_0_buffer[i],
+	lfo_0_buffer[i + 1],
+	lfo_0_buffer[i + 2],
+	lfo_0_buffer[i + 3],
+	lfo_0_buffer[i + 4],
+	lfo_0_buffer[i + 5],
+	lfo_0_buffer[i + 6],
+	lfo_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-1 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-1 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-1 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_1_buffer[i],
+	lfo_1_buffer[i + 1],
+	lfo_1_buffer[i + 2],
+	lfo_1_buffer[i + 3],
+	lfo_1_buffer[i + 4],
+	lfo_1_buffer[i + 5],
+	lfo_1_buffer[i + 6],
+	lfo_1_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-2 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-2 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-2 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_2_buffer[i],
+	lfo_2_buffer[i + 1],
+	lfo_2_buffer[i + 2],
+	lfo_2_buffer[i + 3],
+	lfo_2_buffer[i + 4],
+	lfo_2_buffer[i + 5],
+	lfo_2_buffer[i + 6],
+	lfo_2_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* lfo-3 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* lfo-3 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* lfo-3 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	lfo_3_buffer[i],
+	lfo_3_buffer[i + 1],
+	lfo_3_buffer[i + 2],
+	lfo_3_buffer[i + 3],
+	lfo_3_buffer[i + 4],
+	lfo_3_buffer[i + 5],
+	lfo_3_buffer[i + 6],
+	lfo_3_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+    
+    /* seq-0 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      tmp_v_osc_frequency = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_frequency = ((tmp_v_osc_frequency + 1.0) / 2.0) * v_osc_frequency;
+    }
+      
+    /* seq-0 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      tmp_v_osc_phase = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_phase = ((tmp_v_osc_phase + 1.0) * M_PI) + v_osc_phase;
+    }
+
+    /* seq-0 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      tmp_v_osc_volume = (ags_v8double) {
+	seq_0_buffer[i],
+	seq_0_buffer[i + 1],
+	seq_0_buffer[i + 2],
+	seq_0_buffer[i + 3],
+	seq_0_buffer[i + 4],
+	seq_0_buffer[i + 5],
+	seq_0_buffer[i + 6],
+	seq_0_buffer[i + 7]
+      };
+
+      v_osc_volume = ((tmp_v_osc_volume + 1.0) / 2.0) * v_osc_volume;
+    }
+
+    /* compute osc-3 */
+    if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      v_sine = (ags_v8double) {
+	(gdouble) (sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate)),
+	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
+      };
+    
+      v_buffer += (v_sine * v_osc_volume);
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      v_sawtooth = (ags_v8double) {
+	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))), (samplerate / v_osc_frequency[1])) * 2.0 * v_osc_frequency[1] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))), (samplerate / v_osc_frequency[2])) * 2.0 * v_osc_frequency[2] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))), (samplerate / v_osc_frequency[3])) * 2.0 * v_osc_frequency[3] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))), (samplerate / v_osc_frequency[4])) * 2.0 * v_osc_frequency[4] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))), (samplerate / v_osc_frequency[5])) * 2.0 * v_osc_frequency[5] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))), (samplerate / v_osc_frequency[6])) * 2.0 * v_osc_frequency[6] / samplerate) - 1.0),
+	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
+      };
+    
+      v_buffer += (v_sawtooth * v_osc_volume);
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      v_triangle = (ags_v8double) {
+	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate * 2.0) - (((double) ((((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * v_osc_frequency[1] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate * 2.0) - (((double) ((((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * v_osc_frequency[2] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate * 2.0) - (((double) ((((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * v_osc_frequency[3] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate * 2.0) - (((double) ((((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * v_osc_frequency[4] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate * 2.0) - (((double) ((((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * v_osc_frequency[5] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate * 2.0) - (((double) ((((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * v_osc_frequency[6] / samplerate)) / 2.0) * 2.0) - 1.0)),
+	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
+      };
+    
+      v_buffer += (v_triangle * v_osc_volume);
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      v_square = (ags_v8double) {
+	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
+      };
+    
+      v_buffer += (v_square * v_osc_volume);
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      v_impulse = (ags_v8double) {
+	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 1) + (v_osc_phase[1] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[1]))) * 2.0 * M_PI * v_osc_frequency[1] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 2) + (v_osc_phase[2] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[2]))) * 2.0 * M_PI * v_osc_frequency[2] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 3) + (v_osc_phase[3] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[3]))) * 2.0 * M_PI * v_osc_frequency[3] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 4) + (v_osc_phase[4] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[4]))) * 2.0 * M_PI * v_osc_frequency[4] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 5) + (v_osc_phase[5] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[5]))) * 2.0 * M_PI * v_osc_frequency[5] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 6) + (v_osc_phase[6] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[6]))) * 2.0 * M_PI * v_osc_frequency[6] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
+	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
+      };
+    
+      v_buffer += (v_impulse * v_osc_volume);
+    }
+    
+    *(osc_3_buffer) = (gfloat) v_buffer[0];
+    *(osc_3_buffer++) = (gfloat) v_buffer[1];
+    *(osc_3_buffer++) = (gfloat) v_buffer[2];
+    *(osc_3_buffer++) = (gfloat) v_buffer[3];
+    *(osc_3_buffer++) = (gfloat) v_buffer[4];
+    *(osc_3_buffer++) = (gfloat) v_buffer[5];
+    *(osc_3_buffer++) = (gfloat) v_buffer[6];
+    *(osc_3_buffer++) = (gfloat) v_buffer[7];
+
+    osc_3_buffer++;
+
+    /* iterate */
+    i += 8;
+  }
+#endif
+  
+  for(; i < buffer_length;){
+    /* OSC-0 */
+    osc_0_frequency = abyss_synth_util->osc_0_frequency;
+
+    osc_0_phase = abyss_synth_util->osc_0_phase;
+
+    osc_0_volume = abyss_synth_util->osc_0_volume;
+
+    /* env-0 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_0_frequency);
+    }
+
+    /* env-0 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = (((gdouble *) abyss_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
+    }
+
+    /* env-0 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_0_volume);
+    }
+
+    /* env-1 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (osc_0_frequency);
+    }
+
+    /* env-1 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = (((gdouble *) abyss_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
+    }
+
+    /* env-1 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (abyss_synth_util->osc_0_volume);
+    }
+
+    /* env-2 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_0_frequency);
+    }
+
+    /* env-2 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = (((gdouble *) abyss_synth_util->env_2_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
+    }
+
+    /* env-2 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_0_volume);
+    }
+
+    /* env-3 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_0_frequency);
+    }
+
+    /* env-3 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = (((gdouble *) abyss_synth_util->env_3_buffer)[i] * 2.0 * M_PI) + (osc_0_phase);
+    }
+
+    /* env-3 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_0_volume);
+    }
+
+    /* lfo-0 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
+    }
+
+    /* lfo-0 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
+    }
+
+    /* lfo-0 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
+    }
+
+    /* lfo-1 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
+    }
+
+    /* lfo-1 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
+    }
+
+    /* lfo-1 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
+    }
+
+    /* lfo-2 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
+    }
+
+    /* lfo-2 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
+    }
+
+    /* lfo-2 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
+    }
+
+    /* lfo-3 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
+    }
+
+    /* lfo-3 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
+    }
+
+    /* lfo-3 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_0_volume);
+    }
+
+    /* seq-0 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_0_volume;
+    }
+
+    /* seq-0 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_0_frequency;
+    }
+
+    /* seq-0 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_0_phase;
+    }
+
+    /* seq-1 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_0_volume;
+    }
+
+    /* seq-1 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_0_frequency;
+    }
+
+    /* seq-1 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_0_phase;
+    }
+
+    /* seq-2 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_0_volume;
+    }
+
+    /* seq-2 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_0_frequency;
+    }
+
+    /* seq-2 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_0_phase;
+    }
+
+    /* seq-3 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_0_volume;
+    }
+    
+    /* seq-3 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_0_frequency;
+    }
+
+    /* seq-3 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_0_phase;
+    }
+
+    /* noise 0 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
+    }
+
+    /* noise 0 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
+    }
+
+    /* noise 0 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_0_volume);
+    }
+
+    /* noise 1 to osc-0 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_FREQUENCY)){
+      osc_0_frequency = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (osc_0_frequency);
+    }
+
+    /* noise 1 to osc-0 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_PHASE)){
+      osc_0_phase = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) * M_PI) + (osc_0_phase);
+    }
+
+    /* noise 1 to osc-0 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_0_VOLUME)){
+      osc_0_volume = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_0_volume);
+    }
+
+    /* compute osc-0 */
+    if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      osc_0_buffer[0] = (gfloat) ((osc_0_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) * osc_0_volume));
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      osc_0_buffer[0] = (gfloat) ((osc_0_buffer[0]) + ((fmod(((gdouble) (offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))), (samplerate / osc_0_frequency)) * 2.0 * osc_0_frequency / samplerate) - 1.0) * osc_0_volume);
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      osc_0_buffer[0] = (gfloat) ((osc_0_buffer[0]) + (((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * osc_0_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_0_volume));
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      osc_0_buffer[0] = (gfloat) ((osc_0_buffer[0]) + ((sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_0_volume);
+    }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      osc_0_buffer[0] = (gfloat) ((osc_0_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_0_phase * (2.0 * M_PI) / (samplerate / osc_0_frequency))) * 2.0 * M_PI * osc_0_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_0_volume);
+    }
+
+    osc_0_buffer++;
+
+    /* OSC-1 */
+    osc_1_frequency = abyss_synth_util->osc_1_frequency;
+
+    osc_1_phase = abyss_synth_util->osc_1_phase;
+
+    osc_1_volume = abyss_synth_util->osc_1_volume;
+
+    /* env-0 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_1_frequency);
+    }
+
+    /* env-0 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = (((gdouble *) abyss_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
+    }
+
+    /* env-0 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_1_volume);
+    }
+
+    /* env-1 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (osc_1_frequency);
+    }
+
+    /* env-1 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = (((gdouble *) abyss_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
+    }
+
+    /* env-1 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (abyss_synth_util->osc_1_volume);
+    }
+
+    /* env-2 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_1_frequency);
+    }
+
+    /* env-2 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = (((gdouble *) abyss_synth_util->env_2_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
+    }
+
+    /* env-2 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_1_volume);
+    }
+
+    /* env-3 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_1_frequency);
+    }
+
+    /* env-3 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = (((gdouble *) abyss_synth_util->env_3_buffer)[i] * 2.0 * M_PI) + (osc_1_phase);
+    }
+
+    /* env-3 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_1_volume);
+    }
+
+    /* lfo-0 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
+    }
+
+    /* lfo-0 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
+    }
+
+    /* lfo-0 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
+    }
+
+    /* lfo-1 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
+    }
+
+    /* lfo-1 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
+    }
+
+    /* lfo-1 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
+    }
+
+    /* lfo-2 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
+    }
+
+    /* lfo-2 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
+    }
+
+    /* lfo-2 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
+    }
+
+    /* lfo-3 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
+    }
+
+    /* lfo-3 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
+    }
+
+    /* lfo-3 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_1_volume);
+    }
+
+    /* seq-0 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_1_volume;
+    }
+
+    /* seq-0 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_1_frequency;
+    }
+
+    /* seq-0 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_1_phase;
+    }
+
+    /* seq-1 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_1_volume;
+    }
+
+    /* seq-1 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_1_frequency;
+    }
+
+    /* seq-1 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_1_phase;
+    }
+
+    /* seq-2 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_1_volume;
+    }
+
+    /* seq-2 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_1_frequency;
+    }
+
+    /* seq-2 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_1_phase;
+    }
+
+    /* seq-3 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_1_volume;
+    }
+    
+    /* seq-3 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_1_frequency;
+    }
+
+    /* seq-3 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_1_phase;
+    }
+
+    /* noise 0 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
+    }
+
+    /* noise 0 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
+    }
+
+    /* noise 0 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_1_volume);
+    }
+
+    /* noise 1 to osc-1 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_FREQUENCY)){
+      osc_1_frequency = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (osc_1_frequency);
+    }
+
+    /* noise 1 to osc-1 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_PHASE)){
+      osc_1_phase = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) * M_PI) + (osc_1_phase);
+    }
+
+    /* noise 1 to osc-1 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_1_VOLUME)){
+      osc_1_volume = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_1_volume);
+    }
+
+    /* compute osc-1 */
+    if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      osc_1_buffer[0] = (gfloat) ((osc_1_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) * osc_1_volume));
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      osc_1_buffer[0] = (gfloat) ((osc_1_buffer[0]) + ((fmod(((gdouble) (offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))), (samplerate / osc_1_frequency)) * 2.0 * osc_1_frequency / samplerate) - 1.0) * osc_1_volume);
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      osc_1_buffer[0] = (gfloat) ((osc_1_buffer[0]) + (((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * osc_1_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_1_volume));
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      osc_1_buffer[0] = (gfloat) ((osc_1_buffer[0]) + ((sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_1_volume);
+    }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      osc_1_buffer[0] = (gfloat) ((osc_1_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_1_phase * (2.0 * M_PI) / (samplerate / osc_1_frequency))) * 2.0 * M_PI * osc_1_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_1_volume);
+    }
+
+    osc_1_buffer++;
+
+    /* OSC-2 */
+    osc_2_frequency = abyss_synth_util->osc_2_frequency;
+
+    osc_2_phase = abyss_synth_util->osc_2_phase;
+
+    osc_2_volume = abyss_synth_util->osc_2_volume;
+
+    /* env-0 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_2_frequency);
+    }
+
+    /* env-0 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = (((gdouble *) abyss_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_2_phase);
+    }
+
+    /* env-0 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_2_volume);
+    }
+
+    /* env-1 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (osc_2_frequency);
+    }
+
+    /* env-1 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = (((gdouble *) abyss_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_2_phase);
+    }
+
+    /* env-1 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (abyss_synth_util->osc_2_volume);
+    }
+
+    /* env-2 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_2_frequency);
+    }
+
+    /* env-2 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = (((gdouble *) abyss_synth_util->env_2_buffer)[i] * 2.0 * M_PI) + (osc_2_phase);
+    }
+
+    /* env-2 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_2_volume);
+    }
+
+    /* env-3 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_2_frequency);
+    }
+
+    /* env-3 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = (((gdouble *) abyss_synth_util->env_3_buffer)[i] * 2.0 * M_PI) + (osc_2_phase);
+    }
+
+    /* env-3 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_2_volume);
+    }
+
+    /* lfo-0 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_2_frequency);
+    }
+
+    /* lfo-0 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_2_phase);
+    }
+
+    /* lfo-0 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_2_volume);
+    }
+
+    /* lfo-1 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_2_frequency);
+    }
+
+    /* lfo-1 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_2_phase);
+    }
+
+    /* lfo-1 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_2_volume);
+    }
+
+    /* lfo-2 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_2_frequency);
+    }
+
+    /* lfo-2 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) * M_PI) + (osc_2_phase);
+    }
+
+    /* lfo-2 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_2_volume);
+    }
+
+    /* lfo-3 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_2_frequency);
+    }
+
+    /* lfo-3 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) * M_PI) + (osc_2_phase);
+    }
+
+    /* lfo-3 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_2_volume);
+    }
+
+    /* seq-0 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_2_volume;
+    }
+
+    /* seq-0 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_2_frequency;
+    }
+
+    /* seq-0 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_2_phase;
+    }
+
+    /* seq-1 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_2_volume;
+    }
+
+    /* seq-1 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_2_frequency;
+    }
+
+    /* seq-1 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_2_phase;
+    }
+
+    /* seq-2 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_2_volume;
+    }
+
+    /* seq-2 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_2_frequency;
+    }
+
+    /* seq-2 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_2_phase;
+    }
+
+    /* seq-3 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_2_volume;
+    }
+    
+    /* seq-3 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_2_frequency;
+    }
+
+    /* seq-3 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_2_phase;
+    }
+
+    /* noise 0 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (osc_2_frequency);
+    }
+
+    /* noise 0 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) * M_PI) + (osc_2_phase);
+    }
+
+    /* noise 0 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_2_volume);
+    }
+
+    /* noise 1 to osc-2 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_FREQUENCY)){
+      osc_2_frequency = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (osc_2_frequency);
+    }
+
+    /* noise 1 to osc-2 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_PHASE)){
+      osc_2_phase = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) * M_PI) + (osc_2_phase);
+    }
+
+    /* noise 1 to osc-2 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_2_VOLUME)){
+      osc_2_volume = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_2_volume);
+    }
+
+    /* compute osc-2 */
+    if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      osc_2_buffer[0] = (gfloat) ((osc_2_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_2_phase * (2.0 * M_PI) / (samplerate / osc_2_frequency))) * 2.0 * M_PI * osc_2_frequency / (gdouble) samplerate) * osc_2_volume));
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      osc_2_buffer[0] = (gfloat) ((osc_2_buffer[0]) + ((fmod(((gdouble) (offset + i) + (osc_2_phase * (2.0 * M_PI) / (samplerate / osc_2_frequency))), (samplerate / osc_2_frequency)) * 2.0 * osc_2_frequency / samplerate) - 1.0) * osc_2_volume);
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      osc_2_buffer[0] = (gfloat) ((osc_2_buffer[0]) + (((((offset + i) + (osc_2_phase * (2.0 * M_PI) / (samplerate / osc_2_frequency))) * osc_2_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_2_phase * (2.0 * M_PI) / (samplerate / osc_2_frequency))) * osc_2_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_2_volume));
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      osc_2_buffer[0] = (gfloat) ((osc_2_buffer[0]) + ((sin((gdouble) ((offset + i) + (osc_2_phase * (2.0 * M_PI) / (samplerate / osc_2_frequency))) * 2.0 * M_PI * osc_2_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_2_volume);
+    }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      osc_2_buffer[0] = (gfloat) ((osc_2_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_2_phase * (2.0 * M_PI) / (samplerate / osc_2_frequency))) * 2.0 * M_PI * osc_2_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_2_volume);
+    }
+
+    osc_2_buffer++;
+
+    /* OSC-3 */
+    osc_3_frequency = abyss_synth_util->osc_3_frequency;
+
+    osc_3_phase = abyss_synth_util->osc_3_phase;
+
+    osc_3_volume = abyss_synth_util->osc_3_volume;
+
+    /* env-0 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_3_frequency);
+    }
+
+    /* env-0 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = (((gdouble *) abyss_synth_util->env_0_buffer)[i] * 2.0 * M_PI) + (osc_3_phase);
+    }
+
+    /* env-0 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (osc_3_volume);
+    }
+
+    /* env-1 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (osc_3_frequency);
+    }
+
+    /* env-1 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = (((gdouble *) abyss_synth_util->env_1_buffer)[i] * 2.0 * M_PI) + (osc_3_phase);
+    }
+
+    /* env-1 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (abyss_synth_util->osc_3_volume);
+    }
+
+    /* env-2 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_3_frequency);
+    }
+
+    /* env-2 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = (((gdouble *) abyss_synth_util->env_2_buffer)[i] * 2.0 * M_PI) + (osc_3_phase);
+    }
+
+    /* env-2 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (osc_3_volume);
+    }
+
+    /* env-3 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_3_frequency);
+    }
+
+    /* env-3 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = (((gdouble *) abyss_synth_util->env_3_buffer)[i] * 2.0 * M_PI) + (osc_3_phase);
+    }
+
+    /* env-3 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (osc_3_volume);
+    }
+
+    /* lfo-0 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_3_frequency);
+    }
+
+    /* lfo-0 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) * M_PI) + (osc_3_phase);
+    }
+
+    /* lfo-0 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (osc_3_volume);
+    }
+
+    /* lfo-1 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_3_frequency);
+    }
+
+    /* lfo-1 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) * M_PI) + (osc_3_phase);
+    }
+
+    /* lfo-1 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (osc_3_volume);
+    }
+
+    /* lfo-2 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_3_frequency);
+    }
+
+    /* lfo-2 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) * M_PI) + (osc_3_phase);
+    }
+
+    /* lfo-2 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (osc_3_volume);
+    }
+
+    /* lfo-3 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_3_frequency);
+    }
+
+    /* lfo-3 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) * M_PI) + (osc_3_phase);
+    }
+
+    /* lfo-3 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (osc_3_volume);
+    }
+
+    /* seq-0 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_3_volume;
+    }
+
+    /* seq-0 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_3_frequency;
+    }
+
+    /* seq-0 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((seq_0_buffer[i] + 1.0) / 2.0) * osc_3_phase;
+    }
+
+    /* seq-1 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_3_volume;
+    }
+
+    /* seq-1 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_3_frequency;
+    }
+
+    /* seq-1 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((seq_1_buffer[i] + 1.0) / 2.0) * osc_3_phase;
+    }
+
+    /* seq-2 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_3_volume;
+    }
+
+    /* seq-2 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_3_frequency;
+    }
+
+    /* seq-2 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((seq_2_buffer[i] + 1.0) / 2.0) * osc_3_phase;
+    }
+
+    /* seq-3 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_3_volume;
+    }
+    
+    /* seq-3 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_3_frequency;
+    }
+
+    /* seq-3 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((seq_3_buffer[i] + 1.0) / 2.0) * osc_3_phase;
+    }
+
+    /* noise 0 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (osc_3_frequency);
+    }
+
+    /* noise 0 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) * M_PI) + (osc_3_phase);
+    }
+
+    /* noise 0 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_3_volume);
+    }
+
+    /* noise 1 to osc-3 frequency */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_FREQUENCY)){
+      osc_3_frequency = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (osc_3_frequency);
+    }
+
+    /* noise 1 to osc-3 phase */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_PHASE)){
+      osc_3_phase = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) * M_PI) + (osc_3_phase);
+    }
+
+    /* noise 1 to osc-3 volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_OSC_3_VOLUME)){
+      osc_3_volume = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (abyss_synth_util->osc_3_volume);
+    }
+
+    /* compute osc-3 */
+    if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SIN){
+      osc_3_buffer[0] = (gfloat) ((osc_3_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_3_phase * (2.0 * M_PI) / (samplerate / osc_3_frequency))) * 2.0 * M_PI * osc_3_frequency / (gdouble) samplerate) * osc_3_volume));
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
+      osc_3_buffer[0] = (gfloat) ((osc_3_buffer[0]) + ((fmod(((gdouble) (offset + i) + (osc_3_phase * (2.0 * M_PI) / (samplerate / osc_3_frequency))), (samplerate / osc_3_frequency)) * 2.0 * osc_3_frequency / samplerate) - 1.0) * osc_3_volume);
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
+      osc_3_buffer[0] = (gfloat) ((osc_3_buffer[0]) + (((((offset + i) + (osc_3_phase * (2.0 * M_PI) / (samplerate / osc_3_frequency))) * osc_3_frequency / samplerate * 2.0) - (((double) ((((offset + i) + (osc_3_phase * (2.0 * M_PI) / (samplerate / osc_3_frequency))) * osc_3_frequency / samplerate)) / 2.0) * 2.0) - 1.0) * osc_3_volume));
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
+      osc_3_buffer[0] = (gfloat) ((osc_3_buffer[0]) + ((sin((gdouble) ((offset + i) + (osc_3_phase * (2.0 * M_PI) / (samplerate / osc_3_frequency))) * 2.0 * M_PI * osc_3_frequency / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0) * osc_3_volume);
+    }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
+      osc_3_buffer[0] = (gfloat) ((osc_3_buffer[0]) + (sin((gdouble) ((offset + i) + (osc_3_phase * (2.0 * M_PI) / (samplerate / osc_3_frequency))) * 2.0 * M_PI * osc_3_frequency / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0) * osc_3_volume);
+    }
+
+    osc_3_buffer++;
+
+    /* iterate */
+    i++;
+  }
+
+  /* osc-0 low-pass filter */
+  if(abyss_synth_util->osc_0_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_0){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					osc_0_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_0,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     osc_0_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_0,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_0,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_0,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_0);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     NULL);
+  }else if(abyss_synth_util->osc_0_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_1){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					osc_0_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_1,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     osc_0_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_1,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_1,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_1,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_1);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     NULL);
+  }
+
+  /* osc-1 low-pass filter */
+  if(abyss_synth_util->osc_1_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_0){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					osc_1_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_0,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     osc_1_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_0,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_0,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_0,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_0);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     NULL);
+  }else if(abyss_synth_util->osc_1_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_1){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					osc_1_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_1,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     osc_1_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_1,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_1,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_1,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_1);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     NULL);
+  }
+
+  /* osc-2 low-pass filter */
+  if(abyss_synth_util->osc_2_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_0){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					osc_2_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_0,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     osc_2_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_0,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_0,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_0,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_0);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     NULL);
+  }else if(abyss_synth_util->osc_2_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_1){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					osc_2_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_1,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     osc_2_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_1,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_1,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_1,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_1);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     NULL);
+  }
+
+  /* osc-3 low-pass filter */
+  if(abyss_synth_util->osc_3_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_0){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					osc_3_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_0,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     osc_3_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_0,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_0,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_0,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_0);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_0,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_0,
+					     NULL);
+  }else if(abyss_synth_util->osc_3_low_pass_sends == AGS_ABYSS_SYNTH_OSC_LOW_PASS_1){
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					osc_3_buffer);
+    ags_low_pass_filter_util_set_source_stride(abyss_synth_util->low_pass_filter_util_1,
+					       1);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     osc_3_buffer);
+    ags_low_pass_filter_util_set_destination_stride(abyss_synth_util->low_pass_filter_util_1,
+						    1);
+
+    ags_low_pass_filter_util_set_buffer_length(abyss_synth_util->low_pass_filter_util_1,
+					       buffer_length);
+    ags_low_pass_filter_util_set_format(abyss_synth_util->low_pass_filter_util_1,
+					AGS_SOUNDCARD_FLOAT);
+
+    ags_low_pass_filter_util_process(abyss_synth_util->low_pass_filter_util_1);
+    
+    ags_low_pass_filter_util_set_source(abyss_synth_util->low_pass_filter_util_1,
+					NULL);
+
+    ags_low_pass_filter_util_set_destination(abyss_synth_util->low_pass_filter_util_1,
+					     NULL);
+  }
+  
+  ags_fluid_interpolate_4th_order_util_config();
+
+  source = abyss_synth_util->source;
+
+  if(ring_0_enabled){
+    /* pitch tuning */
+    if(ring_0_pitch_tuning == 0.0){
+      copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+								  ags_audio_buffer_util_format_from_soundcard(NULL,
+													      AGS_SOUNDCARD_DOUBLE),
+								  ags_audio_buffer_util_format_from_soundcard(NULL,
+													      AGS_SOUNDCARD_FLOAT));
+    
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  pitch_buffer, 1, 0,
+						  osc_1_buffer, 1, 0,
+						  buffer_length, copy_mode);
+    }else{
+      phase_incr = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->phase_increment;
+
+      base_key = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->base_key;
+      tuning = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->tuning;
+
+      offset = abyss_synth_util->offset;
+
+      i = 0;
+
+      dsp_phase = 0;
+  
+      /* Convert playback "speed" floating point value to phase index/fract */
+      ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+      end_index = buffer_length - 1;
+
+      start_index = 0;
+      start_point = osc_1_buffer[0];
+
+      end_point1 = osc_1_buffer[end_index];
+      end_point2 = end_point1;
+
+      dsp_i = 0;
+
+      dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+      root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+
+      //TODO:JK: implement me
+  
+      /* interpolate first sample point (start or loop start) if needed */
+      for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+	gdouble phase_incr;
+
+	gint row;
+    
+	main_pitch_tuning = abyss_synth_util->pitch_tuning;
+
+	/* env-0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* env-1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* env-2 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_2_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* env-3 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_3_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-2 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_2_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-3 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_3_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-2 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_2_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-3 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_3_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+    
+	/* noise 0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->noise_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((double *) abyss_synth_util->noise_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+    
+	/* noise 1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->noise_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((double *) abyss_synth_util->noise_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+  
+	if(phase_incr == 0.0){
+	  phase_incr = 1.0;
+	}
+
+	ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+    
+	dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+	row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+	g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+	coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+	coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+	coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+	coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
+    
+	g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+	if(dsp_phase_index + 2 < buffer_length){
+	  pitch_buffer[dsp_i] = (coeffs_0 * start_point
+				 + coeffs_1 * osc_1_buffer[dsp_phase_index]
+				 + coeffs_2 * osc_1_buffer[(dsp_phase_index + 1)]
+				 + coeffs_3 * osc_1_buffer[(dsp_phase_index + 2)]);
+	}
+    
+	/* increment phase */
+	ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+	dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+	offset += 1;
+      }
+  
+      /* interpolate the sequence of sample points */
+      for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+	{
+	  gdouble phase_incr;
+
+	  gint row;
+    
+	  main_pitch_tuning = abyss_synth_util->pitch_tuning;
+
+	  /* env-0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* env-1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* env-2 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_2_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* env-3 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_3_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-2 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_2_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-3 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_3_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-2 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_2_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-3 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_3_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+    
+	  /* noise 0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->noise_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((double *) abyss_synth_util->noise_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+    
+	  /* noise 1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->noise_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((double *) abyss_synth_util->noise_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+  
+	  if(phase_incr == 0.0){
+	    phase_incr = 1.0;
+	  }
+
+	  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+    
+	  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+	  row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+	  g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+	  coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+	  coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+	  coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+	  coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
+    
+	  g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
+
+	  if(dsp_phase_index - 1 > 0 &&
+	     dsp_phase_index + 2 < buffer_length){
+	    pitch_buffer[dsp_i] = (coeffs_0 * osc_1_buffer[(dsp_phase_index - 1)]
+				   + coeffs_1 * osc_1_buffer[dsp_phase_index]
+				   + coeffs_2 * osc_1_buffer[(dsp_phase_index + 1)]
+				   + coeffs_3 * osc_1_buffer[(dsp_phase_index + 2)]);
+	  }
+    
+	  /* increment phase */
+	  ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+	  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+	  offset += 1;
+	}
+    }
+    
+    /* ring from osc 0-1 */
+    for(i = 0; i < buffer_length;){
+      /* env-0 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[i]) - 1.0) * 1200.0) + (ring_0_drive);
+      }
+
+      /* env-1 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[i]) - 1.0) * 1200.0) + (ring_0_drive);
+      }
+
+      /* env-2 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[i]) - 1.0) * 1200.0) + (ring_0_drive);
+      }
+
+      /* env-3 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[i]) - 1.0) * 1200.0) + (ring_0_drive);
+      }
+
+      /* lfo-0 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* lfo-1 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* lfo-2 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* lfo-3 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* seq-0 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->seq_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* seq-1 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->seq_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* seq-2 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->seq_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* seq-3 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((gdouble *) abyss_synth_util->seq_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+    
+      /* noise 0 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((double *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+    
+      /* noise 1 to ring-0 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_DRIVE)){
+	ring_0_drive = ((((double *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_drive);
+      }
+
+      /* env-0 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[i]) - 1.0) * 1200.0) + (ring_0_mix);
+      }
+
+      /* env-1 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[i]) - 1.0) * 1200.0) + (ring_0_mix);
+      }
+
+      /* env-2 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[i]) - 1.0) * 1200.0) + (ring_0_mix);
+      }
+
+      /* env-3 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[i]) - 1.0) * 1200.0) + (ring_0_mix);
+      }
+
+      /* lfo-0 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* lfo-1 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* lfo-2 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* lfo-3 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* seq-0 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->seq_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* seq-1 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->seq_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* seq-2 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->seq_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* seq-3 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((gdouble *) abyss_synth_util->seq_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+    
+      /* noise 0 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((double *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+    
+      /* noise 1 to ring-0 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_MIX)){
+	ring_0_mix = ((((double *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_mix);
+      }
+
+      /* env-0 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[i]) - 1.0) * 1200.0) + (ring_0_gain);
+      }
+
+      /* env-1 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[i]) - 1.0) * 1200.0) + (ring_0_gain);
+      }
+
+      /* env-2 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[i]) - 1.0) * 1200.0) + (ring_0_gain);
+      }
+
+      /* env-3 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[i]) - 1.0) * 1200.0) + (ring_0_gain);
+      }
+
+      /* lfo-0 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+
+      /* lfo-1 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+
+      /* lfo-2 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+
+      /* lfo-3 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+
+      /* seq-0 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->seq_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+
+      /* seq-1 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->seq_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+
+      /* seq-2 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->seq_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+
+      /* seq-3 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((gdouble *) abyss_synth_util->seq_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+    
+      /* noise 0 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((double *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+    
+      /* noise 1 to ring-0 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_0_GAIN)){
+	ring_0_gain = ((((double *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_0_gain);
+      }
+            
+      /* osc-0 and osc-1 to ring-0 */
+      ring_0_buffer[i] = ring_0_gain * (((1.0 - ring_0_mix) * (ring_0_drive * osc_0_buffer[i])) * (ring_0_mix * pitch_buffer[i]));
+      
+      /* iterate */
+      i++;
+    }
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						source, source_stride, 0,
+						ring_0_buffer, 1, 0,
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);    
+  }else{
+    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						source, source_stride, 0,
+						osc_0_buffer, 1, 0,
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						source, source_stride, 0,
+						osc_1_buffer, 1, 0,
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+  }
+
+  if(ring_1_enabled){
+    /* pitch tuning */
+    if(ring_0_pitch_tuning == 0.0){
+      copy_mode = ags_audio_buffer_util_get_copy_mode_from_format(NULL,
+								  ags_audio_buffer_util_format_from_soundcard(NULL,
+													      AGS_SOUNDCARD_DOUBLE),
+								  ags_audio_buffer_util_format_from_soundcard(NULL,
+													      AGS_SOUNDCARD_FLOAT));
+    
+      ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						  pitch_buffer, 1, 0,
+						  osc_3_buffer, 1, 0,
+						  buffer_length, copy_mode);
+    }else{
+      phase_incr = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->phase_increment;
+
+      base_key = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->base_key;
+      tuning = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->tuning;
+
+      offset = abyss_synth_util->offset;
+
+      i = 0;
+
+      dsp_phase = 0;
+  
+      /* Convert playback "speed" floating point value to phase index/fract */
+      ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+      end_index = buffer_length - 1;
+
+      start_index = 0;
+      start_point = osc_3_buffer[0];
+
+      end_point1 = osc_3_buffer[end_index];
+      end_point2 = end_point1;
+
+      dsp_i = 0;
+
+      dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+      root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+
+      //TODO:JK: implement me
+  
+      /* interpolate first sample point (start or loop start) if needed */
+      for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+	gdouble phase_incr;
+
+	gint row;
+    
+	main_pitch_tuning = abyss_synth_util->pitch_tuning;
+
+	/* env-0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* env-1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* env-2 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_2_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* env-3 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->env_3_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-2 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_2_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* lfo-3 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->lfo_3_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-2 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_2_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	/* seq-3 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->seq_3_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+    
+	/* noise 0 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->noise_0_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((double *) abyss_synth_util->noise_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+    
+	/* noise 1 to ring-0 pitch tuning */
+	if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					       abyss_synth_util->noise_1_sends,
+					       AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	  main_pitch_tuning = ((((double *) abyss_synth_util->noise_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	}
+
+	phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+  
+	if(phase_incr == 0.0){
+	  phase_incr = 1.0;
+	}
+
+	ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+    
+	dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+	row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+	g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+	coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+	coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+	coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+	coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
+    
+	g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+	if(dsp_phase_index + 2 < buffer_length){
+	  pitch_buffer[dsp_i] = (coeffs_0 * start_point
+				 + coeffs_1 * osc_3_buffer[dsp_phase_index]
+				 + coeffs_2 * osc_3_buffer[(dsp_phase_index + 1)]
+				 + coeffs_3 * osc_3_buffer[(dsp_phase_index + 2)]);
+	}
+    
+	/* increment phase */
+	ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+	dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+	offset += 1;
+      }
+  
+      /* interpolate the sequence of sample points */
+      for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+	{
+	  gdouble phase_incr;
+
+	  gint row;
+    
+	  main_pitch_tuning = abyss_synth_util->pitch_tuning;
+
+	  /* env-0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* env-1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* env-2 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_2_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* env-3 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->env_3_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-2 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_2_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* lfo-3 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->lfo_3_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-2 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_2_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  /* seq-3 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->seq_3_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+    
+	  /* noise 0 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->noise_0_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((double *) abyss_synth_util->noise_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+    
+	  /* noise 1 to ring-0 pitch tuning */
+	  if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+						 abyss_synth_util->noise_1_sends,
+						 AGS_ABYSS_SYNTH_SENDS_RING_0_PITCH_TUNING)){
+	    main_pitch_tuning = ((((double *) abyss_synth_util->noise_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+	  }
+
+	  phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+  
+	  if(phase_incr == 0.0){
+	    phase_incr = 1.0;
+	  }
+
+	  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+    
+	  dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+	  row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+	  g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+	  coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+	  coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+	  coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+	  coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
+    
+	  g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
+
+	  if(dsp_phase_index - 1 > 0 &&
+	     dsp_phase_index + 2 < buffer_length){
+	    pitch_buffer[dsp_i] = (coeffs_0 * osc_3_buffer[(dsp_phase_index - 1)]
+				   + coeffs_1 * osc_3_buffer[dsp_phase_index]
+				   + coeffs_2 * osc_3_buffer[(dsp_phase_index + 1)]
+				   + coeffs_3 * osc_3_buffer[(dsp_phase_index + 2)]);
+	  }
+    
+	  /* increment phase */
+	  ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+	  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+	  offset += 1;
+	}
+    }
+    
+    /* ring from osc 2-3 */
+    for(i = 0; i < buffer_length;){
+      /* env-0 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[i]) - 1.0) * 1200.0) + (ring_1_drive);
+      }
+
+      /* env-1 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[i]) - 1.0) * 1200.0) + (ring_1_drive);
+      }
+
+      /* env-2 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[i]) - 1.0) * 1200.0) + (ring_1_drive);
+      }
+
+      /* env-3 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[i]) - 1.0) * 1200.0) + (ring_1_drive);
+      }
+
+      /* lfo-0 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* lfo-1 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* lfo-2 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* lfo-3 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* seq-0 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->seq_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* seq-1 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->seq_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* seq-2 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->seq_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* seq-3 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((gdouble *) abyss_synth_util->seq_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+    
+      /* noise 0 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((double *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+    
+      /* noise 1 to ring-1 drive */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_DRIVE)){
+	ring_1_drive = ((((double *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_drive);
+      }
+
+      /* env-0 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[i]) - 1.0) * 1200.0) + (ring_1_mix);
+      }
+
+      /* env-1 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[i]) - 1.0) * 1200.0) + (ring_1_mix);
+      }
+
+      /* env-2 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[i]) - 1.0) * 1200.0) + (ring_1_mix);
+      }
+
+      /* env-3 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[i]) - 1.0) * 1200.0) + (ring_1_mix);
+      }
+
+      /* lfo-0 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* lfo-1 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* lfo-2 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* lfo-3 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* seq-0 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->seq_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* seq-1 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->seq_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* seq-2 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->seq_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* seq-3 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((gdouble *) abyss_synth_util->seq_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+    
+      /* noise 0 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((double *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+    
+      /* noise 1 to ring-1 mix */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_MIX)){
+	ring_1_mix = ((((double *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_mix);
+      }
+
+      /* env-0 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[i]) - 1.0) * 1200.0) + (ring_1_gain);
+      }
+
+      /* env-1 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[i]) - 1.0) * 1200.0) + (ring_1_gain);
+      }
+
+      /* env-2 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[i]) - 1.0) * 1200.0) + (ring_1_gain);
+      }
+
+      /* env-3 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[i]) - 1.0) * 1200.0) + (ring_1_gain);
+      }
+
+      /* lfo-0 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+
+      /* lfo-1 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+
+      /* lfo-2 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+
+      /* lfo-3 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+
+      /* seq-0 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->seq_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+
+      /* seq-1 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->seq_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+
+      /* seq-2 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->seq_2_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+
+      /* seq-3 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((gdouble *) abyss_synth_util->seq_3_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+    
+      /* noise 0 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((double *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+    
+      /* noise 1 to ring-1 gain */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_RING_1_GAIN)){
+	ring_1_gain = ((((double *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0 * 1200.0) + (ring_1_gain);
+      }
+      
+      /* osc-2 and osc-3 to ring-1 */
+      ring_1_buffer[i] = ring_1_gain * (((1.0 - ring_1_mix) * (ring_1_drive * osc_2_buffer[i])) * (ring_1_mix * pitch_buffer[i]));
+      
+      /* iterate */
+      i++;
+    }
+
+    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						source, source_stride, 0,
+						ring_1_buffer, 1, 0,
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);
+  }else{
+    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						source, source_stride, 0,
+						osc_2_buffer, 1, 0,
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
+						source, source_stride, 0,
+						osc_3_buffer, 1, 0,
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
+  }
+  
+  /* pitch tuning */
+  source = abyss_synth_util->source;
+
+  phase_incr = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->phase_increment;
+
+  base_key = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->base_key;
+  tuning = AGS_FLUID_INTERPOLATE_4TH_ORDER_UTIL(abyss_synth_util->pitch_util)->tuning;
+
+  offset = abyss_synth_util->offset;
+
+  i = 0;
+
+  dsp_phase = 0;
+  
+  /* Convert playback "speed" floating point value to phase index/fract */
+  ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+
+  end_index = buffer_length - 1;
+
+  start_index = 0;
+  start_point = source[0];
+
+  end_point1 = source[end_index * source_stride];
+  end_point2 = end_point1;
+
+  dsp_i = 0;
+
+  dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+  root_pitch_hz = exp2(((double) base_key - 48.0) / 12.0) * 440.0;
+
+  //TODO:JK: implement me
+  
+  /* interpolate first sample point (start or loop start) if needed */
+  for(; dsp_phase_index == start_index && dsp_i < buffer_length; dsp_i++){
+    gdouble phase_incr;
+
+    gint row;
+    
+    main_pitch_tuning = abyss_synth_util->pitch_tuning;
+
+    /* env-0 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* env-1 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* env-2 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* env-3 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* lfo-0 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* lfo-1 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* lfo-2 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* lfo-3 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* seq-0 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* seq-1 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* seq-2 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    /* seq-3 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+    
+    /* noise 0 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((double *) abyss_synth_util->noise_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+    
+    /* noise 1 to pitch tuning */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+      main_pitch_tuning = ((((double *) abyss_synth_util->noise_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+    }
+
+    phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+  
+    if(phase_incr == 0.0){
+      phase_incr = 1.0;
+    }
+
+    ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+    
+    dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+    row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+    g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+    coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+    coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+    coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+    coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
+    
+    g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+    if(dsp_phase_index + 2 < buffer_length){
+      pitch_buffer[dsp_i] = (coeffs_0 * start_point
+			     + coeffs_1 * source[dsp_phase_index * source_stride]
+			     + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+			     + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+    }
+    
+    /* increment phase */
+    ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+    dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+    offset += 1;
+  }
+  
+  /* interpolate the sequence of sample points */
+  for(; dsp_i < buffer_length && dsp_phase_index <= end_index; dsp_i++)
+    {
+      gdouble phase_incr;
+
+      gint row;
+    
+      main_pitch_tuning = abyss_synth_util->pitch_tuning;
+
+      /* env-0 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_0_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* env-1 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_1_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* env-2 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_2_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* env-3 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->env_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = (((2.0 * ((gdouble *) abyss_synth_util->env_3_buffer)[dsp_i]) - 1.0) * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* lfo-0 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* lfo-1 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* lfo-2 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* lfo-3 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->lfo_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* seq-0 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* seq-1 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* seq-2 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_2_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_2_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      /* seq-3 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->seq_3_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((gdouble *) abyss_synth_util->seq_3_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+    
+      /* noise 0 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_0_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((double *) abyss_synth_util->noise_0_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+    
+      /* noise 1 to pitch tuning */
+      if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					     abyss_synth_util->noise_1_sends,
+					     AGS_ABYSS_SYNTH_SENDS_PITCH_TUNING)){
+	main_pitch_tuning = ((((double *) abyss_synth_util->noise_1_buffer)[dsp_i] + 1.0) / 2.0 * 1200.0) + (main_pitch_tuning);
+      }
+
+      phase_incr = (exp2((((double) base_key - 48.0 + ((main_pitch_tuning) / 100.0)) / 12.0)) * 440.0) / root_pitch_hz;
+  
+      if(phase_incr == 0.0){
+	phase_incr = 1.0;
+      }
+
+      ags_fluid_phase_set_float(dsp_phase_incr, phase_incr);
+    
+      dsp_phase_index = ags_fluid_phase_index_round(dsp_phase);
+
+      row = ags_fluid_phase_fract_to_tablerow(dsp_phase);
+    
+      g_mutex_lock(&ags_fluid_interp_coeff_4th_order_mutex);
+    
+      coeffs_0 = ags_fluid_interp_coeff_4th_order[row][0];
+      coeffs_1 = ags_fluid_interp_coeff_4th_order[row][1];
+      coeffs_2 = ags_fluid_interp_coeff_4th_order[row][2];
+      coeffs_3 = ags_fluid_interp_coeff_4th_order[row][3];
+    
+      g_mutex_unlock(&ags_fluid_interp_coeff_4th_order_mutex);
+
+      if(dsp_phase_index - 1 > 0 &&
+	 dsp_phase_index + 2 < buffer_length){
+	pitch_buffer[dsp_i] = (coeffs_0 * source[(dsp_phase_index - 1) * source_stride]
+			       + coeffs_1 * source[dsp_phase_index * source_stride]
+			       + coeffs_2 * source[(dsp_phase_index + 1) * source_stride]
+			       + coeffs_3 * source[(dsp_phase_index + 2) * source_stride]);
+      }
+    
+      /* increment phase */
+      ags_fluid_phase_incr(dsp_phase, dsp_phase_incr);
+      dsp_phase_index = ags_fluid_phase_index(dsp_phase);
+
+      offset += 1;
+    }
+
+  /* fill pitch */
+  for(i = 0; i < buffer_length; i++){
+    source[i * source_stride] = (gfloat) pitch_buffer[i];
+  }
+  
+  /* volume */
+  source = abyss_synth_util->source;
+
+  offset = abyss_synth_util->offset;
+
+  i = 0;
+
+  //TODO:JK: implement me
+
+  for(; i < abyss_synth_util->buffer_length;){
+    main_volume = abyss_synth_util->volume;
+
+    /* env-0 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((gdouble *) abyss_synth_util->env_0_buffer)[i] * (main_volume);
+    }
+    
+    /* env-1 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((gdouble *) abyss_synth_util->env_1_buffer)[i] * (main_volume);
+    }
+
+    /* env-2 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((gdouble *) abyss_synth_util->env_2_buffer)[i] * (main_volume);
+    }
+
+    /* env-3 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->env_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((gdouble *) abyss_synth_util->env_3_buffer)[i] * (main_volume);
+    }
+
+    /* lfo-0 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->lfo_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+
+    /* lfo-1 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->lfo_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+
+    /* lfo-2 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->lfo_2_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+
+    /* lfo-3 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->lfo_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->lfo_3_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+    
+    /* seq-0 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->seq_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+
+    /* seq-1 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->seq_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+
+    /* seq-2 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_2_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->seq_2_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+
+    /* seq-3 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->seq_3_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->seq_3_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+    
+    /* noise 0 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_0_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->noise_0_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+    
+    /* noise 1 to volume */
+    if(ags_abyss_synth_util_sends_receives(abyss_synth_util,
+					   abyss_synth_util->noise_1_sends,
+					   AGS_ABYSS_SYNTH_SENDS_VOLUME)){
+      main_volume = ((((gdouble *) abyss_synth_util->noise_1_buffer)[i] + 1.0) / 2.0) * (main_volume);
+    }
+
+    /* volume */
+    source[0] = (gfloat) (((double) source[0]) * main_volume);
+
+    source += source_stride;
+    i++;
+  }
+}
+
+void
+ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_abyss_synth_util_compute(AgsAbyssSynthUtil *abyss_synth_util)
+{
+  if(abyss_synth_util->format == AGS_SOUNDCARD_SIGNED_8_BIT){
+    ags_abyss_synth_util_compute_s8(abyss_synth_util);
+  }else if(abyss_synth_util->format == AGS_SOUNDCARD_SIGNED_16_BIT){
+    ags_abyss_synth_util_compute_s16(abyss_synth_util);
+  }else if(abyss_synth_util->format == AGS_SOUNDCARD_SIGNED_24_BIT){
+    ags_abyss_synth_util_compute_s24(abyss_synth_util);
+  }else if(abyss_synth_util->format == AGS_SOUNDCARD_SIGNED_32_BIT){
+    ags_abyss_synth_util_compute_s32(abyss_synth_util);
+  }else if(abyss_synth_util->format == AGS_SOUNDCARD_SIGNED_64_BIT){
+    ags_abyss_synth_util_compute_s64(abyss_synth_util);
+  }else if(abyss_synth_util->format == AGS_SOUNDCARD_FLOAT){
+    ags_abyss_synth_util_compute_float(abyss_synth_util);
+  }else if(abyss_synth_util->format == AGS_SOUNDCARD_DOUBLE){
+    ags_abyss_synth_util_compute_double(abyss_synth_util);
+  }else if(abyss_synth_util->format == AGS_SOUNDCARD_COMPLEX){
+    ags_abyss_synth_util_compute_complex(abyss_synth_util);
+  }
 }

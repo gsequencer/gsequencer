@@ -13707,9 +13707,6 @@ ags_fx_abyss_synth_audio_notify_buffer_size_callback(GObject *gobject,
 							  format);
 	}
 	
-	ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util_0,
-						   buffer_size);
-	
 	ags_amplifier_util_set_buffer_length(channel_data->amplifier_util_0,
 					     buffer_size);
 	
@@ -13805,9 +13802,6 @@ ags_fx_abyss_synth_audio_notify_format_callback(GObject *gobject,
 							  format);
 	}
 
-	ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util_0,
-					    format);
-
 	ags_amplifier_util_set_format(channel_data->amplifier_util_0,
 				      format);
 
@@ -13883,9 +13877,6 @@ ags_fx_abyss_synth_audio_notify_samplerate_callback(GObject *gobject,
 	ags_abyss_synth_util_set_samplerate(abyss_synth_util_0,
 					    samplerate);
 	
-	ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util_0,
-						samplerate);
-
 	ags_amplifier_util_set_samplerate(channel_data->amplifier_util_0,
 					  samplerate);
 
@@ -13978,13 +13969,6 @@ ags_fx_abyss_synth_audio_set_audio_channels_callback(AgsAudio *audio,
 					  format);		
 	  ags_abyss_synth_util_set_samplerate(channel_data->abyss_synth_util_0,
 					      samplerate);
-
-	  ags_low_pass_filter_util_set_buffer_length(channel_data->low_pass_filter_util_0,
-						     buffer_size);
-	  ags_low_pass_filter_util_set_format(channel_data->low_pass_filter_util_0,
-					      format);
-	  ags_low_pass_filter_util_set_samplerate(channel_data->low_pass_filter_util_0,
-						  samplerate);
 
 	  ags_amplifier_util_set_buffer_length(channel_data->amplifier_util_0,
 					       buffer_size);
@@ -14102,9 +14086,6 @@ ags_fx_abyss_synth_audio_channel_data_alloc()
   /* abyss synth util */
   channel_data->abyss_synth_util_0 = ags_abyss_synth_util_alloc();
 
-  /* low-pass filter util */
-  channel_data->low_pass_filter_util_0 = ags_low_pass_filter_util_alloc();
-
   /* amplifier util */
   channel_data->amplifier_util_0 = ags_amplifier_util_alloc();
 
@@ -14139,9 +14120,6 @@ ags_fx_abyss_synth_audio_channel_data_free(AgsFxAbyssSynthAudioChannelData *chan
 
   /* abyss synth util */
   ags_abyss_synth_util_free(channel_data->abyss_synth_util_0);
-  
-  /* low_pass_filter util */
-  ags_low_pass_filter_util_free(channel_data->low_pass_filter_util_0);
   
   /* amplifier util */
   ags_amplifier_util_free(channel_data->amplifier_util_0);

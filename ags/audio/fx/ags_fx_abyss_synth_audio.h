@@ -29,9 +29,7 @@
 #include <ags/audio/ags_port.h>
 #include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_abyss_synth_util.h>
-#include <ags/audio/ags_low_pass_filter_util.h>
 #include <ags/audio/ags_amplifier_util.h>
-#include <ags/audio/ags_noise_util.h>
 #include <ags/audio/ags_common_pitch_util.h>
 #include <ags/audio/ags_chorus_util.h>
 
@@ -330,8 +328,6 @@ struct _AgsFxAbyssSynthAudioChannelData
   gpointer synth_buffer_0;
   
   AgsAbyssSynthUtil *abyss_synth_util_0;
-
-  AgsLowPassFilterUtil *low_pass_filter_util_0;
 
   AgsAmplifierUtil *amplifier_util_0;
 

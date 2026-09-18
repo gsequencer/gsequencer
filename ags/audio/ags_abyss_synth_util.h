@@ -26,6 +26,8 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_synth_enums.h>
+#include <ags/audio/ags_low_pass_filter_util.h>
+#include <ags/audio/ags_noise_util.h>
 
 G_BEGIN_DECLS
 
@@ -56,30 +58,40 @@ G_BEGIN_DECLS
 	.buffer_length = 0,						\
 	.format = AGS_SOUNDCARD_DEFAULT_FORMAT,				\
 	.samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE,			\
+	.osc_0_buffer = NULL,						\
+	.osc_1_buffer = NULL,						\
+	.osc_2_buffer = NULL,						\
+	.osc_3_buffer = NULL,						\
 	.osc_0_oscillator = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR, \
 	.osc_0_frequency = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY,	\
 	.osc_0_phase = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_PHASE,		\
 	.osc_0_volume = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_VOLUME,	\
+	.osc_0_low_pass_sends = AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS,	\
 	.osc_1_oscillator = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR, \
 	.osc_1_frequency = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY,	\
 	.osc_1_phase = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_PHASE,		\
 	.osc_1_volume = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_VOLUME,	\
+	.osc_1_low_pass_sends = AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS,	\
 	.osc_2_oscillator = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR, \
 	.osc_2_frequency = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY,	\
 	.osc_2_phase = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_PHASE,		\
 	.osc_2_volume = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_VOLUME,	\
+	.osc_2_low_pass_sends = AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS,	\
 	.osc_3_oscillator = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_OSCILLATOR, \
 	.osc_3_frequency = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_FREQUENCY,	\
 	.osc_3_phase = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_PHASE,		\
 	.osc_3_volume = AGS_ABYSS_SYNTH_UTIL_DEFAULT_OSC_VOLUME,	\
+	.osc_3_low_pass_sends = AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS,	\
 	.ring_0_pitch_tuning = 0.0,					\
 	.ring_0_drive = 1.0,						\
 	.ring_0_mix = 0.0,						\
 	.ring_0_gain = 1.0,						\
+	.ring_0_buffer = NULL,						\
 	.ring_1_pitch_tuning = 0.0,					\
 	.ring_1_drive = 1.0,						\
 	.ring_1_mix = 0.0,						\
 	.ring_1_gain = 1.0,						\
+	.ring_1_buffer = NULL,						\
 	.pitch_util = NULL,						\
 	.pitch_buffer = NULL,						\
 	.pitch_type = AGS_TYPE_FLUID_INTERPOLATE_4TH_ORDER_UTIL,	\
@@ -153,15 +165,23 @@ G_BEGIN_DECLS
 	.seq_0_modulation = {0,},					\
 	.seq_0_pingpong = FALSE,					\
 	.seq_0_lfo_frequency = 6.0,					\
+	.seq_0_sends = {0,},						\
+	.seq_0_buffer = NULL,						\
 	.seq_1_modulation = {0,},					\
 	.seq_1_pingpong = FALSE,					\
 	.seq_1_lfo_frequency = 6.0,					\
+	.seq_1_sends = {0,},						\
+	.seq_1_buffer = NULL,						\
 	.seq_2_modulation = {0,},					\
 	.seq_2_pingpong = FALSE,					\
 	.seq_2_lfo_frequency = 6.0,					\
+	.seq_2_sends = {0,},						\
+	.seq_2_buffer = NULL,						\
 	.seq_3_modulation = {0,},					\
 	.seq_3_pingpong = FALSE,					\
 	.seq_3_lfo_frequency = 6.0,					\
+	.seq_3_sends = {0,},						\
+	.seq_3_buffer = NULL,						\
 	.noise_0_util = NULL,						\
 	.noise_0_frequency = 220.0,					\
 	.noise_0_gain = 1.0,						\
@@ -204,6 +224,12 @@ typedef enum{
   AGS_ABYSS_SYNTH_SENDS_VOLUME                  = 1 << 21,
 }AgsAbyssSynthSends;
 
+typedef enum{
+  AGS_ABYSS_SYNTH_OSC_LOW_PASS_0   = 0,
+  AGS_ABYSS_SYNTH_OSC_LOW_PASS_1   = 1,
+  AGS_ABYSS_SYNTH_OSC_NO_LOW_PASS  = 2,
+}AgsAbyssSynthOscLowPassSends;
+
 struct _AgsAbyssSynthUtil
 {
   gpointer source;
@@ -213,40 +239,62 @@ struct _AgsAbyssSynthUtil
   AgsSoundcardFormat format;
   guint samplerate;
 
+  gpointer osc_0_buffer;
+  gpointer osc_1_buffer;
+  gpointer osc_2_buffer;
+  gpointer osc_3_buffer;
+
   AgsSynthOscillatorMode osc_0_oscillator;
   
   gdouble osc_0_frequency;
   gdouble osc_0_phase;
   gdouble osc_0_volume;
 
+  gint64 osc_0_low_pass_sends;
+  
   AgsSynthOscillatorMode osc_1_oscillator;
   
   gdouble osc_1_frequency;
   gdouble osc_1_phase;
   gdouble osc_1_volume;
 
+  gint64 osc_1_low_pass_sends;
+  
   AgsSynthOscillatorMode osc_2_oscillator;
   
   gdouble osc_2_frequency;
   gdouble osc_2_phase;
   gdouble osc_2_volume;
 
+  gint64 osc_2_low_pass_sends;
+  
   AgsSynthOscillatorMode osc_3_oscillator;
   
   gdouble osc_3_frequency;
   gdouble osc_3_phase;
   gdouble osc_3_volume;
 
+  gint64 osc_3_low_pass_sends;
+  
+  gdouble ring_0_enabled;
   gdouble ring_0_pitch_tuning;
   gdouble ring_0_drive;
   gdouble ring_0_mix;
   gdouble ring_0_gain;
 
+  gpointer ring_0_buffer;
+  
+  gdouble ring_1_enabled;
   gdouble ring_1_pitch_tuning;
   gdouble ring_1_drive;
   gdouble ring_1_mix;
   gdouble ring_1_gain;
   
+  gpointer ring_1_buffer;
+  
+  AgsLowPassFilterUtil *low_pass_filter_util_0;
+  AgsLowPassFilterUtil *low_pass_filter_util_1;
+
   gpointer pitch_util;
   
   gpointer pitch_buffer;
@@ -359,20 +407,36 @@ struct _AgsAbyssSynthUtil
   gboolean seq_0_pingpong;
   gdouble seq_0_lfo_frequency;
 
+  gint64 seq_0_sends[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+  gpointer seq_0_buffer;
+
   gdouble seq_1_modulation[AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT];
 
   gboolean seq_1_pingpong;
   gdouble seq_1_lfo_frequency;
+
+  gint64 seq_1_sends[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+  gpointer seq_1_buffer;
 
   gdouble seq_2_modulation[AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT];
 
   gboolean seq_2_pingpong;
   gdouble seq_2_lfo_frequency;
 
+  gint64 seq_2_sends[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+  gpointer seq_2_buffer;
+
   gdouble seq_3_modulation[AGS_ABYSS_SYNTH_UTIL_SEQ_COUNT];
 
   gboolean seq_3_pingpong;
   gdouble seq_3_lfo_frequency;
+
+  gint64 seq_3_sends[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+  gpointer seq_3_buffer;
 
   gpointer noise_0_util;
   
@@ -443,6 +507,10 @@ gdouble ags_abyss_synth_util_get_osc_0_volume(AgsAbyssSynthUtil *abyss_synth_uti
 void ags_abyss_synth_util_set_osc_0_volume(AgsAbyssSynthUtil *abyss_synth_util,
 					   gdouble osc_0_volume);
 
+gint64 ags_abyss_synth_util_get_osc_0_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_0_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+						   gint64 osc_0_low_pass_sends);
+
 AgsSynthOscillatorMode ags_abyss_synth_util_get_osc_1_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_osc_1_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
 					       AgsSynthOscillatorMode osc_1_oscillator);
@@ -458,6 +526,10 @@ void ags_abyss_synth_util_set_osc_1_phase(AgsAbyssSynthUtil *abyss_synth_util,
 gdouble ags_abyss_synth_util_get_osc_1_volume(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_osc_1_volume(AgsAbyssSynthUtil *abyss_synth_util,
 					   gdouble osc_1_volume);
+
+gint64 ags_abyss_synth_util_get_osc_1_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_1_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+						   gint64 osc_1_low_pass_sends);
 
 AgsSynthOscillatorMode ags_abyss_synth_util_get_osc_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_osc_2_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
@@ -475,6 +547,10 @@ gdouble ags_abyss_synth_util_get_osc_2_volume(AgsAbyssSynthUtil *abyss_synth_uti
 void ags_abyss_synth_util_set_osc_2_volume(AgsAbyssSynthUtil *abyss_synth_util,
 					   gdouble osc_2_volume);
 
+gint64 ags_abyss_synth_util_get_osc_2_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_2_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+						   gint64 osc_2_low_pass_sends);
+
 AgsSynthOscillatorMode ags_abyss_synth_util_get_osc_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_osc_3_oscillator(AgsAbyssSynthUtil *abyss_synth_util,
 					       AgsSynthOscillatorMode osc_3_oscillator);
@@ -490,6 +566,42 @@ void ags_abyss_synth_util_set_osc_3_phase(AgsAbyssSynthUtil *abyss_synth_util,
 gdouble ags_abyss_synth_util_get_osc_3_volume(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_osc_3_volume(AgsAbyssSynthUtil *abyss_synth_util,
 					   gdouble osc_3_volume);
+
+gint64 ags_abyss_synth_util_get_osc_3_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_osc_3_low_pass_sends(AgsAbyssSynthUtil *abyss_synth_util,
+						   gint64 osc_3_low_pass_sends);
+
+gdouble ags_abyss_synth_util_get_ring_0_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_0_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util,
+						  gdouble ring_0_pitch_tuning);
+
+gdouble ags_abyss_synth_util_get_ring_0_drive(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_0_drive(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble ring_0_drive);
+
+gdouble ags_abyss_synth_util_get_ring_0_mix(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_0_mix(AgsAbyssSynthUtil *abyss_synth_util,
+					 gdouble ring_0_mix);
+
+gdouble ags_abyss_synth_util_get_ring_0_gain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_0_gain(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble ring_0_gain);
+
+gdouble ags_abyss_synth_util_get_ring_1_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_1_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util,
+						  gdouble ring_1_pitch_tuning);
+
+gdouble ags_abyss_synth_util_get_ring_1_drive(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_1_drive(AgsAbyssSynthUtil *abyss_synth_util,
+					   gdouble ring_1_drive);
+
+gdouble ags_abyss_synth_util_get_ring_1_mix(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_1_mix(AgsAbyssSynthUtil *abyss_synth_util,
+					 gdouble ring_1_mix);
+
+gdouble ags_abyss_synth_util_get_ring_1_gain(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_ring_1_gain(AgsAbyssSynthUtil *abyss_synth_util,
+					  gdouble ring_1_gain);
 
 gdouble ags_abyss_synth_util_get_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_pitch_tuning(AgsAbyssSynthUtil *abyss_synth_util,
@@ -706,6 +818,62 @@ gint64* ags_abyss_synth_util_get_lfo_3_sends(AgsAbyssSynthUtil *abyss_synth_util
 void ags_abyss_synth_util_set_lfo_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
 					  gint64 *lfo_3_sends,
 					  guint lfo_3_sends_count);
+
+gdouble ags_abyss_synth_util_get_seq_0_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+						  gint position);
+void ags_abyss_synth_util_set_seq_0_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					       gint position,
+					       gdouble seq_0_modulation);
+
+gboolean ags_abyss_synth_util_get_seq_0_pingpong(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_0_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					     gboolean seq_0_pingpong);
+
+gdouble ags_abyss_synth_util_get_seq_0_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_0_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+						  gdouble seq_0_lfo_frequency);
+
+gdouble ags_abyss_synth_util_get_seq_1_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+						  gint position);
+void ags_abyss_synth_util_set_seq_1_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					       gint position,
+					       gdouble seq_1_modulation);
+
+gboolean ags_abyss_synth_util_get_seq_1_pingpong(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_1_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					     gboolean seq_1_pingpong);
+
+gdouble ags_abyss_synth_util_get_seq_1_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_1_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+						  gdouble seq_1_lfo_frequency);
+
+gdouble ags_abyss_synth_util_get_seq_2_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+						  gint position);
+void ags_abyss_synth_util_set_seq_2_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					       gint position,
+					       gdouble seq_2_modulation);
+
+gboolean ags_abyss_synth_util_get_seq_2_pingpong(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_2_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					     gboolean seq_2_pingpong);
+
+gdouble ags_abyss_synth_util_get_seq_2_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_2_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+						  gdouble seq_2_lfo_frequency);
+
+gdouble ags_abyss_synth_util_get_seq_3_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+						  gint position);
+void ags_abyss_synth_util_set_seq_3_modulation(AgsAbyssSynthUtil *abyss_synth_util,
+					       gint position,
+					       gdouble seq_3_modulation);
+
+gboolean ags_abyss_synth_util_get_seq_3_pingpong(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_3_pingpong(AgsAbyssSynthUtil *abyss_synth_util,
+					     gboolean seq_3_pingpong);
+
+gdouble ags_abyss_synth_util_get_seq_3_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util);
+void ags_abyss_synth_util_set_seq_3_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util,
+						  gdouble seq_3_lfo_frequency);
 
 gdouble ags_abyss_synth_util_get_noise_0_frequency(AgsAbyssSynthUtil *abyss_synth_util);
 void ags_abyss_synth_util_set_noise_0_frequency(AgsAbyssSynthUtil *abyss_synth_util,
