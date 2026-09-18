@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 8.3.12\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2026-09-01 05:01+0200\n"
+"POT-Creation-Date: 2026-09-18 15:39+0200\n"
 "PO-Revision-Date: 2026-04-12 06:57+0200\n"
 "Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
 "Language-Team: \n"
@@ -322,7 +322,7 @@ msgstr "ინტერფეისის განახლების ვა�
 msgid "Plugin file not present"
 msgstr "დამატების ფაილი არ არსებობს"
 
-#: ags/app/ags_composite_editor.c:380
+#: ags/app/ags_composite_editor.c:381
 msgid "selector"
 msgstr "ამრჩევი"
 
@@ -614,7 +614,7 @@ msgid "position tool"
 msgstr "მოთავსების ხელსაწყო"
 
 #: ags/app/editor/ags_composite_toolbar.c:1000
-#: ags/app/ags_gsequencer_application.c:879
+#: ags/app/ags_gsequencer_application.c:888
 msgid "Edit"
 msgstr "ჩასწორება"
 
@@ -1124,114 +1124,114 @@ msgstr "ავტოგადახვევა"
 msgid "exclude sequencers"
 msgstr "სეკვენსერების გამორიცხვა"
 
-#: ags/app/ags_gsequencer_application.c:787
+#: ags/app/ags_gsequencer_application.c:796
 msgid "Open"
 msgstr "გახსნა"
 
-#: ags/app/ags_gsequencer_application.c:792
+#: ags/app/ags_gsequencer_application.c:801
 msgid "Save"
 msgstr "შენახვა"
 
-#: ags/app/ags_gsequencer_application.c:797
+#: ags/app/ags_gsequencer_application.c:806
 msgid "Save as"
 msgstr "შენახვა, როგორც"
 
-#: ags/app/ags_gsequencer_application.c:802
+#: ags/app/ags_gsequencer_application.c:811
 msgid "Export"
 msgstr "გატანა"
 
-#: ags/app/ags_gsequencer_application.c:807
+#: ags/app/ags_gsequencer_application.c:816
 msgid "Quit"
 msgstr "გასვლა"
 
-#: ags/app/ags_gsequencer_application.c:814
+#: ags/app/ags_gsequencer_application.c:823
 msgid "File"
 msgstr "ფაილი"
 
-#: ags/app/ags_gsequencer_application.c:828
+#: ags/app/ags_gsequencer_application.c:837
 msgid "Add"
 msgstr "დამატება"
 
-#: ags/app/ags_gsequencer_application.c:832
+#: ags/app/ags_gsequencer_application.c:841
 msgid "Notation"
 msgstr "ნოტაცია"
 
-#: ags/app/ags_gsequencer_application.c:837
+#: ags/app/ags_gsequencer_application.c:846
 msgid "Automation"
 msgstr "ავტომატიზაცია"
 
-#: ags/app/ags_gsequencer_application.c:842
+#: ags/app/ags_gsequencer_application.c:851
 msgid "Wave"
 msgstr "ტალღა"
 
-#: ags/app/ags_gsequencer_application.c:849
+#: ags/app/ags_gsequencer_application.c:858
 msgid "Sheet"
 msgstr "ფურცელი"
 
-#: ags/app/ags_gsequencer_application.c:855
+#: ags/app/ags_gsequencer_application.c:864
 msgid "Tempo"
 msgstr "ტემპი"
 
-#: ags/app/ags_gsequencer_application.c:860
+#: ags/app/ags_gsequencer_application.c:869
 msgid "Meta-data"
 msgstr "მეტამონაცემები"
 
-#: ags/app/ags_gsequencer_application.c:865
+#: ags/app/ags_gsequencer_application.c:874
 msgid "Preferences"
 msgstr "მორგება"
 
-#: ags/app/ags_gsequencer_application.c:871
+#: ags/app/ags_gsequencer_application.c:880
 msgid "Downloads"
 msgstr "გადმოწერები"
 
-#: ags/app/ags_gsequencer_application.c:885
-#: ags/app/ags_gsequencer_application.c:1154
+#: ags/app/ags_gsequencer_application.c:894
+#: ags/app/ags_gsequencer_application.c:1163
 msgid "SMF import"
 msgstr "SMF-ის შემოტანა"
 
-#: ags/app/ags_gsequencer_application.c:890
-#: ags/app/ags_gsequencer_application.c:1163
+#: ags/app/ags_gsequencer_application.c:899
+#: ags/app/ags_gsequencer_application.c:1172
 msgid "SMF export"
 msgstr "SMF-ის გატანა"
 
-#: ags/app/ags_gsequencer_application.c:897
+#: ags/app/ags_gsequencer_application.c:906
 msgid "MIDI"
 msgstr "MIDI"
 
-#: ags/app/ags_gsequencer_application.c:908
+#: ags/app/ags_gsequencer_application.c:917
 msgid "Window"
 msgstr "ფანჯარა"
 
-#: ags/app/ags_gsequencer_application.c:915
-#: ags/app/ags_gsequencer_application.c:927
+#: ags/app/ags_gsequencer_application.c:924
+#: ags/app/ags_gsequencer_application.c:936
 msgid "Help"
 msgstr "დახმარება"
 
-#: ags/app/ags_gsequencer_application.c:920
+#: ags/app/ags_gsequencer_application.c:929
 msgid "About"
 msgstr "შესახებ"
 
-#: ags/app/ags_gsequencer_application.c:1108
+#: ags/app/ags_gsequencer_application.c:1117
 msgid "application window"
 msgstr "აპლიკაციის ფანჯარა"
 
-#: ags/app/ags_gsequencer_application.c:1116 ags/app/ags_preferences.c:230
+#: ags/app/ags_gsequencer_application.c:1125 ags/app/ags_preferences.c:230
 msgid "preferences"
 msgstr "მორგება"
 
-#: ags/app/ags_gsequencer_application.c:1126
+#: ags/app/ags_gsequencer_application.c:1135
 msgid "sample downloads"
 msgstr ""
 
-#: ags/app/ags_gsequencer_application.c:1136
+#: ags/app/ags_gsequencer_application.c:1145
 msgid "meta-data"
 msgstr "მეტამონაცემები"
 
-#: ags/app/ags_gsequencer_application.c:1145
+#: ags/app/ags_gsequencer_application.c:1154
 msgid "audio export"
 msgstr "აუდიოს გატანა"
 
-#: ags/app/ags_gsequencer_application.c:1172
+#: ags/app/ags_gsequencer_application.c:1181
 msgid "help"
 msgstr "დახმარება"
 
@@ -1260,11 +1260,11 @@ msgstr ""
 msgid "resize channels"
 msgstr "არხის ზომების შეცვლა"
 
-#: ags/app/ags_app_action_util.c:164
+#: ags/app/ags_app_action_util.c:165
 msgid "open file"
 msgstr "ფაილის გახსნა"
 
-#: ags/app/ags_app_action_util.c:676
+#: ags/app/ags_app_action_util.c:677
 msgid "save file as"
 msgstr "ფაილის შენახვა, როგორც"
 

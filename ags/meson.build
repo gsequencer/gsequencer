@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2025 Daniel Maksymow, Joël Krähemann
+# Copyright (C) 2005-2026 Daniel Maksymow, Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -335,6 +335,7 @@ libags_audio_sources = files(
   'plugin/ags_lv2_worker.c',
   'plugin/ags_lv2_worker_manager.c',
   'plugin/ags_plugin_port.c',
+  'audio/ags_abyss_synth_util.c',
   'audio/ags_acceleration.c',
   'audio/ags_amplifier_util.c',
   'audio/ags_amplifier10_util.c',
@@ -458,6 +459,12 @@ libags_audio_sources = files(
   'audio/file/ags_sndfile.c',
   'audio/file/ags_sound_container.c',
   'audio/file/ags_sound_resource.c',
+  'audio/fx/ags_fx_abyss_synth_audio.c',
+  'audio/fx/ags_fx_abyss_synth_audio_processor.c',
+  'audio/fx/ags_fx_abyss_synth_audio_signal.c',
+  'audio/fx/ags_fx_abyss_synth_channel.c',
+  'audio/fx/ags_fx_abyss_synth_channel_processor.c',
+  'audio/fx/ags_fx_abyss_synth_recycling.c',
   'audio/fx/ags_fx_analyse_audio.c',
   'audio/fx/ags_fx_analyse_audio_processor.c',
   'audio/fx/ags_fx_analyse_audio_signal.c',
@@ -1151,6 +1158,8 @@ libgsequencer_sources = files(
   'app/import/ags_track_collection_callbacks.c',
   'app/import/ags_track_mapper.c',
   'app/import/ags_track_mapper_callbacks.c',
+  'app/machine/ags_abyss_synth.c',
+  'app/machine/ags_abyss_synth_callbacks.c',
   'app/machine/ags_audiorec.c',
   'app/machine/ags_audiorec_callbacks.c',
   'app/machine/ags_cell_pattern.c',
@@ -1581,6 +1590,7 @@ libags_audio_plugin_headers += [
 endif
 
 libags_audio_audio_headers = [
+  'audio/ags_abyss_synth_util.h',
   'audio/ags_acceleration.h',
   'audio/ags_amplifier_util.h',
   'audio/ags_amplifier10_util.h',
@@ -1722,6 +1732,12 @@ libags_audio_audio_file_gstreamer_headers = [
 endif
 
 libags_audio_audio_fx_headers = [
+  'audio/fx/ags_fx_abyss_synth_audio.h',
+  'audio/fx/ags_fx_abyss_synth_audio_processor.h',
+  'audio/fx/ags_fx_abyss_synth_audio_signal.h',
+  'audio/fx/ags_fx_abyss_synth_channel.h',
+  'audio/fx/ags_fx_abyss_synth_channel_processor.h',
+  'audio/fx/ags_fx_abyss_synth_recycling.h',
   'audio/fx/ags_fx_analyse_audio.h',
   'audio/fx/ags_fx_analyse_audio_processor.h',
   'audio/fx/ags_fx_analyse_audio_signal.h',
