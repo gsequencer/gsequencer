@@ -294,8 +294,2818 @@ ags_fx_abyss_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
     midi_note = (y - audio_start_mapping + midi_start_mapping);
   }
 
-  //TODO:JK: implement me
+  if(fx_abyss_synth_audio != NULL){
+    AgsPort *port;
 
+    AgsFxAbyssSynthAudioChannelData *channel_data;
+
+    GValue value = {0,};
+
+    channel_data = fx_abyss_synth_audio->scope_data[sound_scope]->channel_data[audio_channel];
+    
+    /* synth-0 osc-0 oscillator */
+    port = fx_abyss_synth_audio->synth_0_osc_0_oscillator;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_0_oscillator(channel_data->abyss_synth_util_0,
+						(guint) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-0 octave */
+    port = fx_abyss_synth_audio->synth_0_osc_0_octave;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      octave = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-0 key */    
+    port = fx_abyss_synth_audio->synth_0_osc_0_key;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      key = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+
+    ags_abyss_synth_util_set_osc_0_frequency(channel_data->abyss_synth_util_0,
+					     exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
+      
+    /* synth-0 osc-0 phase */    
+    port = fx_abyss_synth_audio->synth_0_osc_0_phase;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_0_phase(channel_data->abyss_synth_util_0,
+					   ((gdouble) samplerate / ags_abyss_synth_util_get_osc_0_frequency(channel_data->abyss_synth_util_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+    }
+
+    g_value_unset(&value);
+      
+    /* synth-0 osc-0 volume */    
+    port = fx_abyss_synth_audio->synth_0_osc_0_volume;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_0_volume(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 osc-0 low-pass sends */    
+    port = fx_abyss_synth_audio->synth_0_osc_0_low_pass_sends;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_0_low_pass_sends(channel_data->abyss_synth_util_0,
+						    (gint64) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-1 oscillator */
+    port = fx_abyss_synth_audio->synth_0_osc_1_oscillator;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_1_oscillator(channel_data->abyss_synth_util_0,
+						(guint) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-1 octave */
+    port = fx_abyss_synth_audio->synth_0_osc_1_octave;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      octave = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-1 key */    
+    port = fx_abyss_synth_audio->synth_0_osc_1_key;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      key = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+
+    ags_abyss_synth_util_set_osc_1_frequency(channel_data->abyss_synth_util_0,
+					     exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
+      
+    /* synth-0 osc-1 phase */    
+    port = fx_abyss_synth_audio->synth_0_osc_1_phase;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_1_phase(channel_data->abyss_synth_util_0,
+					   ((gdouble) samplerate / ags_abyss_synth_util_get_osc_1_frequency(channel_data->abyss_synth_util_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+    }
+
+    g_value_unset(&value);
+      
+    /* synth-0 osc-1 volume */    
+    port = fx_abyss_synth_audio->synth_0_osc_1_volume;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_1_volume(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 osc-1 low-pass sends */    
+    port = fx_abyss_synth_audio->synth_0_osc_1_low_pass_sends;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_1_low_pass_sends(channel_data->abyss_synth_util_0,
+						    (gint64) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-2 oscillator */
+    port = fx_abyss_synth_audio->synth_0_osc_2_oscillator;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_2_oscillator(channel_data->abyss_synth_util_0,
+						(guint) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-2 octave */
+    port = fx_abyss_synth_audio->synth_0_osc_2_octave;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      octave = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-2 key */    
+    port = fx_abyss_synth_audio->synth_0_osc_2_key;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      key = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+
+    ags_abyss_synth_util_set_osc_2_frequency(channel_data->abyss_synth_util_0,
+					     exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
+      
+    /* synth-0 osc-2 phase */    
+    port = fx_abyss_synth_audio->synth_0_osc_2_phase;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_2_phase(channel_data->abyss_synth_util_0,
+					   ((gdouble) samplerate / ags_abyss_synth_util_get_osc_2_frequency(channel_data->abyss_synth_util_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+    }
+
+    g_value_unset(&value);
+      
+    /* synth-0 osc-2 volume */    
+    port = fx_abyss_synth_audio->synth_0_osc_2_volume;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_2_volume(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 osc-2 low-pass sends */    
+    port = fx_abyss_synth_audio->synth_0_osc_2_low_pass_sends;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_2_low_pass_sends(channel_data->abyss_synth_util_0,
+						    (gint64) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-3 oscillator */
+    port = fx_abyss_synth_audio->synth_0_osc_3_oscillator;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_3_oscillator(channel_data->abyss_synth_util_0,
+						(guint) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-3 octave */
+    port = fx_abyss_synth_audio->synth_0_osc_3_octave;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      octave = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 osc-3 key */    
+    port = fx_abyss_synth_audio->synth_0_osc_3_key;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      key = (gdouble) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+
+    ags_abyss_synth_util_set_osc_3_frequency(channel_data->abyss_synth_util_0,
+					     exp2(((octave * 12.0) + key + ((gdouble) midi_note - 48.0)) / 12.0) * 440.0);
+      
+    /* synth-0 osc-3 phase */    
+    port = fx_abyss_synth_audio->synth_0_osc_3_phase;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_3_phase(channel_data->abyss_synth_util_0,
+					   ((gdouble) samplerate / ags_abyss_synth_util_get_osc_3_frequency(channel_data->abyss_synth_util_0)) * ((gdouble) g_value_get_float(&value) / (2.0 * M_PI)));
+    }
+
+    g_value_unset(&value);
+      
+    /* synth-0 osc-3 volume */    
+    port = fx_abyss_synth_audio->synth_0_osc_3_volume;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_3_volume(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 osc-3 low-pass sends */    
+    port = fx_abyss_synth_audio->synth_0_osc_3_low_pass_sends;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_osc_3_low_pass_sends(channel_data->abyss_synth_util_0,
+						    (gint64) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-0 enabled */
+    port = fx_abyss_synth_audio->synth_0_ring_0_enabled;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_0_enabled(channel_data->abyss_synth_util_0,
+					      (gboolean) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-0 pitch tuning */
+    port = fx_abyss_synth_audio->synth_0_ring_0_tuning;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_0_pitch_tuning(channel_data->abyss_synth_util_0,
+						   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-0 drive */
+    port = fx_abyss_synth_audio->synth_0_ring_0_drive;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_0_drive(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-0 mix */
+    port = fx_abyss_synth_audio->synth_0_ring_0_mix;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_0_mix(channel_data->abyss_synth_util_0,
+					  (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-0 gain */
+    port = fx_abyss_synth_audio->synth_0_ring_0_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_0_gain(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-1 enabled */
+    port = fx_abyss_synth_audio->synth_0_ring_1_enabled;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_1_enabled(channel_data->abyss_synth_util_0,
+					      (gboolean) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-1 pitch tuning */
+    port = fx_abyss_synth_audio->synth_0_ring_1_tuning;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_1_pitch_tuning(channel_data->abyss_synth_util_0,
+						   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-1 drive */
+    port = fx_abyss_synth_audio->synth_0_ring_1_drive;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_1_drive(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-1 mix */
+    port = fx_abyss_synth_audio->synth_0_ring_1_mix;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_1_mix(channel_data->abyss_synth_util_0,
+					  (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 ring-1 gain */
+    port = fx_abyss_synth_audio->synth_0_ring_1_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_ring_1_gain(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 pitch tuning */
+    port = fx_abyss_synth_audio->synth_0_pitch_tuning;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_pitch_tuning(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 volume */
+    port = fx_abyss_synth_audio->synth_0_volume;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_volume(channel_data->abyss_synth_util_0,
+				      (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 attack */
+    port = fx_abyss_synth_audio->synth_0_env_0_attack;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_0_attack(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 sustain */
+    port = fx_abyss_synth_audio->synth_0_env_0_sustain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_0_sustain(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 decay */
+    port = fx_abyss_synth_audio->synth_0_env_0_decay;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_0_decay(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 release */
+    port = fx_abyss_synth_audio->synth_0_env_0_release;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_0_release(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 gain */
+    port = fx_abyss_synth_audio->synth_0_env_0_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_0_gain(channel_data->abyss_synth_util_0,
+					  (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 frequency */
+    port = fx_abyss_synth_audio->synth_0_env_0_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_0_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-0 sends */    
+    port = fx_abyss_synth_audio->synth_0_env_0_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_env_0_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 env-1 attack */
+    port = fx_abyss_synth_audio->synth_0_env_1_attack;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_1_attack(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 sustain */
+    port = fx_abyss_synth_audio->synth_0_env_1_sustain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_1_sustain(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 decay */
+    port = fx_abyss_synth_audio->synth_0_env_1_decay;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_1_decay(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 release */
+    port = fx_abyss_synth_audio->synth_0_env_1_release;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_1_release(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 gain */
+    port = fx_abyss_synth_audio->synth_0_env_1_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_1_gain(channel_data->abyss_synth_util_0,
+					  (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 frequency */
+    port = fx_abyss_synth_audio->synth_0_env_1_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_1_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-1 sends */    
+    port = fx_abyss_synth_audio->synth_0_env_1_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_env_1_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-2 attack */
+    port = fx_abyss_synth_audio->synth_0_env_2_attack;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_2_attack(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-2 sustain */
+    port = fx_abyss_synth_audio->synth_0_env_2_sustain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_2_sustain(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-2 decay */
+    port = fx_abyss_synth_audio->synth_0_env_2_decay;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_2_decay(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-2 release */
+    port = fx_abyss_synth_audio->synth_0_env_2_release;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_2_release(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-2 gain */
+    port = fx_abyss_synth_audio->synth_0_env_2_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_2_gain(channel_data->abyss_synth_util_0,
+					  (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-2 frequency */
+    port = fx_abyss_synth_audio->synth_0_env_2_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_2_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-2 sends */    
+    port = fx_abyss_synth_audio->synth_0_env_2_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_env_2_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-3 attack */
+    port = fx_abyss_synth_audio->synth_0_env_3_attack;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_3_attack(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-3 sustain */
+    port = fx_abyss_synth_audio->synth_0_env_3_sustain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_3_sustain(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-3 decay */
+    port = fx_abyss_synth_audio->synth_0_env_3_decay;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_3_decay(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-3 release */
+    port = fx_abyss_synth_audio->synth_0_env_3_release;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_3_release(channel_data->abyss_synth_util_0,
+					     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-3 gain */
+    port = fx_abyss_synth_audio->synth_0_env_3_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_3_gain(channel_data->abyss_synth_util_0,
+					  (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-3 frequency */
+    port = fx_abyss_synth_audio->synth_0_env_3_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_env_3_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 env-3 sends */    
+    port = fx_abyss_synth_audio->synth_0_env_3_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_env_3_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 lfo-0 frequency */
+    port = fx_abyss_synth_audio->synth_0_lfo_0_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_0_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-0 depth */
+    port = fx_abyss_synth_audio->synth_0_lfo_0_depth;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_0_depth(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-0 tuning */
+    port = fx_abyss_synth_audio->synth_0_lfo_0_tuning;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_0_tuning(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-0 sends */    
+    port = fx_abyss_synth_audio->synth_0_lfo_0_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_lfo_0_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 lfo-1 frequency */
+    port = fx_abyss_synth_audio->synth_0_lfo_1_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_1_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 depth */
+    port = fx_abyss_synth_audio->synth_0_lfo_1_depth;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_1_depth(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 tuning */
+    port = fx_abyss_synth_audio->synth_0_lfo_1_tuning;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_1_tuning(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-1 sends */    
+    port = fx_abyss_synth_audio->synth_0_lfo_1_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_lfo_1_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 lfo-2 frequency */
+    port = fx_abyss_synth_audio->synth_0_lfo_2_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_2_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-2 depth */
+    port = fx_abyss_synth_audio->synth_0_lfo_2_depth;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_2_depth(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-2 tuning */
+    port = fx_abyss_synth_audio->synth_0_lfo_2_tuning;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_2_tuning(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);    
+
+    /* synth-0 lfo-2 sends */    
+    port = fx_abyss_synth_audio->synth_0_lfo_2_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_lfo_2_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-3 frequency */
+    port = fx_abyss_synth_audio->synth_0_lfo_3_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_3_frequency(channel_data->abyss_synth_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-3 depth */
+    port = fx_abyss_synth_audio->synth_0_lfo_3_depth;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_3_depth(channel_data->abyss_synth_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-3 tuning */
+    port = fx_abyss_synth_audio->synth_0_lfo_3_tuning;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_lfo_3_tuning(channel_data->abyss_synth_util_0,
+					    (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 lfo-3 sends */    
+    port = fx_abyss_synth_audio->synth_0_lfo_3_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_lfo_3_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 0 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_0;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						0,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 1 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_1;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						1,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 2 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_2;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						2,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 3 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_3;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						3,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 4 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_4;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						4,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 5 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_5;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						5,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 6 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_6;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						6,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 7 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_7;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						7,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 8 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_8;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						8,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 9 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_9;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						9,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 10 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_10;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						10,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 11 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_11;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						11,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 12 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_12;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						12,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 13 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_13;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						13,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 14 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_14;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						14,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 modulation 15 */
+    port = fx_abyss_synth_audio->synth_0_seq_0_modulation_15;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_modulation(channel_data->abyss_synth_util_0,
+						15,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 pingpong */
+    port = fx_abyss_synth_audio->synth_0_seq_0_pingpong;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_pingpong(channel_data->abyss_synth_util_0,
+					      (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 LFO frequency */
+    port = fx_abyss_synth_audio->synth_0_seq_0_lfo_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_0_lfo_frequency(channel_data->abyss_synth_util_0,
+						   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-0 sends */    
+    port = fx_abyss_synth_audio->synth_0_seq_0_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_seq_0_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 0 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_0;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						0,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 1 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_1;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						1,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 2 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_2;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						2,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 3 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_3;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						3,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 4 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_4;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						4,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 5 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_5;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						5,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 6 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_6;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						6,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 7 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_7;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						7,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 8 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_8;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						8,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 9 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_9;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						9,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 10 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_10;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						10,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 11 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_11;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						11,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 12 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_12;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						12,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 13 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_13;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						13,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 14 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_14;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						14,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 modulation 15 */
+    port = fx_abyss_synth_audio->synth_0_seq_1_modulation_15;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_modulation(channel_data->abyss_synth_util_0,
+						15,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 pingpong */
+    port = fx_abyss_synth_audio->synth_0_seq_1_pingpong;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_pingpong(channel_data->abyss_synth_util_0,
+					      (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 LFO frequency */
+    port = fx_abyss_synth_audio->synth_0_seq_1_lfo_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_1_lfo_frequency(channel_data->abyss_synth_util_0,
+						   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-1 sends */    
+    port = fx_abyss_synth_audio->synth_0_seq_1_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_seq_1_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 0 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_0;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						0,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 1 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_1;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						1,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 2 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_2;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						2,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 3 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_3;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						3,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 4 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_4;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						4,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 5 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_5;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						5,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 6 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_6;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						6,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 7 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_7;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						7,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 8 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_8;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						8,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 9 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_9;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						9,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 10 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_10;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						10,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 11 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_11;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						11,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 12 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_12;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						12,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 13 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_13;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						13,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 14 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_14;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						14,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 modulation 15 */
+    port = fx_abyss_synth_audio->synth_0_seq_2_modulation_15;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_modulation(channel_data->abyss_synth_util_0,
+						15,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 pingpong */
+    port = fx_abyss_synth_audio->synth_0_seq_2_pingpong;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_pingpong(channel_data->abyss_synth_util_0,
+					      (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 LFO frequency */
+    port = fx_abyss_synth_audio->synth_0_seq_2_lfo_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_2_lfo_frequency(channel_data->abyss_synth_util_0,
+						   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-2 sends */    
+    port = fx_abyss_synth_audio->synth_0_seq_2_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_seq_2_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 0 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_0;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						0,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 1 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_1;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						1,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 2 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_2;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						2,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 3 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_3;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						3,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 4 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_4;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						4,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 5 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_5;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						5,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 6 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_6;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						6,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 7 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_7;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						7,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 8 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_8;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						8,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 9 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_9;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						9,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 10 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_10;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						10,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 11 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_11;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						11,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 12 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_12;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						12,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 13 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_13;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						13,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 14 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_14;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						14,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 modulation 15 */
+    port = fx_abyss_synth_audio->synth_0_seq_3_modulation_15;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_modulation(channel_data->abyss_synth_util_0,
+						15,
+						(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 pingpong */
+    port = fx_abyss_synth_audio->synth_0_seq_3_pingpong;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_pingpong(channel_data->abyss_synth_util_0,
+					      (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 LFO frequency */
+    port = fx_abyss_synth_audio->synth_0_seq_3_lfo_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_abyss_synth_util_set_seq_3_lfo_frequency(channel_data->abyss_synth_util_0,
+						   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* synth-0 seq-3 sends */    
+    port = fx_abyss_synth_audio->synth_0_seq_3_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_seq_3_sends(channel_data->abyss_synth_util_0,
+							       NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+
+    g_value_unset(&value);
+    
+    /* synth-0 pink noise 0 frequency */
+    port = fx_abyss_synth_audio->synth_0_pink_noise_0_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_noise_util_set_frequency(channel_data->abyss_synth_util_0->noise_0_util,
+				   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);    
+    
+    /* synth-0 pink noise 0 gain */    
+    port = fx_abyss_synth_audio->synth_0_pink_noise_0_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_noise_util_set_volume(channel_data->abyss_synth_util_0->noise_0_util,
+				(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);    
+
+    /* synth-0 pink noise 0 sends */    
+    port = fx_abyss_synth_audio->synth_0_pink_noise_0_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+    
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_noise_0_sends(channel_data->abyss_synth_util_0,
+								 NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+    
+    g_value_unset(&value);
+    
+    /* synth-0 pink noise 1 frequency */
+    port = fx_abyss_synth_audio->synth_0_pink_noise_1_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_noise_util_set_frequency(channel_data->abyss_synth_util_0->noise_1_util,
+				   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);    
+    
+    /* synth-0 pink noise 1 gain */    
+    port = fx_abyss_synth_audio->synth_0_pink_noise_1_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_noise_util_set_volume(channel_data->abyss_synth_util_0->noise_1_util,
+				(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);    
+
+    /* synth-0 pink noise 1 sends */    
+    port = fx_abyss_synth_audio->synth_0_pink_noise_1_sends;
+
+    g_value_init(&value, G_TYPE_POINTER);
+    
+    if(port != NULL){      
+      g_value_set_pointer(&value,
+			  ags_abyss_synth_util_get_noise_1_sends(channel_data->abyss_synth_util_0,
+								 NULL));
+    
+      ags_port_safe_read(port,
+			 &value);
+    }
+    
+    g_value_unset(&value);
+
+    /* low-pass 0 cut-off frequency */
+    port = fx_abyss_synth_audio->low_pass_0_cut_off_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_low_pass_filter_util_set_cut_off_frequency(channel_data->abyss_synth_util_0->low_pass_filter_util_0,
+						     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* low-pass 0 filter gain */
+    port = fx_abyss_synth_audio->low_pass_0_filter_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_low_pass_filter_util_set_filter_gain(channel_data->abyss_synth_util_0->low_pass_filter_util_0,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* low-pass 0 no-clip */    
+    port = fx_abyss_synth_audio->low_pass_0_no_clip;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_low_pass_filter_util_set_no_clip(channel_data->abyss_synth_util_0->low_pass_filter_util_0,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* low-pass 1 cut-off frequency */
+    port = fx_abyss_synth_audio->low_pass_1_cut_off_frequency;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_low_pass_filter_util_set_cut_off_frequency(channel_data->abyss_synth_util_0->low_pass_filter_util_1,
+						     (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* low-pass 1 filter gain */
+    port = fx_abyss_synth_audio->low_pass_1_filter_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_low_pass_filter_util_set_filter_gain(channel_data->abyss_synth_util_0->low_pass_filter_util_1,
+					       (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+    
+    /* low-pass 1 no-clip */    
+    port = fx_abyss_synth_audio->low_pass_1_no_clip;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_low_pass_filter_util_set_no_clip(channel_data->abyss_synth_util_0->low_pass_filter_util_1,
+					   (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* amplifier 0 amp 0 gain */
+    port = fx_abyss_synth_audio->amplifier_0_amp_0_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_amplifier_util_set_amp_0_gain(channel_data->amplifier_util_0,
+					(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* amplifier 0 amp 1 gain */    
+    port = fx_abyss_synth_audio->amplifier_0_amp_1_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_amplifier_util_set_amp_1_gain(channel_data->amplifier_util_0,
+					(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* amplifier 0 amp 2 gain */    
+    port = fx_abyss_synth_audio->amplifier_0_amp_2_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_amplifier_util_set_amp_2_gain(channel_data->amplifier_util_0,
+					(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* amplifier 0 amp 3 gain */    
+    port = fx_abyss_synth_audio->amplifier_0_amp_3_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_amplifier_util_set_amp_3_gain(channel_data->amplifier_util_0,
+					(gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* amplifier 0 filter gain */    
+    port = fx_abyss_synth_audio->amplifier_0_filter_gain;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      ags_amplifier_util_set_filter_gain(channel_data->amplifier_util_0,
+					 (gdouble) g_value_get_float(&value));
+    }
+
+    g_value_unset(&value);
+
+    /* chorus enabled */
+    port = fx_abyss_synth_audio->chorus_enabled;
+
+    g_value_init(&value, G_TYPE_FLOAT);
+    
+    if(port != NULL){      
+      ags_port_safe_read(port,
+			 &value);
+
+      chorus_enabled = (gboolean) g_value_get_float(&value);
+    }
+
+    g_value_unset(&value);
+
+    if(chorus_enabled){
+      /* chorus input-volume */
+      port = fx_abyss_synth_audio->chorus_input_volume;
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_chorus_util_set_input_volume(channel_data->chorus_util,
+					 (gdouble) g_value_get_float(&value));
+      }
+      
+      g_value_unset(&value);
+
+      /* chorus output-volume */    
+      port = fx_abyss_synth_audio->chorus_output_volume;
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_chorus_util_set_output_volume(channel_data->chorus_util,
+					  (gdouble) g_value_get_float(&value));
+      }
+
+      g_value_unset(&value);
+
+      /* chorus lfo-oscillator */    
+      port = fx_abyss_synth_audio->chorus_lfo_oscillator;
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_chorus_util_set_lfo_oscillator(channel_data->chorus_util,
+					   (guint) g_value_get_float(&value));
+      }
+
+      g_value_unset(&value);
+
+      /* chorus lfo-frequency */    
+      port = fx_abyss_synth_audio->chorus_lfo_frequency;
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_chorus_util_set_lfo_frequency(channel_data->chorus_util,
+					  (gdouble) g_value_get_float(&value));
+      }
+
+      g_value_unset(&value);
+
+      /* chorus depth */    
+      port = fx_abyss_synth_audio->chorus_depth;
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_chorus_util_set_depth(channel_data->chorus_util,
+				  (gdouble) g_value_get_float(&value));
+      }
+
+      g_value_unset(&value);
+
+      /* chorus mix */    
+      port = fx_abyss_synth_audio->chorus_mix;
+
+      g_object_get(fx_abyss_synth_audio,
+		   "chorus-mix", &port,
+		   NULL);
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_chorus_util_set_mix(channel_data->chorus_util,
+				(gdouble) g_value_get_float(&value));
+      }
+
+      g_value_unset(&value);
+
+      /* chorus delay */    
+      port = fx_abyss_synth_audio->chorus_delay;
+
+      g_value_init(&value, G_TYPE_FLOAT);
+    
+      if(port != NULL){      
+	ags_port_safe_read(port,
+			   &value);
+
+	ags_chorus_util_set_delay(channel_data->chorus_util,
+				  (gdouble) g_value_get_float(&value));
+      }
+
+      g_value_unset(&value);
+    }
+  }
+  
   copy_mode_out = ags_audio_buffer_util_get_copy_mode_from_format(&(fx_abyss_synth_audio_signal->audio_buffer_util),
 								  audio_buffer_util_format,
 								  AGS_AUDIO_BUFFER_UTIL_FLOAT);
@@ -327,6 +3137,22 @@ ags_fx_abyss_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
 
     ags_audio_buffer_util_clear_buffer(&(fx_abyss_synth_audio_signal->audio_buffer_util),
 				       channel_data->synth_buffer_0, 1,
+				       buffer_size, audio_buffer_util_format);
+
+    ags_audio_buffer_util_clear_buffer(&(fx_abyss_synth_audio_signal->audio_buffer_util),
+				       channel_data->abyss_synth_util_0->osc_0_buffer, 1,
+				       buffer_size, audio_buffer_util_format);
+
+    ags_audio_buffer_util_clear_buffer(&(fx_abyss_synth_audio_signal->audio_buffer_util),
+				       channel_data->abyss_synth_util_0->osc_1_buffer, 1,
+				       buffer_size, audio_buffer_util_format);
+
+    ags_audio_buffer_util_clear_buffer(&(fx_abyss_synth_audio_signal->audio_buffer_util),
+				       channel_data->abyss_synth_util_0->osc_2_buffer, 1,
+				       buffer_size, audio_buffer_util_format);
+
+    ags_audio_buffer_util_clear_buffer(&(fx_abyss_synth_audio_signal->audio_buffer_util),
+				       channel_data->abyss_synth_util_0->osc_3_buffer, 1,
 				       buffer_size, audio_buffer_util_format);
     
     /* abyss synth 0 */
@@ -363,7 +3189,7 @@ ags_fx_abyss_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
     
     g_rec_mutex_lock(source_stream_mutex);
 
-    //TODO:JK: implement me
+    ags_abyss_synth_util_compute(channel_data->abyss_synth_util_0);
         
     /* amplifier 0 */
     ags_amplifier_util_set_source(channel_data->amplifier_util_0,

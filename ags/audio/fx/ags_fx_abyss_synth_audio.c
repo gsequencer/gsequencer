@@ -162,18 +162,22 @@ static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_lfo_3_sends_plugin_po
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_0_modulation_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_0_pingpong_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_0_lfo_frequency_plugin_port();
+static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_0_sends_plugin_port();
 
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_1_modulation_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_1_pingpong_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_1_lfo_frequency_plugin_port();
+static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_1_sends_plugin_port();
 
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_2_modulation_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_2_pingpong_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_2_lfo_frequency_plugin_port();
+static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_2_sends_plugin_port();
 
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_3_modulation_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_3_pingpong_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_3_lfo_frequency_plugin_port();
+static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_seq_3_sends_plugin_port();
 
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_frequency_plugin_port();
 static AgsPluginPort* ags_fx_abyss_synth_audio_get_synth_0_pink_noise_0_gain_plugin_port();
@@ -5862,6 +5866,30 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 
   position++;
 
+  /* synth-0 seq-0 sends */
+  fx_abyss_synth_audio->synth_0_seq_0_sends = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
+							   "specifier", "./synth-0-seq-0-sends[0]",
+							   "control-port", "31/56",
+							   "port-value-is-pointer", TRUE,
+							   "port-value-type", G_TYPE_INT64,
+							   "port-value-size", sizeof(gint64),
+							   "port-value-length", AGS_ABYSS_SYNTH_SENDS_COUNT,
+							   NULL);
+  
+  fx_abyss_synth_audio->synth_0_seq_0_sends->port_value.ags_port_pointer = (gint64 *) g_malloc(AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_abyss_synth_audio->synth_0_seq_0_sends->port_value.ags_port_pointer, 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  g_object_set(fx_abyss_synth_audio->synth_0_seq_0_sends,
+	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_0_sends_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
+		      fx_abyss_synth_audio->synth_0_seq_0_sends);
+
+  position++;
+
   /* synth-0 seq modulation 0 */
   fx_abyss_synth_audio->synth_0_seq_1_modulation_0 = g_object_new(AGS_TYPE_PORT,
 							    "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
@@ -6255,6 +6283,30 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
 		      fx_abyss_synth_audio->synth_0_seq_1_lfo_frequency);
+
+  position++;
+
+  /* synth-0 seq-1 sends */
+  fx_abyss_synth_audio->synth_0_seq_1_sends = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
+							   "specifier", "./synth-0-seq-1-sends[0]",
+							   "control-port", "31/56",
+							   "port-value-is-pointer", TRUE,
+							   "port-value-type", G_TYPE_INT64,
+							   "port-value-size", sizeof(gint64),
+							   "port-value-length", AGS_ABYSS_SYNTH_SENDS_COUNT,
+							   NULL);
+  
+  fx_abyss_synth_audio->synth_0_seq_1_sends->port_value.ags_port_pointer = (gint64 *) g_malloc(AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_abyss_synth_audio->synth_0_seq_1_sends->port_value.ags_port_pointer, 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  g_object_set(fx_abyss_synth_audio->synth_0_seq_1_sends,
+	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_1_sends_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
+		      fx_abyss_synth_audio->synth_0_seq_1_sends);
 
   position++;
 
@@ -6654,6 +6706,30 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 
   position++;
 
+  /* synth-0 seq-2 sends */
+  fx_abyss_synth_audio->synth_0_seq_2_sends = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
+							   "specifier", "./synth-0-seq-2-sends[0]",
+							   "control-port", "31/56",
+							   "port-value-is-pointer", TRUE,
+							   "port-value-type", G_TYPE_INT64,
+							   "port-value-size", sizeof(gint64),
+							   "port-value-length", AGS_ABYSS_SYNTH_SENDS_COUNT,
+							   NULL);
+  
+  fx_abyss_synth_audio->synth_0_seq_2_sends->port_value.ags_port_pointer = (gint64 *) g_malloc(AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_abyss_synth_audio->synth_0_seq_2_sends->port_value.ags_port_pointer, 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  g_object_set(fx_abyss_synth_audio->synth_0_seq_2_sends,
+	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_2_sends_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
+		      fx_abyss_synth_audio->synth_0_seq_2_sends);
+
+  position++;
+
   /* synth-0 seq modulation 0 */
   fx_abyss_synth_audio->synth_0_seq_3_modulation_0 = g_object_new(AGS_TYPE_PORT,
 							    "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
@@ -7047,6 +7123,30 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 
   ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
 		      fx_abyss_synth_audio->synth_0_seq_3_lfo_frequency);
+
+  position++;
+
+  /* synth-0 seq-3 sends */
+  fx_abyss_synth_audio->synth_0_seq_3_sends = g_object_new(AGS_TYPE_PORT,
+							   "plugin-name", ags_fx_abyss_synth_audio_plugin_name,
+							   "specifier", "./synth-0-seq-3-sends[0]",
+							   "control-port", "31/56",
+							   "port-value-is-pointer", TRUE,
+							   "port-value-type", G_TYPE_INT64,
+							   "port-value-size", sizeof(gint64),
+							   "port-value-length", AGS_ABYSS_SYNTH_SENDS_COUNT,
+							   NULL);
+  
+  fx_abyss_synth_audio->synth_0_seq_3_sends->port_value.ags_port_pointer = (gint64 *) g_malloc(AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  memset(fx_abyss_synth_audio->synth_0_seq_3_sends->port_value.ags_port_pointer, 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+  g_object_set(fx_abyss_synth_audio->synth_0_seq_3_sends,
+	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_3_sends_plugin_port(),
+	       NULL);
+
+  ags_recall_add_port((AgsRecall *) fx_abyss_synth_audio,
+		      fx_abyss_synth_audio->synth_0_seq_3_sends);
 
   position++;
   
@@ -10410,6 +10510,33 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
+  case PROP_SYNTH_0_SEQ_0_SENDS:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_abyss_synth_audio->synth_0_seq_0_sends){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_abyss_synth_audio->synth_0_seq_0_sends != NULL){
+	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_seq_0_sends));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_abyss_synth_audio->synth_0_seq_0_sends = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_SYNTH_0_SEQ_1_MODULATION_0:
     {
       AgsPort *port;
@@ -10892,6 +11019,33 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
       }
 
       fx_abyss_synth_audio->synth_0_seq_1_lfo_frequency = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_SENDS:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_abyss_synth_audio->synth_0_seq_1_sends){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_abyss_synth_audio->synth_0_seq_1_sends != NULL){
+	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_seq_1_sends));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_abyss_synth_audio->synth_0_seq_1_sends = port;
       
       g_rec_mutex_unlock(recall_mutex);	
     }
@@ -11382,6 +11536,33 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
       g_rec_mutex_unlock(recall_mutex);	
     }
     break;
+  case PROP_SYNTH_0_SEQ_2_SENDS:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_abyss_synth_audio->synth_0_seq_2_sends){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_abyss_synth_audio->synth_0_seq_2_sends != NULL){
+	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_seq_2_sends));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_abyss_synth_audio->synth_0_seq_2_sends = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_SYNTH_0_SEQ_3_MODULATION_0:
     {
       AgsPort *port;
@@ -11864,6 +12045,33 @@ ags_fx_abyss_synth_audio_set_property(GObject *gobject,
       }
 
       fx_abyss_synth_audio->synth_0_seq_3_lfo_frequency = port;
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_SENDS:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      g_rec_mutex_lock(recall_mutex);
+
+      if(port == fx_abyss_synth_audio->synth_0_seq_3_sends){
+	g_rec_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(fx_abyss_synth_audio->synth_0_seq_3_sends != NULL){
+	g_object_unref(G_OBJECT(fx_abyss_synth_audio->synth_0_seq_3_sends));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      fx_abyss_synth_audio->synth_0_seq_3_sends = port;
       
       g_rec_mutex_unlock(recall_mutex);	
     }
@@ -13344,6 +13552,690 @@ ags_fx_abyss_synth_audio_get_property(GObject *gobject,
       g_rec_mutex_lock(recall_mutex);
 
       g_value_set_object(value, fx_abyss_synth_audio->synth_0_env_3_sends);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_0:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_0);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_1:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_1);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_2:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_2);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_3:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_3);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_4:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_4);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_5:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_5);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_6:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_6);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_7:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_7);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_8:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_8);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_9:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_9);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_10:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_10);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_11:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_11);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_12:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_12);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_13:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_13);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_14:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_14);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_MODULATION_15:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_modulation_15);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_PINGPONG:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_pingpong);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_LFO_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_lfo_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_0_SENDS:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_0_sends);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_0:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_0);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_1:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_1);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_2:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_2);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_3:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_3);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_4:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_4);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_5:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_5);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_6:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_6);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_7:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_7);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_8:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_8);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_9:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_9);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_10:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_10);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_11:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_11);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_12:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_12);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_13:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_13);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_14:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_14);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_MODULATION_15:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_modulation_15);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_PINGPONG:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_pingpong);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_LFO_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_lfo_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_1_SENDS:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_1_sends);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_0:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_0);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_1:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_1);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_2:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_2);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_3:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_3);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_4:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_4);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_5:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_5);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_6:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_6);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_7:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_7);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_8:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_8);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_9:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_9);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_10:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_10);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_11:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_11);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_12:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_12);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_13:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_13);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_14:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_14);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_MODULATION_15:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_modulation_15);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_PINGPONG:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_pingpong);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_LFO_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_lfo_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_2_SENDS:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_2_sends);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_0:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_0);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_1:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_1);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_2:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_2);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_3:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_3);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_4:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_4);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_5:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_5);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_6:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_6);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_7:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_7);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_8:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_8);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_9:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_9);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_10:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_10);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_11:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_11);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_12:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_12);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_13:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_13);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_14:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_14);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_MODULATION_15:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_modulation_15);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_PINGPONG:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_pingpong);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_LFO_FREQUENCY:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_lfo_frequency);
+      
+      g_rec_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_SYNTH_0_SEQ_3_SENDS:
+    {
+      g_rec_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, fx_abyss_synth_audio->synth_0_seq_3_sends);
       
       g_rec_mutex_unlock(recall_mutex);	
     }
@@ -17695,6 +18587,60 @@ ags_fx_abyss_synth_audio_get_synth_0_seq_0_lfo_frequency_plugin_port()
 }
 
 static AgsPluginPort*
+ags_fx_abyss_synth_audio_get_synth_0_seq_0_sends_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    static gint64 sends_default[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    memset(&(sends_default[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_ABYSS_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_POINTER);
+
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
 ags_fx_abyss_synth_audio_get_synth_0_seq_1_modulation_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
@@ -17805,6 +18751,60 @@ ags_fx_abyss_synth_audio_get_synth_0_seq_1_lfo_frequency_plugin_port()
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
 		      16.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_abyss_synth_audio_get_synth_0_seq_1_sends_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    static gint64 sends_default[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    memset(&(sends_default[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_ABYSS_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_POINTER);
+
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
   }
 
   g_mutex_unlock(&mutex);
@@ -17931,6 +18931,60 @@ ags_fx_abyss_synth_audio_get_synth_0_seq_2_lfo_frequency_plugin_port()
 }
 
 static AgsPluginPort*
+ags_fx_abyss_synth_audio_get_synth_0_seq_2_sends_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    static gint64 sends_default[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    memset(&(sends_default[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_ABYSS_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_POINTER);
+
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
 ags_fx_abyss_synth_audio_get_synth_0_seq_3_modulation_plugin_port()
 {
   static AgsPluginPort *plugin_port = NULL;
@@ -18041,6 +19095,60 @@ ags_fx_abyss_synth_audio_get_synth_0_seq_3_lfo_frequency_plugin_port()
 		      0.01);
     g_value_set_float(plugin_port->upper_value,
 		      16.0);
+  }
+
+  g_mutex_unlock(&mutex);
+    
+  return(plugin_port);
+}
+
+static AgsPluginPort*
+ags_fx_abyss_synth_audio_get_synth_0_seq_3_sends_plugin_port()
+{
+  static AgsPluginPort *plugin_port = NULL;
+
+  static GMutex mutex;
+
+  g_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    static gint64 sends_default[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_lower[AGS_ABYSS_SYNTH_SENDS_COUNT];
+    static gint64 sends_upper[AGS_ABYSS_SYNTH_SENDS_COUNT];
+
+    guint i;
+    
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL);
+
+    plugin_port->port_index = 0;
+
+    memset(&(sends_default[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    memset(&(sends_lower[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+    // memset(&(sends_upper[0]), 0, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+
+    for(i = 0; i < AGS_ABYSS_SYNTH_SENDS_COUNT; i++){
+      sends_upper[i] = (1L << i);
+    }
+    
+
+    /* range */
+    g_value_init(plugin_port->default_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->lower_value,
+		 G_TYPE_POINTER);
+    g_value_init(plugin_port->upper_value,
+		 G_TYPE_POINTER);
+
+    g_value_set_pointer(plugin_port->default_value,
+			&(sends_default[0]));
+    g_value_set_pointer(plugin_port->lower_value,
+			&(sends_lower[0]));
+    g_value_set_pointer(plugin_port->upper_value,
+			&(sends_upper[0]));
   }
 
   g_mutex_unlock(&mutex);

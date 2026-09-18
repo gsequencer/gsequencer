@@ -4204,6 +4204,54 @@ ags_abyss_synth_util_set_seq_0_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util
 }
 
 /**
+ * ags_abyss_synth_util_get_seq_0_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_0_sends_count: (out): the return location of seq-0 sends count
+ * 
+ * Get seq-0 sends of @abyss_synth_util.
+ * 
+ * Returns: (transfer none): the seq-0 sends
+ * 
+ * Since: 9.4.0
+ */
+gint64*
+ags_abyss_synth_util_get_seq_0_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     guint *seq_0_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return(NULL);
+  }
+
+  if(seq_0_sends_count != NULL){
+    seq_0_sends_count[0] = AGS_ABYSS_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(abyss_synth_util->seq_0_sends[0]));
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_0_synth_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_0_sends: the seq-0 sends
+ * @seq_0_sends_count: the seq-0 sends count
+ *
+ * Set @seq_0_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_0_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     gint64 *seq_0_sends,
+				     guint seq_0_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  memcpy(&(abyss_synth_util->seq_0_sends[0]), seq_0_sends, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+}
+
+/**
  * ags_abyss_synth_util_get_seq_1_modulation:
  * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
  * @position: the sequencer position of modulation
@@ -4329,6 +4377,54 @@ ags_abyss_synth_util_set_seq_1_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util
   }
 
   abyss_synth_util->seq_1_lfo_frequency = seq_1_lfo_frequency;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_1_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_1_sends_count: (out): the return location of seq-1 sends count
+ * 
+ * Get seq-1 sends of @abyss_synth_util.
+ * 
+ * Returns: (transfer none): the seq-1 sends
+ * 
+ * Since: 9.4.0
+ */
+gint64*
+ags_abyss_synth_util_get_seq_1_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     guint *seq_1_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return(NULL);
+  }
+
+  if(seq_1_sends_count != NULL){
+    seq_1_sends_count[0] = AGS_ABYSS_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(abyss_synth_util->seq_1_sends[0]));
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_1_synth_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_1_sends: the seq-1 sends
+ * @seq_1_sends_count: the seq-1 sends count
+ *
+ * Set @seq_1_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_1_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     gint64 *seq_1_sends,
+				     guint seq_1_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  memcpy(&(abyss_synth_util->seq_1_sends[0]), seq_1_sends, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
 }
 
 /**
@@ -4460,6 +4556,54 @@ ags_abyss_synth_util_set_seq_2_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util
 }
 
 /**
+ * ags_abyss_synth_util_get_seq_2_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_2_sends_count: (out): the return location of seq-2 sends count
+ * 
+ * Get seq-2 sends of @abyss_synth_util.
+ * 
+ * Returns: (transfer none): the seq-2 sends
+ * 
+ * Since: 9.4.0
+ */
+gint64*
+ags_abyss_synth_util_get_seq_2_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     guint *seq_2_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return(NULL);
+  }
+
+  if(seq_2_sends_count != NULL){
+    seq_2_sends_count[0] = AGS_ABYSS_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(abyss_synth_util->seq_2_sends[0]));
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_2_synth_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_2_sends: the seq-2 sends
+ * @seq_2_sends_count: the seq-2 sends count
+ *
+ * Set @seq_2_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_2_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     gint64 *seq_2_sends,
+				     guint seq_2_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  memcpy(&(abyss_synth_util->seq_2_sends[0]), seq_2_sends, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
+}
+
+/**
  * ags_abyss_synth_util_get_seq_3_modulation:
  * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
  * @position: the sequencer position of modulation
@@ -4585,6 +4729,54 @@ ags_abyss_synth_util_set_seq_3_lfo_frequency(AgsAbyssSynthUtil *abyss_synth_util
   }
 
   abyss_synth_util->seq_3_lfo_frequency = seq_3_lfo_frequency;
+}
+
+/**
+ * ags_abyss_synth_util_get_seq_3_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_3_sends_count: (out): the return location of seq-3 sends count
+ * 
+ * Get seq-3 sends of @abyss_synth_util.
+ * 
+ * Returns: (transfer none): the seq-3 sends
+ * 
+ * Since: 9.4.0
+ */
+gint64*
+ags_abyss_synth_util_get_seq_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     guint *seq_3_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return(NULL);
+  }
+
+  if(seq_3_sends_count != NULL){
+    seq_3_sends_count[0] = AGS_ABYSS_SYNTH_SENDS_COUNT;
+  }
+
+  return(&(abyss_synth_util->seq_3_sends[0]));
+}
+
+/**
+ * ags_abyss_synth_util_set_seq_3_synth_sends:
+ * @abyss_synth_util: the #AgsAbyssSynthUtil-struct
+ * @seq_3_sends: the seq-3 sends
+ * @seq_3_sends_count: the seq-3 sends count
+ *
+ * Set @seq_3_sends of @abyss_synth_util.
+ *
+ * Since: 9.4.0
+ */
+void
+ags_abyss_synth_util_set_seq_3_sends(AgsAbyssSynthUtil *abyss_synth_util,
+				     gint64 *seq_3_sends,
+				     guint seq_3_sends_count)
+{
+  if(abyss_synth_util == NULL){
+    return;
+  }
+
+  memcpy(&(abyss_synth_util->seq_3_sends[0]), seq_3_sends, AGS_ABYSS_SYNTH_SENDS_COUNT * sizeof(gint64));
 }
 
 /**

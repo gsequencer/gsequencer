@@ -201,6 +201,8 @@ struct _AgsFxAbyssSynthAudio
   AgsPort *synth_0_seq_0_pingpong;
   AgsPort *synth_0_seq_0_lfo_frequency;  
 
+  AgsPort *synth_0_seq_0_sends;
+
   AgsPort *synth_0_seq_1_modulation_0;
   AgsPort *synth_0_seq_1_modulation_1;
   AgsPort *synth_0_seq_1_modulation_2;
@@ -220,6 +222,8 @@ struct _AgsFxAbyssSynthAudio
 
   AgsPort *synth_0_seq_1_pingpong;
   AgsPort *synth_0_seq_1_lfo_frequency;
+
+  AgsPort *synth_0_seq_1_sends;
   
   AgsPort *synth_0_seq_2_modulation_0;
   AgsPort *synth_0_seq_2_modulation_1;
@@ -240,6 +244,8 @@ struct _AgsFxAbyssSynthAudio
 
   AgsPort *synth_0_seq_2_pingpong;
   AgsPort *synth_0_seq_2_lfo_frequency;
+
+  AgsPort *synth_0_seq_2_sends;
   
   AgsPort *synth_0_seq_3_modulation_0;
   AgsPort *synth_0_seq_3_modulation_1;
@@ -261,6 +267,8 @@ struct _AgsFxAbyssSynthAudio
   AgsPort *synth_0_seq_3_pingpong;
   AgsPort *synth_0_seq_3_lfo_frequency;
   
+  AgsPort *synth_0_seq_3_sends;
+
   AgsPort *synth_0_pink_noise_0_frequency;
   AgsPort *synth_0_pink_noise_0_gain;  
 
