@@ -3709,7 +3709,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							 "port-value-length", 1,
 							 NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_0_key->port_value.ags_port_float = (gfloat) 2.0;
+  fx_abyss_synth_audio->synth_0_osc_0_key->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_0_key,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_0_key_plugin_port(),
@@ -3841,7 +3841,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							 "port-value-length", 1,
 							 NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_1_key->port_value.ags_port_float = (gfloat) 2.0;
+  fx_abyss_synth_audio->synth_0_osc_1_key->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_1_key,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_1_key_plugin_port(),
@@ -3973,7 +3973,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							 "port-value-length", 1,
 							 NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_2_key->port_value.ags_port_float = (gfloat) 2.0;
+  fx_abyss_synth_audio->synth_0_osc_2_key->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_2_key,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_2_key_plugin_port(),
@@ -4105,7 +4105,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							 "port-value-length", 1,
 							 NULL);
   
-  fx_abyss_synth_audio->synth_0_osc_3_key->port_value.ags_port_float = (gfloat) 2.0;
+  fx_abyss_synth_audio->synth_0_osc_3_key->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_osc_3_key,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_osc_3_key_plugin_port(),
@@ -4723,7 +4723,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							       "port-value-length", 1,
 							       NULL);
   
-  fx_abyss_synth_audio->synth_0_env_1_frequency->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_env_1_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_env_1_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_env_1_frequency_plugin_port(),
@@ -5081,7 +5081,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								"port-value-length", 1,
 								NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_0_oscillator->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_0_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_0_oscillator,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_0_oscillator_plugin_port(),
@@ -5103,7 +5103,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							       "port-value-length", 1,
 							       NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_0_frequency->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_0_frequency->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_0_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_0_frequency_plugin_port(),
@@ -5125,7 +5125,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							   "port-value-length", 1,
 							   NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_0_depth->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_0_depth->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_0_depth,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_0_depth_plugin_port(),
@@ -5147,7 +5147,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_0_tuning->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_0_tuning->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_0_tuning,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_0_tuning_plugin_port(),
@@ -5193,7 +5193,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								"port-value-length", 1,
 								NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_1_oscillator->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_1_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_1_oscillator,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_1_oscillator_plugin_port(),
@@ -5215,7 +5215,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							       "port-value-length", 1,
 							       NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_1_frequency->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_1_frequency->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_1_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_1_frequency_plugin_port(),
@@ -5237,7 +5237,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							   "port-value-length", 1,
 							   NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_1_depth->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_1_depth->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_1_depth,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_1_depth_plugin_port(),
@@ -5259,7 +5259,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_1_tuning->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_1_tuning->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_1_tuning,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_1_tuning_plugin_port(),
@@ -5305,7 +5305,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								"port-value-length", 1,
 								NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_2_oscillator->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_2_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_2_oscillator,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_2_oscillator_plugin_port(),
@@ -5327,7 +5327,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							       "port-value-length", 1,
 							       NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_2_frequency->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_2_frequency->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_2_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_2_frequency_plugin_port(),
@@ -5349,7 +5349,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							   "port-value-length", 1,
 							   NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_2_depth->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_2_depth->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_2_depth,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_2_depth_plugin_port(),
@@ -5371,7 +5371,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_2_tuning->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_2_tuning->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_2_tuning,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_2_tuning_plugin_port(),
@@ -5417,7 +5417,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								"port-value-length", 1,
 								NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_3_oscillator->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_3_oscillator->port_value.ags_port_float = (gfloat) AGS_SYNTH_OSCILLATOR_SIN;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_3_oscillator,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_3_oscillator_plugin_port(),
@@ -5439,7 +5439,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							       "port-value-length", 1,
 							       NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_3_frequency->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_3_frequency->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_3_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_3_frequency_plugin_port(),
@@ -5461,7 +5461,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							   "port-value-length", 1,
 							   NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_3_depth->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_3_depth->port_value.ags_port_float = (gfloat) AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_DEPTH;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_3_depth,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_3_depth_plugin_port(),
@@ -5483,7 +5483,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_abyss_synth_audio->synth_0_lfo_3_tuning->port_value.ags_port_float = (gfloat) 0.333;
+  fx_abyss_synth_audio->synth_0_lfo_3_tuning->port_value.ags_port_float = (gfloat) 0.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_lfo_3_tuning,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_lfo_3_tuning_plugin_port(),
@@ -5903,7 +5903,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								   "port-value-length", 1,
 								   NULL);
   
-  fx_abyss_synth_audio->synth_0_seq_0_lfo_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_seq_0_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_seq_0_lfo_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_0_lfo_frequency_plugin_port(),
@@ -6323,7 +6323,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								   "port-value-length", 1,
 								   NULL);
   
-  fx_abyss_synth_audio->synth_0_seq_1_lfo_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_seq_1_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_seq_1_lfo_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_1_lfo_frequency_plugin_port(),
@@ -6743,7 +6743,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								   "port-value-length", 1,
 								   NULL);
   
-  fx_abyss_synth_audio->synth_0_seq_2_lfo_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_seq_2_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_seq_2_lfo_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_2_lfo_frequency_plugin_port(),
@@ -7163,7 +7163,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 								   "port-value-length", 1,
 								   NULL);
   
-  fx_abyss_synth_audio->synth_0_seq_3_lfo_frequency->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_seq_3_lfo_frequency->port_value.ags_port_float = (gfloat) 6.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_seq_3_lfo_frequency,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_seq_3_lfo_frequency_plugin_port(),
@@ -7565,7 +7565,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							       "port-value-length", 1,
 							       NULL);
   
-  fx_abyss_synth_audio->amplifier_0_filter_gain->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->amplifier_0_filter_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_abyss_synth_audio->amplifier_0_filter_gain,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_amplifier_filter_gain_plugin_port(),
@@ -16554,7 +16554,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_0_attack_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16593,7 +16593,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_0_decay_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16632,7 +16632,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_0_sustain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16671,7 +16671,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_0_release_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16710,7 +16710,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_0_gain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16749,7 +16749,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_0_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      6.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16841,7 +16841,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_1_attack_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16880,7 +16880,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_1_decay_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16919,7 +16919,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_1_sustain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16958,7 +16958,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_1_release_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -16997,7 +16997,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_1_gain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17036,7 +17036,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_1_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      6.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17129,7 +17129,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_2_attack_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17168,7 +17168,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_2_decay_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17207,7 +17207,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_2_sustain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17246,7 +17246,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_2_release_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17285,7 +17285,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_2_gain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17324,7 +17324,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_2_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      6.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17416,7 +17416,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_3_attack_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17455,7 +17455,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_3_decay_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17494,7 +17494,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_3_sustain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17533,7 +17533,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_3_release_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17572,7 +17572,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_3_gain_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      1.0);
+		      0.333);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,
@@ -17611,7 +17611,7 @@ ags_fx_abyss_synth_audio_get_synth_0_env_3_frequency_plugin_port()
 		 G_TYPE_FLOAT);
 
     g_value_set_float(plugin_port->default_value,
-		      AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
+		      6.0);
     g_value_set_float(plugin_port->lower_value,
 		      0.0);
     g_value_set_float(plugin_port->upper_value,

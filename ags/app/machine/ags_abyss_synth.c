@@ -429,7 +429,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_0_attack,
 		      12);
   
@@ -460,7 +460,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_0_decay,
 		      12);
   
@@ -491,7 +491,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_0_sustain,
 		      12);
   
@@ -522,7 +522,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_0_release,
 		      12);
   
@@ -553,7 +553,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_0_gain,
 		      12);
   
@@ -631,7 +631,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_1_attack,
 		      12);
   
@@ -662,7 +662,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_1_decay,
 		      12);
   
@@ -693,7 +693,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_1_sustain,
 		      12);
   
@@ -724,7 +724,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_1_release,
 		      12);
   
@@ -755,7 +755,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_1_gain,
 		      12);
   
@@ -833,7 +833,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_2_attack,
 		      12);
   
@@ -864,7 +864,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_2_decay,
 		      12);
   
@@ -895,7 +895,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_2_sustain,
 		      12);
   
@@ -926,7 +926,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_2_release,
 		      12);
   
@@ -957,7 +957,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_2_gain,
 		      12);
   
@@ -1035,7 +1035,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_3_attack,
 		      12);
   
@@ -1066,7 +1066,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_3_decay,
 		      12);
   
@@ -1097,7 +1097,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_3_sustain,
 		      12);
   
@@ -1128,7 +1128,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_3_release,
 		      12);
   
@@ -1159,7 +1159,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   1.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->env_3_gain,
 		      12);
   
@@ -1264,7 +1264,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   6.0);
+			   AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
   ags_dial_set_radius(abyss_synth->lfo_0_frequency,
 		      12);
   
@@ -1392,7 +1392,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   6.0);
+			   AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
   ags_dial_set_radius(abyss_synth->lfo_1_frequency,
 		      12);
   
@@ -1520,7 +1520,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   6.0);
+			   AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
   ags_dial_set_radius(abyss_synth->lfo_2_frequency,
 		      12);
   
@@ -1648,7 +1648,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   6.0);
+			   AGS_ABYSS_SYNTH_UTIL_DEFAULT_LFO_FREQUENCY);
   ags_dial_set_radius(abyss_synth->lfo_3_frequency,
 		      12);
   
@@ -2169,7 +2169,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 										      16.0,
 										      0.01);
   gtk_spin_button_set_value(abyss_synth->seq_0_lfo_frequency,
-			    8.0);  
+			    6.0);  
   gtk_grid_attach(seq_0_grid,
 		  (GtkWidget *) abyss_synth->seq_0_lfo_frequency,
 		  6, 1,
@@ -2617,7 +2617,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 										      16.0,
 										      0.01);
   gtk_spin_button_set_value(abyss_synth->seq_1_lfo_frequency,
-			    8.0);  
+			    6.0);  
   gtk_grid_attach(seq_1_grid,
 		  (GtkWidget *) abyss_synth->seq_1_lfo_frequency,
 		  6, 1,
@@ -3065,7 +3065,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 										      16.0,
 										      0.01);
   gtk_spin_button_set_value(abyss_synth->seq_2_lfo_frequency,
-			    8.0);  
+			    6.0);  
   gtk_grid_attach(seq_2_grid,
 		  (GtkWidget *) abyss_synth->seq_2_lfo_frequency,
 		  6, 1,
@@ -3513,7 +3513,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 										      16.0,
 										      0.01);
   gtk_spin_button_set_value(abyss_synth->seq_3_lfo_frequency,
-			    8.0);  
+			    6.0);  
   gtk_grid_attach(seq_3_grid,
 		  (GtkWidget *) abyss_synth->seq_3_lfo_frequency,
 		  6, 1,
@@ -4870,7 +4870,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   0.333);
   ags_dial_set_radius(abyss_synth->volume,
 		      12);
 
@@ -4917,7 +4917,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   2000.0);
   ags_dial_set_radius(abyss_synth->low_pass_0_cut_off_frequency,
 		      12);
 
@@ -4948,7 +4948,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
   ags_dial_set_radius(abyss_synth->low_pass_0_filter_gain,
 		      12);
 
@@ -5026,7 +5026,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   2000.0);
   ags_dial_set_radius(abyss_synth->low_pass_1_cut_off_frequency,
 		      12);
 
@@ -5057,7 +5057,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
   ags_dial_set_radius(abyss_synth->low_pass_1_filter_gain,
 		      12);
 
@@ -5234,7 +5234,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 			      16, 100);
 
   gtk_range_set_value((GtkRange *) abyss_synth->amplifier_0_filter_gain,
-		      0.0);
+		      1.0);
   gtk_range_set_inverted((GtkRange *) abyss_synth->amplifier_0_filter_gain,
 			 TRUE);
 
