@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,6 +111,12 @@ struct _AgsModulationMatrixClass
 };
 
 GType ags_modulation_matrix_get_type(void);
+
+void ags_modulation_matrix_set_dim(AgsModulationMatrix *modulation_matrix,
+				   gint n_cols, gint n_rows);
+
+void ags_modulation_matrix_set_label(AgsModulationMatrix *modulation_matrix,
+				     gchar **label_x, gchar **label_y);
 
 void ags_modulation_matrix_set_enabled(AgsModulationMatrix *modulation_matrix,
 				       gint x, gint y,

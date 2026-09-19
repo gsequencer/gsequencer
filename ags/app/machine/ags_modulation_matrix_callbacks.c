@@ -50,9 +50,9 @@ ags_modulation_matrix_gesture_click_pressed_callback(GtkGestureClick *event_cont
   audio = machine->audio;
 
   if(x >= (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH &&
-     x < (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * modulation_matrix->cell_width) &&
+     x < (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (modulation_matrix->n_cols * modulation_matrix->cell_width) &&
      y >= 2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH &&
-     y < 2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * modulation_matrix->cell_height)){
+     y < 2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (modulation_matrix->n_rows * modulation_matrix->cell_height)){
     modulation_matrix->flags |= AGS_MODULATION_MATRIX_CURSOR_ON;
     
     modulation_matrix->cursor_x = (guint) floor((x - (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH) / (double) modulation_matrix->cell_width);
@@ -74,7 +74,7 @@ ags_modulation_matrix_gesture_click_released_callback(GtkGestureClick *event_con
   cursor_x = modulation_matrix->cursor_x;
   cursor_y = modulation_matrix->cursor_y;
 
-  //  g_message("cursor %d | %d", cursor_x, cursor_y);
+  g_message("cursor %d | %d", cursor_x, cursor_y);
 
   if((AGS_MODULATION_MATRIX_CURSOR_ON & (modulation_matrix->flags)) != 0){
     modulation_matrix->flags &= (~AGS_MODULATION_MATRIX_CURSOR_ON);

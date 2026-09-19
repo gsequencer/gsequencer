@@ -141,6 +141,9 @@ void ags_gsequencer_add_raven_synth_callback(GAction *action, GVariant *paramete
 void ags_gsequencer_add_modular_synth_callback(GAction *action, GVariant *parameter,
 					       AgsGSequencerApplication *gsequencer_app);
 
+void ags_gsequencer_add_abyss_synth_callback(GAction *action, GVariant *parameter,
+					     AgsGSequencerApplication *gsequencer_app);
+
 void ags_gsequencer_add_ffplayer_callback(GAction *action, GVariant *parameter,
 					  AgsGSequencerApplication *gsequencer_app);
 

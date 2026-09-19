@@ -565,7 +565,7 @@ ags_synth_update(AgsSynth *synth)
     start_input_line = ags_pad_get_line(AGS_PAD(input_pad->data));
     oscillator = AGS_SYNTH_INPUT_LINE(start_input_line->data)->oscillator;
 
-    current_frame_count = gtk_spin_button_get_value(oscillator->attack) + gtk_spin_button_get_value(oscillator->frame_count);
+    current_frame_count = gtk_spin_button_get_value_as_int(oscillator->attack) + gtk_spin_button_get_value_as_int(oscillator->frame_count);
     
     if(requested_frame_count < current_frame_count){
       requested_frame_count = current_frame_count;
