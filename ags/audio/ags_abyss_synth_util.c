@@ -46773,7 +46773,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						ring_0_buffer, 1, 0,
 						osc_0_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
     
     /* ring from osc 0-1 */
     for(i = 0; i < buffer_length;){
@@ -47081,7 +47081,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						source, source_stride, 0,
 						ring_0_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16);    
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);    
   }else{
     source = abyss_synth_util->source;
 
@@ -47091,12 +47091,12 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						source, source_stride, 0,
 						osc_0_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
     
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						source, source_stride, 0,
 						osc_1_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
   }
 
   source = abyss_synth_util->source;
@@ -47433,7 +47433,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						ring_1_buffer, 1, 0,
 						osc_2_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
     
     /* ring from osc 2-3 */
     for(i = 0; i < buffer_length;){
@@ -47741,7 +47741,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						source, source_stride, 0,
 						ring_1_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16);
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);
   }else{
     source = abyss_synth_util->source;
 
@@ -47751,12 +47751,12 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						source, source_stride, 0,
 						osc_2_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
     
     ags_audio_buffer_util_copy_buffer_to_buffer(NULL,
 						source, source_stride, 0,
 						osc_3_buffer, 1, 0,
-						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
+						buffer_length, AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
   }
   
   /* pitch tuning */
