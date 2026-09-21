@@ -6688,19 +6688,6 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 
   for(; i < i_stop;){
     /* OSC-0 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -7233,7 +7220,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -7246,7 +7233,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -7259,7 +7246,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -7272,7 +7259,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -7285,7 +7272,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT8;
@@ -7302,19 +7289,6 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -7847,7 +7821,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -7860,7 +7834,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -7873,7 +7847,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -7886,7 +7860,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -7899,7 +7873,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT8;
@@ -7916,19 +7890,6 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -8461,7 +8422,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -8474,7 +8435,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -8487,7 +8448,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -8500,7 +8461,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -8513,7 +8474,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT8;    
@@ -8530,19 +8491,6 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -9075,7 +9023,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -9088,7 +9036,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -9101,7 +9049,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -9114,7 +9062,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -9127,7 +9075,7 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT8;
@@ -13853,19 +13801,6 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 
   for(; i < i_stop;){
     /* OSC-0 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -14398,7 +14333,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -14411,7 +14346,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -14424,7 +14359,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -14437,7 +14372,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -14450,7 +14385,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT16;
@@ -14467,19 +14402,6 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -15012,7 +14934,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -15025,7 +14947,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -15038,7 +14960,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -15051,7 +14973,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -15064,7 +14986,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT16;
@@ -15081,19 +15003,6 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -15626,7 +15535,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -15639,7 +15548,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -15652,7 +15561,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -15665,7 +15574,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -15678,7 +15587,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT16;    
@@ -15695,19 +15604,6 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -16240,7 +16136,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -16253,7 +16149,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -16266,7 +16162,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -16279,7 +16175,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -16292,7 +16188,7 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT16;
@@ -21018,19 +20914,6 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 
   for(; i < i_stop;){
     /* OSC-0 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -21563,7 +21446,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -21576,7 +21459,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -21589,7 +21472,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -21602,7 +21485,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -21615,7 +21498,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) 0x7fffff;
@@ -21632,19 +21515,6 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -22177,7 +22047,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -22190,7 +22060,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -22203,7 +22073,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -22216,7 +22086,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -22229,7 +22099,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) 0x7fffff;
@@ -22246,19 +22116,6 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -22791,7 +22648,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -22804,7 +22661,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -22817,7 +22674,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -22830,7 +22687,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -22843,7 +22700,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) 0x7fffff;    
@@ -22860,19 +22717,6 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -23405,7 +23249,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -23418,7 +23262,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -23431,7 +23275,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -23444,7 +23288,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -23457,7 +23301,7 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) 0x7fffff;
@@ -28183,19 +28027,6 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 
   for(; i < i_stop;){
     /* OSC-0 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -28728,7 +28559,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -28741,7 +28572,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -28754,7 +28585,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -28767,7 +28598,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -28780,7 +28611,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT32;
@@ -28797,19 +28628,6 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -29342,7 +29160,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -29355,7 +29173,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -29368,7 +29186,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -29381,7 +29199,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -29394,7 +29212,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT32;
@@ -29411,19 +29229,6 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -29956,7 +29761,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -29969,7 +29774,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -29982,7 +29787,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -29995,7 +29800,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -30008,7 +29813,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT32;    
@@ -30025,19 +29830,6 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -30570,7 +30362,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -30583,7 +30375,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -30596,7 +30388,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -30609,7 +30401,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -30622,7 +30414,7 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT32;
@@ -35348,19 +35140,6 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 
   for(; i < i_stop;){
     /* OSC-0 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -35893,7 +35672,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -35906,7 +35685,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -35919,7 +35698,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -35932,7 +35711,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -35945,7 +35724,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT64;
@@ -35962,19 +35741,6 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -36507,7 +36273,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -36520,7 +36286,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -36533,7 +36299,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -36546,7 +36312,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -36559,7 +36325,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT64;
@@ -36576,19 +36342,6 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -37121,7 +36874,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -37134,7 +36887,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -37147,7 +36900,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -37160,7 +36913,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -37173,7 +36926,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     v_buffer *= (gdouble) G_MAXINT64;    
@@ -37190,19 +36943,6 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -37735,7 +37475,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -37748,7 +37488,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -37761,7 +37501,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -37774,7 +37514,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -37787,7 +37527,7 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     v_buffer *= (gdouble) G_MAXINT64;
@@ -42513,19 +42253,6 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 
   for(; i < i_stop;){
     /* OSC-0 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -43058,7 +42785,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -43071,7 +42798,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -43084,7 +42811,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -43097,7 +42824,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -43110,7 +42837,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     *(osc_0_buffer) = (gfloat) v_buffer[0];
@@ -43125,19 +42852,6 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -43670,7 +43384,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -43683,7 +43397,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -43696,7 +43410,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -43709,7 +43423,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -43722,7 +43436,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     *(osc_1_buffer) = (gfloat) v_buffer[0];
@@ -43737,19 +43451,6 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -44282,7 +43983,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -44295,7 +43996,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -44308,7 +44009,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -44321,7 +44022,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -44334,7 +44035,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
 
     *(osc_2_buffer) = (gfloat) v_buffer[0];
@@ -44349,19 +44050,6 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -44894,7 +44582,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -44907,7 +44595,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -44920,7 +44608,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -44933,7 +44621,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -44946,7 +44634,7 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     *(osc_3_buffer) = (gfloat) v_buffer[0];
@@ -49670,19 +49358,6 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 
   for(; i < i_stop;){
     /* OSC-0 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -50215,7 +49890,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -50228,7 +49903,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -50241,7 +49916,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -50254,7 +49929,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_0_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -50267,7 +49942,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     *(osc_0_buffer) = (gdouble) v_buffer[0];
@@ -50282,19 +49957,6 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -50827,7 +50489,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -50840,7 +50502,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -50853,7 +50515,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -50866,7 +50528,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_1_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -50879,7 +50541,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     *(osc_1_buffer) = (gdouble) v_buffer[0];
@@ -50894,19 +50556,6 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -51439,7 +51088,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -51452,7 +51101,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -51465,7 +51114,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -51478,7 +51127,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_2_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -51491,7 +51140,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     *(osc_2_buffer) = (gdouble) v_buffer[0];
@@ -51506,19 +51155,6 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
-    tmp_source = source;
-    
-    v_buffer = (ags_v8double) {
-      (gdouble) *(tmp_source),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride),
-      (gdouble) *(tmp_source += source_stride)
-    };
-
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -52051,7 +51687,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(gdouble) (sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate))
       };
     
-      v_buffer += (v_sine * v_osc_volume);
+      v_buffer = (v_sine * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SAWTOOTH){
       v_sawtooth = (ags_v8double) {
 	((fmod(((gdouble) (offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))), (samplerate / v_osc_frequency[0])) * 2.0 * v_osc_frequency[0] / samplerate) - 1.0),
@@ -52064,7 +51700,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((fmod(((gdouble) (offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))), (samplerate / v_osc_frequency[7])) * 2.0 * v_osc_frequency[7] / samplerate) - 1.0)
       };
     
-      v_buffer += (v_sawtooth * v_osc_volume);
+      v_buffer = (v_sawtooth * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_TRIANGLE){
       v_triangle = (ags_v8double) {
 	(((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate * 2.0) - (((double) ((((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * v_osc_frequency[0] / samplerate)) / 2.0) * 2.0) - 1.0)),
@@ -52077,7 +51713,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate * 2.0) - (((double) ((((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * v_osc_frequency[7] / samplerate)) / 2.0) * 2.0) - 1.0)),
       };
     
-      v_buffer += (v_triangle * v_osc_volume);
+      v_buffer = (v_triangle * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_SQUARE){
       v_square = (ags_v8double) {
 	((sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
@@ -52090,7 +51726,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	((sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= 0.0) ? 1.0: -1.0),
       };
     
-      v_buffer += (v_square * v_osc_volume);
+      v_buffer = (v_square * v_osc_volume);
     }else if(abyss_synth_util->osc_3_oscillator == AGS_SYNTH_OSCILLATOR_IMPULSE){
       v_impulse = (ags_v8double) {
 	(sin((gdouble) ((offset + i) + (v_osc_phase[0] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[0]))) * 2.0 * M_PI * v_osc_frequency[0] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0),
@@ -52103,7 +51739,7 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 	(sin((gdouble) ((offset + i + 7) + (v_osc_phase[7] * ((2.0 * M_PI)) / (samplerate / v_osc_frequency[7]))) * 2.0 * M_PI * v_osc_frequency[7] / (gdouble) samplerate) >= sin(2.0 * M_PI * 3.0 / 5.0) ? 1.0: -1.0)
       };
     
-      v_buffer += (v_impulse * v_osc_volume);
+      v_buffer = (v_impulse * v_osc_volume);
     }
     
     *(osc_3_buffer) = (gdouble) v_buffer[0];
