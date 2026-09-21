@@ -4237,7 +4237,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_abyss_synth_audio->synth_0_ring_0_drive->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_ring_0_drive->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_ring_0_drive,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_ring_0_drive_plugin_port(),
@@ -4281,7 +4281,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							   "port-value-length", 1,
 							   NULL);
   
-  fx_abyss_synth_audio->synth_0_ring_0_gain->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_ring_0_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_ring_0_gain,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_ring_0_gain_plugin_port(),
@@ -4347,7 +4347,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							    "port-value-length", 1,
 							    NULL);
   
-  fx_abyss_synth_audio->synth_0_ring_1_drive->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_ring_1_drive->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_ring_1_drive,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_ring_1_drive_plugin_port(),
@@ -4391,7 +4391,7 @@ ags_fx_abyss_synth_audio_init(AgsFxAbyssSynthAudio *fx_abyss_synth_audio)
 							   "port-value-length", 1,
 							   NULL);
   
-  fx_abyss_synth_audio->synth_0_ring_1_gain->port_value.ags_port_float = (gfloat) 0.0;
+  fx_abyss_synth_audio->synth_0_ring_1_gain->port_value.ags_port_float = (gfloat) 1.0;
 
   g_object_set(fx_abyss_synth_audio->synth_0_ring_1_gain,
 	       "plugin-port", ags_fx_abyss_synth_audio_get_synth_0_ring_1_gain_plugin_port(),
