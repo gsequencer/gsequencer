@@ -4585,7 +4585,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
   ags_dial_set_radius(abyss_synth->ring_0_drive,
 		      12);
 
@@ -4647,7 +4647,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
   ags_dial_set_radius(abyss_synth->ring_0_gain,
 		      12);
 
@@ -4730,7 +4730,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
   ags_dial_set_radius(abyss_synth->ring_1_drive,
 		      12);
 
@@ -4792,7 +4792,7 @@ ags_abyss_synth_init(AgsAbyssSynth *abyss_synth)
 				    0.01);
 
   gtk_adjustment_set_value(adjustment,
-			   0.0);
+			   1.0);
   ags_dial_set_radius(abyss_synth->ring_1_gain,
 		      12);
 
