@@ -1,3 +1,8 @@
+ags (9.4.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_abyss_synth_util.c missing initialization of LFO buffer
+
 ags (9.4.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
