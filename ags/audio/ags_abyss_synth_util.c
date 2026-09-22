@@ -6132,6 +6132,10 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -6200,6 +6204,10 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -6268,6 +6276,10 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -6336,6 +6348,10 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -6620,6 +6636,14 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -6656,6 +6680,10 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
@@ -6687,9 +6715,9 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
   i_stop = buffer_length - (buffer_length % 8);
 
   for(; i < i_stop;){
+    /* OSC-0 */
     v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
     
-    /* OSC-0 */
     v_osc_frequency = (ags_v8double) {
       osc_0_frequency,
       osc_0_frequency,
@@ -7291,6 +7319,8 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -7892,6 +7922,8 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -8493,6 +8525,8 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -13265,6 +13299,10 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -13333,6 +13371,10 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -13401,6 +13443,10 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -13469,6 +13515,10 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -13753,6 +13803,10 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -13789,6 +13843,10 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
@@ -14424,6 +14482,8 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -15025,6 +15085,8 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -15626,6 +15688,8 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -20398,6 +20462,10 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -20466,6 +20534,10 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -20534,6 +20606,10 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -20602,6 +20678,10 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -20886,6 +20966,10 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -20922,6 +21006,10 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
@@ -21557,6 +21645,8 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -22158,6 +22248,8 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -22759,6 +22851,8 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -27531,6 +27625,10 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -27599,6 +27697,10 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -27667,6 +27769,10 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -27735,6 +27841,10 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -28019,6 +28129,10 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -28055,6 +28169,10 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
@@ -28690,6 +28808,8 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -29291,6 +29411,8 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -29892,6 +30014,8 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -34664,6 +34788,10 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -34732,6 +34860,10 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -34800,6 +34932,10 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -34868,6 +35004,10 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -35152,6 +35292,10 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -35188,6 +35332,10 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
@@ -35823,6 +35971,8 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -36424,6 +36574,8 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -37025,6 +37177,8 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -41797,6 +41951,10 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -41865,6 +42023,10 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -41933,6 +42095,10 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -42001,6 +42167,10 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -42285,6 +42455,10 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -42321,6 +42495,10 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
@@ -42954,6 +43132,8 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -43553,6 +43733,8 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -44152,6 +44334,8 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -48922,6 +49106,10 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -48990,6 +49178,10 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -49058,6 +49250,10 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -49126,6 +49322,10 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -49410,6 +49610,10 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -49446,6 +49650,10 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
@@ -50079,6 +50287,8 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     osc_0_buffer++;
 
     /* OSC-1 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_1_frequency,
       osc_1_frequency,
@@ -50678,6 +50888,8 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     osc_1_buffer++;
 
     /* OSC-2 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_2_frequency,
       osc_2_frequency,
@@ -51277,6 +51489,8 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     osc_2_buffer++;
 
     /* OSC-3 */
+    v_buffer = (ags_v8double) {0, 0, 0, 0, 0, 0, 0, 0, };
+    
     v_osc_frequency = (ags_v8double) {
       osc_3_frequency,
       osc_3_frequency,
@@ -56033,6 +56247,10 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_0_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_0_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
 				  abyss_synth_util->lfo_0_buffer);
 
@@ -56101,6 +56319,10 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_1_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_1_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
 				  abyss_synth_util->lfo_1_buffer);
 
@@ -56169,6 +56391,10 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_2_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_2_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
 				  abyss_synth_util->lfo_2_buffer);
 
@@ -56237,6 +56463,10 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(lfo_3_has_sends){
+    for(i = 0; i < buffer_length; i++){
+      ((gdouble *) abyss_synth_util->lfo_3_buffer)[i] = 1.0;
+    }
+    
     ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
 				  abyss_synth_util->lfo_3_buffer);
 
@@ -56521,6 +56751,10 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_0_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_0_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
 
@@ -56557,6 +56791,10 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
   }
 
   if(noise_1_has_sends){
+    ags_audio_buffer_util_clear_double(NULL,
+				       abyss_synth_util->noise_1_buffer, 1,
+				       buffer_length);
+
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
 
