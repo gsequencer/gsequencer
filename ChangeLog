@@ -1,3 +1,17 @@
+ags (9.4.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_machine_finalize()
+
+ags (9.4.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_abyss_synth_util.c memory-leaks
+	* fixed ags_amplifier_util.c memory-leak
+	* fixed ags_envelope_util.c memory-leak
+	* fixed ags_noise_util.c memory-leak
+	* fixed ags_lfo_synth_util.c memory-leak
+
 ags (9.4.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
