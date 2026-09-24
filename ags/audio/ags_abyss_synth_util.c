@@ -199,6 +199,19 @@ ags_abyss_synth_util_free(AgsAbyssSynthUtil *ptr)
   ags_stream_free(ptr->noise_0_buffer);
   ags_stream_free(ptr->noise_1_buffer);
 
+  ags_envelope_util_free(ptr->env_0_util);
+  ags_envelope_util_free(ptr->env_1_util);
+  ags_envelope_util_free(ptr->env_2_util);
+  ags_envelope_util_free(ptr->env_3_util);
+
+  ags_lfo_synth_util_free(ptr->lfo_0_util);
+  ags_lfo_synth_util_free(ptr->lfo_1_util);
+  ags_lfo_synth_util_free(ptr->lfo_2_util);
+  ags_lfo_synth_util_free(ptr->lfo_3_util);
+
+  ags_noise_util_free(ptr->noise_0_util);
+  ags_noise_util_free(ptr->noise_1_util);
+
   g_free(ptr);
 }
 
