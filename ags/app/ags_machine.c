@@ -1139,6 +1139,8 @@ ags_machine_finalize(GObject *gobject)
 
   machine = (AgsMachine *) gobject;
 
+  audio = machine->audio;
+  
   g_object_disconnect(application_context,
 		      "any_signal::check-message",
 		      G_CALLBACK(ags_machine_check_message_callback),
@@ -1148,17 +1150,17 @@ ags_machine_finalize(GObject *gobject)
   g_free(machine->uid);
 
   /* remove from sound provider */
-  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  if(audio != NULL){
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
-  start_list = g_list_remove(start_list,
-			     machine->audio);
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-			       start_list);
-
-  //  g_object_unref(machine->audio);
-  g_list_foreach(start_list,
-		 (GFunc) g_object_unref,
-		 NULL);
+    g_object_ref(audio);
+    
+    start_list = g_list_remove(start_list,
+			       audio);
+    
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				 start_list);
+  }
   
   g_list_free_full(machine->enabled_automation_port,
 		   (GDestroyNotify) ags_machine_automation_port_free);  
@@ -1187,12 +1189,12 @@ ags_machine_finalize(GObject *gobject)
     g_free(machine->machine_name);
   }
 
-  audio = machine->audio;
-
   /* call parent */
   G_OBJECT_CLASS(ags_machine_parent_class)->finalize(gobject);
 
   if(audio != NULL){
+    g_object_run_dispose(G_OBJECT(audio));
+    
     g_object_unref(G_OBJECT(audio));
   }
 }
