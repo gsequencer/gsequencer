@@ -19,6 +19,7 @@
 
 #include <ags/audio/ags_envelope_util.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_vector_256_manager.h>
 
