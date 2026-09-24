@@ -55,6 +55,7 @@ void ags_functional_machine_add_and_destroy_test_stargazer_synth();
 void ags_functional_machine_add_and_destroy_test_quantum_synth();
 void ags_functional_machine_add_and_destroy_test_raven_synth();
 void ags_functional_machine_add_and_destroy_test_modular_synth();
+void ags_functional_machine_add_and_destroy_test_abyss_synth();
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_machine_add_and_destroy_test_ffplayer();
 void ags_functional_machine_add_and_destroy_test_sf2_synth();
@@ -120,7 +121,8 @@ ags_functional_machine_add_and_destroy_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsStargazerSynth", ags_functional_machine_add_and_destroy_test_stargazer_synth) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsQuantumSynth", ags_functional_machine_add_and_destroy_test_quantum_synth) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsRavenSynth", ags_functional_machine_add_and_destroy_test_raven_synth) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsModularSynth", ags_functional_machine_add_and_destroy_test_modular_synth) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsModularSynth", ags_functional_machine_add_and_destroy_test_modular_synth) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsAbyssSynth", ags_functional_machine_add_and_destroy_test_abyss_synth) == NULL)
 #ifdef AGS_WITH_LIBINSTPATCH
      ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL) ||
@@ -486,6 +488,25 @@ ags_functional_machine_add_and_destroy_test_modular_synth()
 
   ags_functional_test_util_sync();
   AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_MODULAR_SYNTH);
+
+  /* destroy synth */
+  ags_functional_test_util_machine_destroy(0);
+  
+  ags_functional_test_util_sync();
+  ags_functional_test_util_stack_clear();
+}
+
+void
+ags_functional_machine_add_and_destroy_test_abyss_synth()
+{
+  /* add synth */
+  ags_functional_test_util_add_machine(NULL,
+				       "Abyss Synth");
+
+  ags_functional_test_util_idle(AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_DEFAULT_IDLE_TIME);
+
+  ags_functional_test_util_sync();
+  AGS_FUNCTIONAL_TEST_UTIL_ASSERT_STACK_OBJECT_IS_A_TYPE(0, AGS_TYPE_ABYSS_SYNTH);
 
   /* destroy synth */
   ags_functional_test_util_machine_destroy(0);
