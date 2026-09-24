@@ -203,11 +203,11 @@ ags_amplifier_util_free(AgsAmplifierUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
 
-  //  g_free(ptr->destination);
+  ags_stream_free(ptr->destination);
 
-  //  if(ptr->destination != ptr->source){
-  //    g_free(ptr->source);
-  //  }
+  if(ptr->destination != ptr->source){
+    ags_stream_free(ptr->source);
+  }
   
   g_free(ptr);
 }

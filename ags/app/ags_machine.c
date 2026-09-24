@@ -1155,7 +1155,7 @@ ags_machine_finalize(GObject *gobject)
   ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
 			       start_list);
 
-  g_object_unref(machine->audio);
+  //  g_object_unref(machine->audio);
   g_list_foreach(start_list,
 		 (GFunc) g_object_unref,
 		 NULL);

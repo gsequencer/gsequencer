@@ -136,7 +136,13 @@ void
 ags_envelope_util_free(AgsEnvelopeUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
+  
+  ags_stream_free(ptr->destination);
 
+  if(ptr->destination != ptr->source){
+    ags_stream_free(ptr->source);
+  }
+  
   g_free(ptr);
 }
 

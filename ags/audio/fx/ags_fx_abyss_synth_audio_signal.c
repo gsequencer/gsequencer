@@ -3191,6 +3191,9 @@ ags_fx_abyss_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
 
     ags_abyss_synth_util_compute(channel_data->abyss_synth_util_0);
         
+    ags_abyss_synth_util_set_source(channel_data->abyss_synth_util_0,
+				    NULL);
+    
     /* amplifier 0 */
     ags_amplifier_util_set_source(channel_data->amplifier_util_0,
 				  channel_data->synth_buffer_0);
@@ -3217,9 +3220,6 @@ ags_fx_abyss_synth_audio_signal_stream_feed(AgsFxNotationAudioSignal *fx_notatio
       
     ags_amplifier_util_set_destination(channel_data->amplifier_util_0,
 				       NULL);
-
-    ags_abyss_synth_util_set_source(channel_data->abyss_synth_util_0,
-				    NULL);
     
     /* copy synth buffer */
     ags_audio_buffer_util_clear_buffer(&(fx_abyss_synth_audio_signal->audio_buffer_util),

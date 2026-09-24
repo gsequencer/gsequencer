@@ -168,7 +168,37 @@ void
 ags_abyss_synth_util_free(AgsAbyssSynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
- 
+
+  ags_stream_free(ptr->source);
+  
+  ags_stream_free(ptr->osc_0_buffer);
+  ags_stream_free(ptr->osc_1_buffer);
+  ags_stream_free(ptr->osc_2_buffer);
+  ags_stream_free(ptr->osc_3_buffer);
+  
+  ags_stream_free(ptr->ring_0_buffer);
+  ags_stream_free(ptr->ring_1_buffer);
+  
+  ags_stream_free(ptr->pitch_buffer);
+
+  ags_stream_free(ptr->env_0_buffer);
+  ags_stream_free(ptr->env_1_buffer);
+  ags_stream_free(ptr->env_2_buffer);
+  ags_stream_free(ptr->env_3_buffer);
+  
+  ags_stream_free(ptr->lfo_0_buffer);
+  ags_stream_free(ptr->lfo_1_buffer);
+  ags_stream_free(ptr->lfo_2_buffer);
+  ags_stream_free(ptr->lfo_3_buffer);
+  
+  ags_stream_free(ptr->seq_0_buffer);
+  ags_stream_free(ptr->seq_1_buffer);
+  ags_stream_free(ptr->seq_2_buffer);
+  ags_stream_free(ptr->seq_3_buffer);
+  
+  ags_stream_free(ptr->noise_0_buffer);
+  ags_stream_free(ptr->noise_1_buffer);
+
   g_free(ptr);
 }
 
@@ -6120,6 +6150,30 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -6408,6 +6462,18 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -6646,6 +6712,9 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -6666,6 +6735,12 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -6686,6 +6761,9 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -6706,6 +6784,12 @@ ags_abyss_synth_util_compute_s8(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
@@ -13287,6 +13371,30 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -13575,6 +13683,18 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -13809,6 +13929,9 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -13829,6 +13952,12 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -13849,6 +13978,9 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -13869,6 +14001,12 @@ ags_abyss_synth_util_compute_s16(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
@@ -20450,6 +20588,30 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -20738,6 +20900,18 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -20972,6 +21146,9 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -20992,6 +21169,12 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -21012,6 +21195,9 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -21032,6 +21218,12 @@ ags_abyss_synth_util_compute_s24(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
@@ -27613,6 +27805,30 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -27901,6 +28117,18 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -28135,6 +28363,9 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -28155,6 +28386,12 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -28175,6 +28412,9 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -28195,6 +28435,12 @@ ags_abyss_synth_util_compute_s32(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
@@ -34776,6 +35022,30 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -35064,6 +35334,18 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -35298,6 +35580,9 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -35318,6 +35603,12 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -35338,6 +35629,9 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -35358,6 +35652,12 @@ ags_abyss_synth_util_compute_s64(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
@@ -41939,6 +42239,30 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -42227,6 +42551,18 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -42461,6 +42797,9 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -42481,6 +42820,12 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -42501,6 +42846,9 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -42521,6 +42869,12 @@ ags_abyss_synth_util_compute_float(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
@@ -49094,6 +49448,30 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -49382,6 +49760,18 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -49616,6 +50006,9 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -49636,6 +50029,12 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -49656,6 +50055,9 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -49676,6 +50078,12 @@ ags_abyss_synth_util_compute_double(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
@@ -56235,6 +56643,30 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_envelope_util_set_source(abyss_synth_util->env_0_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_0_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_1_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_1_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_2_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_2_util,
+				    NULL);
+
+  ags_envelope_util_set_source(abyss_synth_util->env_3_util,
+			       NULL);
+
+  ags_envelope_util_set_destination(abyss_synth_util->env_3_util,
+				    NULL);
+
   /* LFO-0 */
   lfo_0_has_sends = FALSE;
   
@@ -56523,6 +56955,18 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
     }
   }
 
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_0_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_1_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_2_util,
+				NULL);
+
+  ags_lfo_synth_util_set_source(abyss_synth_util->lfo_3_util,
+				NULL);
+
   /* seq-0 */
   seq_0_has_sends = FALSE;
   
@@ -56757,6 +57201,9 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_0_util,
 			      abyss_synth_util->noise_0_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   abyss_synth_util->noise_0_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_0_util,
 				     buffer_length);
@@ -56777,6 +57224,12 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_0_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_0_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_0_util,
+				   NULL);
   }
 
   /* pink-noise 1 */
@@ -56797,6 +57250,9 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
 
     ags_noise_util_set_source(abyss_synth_util->noise_1_util,
 			      abyss_synth_util->noise_1_buffer);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   abyss_synth_util->noise_1_buffer);
 
     ags_noise_util_set_buffer_length(abyss_synth_util->noise_1_util,
 				     buffer_length);
@@ -56817,6 +57273,12 @@ ags_abyss_synth_util_compute_complex(AgsAbyssSynthUtil *abyss_synth_util)
 			      offset);
 
     ags_noise_util_compute(abyss_synth_util->noise_1_util);
+    
+    ags_noise_util_set_source(abyss_synth_util->noise_1_util,
+			      NULL);
+    
+    ags_noise_util_set_destination(abyss_synth_util->noise_1_util,
+				   NULL);
   }
 
   /* OSC 0-3 */
