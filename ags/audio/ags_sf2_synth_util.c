@@ -253,6 +253,9 @@ ags_sf2_synth_util_free(AgsSF2SynthUtil *ptr)
   ags_resample_util_set_source(ptr->resample_util,
 			       NULL);
 
+  ags_resample_util_set_destination(ptr->resample_util,
+				    NULL);
+
   ags_resample_util_free(ptr->resample_util);
 
   if(ptr->pitch_type == AGS_TYPE_FAST_PITCH_UTIL){
@@ -2189,6 +2192,7 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 		  
 	resample_util->source = NULL;
 
+#if 0
 	if(resample_util->data_in != NULL){
 	  ags_stream_free(resample_util->data_in);
 	
@@ -2206,6 +2210,7 @@ ags_sf2_synth_util_load_instrument(AgsSF2SynthUtil *sf2_synth_util,
 
 	  resample_util->buffer = NULL;
 	}
+#endif
       }
     }
   }
@@ -2714,6 +2719,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 		  
 		resample_util->source = NULL;
 
+#if 0
 		if(resample_util->data_in != NULL){
 		  ags_stream_free(resample_util->data_in);
 
@@ -2731,6 +2737,7 @@ ags_sf2_synth_util_load_midi_locale(AgsSF2SynthUtil *sf2_synth_util,
 
 		  resample_util->buffer = NULL;
 		}
+#endif
 	      }
 
 	      i++;	      

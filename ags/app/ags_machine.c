@@ -1161,7 +1161,17 @@ ags_machine_finalize(GObject *gobject)
     ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
 				 start_list);
   }
-  
+
+  /* remove from ui provider */
+  start_list = ags_ui_provider_get_machine(AGS_UI_PROVIDER(application_context));
+
+  start_list = g_list_remove(start_list,
+			     machine);
+
+  ags_ui_provider_set_machine(AGS_UI_PROVIDER(application_context),
+			      start_list);
+
+  /* automation port */
   g_list_free_full(machine->enabled_automation_port,
 		   (GDestroyNotify) ags_machine_automation_port_free);  
   
@@ -1194,8 +1204,6 @@ ags_machine_finalize(GObject *gobject)
 
   if(audio != NULL){
     g_object_run_dispose(G_OBJECT(audio));
-    
-    g_object_unref(G_OBJECT(audio));
   }
 }
 
