@@ -1433,6 +1433,8 @@ ags_functional_test_util_header_bar_menu_button_click_driver_program(guint n_par
     ags_app_action_util_add_raven_synth();
   }else if(!g_ascii_strncasecmp(action, "app.add_modular_synth", 21)){
     ags_app_action_util_add_modular_synth();
+  }else if(!g_ascii_strncasecmp(action, "app.add_abyss_synth", 19)){
+    ags_app_action_util_add_abyss_synth();
   }else if(!g_ascii_strncasecmp(action, "app.add_ffplayer", 16)){
     ags_app_action_util_add_ffplayer();
   }else if(!g_ascii_strncasecmp(action, "app.add_sf2_synth", 17)){
@@ -3279,6 +3281,22 @@ ags_functional_test_util_add_machine_driver_program(guint n_params,
       success = TRUE;
       
       g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_modular_synth",
+				     NULL);
+    }else if(!g_ascii_strncasecmp(machine_name,
+				  "Abyss Synth",
+				  13)){
+      static gchar* abyss_synth_path[] = {
+	"Abyss Synth",
+	NULL
+      };
+      
+      path_strv = abyss_synth_path;
+      
+      action = "app.add_abyss_synth";
+
+      success = TRUE;
+      
+      g_action_group_activate_action(G_ACTION_GROUP(ags_ui_provider_get_app(AGS_UI_PROVIDER(application_context))), "add_abyss_synth",
 				     NULL);
     }else if(!g_ascii_strncasecmp(machine_name,
 				  "FPlayer",

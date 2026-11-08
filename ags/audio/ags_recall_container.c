@@ -793,14 +793,15 @@ ags_recall_container_finalize(GObject *gobject)
   recall_container = AGS_RECALL_CONTAINER(gobject);
 
   /* recall */
-  g_object_unref(recall_container->recall_audio);
+  if(recall_container->recall_audio != NULL){
+    g_object_unref(recall_container->recall_audio);
+  }
   
   g_list_free_full(recall_container->recall_audio_run,
 		   g_object_unref);
 
   g_list_free_full(recall_container->recall_channel,
 		   g_object_unref);
-
 
   g_list_free_full(recall_container->recall_channel_run,
 		   g_object_unref);

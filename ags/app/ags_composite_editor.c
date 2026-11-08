@@ -53,6 +53,7 @@
 #include <ags/app/machine/ags_quantum_synth.h>
 #include <ags/app/machine/ags_raven_synth.h>
 #include <ags/app/machine/ags_modular_synth.h>
+#include <ags/app/machine/ags_abyss_synth.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/app/machine/ags_ffplayer.h>
@@ -1197,6 +1198,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      AGS_IS_QUANTUM_SYNTH(machine) ||
      AGS_IS_RAVEN_SYNTH(machine) ||
      AGS_IS_MODULAR_SYNTH(machine) ||
+     AGS_IS_ABYSS_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||
@@ -1398,6 +1400,7 @@ ags_composite_editor_real_machine_changed(AgsCompositeEditor *composite_editor,
      AGS_IS_QUANTUM_SYNTH(machine) ||
      AGS_IS_RAVEN_SYNTH(machine) ||
      AGS_IS_MODULAR_SYNTH(machine) ||
+     AGS_IS_ABYSS_SYNTH(machine) ||
 #ifdef AGS_WITH_LIBINSTPATCH
      AGS_IS_FFPLAYER(machine) ||
      AGS_IS_SF2_SYNTH(machine) ||
@@ -2989,6 +2992,8 @@ ags_composite_editor_paste_wave_all(AgsCompositeEditor *composite_editor,
 	child = child->next;
       }
 
+      x_boundary = 0;
+      
       prop = xmlGetProp(wave_node,
 			BAD_CAST "x-boundary");
 

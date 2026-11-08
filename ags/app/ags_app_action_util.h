@@ -66,6 +66,7 @@ void ags_app_action_util_add_stargazer_synth();
 void ags_app_action_util_add_quantum_synth();
 void ags_app_action_util_add_raven_synth();
 void ags_app_action_util_add_modular_synth();
+void ags_app_action_util_add_abyss_synth();
 void ags_app_action_util_add_ffplayer();
 void ags_app_action_util_add_sf2_synth();
 void ags_app_action_util_add_pitch_sampler();

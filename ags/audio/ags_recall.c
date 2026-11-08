@@ -2020,8 +2020,9 @@ ags_recall_dispose(GObject *gobject)
   
   /* recall container */
   if(recall->recall_container != NULL){
-    ags_recall_container_remove((AgsRecallContainer *) recall->recall_container,
-				recall);
+    g_object_unref(recall->recall_container);
+
+    recall->recall_container = NULL;
   }
 
   /* soundcard */
@@ -2095,7 +2096,6 @@ ags_recall_dispose(GObject *gobject)
 
     while(list != NULL){      
       g_object_run_dispose(G_OBJECT(list->data));
-      g_object_unref(G_OBJECT(list->data));
       
       list = list->next;
     }

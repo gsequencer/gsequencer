@@ -31,6 +31,9 @@
 #include <ags/libags-gui.h>
 
 #include <ags/app/ags_machine.h>
+
+#include <ags/app/machine/ags_modulation_matrix.h>
+
 G_BEGIN_DECLS
 
 #define AGS_TYPE_ABYSS_SYNTH                (ags_abyss_synth_get_type())
@@ -129,8 +132,11 @@ struct _AgsAbyssSynth
   AgsDial *lfo_3_tuning;
 
   /* pink noise */
-  AgsDial *pink_noise_frequency;
-  AgsDial *pink_noise_gain;
+  AgsDial *pink_noise_0_frequency;
+  AgsDial *pink_noise_0_gain;
+  
+  AgsDial *pink_noise_1_frequency;
+  AgsDial *pink_noise_1_gain;
 
   /* SEQ 0-3 */
   AgsDial *seq_0_modulation_0;
@@ -217,6 +223,9 @@ struct _AgsAbyssSynth
   GtkDropDown *seq_3_mode;
   GtkSpinButton *seq_3_lfo_frequency;
 
+  /* modulation */
+  AgsModulationMatrix *modulation_matrix;
+
   /* OSC 0-4 */
   GtkDropDown *osc_0_oscillator;
 
@@ -285,21 +294,19 @@ struct _AgsAbyssSynth
   /* ring 0-1 */
   GtkCheckButton *ring_0_enabled;
   
-  AgsDial *ring_0_lfo_frequency;
-  AgsDial *ring_0_lfo_depth;
+  AgsDial *ring_0_tuning;
+  AgsDial *ring_0_drive;
   
-  AgsDial *ring_0_dry;
-  AgsDial *ring_0_wet;
+  AgsDial *ring_0_mix;
 
   AgsDial *ring_0_gain;
 
   GtkCheckButton *ring_1_enabled;
   
-  AgsDial *ring_1_lfo_frequency;
-  AgsDial *ring_1_lfo_depth;
+  AgsDial *ring_1_tuning;
+  AgsDial *ring_1_drive;
   
-  AgsDial *ring_1_dry;
-  AgsDial *ring_1_wet;
+  AgsDial *ring_1_mix;
 
   AgsDial *ring_1_gain;
   
@@ -329,74 +336,6 @@ struct _AgsAbyssSynth
   AgsDial *low_pass_1_cut_off_frequency;
   AgsDial *low_pass_1_filter_gain;
   AgsDial *low_pass_1_no_clip;
-
-  /* delay 0-1 */
-  AgsDial *delay_0_feedback;
-  AgsDial *delay_0_dry;
-  AgsDial *delay_0_wet;
-  AgsDial *delay_0_time;
-  AgsDial *delay_0_gain;
-  
-  AgsDial *delay_1_feedback;
-  AgsDial *delay_1_dry;
-  AgsDial *delay_1_wet;
-  AgsDial *delay_1_time;
-  AgsDial *delay_1_gain;
-
-  /* tremolo 0-1 */
-  GtkCheckButton *tremolo_0_enabled;
-
-  AgsDial *tremolo_0_gain;
-  AgsDial *tremolo_0_lfo_depth;
-  AgsDial *tremolo_0_lfo_freq;
-  AgsDial *tremolo_0_tuning;
-  
-  GtkCheckButton *tremolo_1_enabled;
-
-  AgsDial *tremolo_1_gain;
-  AgsDial *tremolo_1_lfo_depth;
-  AgsDial *tremolo_1_lfo_freq;
-  AgsDial *tremolo_1_tuning;
-
-  /* vibrato 0-3 */
-  GtkCheckButton *vibrato_0_enabled;
-
-  AgsDial *vibrato_0_gain; 
-  AgsDial *vibrato_0_lfo_depth;
-  AgsDial *vibrato_0_lfo_freq;
-  AgsDial *vibrato_0_tuning;
-  
-  GtkCheckButton *vibrato_1_enabled;
-
-  AgsDial *vibrato_1_gain; 
-  AgsDial *vibrato_1_lfo_depth;
-  AgsDial *vibrato_1_lfo_freq;
-  AgsDial *vibrato_1_tuning;
-  
-  GtkCheckButton *vibrato_2_enabled;
-
-  AgsDial *vibrato_2_gain; 
-  AgsDial *vibrato_2_lfo_depth;
-  AgsDial *vibrato_2_lfo_freq;
-  AgsDial *vibrato_2_tuning;
-  
-  GtkCheckButton *vibrato_3_enabled;
-
-  AgsDial *vibrato_3_gain; 
-  AgsDial *vibrato_3_lfo_depth;
-  AgsDial *vibrato_3_lfo_freq;
-  AgsDial *vibrato_3_tuning;
-
-  /* wah-wah */
-  AgsDial *wah_wah_attack;
-  AgsDial *wah_wah_decay;
-  AgsDial *wah_wah_sustain;
-  AgsDial *wah_wah_release;
-  AgsDial *wah_wah_gain;
-  
-  AgsDial *wah_wah_lfo_depth;
-  AgsDial *wah_wah_lfo_freq;
-  AgsDial *wah_wah_lfo_tuning;
 
   /* chorus */
   GtkCheckButton *chorus_enabled;

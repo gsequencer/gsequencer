@@ -66,6 +66,7 @@
 
 #include <ags/audio/ags_noise_util.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #if defined(AGS_OSX_ACCELERATE_BUILTIN_FUNCTIONS)
@@ -185,6 +186,12 @@ ags_noise_util_free(AgsNoiseUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
   
+  ags_stream_free(ptr->destination);
+
+  if(ptr->destination != ptr->source){
+    ags_stream_free(ptr->source);
+  }
+
   g_free(ptr);
 }
 

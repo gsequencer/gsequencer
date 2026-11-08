@@ -19,6 +19,7 @@
 
 #include <ags/audio/ags_lfo_synth_util.h>
 
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 #include <ags/audio/ags_fourier_transform_util.h>
 
@@ -133,6 +134,8 @@ void
 ags_lfo_synth_util_free(AgsLFOSynthUtil *ptr)
 {
   g_return_if_fail(ptr != NULL);
+
+  ags_stream_free(ptr->source);
   
   g_free(ptr);
 }
