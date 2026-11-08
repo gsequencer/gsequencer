@@ -3620,8 +3620,7 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
 
-    g_list_free_full(start_list,
-		     g_object_unref);
+    g_list_free(start_list);
   }
 
   /* recall */
@@ -3644,8 +3643,7 @@ ags_audio_dispose(GObject *gobject)
       list = list_next;
     }
 
-    g_list_free_full(start_list,
-		     g_object_unref);
+    g_list_free(start_list);
 
     g_rec_mutex_unlock(recall_mutex);
   }

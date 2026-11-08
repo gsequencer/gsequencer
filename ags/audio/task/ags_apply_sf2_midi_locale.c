@@ -356,8 +356,10 @@ ags_apply_sf2_midi_locale_launch(AgsTask *task)
 
   synth_resample_util->src_ratio = synth_template_resample_util->src_ratio;
 
+#if 0
   g_free(synth_template_resample_util->data_in);
   g_free(synth_template_resample_util->data_out);
+#endif
   
   synth_resample_util->input_frames = synth_template_resample_util->input_frames;
   synth_resample_util->data_in = synth_template_resample_util->data_in;

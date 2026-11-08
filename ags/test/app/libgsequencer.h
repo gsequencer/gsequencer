@@ -289,6 +289,7 @@
 #include <ags/app/machine/ags_quantum_synth.h>
 #include <ags/app/machine/ags_raven_synth.h>
 #include <ags/app/machine/ags_modular_synth.h>
+#include <ags/app/machine/ags_abyss_synth.h>
 #include <ags/app/machine/ags_matrix_bulk_input.h>
 #include <ags/app/machine/ags_drum_callbacks.h>
 #include <ags/app/machine/ags_drum_input_line.h>

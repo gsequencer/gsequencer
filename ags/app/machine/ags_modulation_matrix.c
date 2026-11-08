@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2025 Joël Krähemann
+ * Copyright (C) 2005-2026 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -189,8 +189,8 @@ ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix)
   modulation_matrix->cell_width = AGS_MODULATION_MATRIX_DEFAULT_CELL_WIDTH;
   modulation_matrix->cell_height = AGS_MODULATION_MATRIX_DEFAULT_CELL_HEIGHT;
   
-  modulation_matrix->n_cols = 8;
-  modulation_matrix->n_rows = 5;
+  modulation_matrix->n_cols = AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY;
+  modulation_matrix->n_rows = AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY;
 
   modulation_matrix->cursor_x = 0;
   modulation_matrix->cursor_y = 0;
@@ -222,9 +222,9 @@ ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix)
 
   g_strv_builder_unref(strv_builder);
 
-  modulation_matrix->matrix_enabled = g_malloc(AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * sizeof(guint64));
+  modulation_matrix->matrix_enabled = g_malloc(modulation_matrix->n_rows * sizeof(guint64));
 
-  memset(modulation_matrix->matrix_enabled, 0, AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * sizeof(guint64));
+  memset(modulation_matrix->matrix_enabled, 0, modulation_matrix->n_rows * sizeof(guint64));
     
   modulation_matrix->grid = (GtkGrid *) gtk_grid_new();
 
@@ -249,8 +249,8 @@ ags_modulation_matrix_init(AgsModulationMatrix *modulation_matrix)
 			   TRUE);
 
   gtk_widget_set_size_request(GTK_WIDGET(modulation_matrix->drawing_area),
-			      (AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * modulation_matrix->cell_width) + 2),
-			      (AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + 2) + ((AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * modulation_matrix->cell_height) + 2));
+			      (AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + 2) + ((modulation_matrix->n_cols * modulation_matrix->cell_width) + 2),
+			      (AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + 2) + ((modulation_matrix->n_rows * modulation_matrix->cell_height) + 2));
 
   gtk_widget_set_halign((GtkWidget *) modulation_matrix->drawing_area,
 			GTK_ALIGN_FILL);
@@ -357,6 +357,43 @@ ags_modulation_matrix_disconnect(AgsConnectable *connectable)
 				 NULL);
 
   //TODO:JK: implement me
+}
+
+void
+ags_modulation_matrix_set_dim(AgsModulationMatrix *modulation_matrix,
+			      gint n_cols, gint n_rows)
+{
+  if(!AGS_IS_MODULATION_MATRIX(modulation_matrix) ||
+     n_cols < 0 ||
+     n_rows < 0){
+    return;
+  }
+
+  modulation_matrix->n_cols = n_cols;
+  modulation_matrix->n_rows = n_rows;
+
+  modulation_matrix->matrix_enabled = g_malloc(modulation_matrix->n_rows * sizeof(guint64));
+
+  memset(modulation_matrix->matrix_enabled, 0, modulation_matrix->n_rows * sizeof(guint64));
+    
+  gtk_widget_set_size_request(GTK_WIDGET(modulation_matrix->drawing_area),
+			      (AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + 2) + ((modulation_matrix->n_cols * modulation_matrix->cell_width) + 2),
+			      (AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + 2) + ((modulation_matrix->n_rows * modulation_matrix->cell_height) + 2));  
+}
+
+void
+ags_modulation_matrix_set_label(AgsModulationMatrix *modulation_matrix,
+				gchar **label_x, gchar **label_y)
+{
+  if(!AGS_IS_MODULATION_MATRIX(modulation_matrix)){
+    return;
+  }
+
+  g_strfreev(modulation_matrix->label_x);
+  g_strfreev(modulation_matrix->label_y);
+
+  modulation_matrix->label_x = g_strdupv(label_x);
+  modulation_matrix->label_y = g_strdupv(label_y);
 }
 
 void
@@ -547,13 +584,13 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   cairo_set_line_width(cr,
 		       1.0);
 
-  for(i = 0; i < 6; i++){
+  for(i = 0; i < modulation_matrix->n_rows + 1; i++){
     cairo_move_to(cr,
 		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH,
 		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_height));
   
     cairo_line_to(cr,
-		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY * modulation_matrix->cell_width),
+		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (modulation_matrix->n_cols * modulation_matrix->cell_width),
 		  2.0 + (double) AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (i * modulation_matrix->cell_height));
 
   }
@@ -570,14 +607,14 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   cairo_set_line_width(cr,
 		       1.0);
 
-  for(i = 0; i < 9; i++){
+  for(i = 0; i < modulation_matrix->n_cols + 1; i++){
     cairo_move_to(cr,
 		  (double) AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_width),
 		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH);
   
     cairo_line_to(cr,
 		  AGS_MODULATION_MATRIX_DEFAULT_CONTROL_WIDTH + (double) (i * modulation_matrix->cell_width),
-		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY * modulation_matrix->cell_height));
+		  2.0 + AGS_MODULATION_MATRIX_ROTATED_CONTROL_WIDTH + (double) (modulation_matrix->n_rows * modulation_matrix->cell_height));
 
   }
   
@@ -595,7 +632,7 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   x_start = 8.0;
   y_start = 2.0;
   
-  for(i = 0; i < 5; i++){
+  for(i = 0; i < modulation_matrix->n_rows && sends_source_strv[i] != NULL; i++){
     text = g_strdup_printf("%s",
 			   (sends_source_strv[i]));
 
@@ -638,7 +675,7 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   x_start = 8.0;
   y_start = 2.0;
   
-  for(i = 0; i < 8; i++){
+  for(i = 0; i < modulation_matrix->n_cols && sends_sink_strv[i] != NULL; i++){
     cairo_save(cr);
 
     text = g_strdup_printf("%s",
@@ -682,8 +719,8 @@ ags_modulation_matrix_draw(AgsModulationMatrix *modulation_matrix,
   double angle_0 = 0.0;
   double angle_1 = 2.0 * M_PI;
 
-  for(i = 0; i < AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_VERTICALLY; i++){
-    for(j = 0; j < AGS_MODULATION_MATRIX_DEFAULT_CONTROLS_HORIZONTALLY; j++){      
+  for(i = 0; i < modulation_matrix->n_rows; i++){
+    for(j = 0; j < modulation_matrix->n_cols; j++){      
       if(ags_modulation_matrix_get_enabled(modulation_matrix, j, i)){
 	//	g_message("enabled %d | %d", j, i);
 
